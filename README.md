@@ -11,6 +11,16 @@
 ## Wiki
 - [Hmm wiki](https://github.com/boostcampwm2025/iOS01-Hmm/wiki)
 
+## 그룹 프로젝트 목표
+- 일하지 않고 추억 만들기
+  - '놀이'처럼 생각하기
+  - 재미를 잃지 않기
+- 배포 가능한 수준의 기능 개발 완료하기
+  - App 다운로드 100회 달성하기
+  - 사용자 피드백 받아보기
+<img width="800" alt="스크린샷 2025-12-09 오전 1 23 31" src="https://github.com/user-attachments/assets/09983098-309c-402e-b3d0-b4bfd1b3efca" />
+
+
 ## 주간 일정
 ### 1주차 (기획 주간)
 <img width="800" alt="image" src="https://github.com/user-attachments/assets/bfafeea7-3ff4-401e-a882-84eb7292c2be" />
