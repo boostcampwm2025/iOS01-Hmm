@@ -17,6 +17,7 @@ fileprivate enum Constant {
         static let currentMoney: String = "$100,000"
         static let currencyPerTapHeader: String = "탭 당 획득 재산"
         static let navigationTitle: String = "탭 이벤트 연산 확인"
+        static let tapArea: String = "Tap Button"
     }
     
     enum Fonts {
@@ -33,15 +34,29 @@ fileprivate enum Constant {
     enum Colors {
         static let primary: Color = .blue
     }
+    
+    enum Size {
+        static let tapButtonHeight: CGFloat = 50
+    }
 }
 
 struct VarifyTapEventCalculationView: View {
-    
+    @State var temp: Int = 0
     var body: some View {
         VStack(alignment: .leading, spacing: Constant.Spacing.section) {
             descriptionSection
             dashBoardSection
+            Stepper("Fever", value: $temp)
+            Stepper("웹 개발 초급", value: $temp)
+            Stepper("웹 개발 중급", value: $temp)
+            Stepper("웹 개발 고급", value: $temp)
+            Stepper("마우스", value: $temp)
+            Stepper("키보드", value: $temp)
+            Stepper("의자", value: $temp)
+            Text("소비 아이템")
             Spacer()
+
+            tapButton
         }
         .padding()
         .navigationTitle(Constant.Text.navigationTitle)
@@ -65,14 +80,34 @@ struct VarifyTapEventCalculationView: View {
             Text(Constant.Text.currentMoney)
                 .font(Constant.Fonts.large)
                 .foregroundStyle(Constant.Colors.primary)
-            
+        }
+
+        VStack(alignment: .leading, spacing: 0) {
             Text(Constant.Text.currencyPerTapHeader)
                 .font(Constant.Fonts.subTitle)
             
             Text(Constant.Text.currentMoney)
                 .font(Constant.Fonts.large)
                 .foregroundStyle(Constant.Colors.primary)
-            Divider()
+        }
+        Divider()
+    }
+    
+    @ViewBuilder
+    var tapButton: some View {
+        Button {
+            print("Tapped")
+        } label: {
+            Text(Constant.Text.tapArea)
+                .font(Constant.Fonts.subTitle)
+                .foregroundStyle(Color.white)
+                .frame(
+                    maxWidth: .infinity,
+                    maxHeight: Constant.Size.tapButtonHeight,
+                    alignment: .center
+                )
+                .background(Constant.Colors.primary)
+                .cornerRadius(10)
         }
     }
 }
