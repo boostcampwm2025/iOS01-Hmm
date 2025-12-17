@@ -6,7 +6,7 @@
 //
 
 /// 사용자가 보유한 스킬들을 관리하는 구조체
-class SkillSet {
+final class SkillSet {
     /// 스킬 이름을 키로, 현재 레벨을 값으로 가지는 딕셔너리
     private(set) var currentSkillLevels: [String: Int] = [:]
     
@@ -22,6 +22,21 @@ class SkillSet {
         }
         
         currentSkillLevels[skill.title] = currentLevel + 1
+        return true
+    }
+    
+    /// 특정 스킬의 레벨을 1 감소시킵니다.
+    /// - Parameter skill: 다운그레이드할 스킬
+    /// - Returns: 다운그레이드 성공 시 `true`, 레벨이 0이거나 스킬을 보유하지 않은 경우 `false`
+    @discardableResult
+    func downgrade(skill: Skill) -> Bool {
+        let currentLevel = currentSkillLevels[skill.title] ?? 0
+        
+        guard currentLevel > 0 else {
+            return false
+        }
+        
+        currentSkillLevels[skill.title] = currentLevel - 1
         return true
     }
 }

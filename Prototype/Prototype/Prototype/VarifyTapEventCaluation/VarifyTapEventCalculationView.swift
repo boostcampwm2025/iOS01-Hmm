@@ -50,9 +50,6 @@ struct VarifyTapEventCalculationView: View {
             Stepper("웹 개발 초급", value: $temp)
             Stepper("웹 개발 중급", value: $temp)
             Stepper("웹 개발 고급", value: $temp)
-            Stepper("마우스", value: $temp)
-            Stepper("키보드", value: $temp)
-            Stepper("의자", value: $temp)
             Text("소비 아이템")
             Spacer()
 
