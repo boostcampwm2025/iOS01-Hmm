@@ -14,4 +14,7 @@ actor User {
         money: .init(amount: 0),
         diamond: .init(amount: 0)
     )
+    
+    /// 유저의 스킬 목록
+    private(set) var skillSet: SkillSet = .init(currentSkillLevels: [:])
 }
