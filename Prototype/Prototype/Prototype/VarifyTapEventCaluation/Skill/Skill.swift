@@ -6,10 +6,15 @@
 //
 
 /// 게임 내 스킬 시스템을 위한 공통 구조체
-struct Skill {
+final class Skill {
     /// 스킬 이름
     var title: String
     
     /// 최대 업그레이드 레벨
     var maxUpgradeLevel: Int
+    
+    init(title: String, maxUpgradeLevel: Int) {
+        self.title = title
+        self.maxUpgradeLevel = maxUpgradeLevel
+    }
 }

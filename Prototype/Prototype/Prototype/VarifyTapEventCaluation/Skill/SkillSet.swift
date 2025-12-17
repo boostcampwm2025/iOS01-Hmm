@@ -6,7 +6,7 @@
 //
 
 /// 사용자가 보유한 스킬들을 관리하는 구조체
-struct SkillSet {
+class SkillSet {
     /// 스킬 이름을 키로, 현재 레벨을 값으로 가지는 딕셔너리
     private(set) var currentSkillLevels: [String: Int] = [:]
     
@@ -14,7 +14,7 @@ struct SkillSet {
     /// - Parameter skill: 업그레이드할 스킬
     /// - Returns: 업그레이드 성공 시 `true`, 최대 레벨 도달 시 `false`
     @discardableResult
-    mutating func upgrade(skill: Skill) -> Bool {
+    func upgrade(skill: Skill) -> Bool {
         let currentLevel = currentSkillLevels[skill.title] ?? 0
         
         guard currentLevel < skill.maxUpgradeLevel else {

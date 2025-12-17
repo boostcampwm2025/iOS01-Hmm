@@ -7,14 +7,17 @@
 
 actor User {
     /// 닉네임
-    let nickname: String = "ProtoType"
+    let nickname: String
     
     /// 재화 지갑
-    private(set) var wallet: Wallet = .init(
-        money: .init(amount: 0),
-        diamond: .init(amount: 0)
-    )
+    private(set) var wallet: Wallet
     
     /// 유저의 스킬 목록
-    private(set) var skillSet: SkillSet = .init(currentSkillLevels: [:])
+    private(set) var skillSet: SkillSet
+    
+    init(nickname: String, wallet: Wallet, skillSet: SkillSet) {
+        self.nickname = nickname
+        self.wallet = wallet
+        self.skillSet = skillSet
+    }
 }
