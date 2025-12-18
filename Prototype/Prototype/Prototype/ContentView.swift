@@ -6,10 +6,30 @@
 //
 
 import SwiftUI
+import SpriteKit
 
 struct ContentView: View {
+    let gameSceme: SKScene = {
+        let scene = StackGameScene()
+        scene.scaleMode = .resizeFill
+        return scene
+    }()
+
     var body: some View {
-        ApplyDesignResourceView()
+        NavigationStack {
+            List {
+                NavigationLink("물리 엔진 검증") {
+                    SpriteView(scene: gameSceme)
+                        .ignoresSafeArea()
+                }
+                NavigationLink("자이로 센서 검증") {
+                    MotionView()
+                }
+                NavigationLink("탭 이벤트 검증") {
+                    VarifyTapEventCalculationView()
+                }
+            }
+        }
     }
 }
 
