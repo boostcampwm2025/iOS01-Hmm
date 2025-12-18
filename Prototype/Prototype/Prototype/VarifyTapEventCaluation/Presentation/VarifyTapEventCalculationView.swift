@@ -43,74 +43,116 @@ struct VarifyTapEventCalculationView: View {
     @State var viewModel = VarifyTapEventCalculationViewModel()
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Constant.Spacing.section) {
-            descriptionSection
-            dashBoardSection
-            // 피버 시스템 섹션
-            VStack(alignment: .leading, spacing: 8) {
-                Text("피버 시스템")
-                    .font(Constant.Fonts.subTitle)
-                
-                HStack {
-                    Text("현재 단계: \(viewModel.feverLevel)")
-                        .font(Constant.Fonts.body)
-                    Spacer()
-                    Text("배율: x\(String(format: "%.1f", viewModel.feverMultiplier))")
-                        .font(Constant.Fonts.body)
-                        .foregroundStyle(Constant.Colors.primary)
-                }
-                
-                HStack(spacing: 8) {
-                    Button("단계 올리기") {
-                        viewModel.increaseFeverLevel()
-                    }
-                    .buttonStyle(.bordered)
-                    
-                    Button("단계 내리기") {
-                        viewModel.decreaseFeverLevel()
-                    }
-                    .buttonStyle(.bordered)
-                    
-                    Button("초기화") {
-                        viewModel.resetFever()
-                    }
-                    .buttonStyle(.bordered)
-                }
-            }
-            
-            // 스킬 업그레이드 섹션
-            VStack(alignment: .leading, spacing: 8) {
-                Text("스킬 업그레이드")
-                    .font(Constant.Fonts.subTitle)
-                
-                ForEach(viewModel.availableSkills, id: \.title) { skill in
-                    HStack {
-                        Text(skill.title)
-                        Spacer()
-                        Text("Lv. \(viewModel.skillLevels[skill.title] ?? 0)")
-                        Button("+") {
-                            viewModel.upgradeSkill(skill)
-                        }
-                        .buttonStyle(.bordered)
-                        Button("-") {
-                            viewModel.downgradeSkill(skill)
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                }
-            }
-            
-            Divider()
-            
-            Spacer()
+        ScrollView {
+            VStack(alignment: .leading, spacing: Constant.Spacing.section) {
+                descriptionSection
+                dashBoardSection
+                // 피버 시스템 섹션
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("피버 시스템")
+                        .font(Constant.Fonts.subTitle)
 
-            tapButton
+                    HStack {
+                        Text("현재 단계: \(viewModel.feverLevel)")
+                            .font(Constant.Fonts.body)
+                        Spacer()
+                        Text("배율: x\(String(format: "%.1f", viewModel.feverMultiplier))")
+                            .font(Constant.Fonts.body)
+                            .foregroundStyle(Constant.Colors.primary)
+                    }
+
+                    HStack(spacing: 8) {
+                        Button("단계 올리기") {
+                            viewModel.increaseFeverLevel()
+                        }
+                        .buttonStyle(.bordered)
+
+                        Button("단계 내리기") {
+                            viewModel.decreaseFeverLevel()
+                        }
+                        .buttonStyle(.bordered)
+
+                        Button("초기화") {
+                            viewModel.resetFever()
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                }
+
+                // 버프 시스템 섹션
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("버프 시스템 (소비 아이템)")
+                        .font(Constant.Fonts.subTitle)
+
+                    HStack {
+                        Text("버프 배율: x\(String(format: "%.1f", viewModel.buffMultiplier))")
+                            .font(Constant.Fonts.body)
+                        Spacer()
+                        if viewModel.buffRemainingTime > 0 {
+                            Text("남은 시간: \(Int(viewModel.buffRemainingTime))초")
+                                .font(Constant.Fonts.body)
+                                .foregroundStyle(.orange)
+                        }
+                    }
+
+                    HStack {
+                        Text(viewModel.doubleRewardItem.name)
+                            .font(Constant.Fonts.body)
+                        Spacer()
+                        Text("보유: \(viewModel.itemCounts[viewModel.doubleRewardItem.name] ?? 0)개")
+                            .font(Constant.Fonts.body)
+                    }
+
+                    HStack(spacing: 8) {
+                        Button("아이템 추가") {
+                            viewModel.addItem()
+                        }
+                        .buttonStyle(.bordered)
+
+                        Button("아이템 사용") {
+                            viewModel.useItem()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(viewModel.buffRemainingTime > 0)
+                    }
+                }
+
+                // 스킬 업그레이드 섹션
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("스킬 업그레이드")
+                        .font(Constant.Fonts.subTitle)
+                    
+                    ForEach(viewModel.availableSkills, id: \.title) { skill in
+                        HStack {
+                            Text(skill.title)
+                            Spacer()
+                            Text("Lv. \(viewModel.skillLevels[skill.title] ?? 0)")
+                            Button("+") {
+                                viewModel.upgradeSkill(skill)
+                            }
+                            .buttonStyle(.bordered)
+                            Button("-") {
+                                viewModel.downgradeSkill(skill)
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                    }
+                }
+                
+                Divider()
+                
+                Spacer()
+
+                tapButton
+            }
+            .padding()
+            .task {
+                await viewModel.loadInitialData()
+            }
         }
-        .padding()
         .navigationTitle(Constant.Text.navigationTitle)
-        .task {
-            await viewModel.loadInitialData()
-        }
+        .navigationBarTitleDisplayMode(.inline)
+
     }
     
     @ViewBuilder
