@@ -16,10 +16,11 @@ struct ApplyDesignResourceView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Description").font(.title).bold()
+                Text("Description").font(.title2)
                 Text(
                     "로고나 캐릭터에 필요한 gif, lottie 등 다양한 형태의 디자인 리소스를 가능한 방법으로 적용하고 확인합니다."
                 )
+                Divider()
                 .padding(.bottom, 16)
                 VStack(spacing: 16) {
                     Logo()
