@@ -5,7 +5,6 @@
 //  Created by SeoJunYoung on 12/18/25.
 //
 
-
 struct Policy {
     
     /// 스킬 강화별 가중치 [스킬이름 : 레벨 : 가중치]
@@ -46,5 +45,13 @@ struct Policy {
             9: 90,
             10: 100
         ]
+    ]
+    
+    /// 피버 단계별 배율 [단계 : 배율]
+    static let feverMultipliers: [Int: Double] = [
+        0: 1.0,   // 기본 (가중치 없음)
+        1: 1.2,   // 20% 증가
+        2: 1.5,   // 50% 증가
+        3: 2.0    // 100% 증가 (2배)
     ]
 }

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Observation
 
 fileprivate enum Constant {
     enum Text {
@@ -47,6 +46,37 @@ struct VarifyTapEventCalculationView: View {
         VStack(alignment: .leading, spacing: Constant.Spacing.section) {
             descriptionSection
             dashBoardSection
+            // 피버 시스템 섹션
+            VStack(alignment: .leading, spacing: 8) {
+                Text("피버 시스템")
+                    .font(Constant.Fonts.subTitle)
+                
+                HStack {
+                    Text("현재 단계: \(viewModel.feverLevel)")
+                        .font(Constant.Fonts.body)
+                    Spacer()
+                    Text("배율: x\(String(format: "%.1f", viewModel.feverMultiplier))")
+                        .font(Constant.Fonts.body)
+                        .foregroundStyle(Constant.Colors.primary)
+                }
+                
+                HStack(spacing: 8) {
+                    Button("단계 올리기") {
+                        viewModel.increaseFeverLevel()
+                    }
+                    .buttonStyle(.bordered)
+                    
+                    Button("단계 내리기") {
+                        viewModel.decreaseFeverLevel()
+                    }
+                    .buttonStyle(.bordered)
+                    
+                    Button("초기화") {
+                        viewModel.resetFever()
+                    }
+                    .buttonStyle(.bordered)
+                }
+            }
             
             // 스킬 업그레이드 섹션
             VStack(alignment: .leading, spacing: 8) {
@@ -130,80 +160,6 @@ struct VarifyTapEventCalculationView: View {
                 .background(Constant.Colors.primary)
                 .cornerRadius(10)
         }
-    }
-}
-
-@Observable
-final class VarifyTapEventCalculationViewModel {
-    private let user: User
-    private let tapSystem: TapGameSystem
-    
-    // UI 상태
-    var currentMoney: Double = 0
-    var moneyPerTap: Double = 0
-    var skillLevels: [String: Int] = [:]
-    
-    // 사용 가능한 스킬 목록
-    let availableSkills: [Skill] = [
-        Skill(title: "웹 개발 초급", maxUpgradeLevel: 10),
-        Skill(title: "웹 개발 중급", maxUpgradeLevel: 10),
-        Skill(title: "웹 개발 고급", maxUpgradeLevel: 10)
-    ]
-    
-    init() {
-        let user = User(
-            nickname: "ProtoType",
-            wallet: .init(money: .init(amount: 0), diamond: .init(amount: 0)),
-            skillSet: .init()
-        )
-        self.user = user
-        self.tapSystem = .init(
-            user: user,
-            rewardCalculator: .init(user: user),
-            feverSystem: .init()
-        )
-    }
-    
-    /// 초기 데이터 로드
-    func loadInitialData() async {
-        await updateUIState()
-    }
-    
-    /// 탭 이벤트
-    func tap() {
-        Task {
-            let earned = await tapSystem.tap()
-            await updateUIState()
-            print("획득한 재산: \(earned)")
-        }
-    }
-    
-    /// 스킬 업그레이드
-    func upgradeSkill(_ skill: Skill) {
-        Task {
-            let success = await user.skillSet.upgrade(skill: skill)
-            if success {
-                await updateUIState()
-            }
-        }
-    }
-    
-    /// 스킬 다운그레이드
-    func downgradeSkill(_ skill: Skill) {
-        Task {
-            let success = await user.skillSet.downgrade(skill: skill)
-            if success {
-                await updateUIState()
-            }
-        }
-    }
-    
-    /// UI 상태 업데이트
-    @MainActor
-    private func updateUIState() async {
-        currentMoney = await user.wallet.money.amount
-        moneyPerTap = await tapSystem.rewardCalculator.calculateMoneyPerTap()
-        skillLevels = await user.skillSet.currentSkillLevels
     }
 }
 
