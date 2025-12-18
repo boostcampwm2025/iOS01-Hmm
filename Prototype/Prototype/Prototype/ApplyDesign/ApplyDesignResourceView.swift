@@ -116,13 +116,13 @@ private extension GIFView {
 
 struct Logo: View {
 
-    enum LogoType: String, CaseIterable {
+    enum Option: String, CaseIterable {
         case webViewGIF = "GIF - WebView"
         case imageSourceGIF = "GIF - ImageSource"
         case lottie = "Lottie"
     }
 
-    @State private var selectedLogo: LogoType = .webViewGIF
+    @State private var selectedLogo: Option = .webViewGIF
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -131,7 +131,7 @@ struct Logo: View {
                 .bold()
 
             Picker("로고 선택", selection: $selectedLogo) {
-                ForEach(LogoType.allCases, id: \.self) { type in
+                ForEach(Option.allCases, id: \.self) { type in
                     Text(type.rawValue)
                 }
             }
@@ -155,12 +155,12 @@ struct Logo: View {
 
 struct Character2D: View {
 
-    enum LogoType: String, CaseIterable {
+    enum Option: String, CaseIterable {
         case gif = "GIF"
         case lottie = "Lottie"
     }
 
-    @State private var selectedLogo: LogoType = .gif
+    @State private var selectedLogo: Option = .gif
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -169,7 +169,7 @@ struct Character2D: View {
                 .bold()
 
             Picker("로고 선택", selection: $selectedLogo) {
-                ForEach(LogoType.allCases, id: \.self) { type in
+                ForEach(Option.allCases, id: \.self) { type in
                     Text(type.rawValue)
                 }
             }
