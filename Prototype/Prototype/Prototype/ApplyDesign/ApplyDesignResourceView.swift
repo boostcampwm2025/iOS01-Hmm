@@ -9,6 +9,8 @@ import SwiftUI
 import WebKit
 import Lottie
 import SpriteKit
+import RealityKit
+import Combine
 
 struct ApplyDesignResourceView: View {
     var body: some View {
@@ -19,8 +21,11 @@ struct ApplyDesignResourceView: View {
                     "로고나 캐릭터에 필요한 gif, lottie 등 다양한 형태의 디자인 리소스를 가능한 방법으로 적용하고 확인합니다."
                 )
                 .padding(.bottom, 16)
-                Logo()
-                Character2D()
+                VStack(spacing: 16) {
+                    Logo()
+                    Character2D()
+                    Character3D()
+                }
             }.padding()
         }
     }
@@ -190,6 +195,69 @@ struct SpriteCharacterView: View {
     }
 }
 
+struct RealityControlView: View {
+    @StateObject private var viewModel = Character3DViewModel()
+
+    var body: some View {
+        RealityCharacterView(viewModel: viewModel)
+            .frame(width: 200, height: 200)
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        viewModel.dragOffset = value.translation
+                    }
+            )
+    }
+}
+
+final class Character3DViewModel: ObservableObject {
+    @Published var dragOffset: CGSize = .zero
+}
+
+struct RealityCharacterView: UIViewRepresentable {
+    @ObservedObject var viewModel: Character3DViewModel
+
+    func makeUIView(context: Context) -> ARView {
+        let view = ARView(frame: .zero)
+        view.environment.background = .color(.clear)
+
+        let character = try! Entity.load(named: "sample_character_3D")
+        character.generateCollisionShapes(recursive: true)
+
+        // 사이즈 자동 맞춤
+        let bounds = character.visualBounds(relativeTo: nil)
+        let size = bounds.extents
+        let maxDimension = max(size.x, size.y, size.z)
+        let targetSize: Float = 0.4
+        let scale = targetSize / maxDimension
+        character.scale = SIMD3<Float>(repeating: scale)
+
+        let anchor = AnchorEntity(world: .zero)
+        anchor.addChild(character)
+        view.scene.addAnchor(anchor)
+
+        context.coordinator.character = character
+
+        return view
+    }
+
+    func updateUIView(_ uiView: ARView, context: Context) {
+        guard let character = context.coordinator.character else { return }
+        let offset = viewModel.dragOffset
+        character.position.x = Float(offset.width) * 0.001
+        character.position.y = Float(-offset.height) * 0.001
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    final class Coordinator {
+        var character: Entity?
+        var viewModel: Character3DViewModel?
+    }
+}
+
 // MARK: - 로고
 struct Logo: View {
 
@@ -199,7 +267,7 @@ struct Logo: View {
         case lottie = "Lottie"
     }
 
-    @State private var selectedLogo: Option = .webViewGIF
+    @State private var selectedOption: Option = .webViewGIF
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -207,14 +275,14 @@ struct Logo: View {
                 .font(.title)
                 .bold()
 
-            Picker("로고 선택", selection: $selectedLogo) {
+            Picker("방법 선택", selection: $selectedOption) {
                 ForEach(Option.allCases, id: \.self) { type in
                     Text(type.rawValue)
                 }
             }
             .pickerStyle(.segmented)
             Group {
-                switch selectedLogo {
+                switch selectedOption {
                 case .webViewGIF:
                     GIFView(gifName: "logo_gif", renderType: .webView)
                         .frame(width: 200, height: 200)
@@ -226,6 +294,7 @@ struct Logo: View {
                         .playing(loopMode: .playOnce).frame(width: 200, height: 200) // 재생 모드 설정 가능
                 }
             }.frame(maxWidth: .infinity)
+                .background(Color.white)
         }
     }
 }
@@ -239,7 +308,7 @@ struct Character2D: View {
         case spriteKit = "SpriteKit"
     }
 
-    @State private var selectedLogo: Option = .gif
+    @State private var selectedOption: Option = .gif
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -247,14 +316,14 @@ struct Character2D: View {
                 .font(.title)
                 .bold()
 
-            Picker("로고 선택", selection: $selectedLogo) {
+            Picker("방법 선택", selection: $selectedOption) {
                 ForEach(Option.allCases, id: \.self) { type in
                     Text(type.rawValue)
                 }
             }
             .pickerStyle(.segmented)
             Group {
-                switch selectedLogo {
+                switch selectedOption {
                 case .gif:
                     GIFView(gifName: "character_blink_gif", renderType: .webView)
                         .frame(width: 200, height: 200)
@@ -265,6 +334,21 @@ struct Character2D: View {
                     SpriteCharacterView()
                 }
             }.frame(maxWidth: .infinity)
+        }
+    }
+}
+
+// MARK: - 3D캐릭터 표시 및 제어
+struct Character3D: View {
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("3D캐릭터")
+                .font(.title)
+                .bold()
+            Text("* 드래그 시 이동합니다.")
+            RealityControlView()
+                .frame(maxWidth: .infinity)
         }
     }
 }
