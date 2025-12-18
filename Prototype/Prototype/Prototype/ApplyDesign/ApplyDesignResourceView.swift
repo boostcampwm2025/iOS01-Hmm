@@ -8,6 +8,7 @@
 import SwiftUI
 import WebKit
 import Lottie
+import SpriteKit
 
 struct ApplyDesignResourceView: View {
     var body: some View {
@@ -20,7 +21,6 @@ struct ApplyDesignResourceView: View {
                 .padding(.bottom, 16)
                 Logo()
                 Character2D()
-                Control2DCharacter()
             }.padding()
         }
     }
@@ -113,7 +113,84 @@ private extension GIFView {
     }
 }
 
+final class CharacterScene: SKScene {
 
+    private let character = SKSpriteNode(imageNamed: "character_idle")
+    private var isJumping = false
+
+    override func didMove(to view: SKView) {
+        backgroundColor = .clear
+        size = view.bounds.size
+        scaleMode = .resizeFill
+
+        character.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        character.size = CGSize(width: 200, height: 200)
+        addChild(character)
+
+        idleAnimation()
+    }
+
+    // 기본 상태 (눈 깜빡이며 숨 쉬기)
+    func idleAnimation() {
+        character.removeAction(forKey: "idle")
+
+        let inhaleTexture = SKAction.run {
+            self.character.texture = SKTexture(imageNamed: "character_idle")
+        }
+
+        let exhaleTexture = SKAction.run {
+            self.character.texture = SKTexture(imageNamed: "character_close")
+        }
+
+        let scaleUp = SKAction.scale(to: 1.05, duration: 0.6)
+        let scaleDown = SKAction.scale(to: 1.0, duration: 0.2)
+
+        let inhale = SKAction.sequence([inhaleTexture, scaleUp])
+        let exhale = SKAction.sequence([exhaleTexture, scaleDown])
+
+        let breathing = SKAction.sequence([inhale, exhale])
+
+        character.run(.repeatForever(breathing), withKey: "idle")
+    }
+
+    // 특정 상황: 터치하면 점프하며 웃기
+    func smileAnimation() {
+        character.removeAllActions()
+
+        self.character.texture = SKTexture(imageNamed: "character_smile" )
+
+        let jump = SKAction.moveBy(x: 0, y: 12, duration: 0.15)
+        let down = SKAction.moveBy(x: 0, y: -12, duration: 0.15)
+        let keepSmile = SKAction.wait(forDuration: 0.15)
+        let bounce = SKAction.sequence([jump, down, keepSmile])
+
+        character.run(.repeat(bounce, count: 1)) {
+            self.isJumping = false
+            self.idleAnimation()
+        }
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if self.isJumping { return }
+        self.isJumping = true
+        smileAnimation()
+    }
+}
+
+struct SpriteCharacterView: View {
+    var body: some View {
+        VStack {
+            Text("* 터치하면 점프합니다.")
+            SpriteView(
+                scene: CharacterScene(),
+                options: [.allowsTransparency]
+            )
+            .frame(width: 200, height: 200)
+        }
+    }
+}
+
+// MARK: - 로고
 struct Logo: View {
 
     enum Option: String, CaseIterable {
@@ -139,13 +216,13 @@ struct Logo: View {
             Group {
                 switch selectedLogo {
                 case .webViewGIF:
-                    GIFView(gifName: "logogif", renderType: .webView)
+                    GIFView(gifName: "logo_gif", renderType: .webView)
                         .frame(width: 200, height: 200)
                 case .imageSourceGIF:
-                    GIFView(gifName: "logogif", renderType: .imageSource)
+                    GIFView(gifName: "logo_gif", renderType: .imageSource)
                         .frame(width: 200, height: 200)
                 case .lottie:
-                    LottieView(animation: .named("logolottie"))
+                    LottieView(animation: .named("logo_lottie"))
                         .playing(loopMode: .playOnce).frame(width: 200, height: 200) // 재생 모드 설정 가능
                 }
             }.frame(maxWidth: .infinity)
@@ -153,18 +230,20 @@ struct Logo: View {
     }
 }
 
+// MARK: - 2D캐릭터 표시 및 제어
 struct Character2D: View {
 
     enum Option: String, CaseIterable {
         case gif = "GIF"
         case lottie = "Lottie"
+        case spriteKit = "SpriteKit"
     }
 
     @State private var selectedLogo: Option = .gif
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("캐릭터")
+            Text("2D캐릭터")
                 .font(.title)
                 .bold()
 
@@ -177,47 +256,13 @@ struct Character2D: View {
             Group {
                 switch selectedLogo {
                 case .gif:
-                    GIFView(gifName: "logogif", renderType: .webView)
+                    GIFView(gifName: "character_blink_gif", renderType: .webView)
                         .frame(width: 200, height: 200)
                 case .lottie:
-                    LottieView(animation: .named("logolottie"))
-                        .playing(loopMode: .playOnce).frame(width: 200, height: 200) // 재생 모드 설정 가능
-                }
-            }.frame(maxWidth: .infinity)
-        }
-    }
-}
-
-struct Control2DCharacter: View {
-
-    enum LogoType: String, CaseIterable {
-        case gif = "GIF"
-        case lottie = "Lottie"
-    }
-
-    @State private var selectedLogo: LogoType = .gif
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("캐릭터 조작")
-                .font(.title)
-                .bold()
-
-            Picker("로고 선택", selection: $selectedLogo) {
-                ForEach(LogoType.allCases, id: \.self) { type in
-                    Text(type.rawValue)
-                }
-            }
-            .pickerStyle(.segmented)
-            Group {
-                switch selectedLogo {
-                case .gif:
-                    GIFView(gifName: "logogif", renderType: .webView)
-                        .frame(width: 200, height: 200)
-                case .lottie:
-                    LottieView(animation: .named("logolottie"))
-                        .playing(loopMode: .playOnce).frame(width: 200, height: 200) // 재생 모드 설정 가능
-
+                    LottieView(animation: .named("character_smile_lottie"))
+                        .playing(loopMode: .loop).frame(width: 200, height: 200) // 재생 모드 설정 가능
+                case .spriteKit:
+                    SpriteCharacterView()
                 }
             }.frame(maxWidth: .infinity)
         }
