@@ -28,6 +28,9 @@ struct ContentView: View {
                 NavigationLink("탭 이벤트 검증") {
                     VarifyTapEventCalculationView()
                 }
+                NavigationLink("디자인 리소스 적용 검증") {
+                    ApplyDesignResourceView()
+                }
             }
         }
     }
