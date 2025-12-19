@@ -71,7 +71,6 @@
 			name = Prototype;
 			packageProductDependencies = (
 				28CCE4822EF321FA00385818 /* Lottie */,
-				28CCE4842EF321FA00385818 /* Lottie-Dynamic */,
 			);
 			productName = Prototype;
 			productReference = 08267DF92EF1A312005A0066 /* Prototype.app */;
@@ -359,11 +358,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 28CCE4812EF321FA00385818 /* XCRemoteSwiftPackageReference "lottie-ios" */;
 			productName = Lottie;
-		};
-		28CCE4842EF321FA00385818 /* Lottie-Dynamic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 28CCE4812EF321FA00385818 /* XCRemoteSwiftPackageReference "lottie-ios" */;
-			productName = "Lottie-Dynamic";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
