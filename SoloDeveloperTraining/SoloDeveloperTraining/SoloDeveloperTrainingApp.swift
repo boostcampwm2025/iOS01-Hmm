@@ -11,8 +11,12 @@ import SwiftUI
 struct SoloDeveloperTrainingApp: App {
     var body: some Scene {
         WindowGroup {
-            let user = User(nickname: "", career: .laptopOwner, wallet: .init(), inventory: .init(housing: .init()), record: .init())
-            user.career.rawValue
+            let user = User(
+                nickname: "donggle",
+                wallet: .init(),
+                inventory: .init(),
+                record: <#T##Record#>
+            )
         }
     }
 }
