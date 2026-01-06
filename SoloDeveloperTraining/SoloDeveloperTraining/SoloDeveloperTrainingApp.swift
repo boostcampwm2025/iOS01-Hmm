@@ -11,7 +11,8 @@ import SwiftUI
 struct SoloDeveloperTrainingApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            let user = User(nickname: "", career: .laptopOwner, wallet: .init(), inventory: .init(housing: .init()), record: .init())
+            user.career.rawValue
         }
     }
 }
