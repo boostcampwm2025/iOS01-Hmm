@@ -5,10 +5,11 @@
 //  Created by SeoJunYoung on 1/6/26.
 //
 
-class TapGame {
-    let user: User
-    let calculator: Calculator
-    let feverSystem: FeverSystem
+class TapGame: Game {
+    var kind: GameKind
+    var user: User
+    var calculator: Calculator
+    var feverSystem: FeverSystem
 
     init(user: User, calculator: Calculator, feverSystem: FeverSystem) {
         self.user = user
@@ -16,11 +17,11 @@ class TapGame {
         self.feverSystem = feverSystem
     }
 
-    func startGame() {}
-    func endGame() {}
+    func start() {}
+    func end() {}
 
-    private func actionDidOccur() async {
+    func didPerformAction() async {
         let goldGained = calculator.calculateGoldGained()
-        await user.wallet.addGold(goldGained)
+//        await user.wallet.addGold(goldGained)
     }
 }

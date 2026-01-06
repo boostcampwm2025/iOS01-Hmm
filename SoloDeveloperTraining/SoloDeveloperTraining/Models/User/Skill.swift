@@ -22,23 +22,6 @@ final class Skill {
     }
 }
 
-/// 업무 종류
-enum GameKind {
-    case tap
-    case language
-    case dodge
-    case stack
-    
-    var displayTitle: String {
-        switch self {
-        case .tap: "코드짜기"
-        case .language: "언어 맞추기"
-        case .dodge: "버그 피하기"
-        case .stack: "물건 쌓기"
-        }
-    }
-}
-
 /// 스킬 등급
 enum SkillTier: Int {
     case beginner = 0
