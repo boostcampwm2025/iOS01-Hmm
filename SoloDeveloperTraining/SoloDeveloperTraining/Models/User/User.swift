@@ -28,7 +28,7 @@ actor User {
     init(
         id: UUID = UUID(),
         nickname: String,
-        career: Career,
+        career: Career = .unemployed,
         wallet: Wallet,
         inventory: Inventory,
         record: Record,
