@@ -54,7 +54,8 @@ final class FeverSystem {
     /// 피버 획득
     /// - Parameter amount: 획득할 피버량
     func gainFever(_ amount: Double) {
-        feverPercent += amount
+        let sumPercent = feverPercent + amount
+        feverPercent = min(400, sumPercent)
     }
     
     /// 피버 시스템 시작
@@ -82,7 +83,11 @@ final class FeverSystem {
     /// 피버 감소 (매 주기마다 호출)
     private func decreaseFever() {
         guard feverPercent > 0 else { return }
-        feverPercent -= decreasePercentPerTick
+        if feverPercent - decreasePercentPerTick < 0 {
+            feverPercent = 0
+        } else {
+            feverPercent -= decreasePercentPerTick
+        }
     }
     
     /// 피버 단계 업데이트

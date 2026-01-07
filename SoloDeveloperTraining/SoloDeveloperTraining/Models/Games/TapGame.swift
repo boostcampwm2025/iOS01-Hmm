@@ -10,11 +10,13 @@ final class TapGame: Game {
     var user: User
     var calculator: Calculator
     var feverSystem: FeverSystem
+    var buffSystem: BuffSystem
 
-    init(user: User, calculator: Calculator, feverSystem: FeverSystem) {
+    init(user: User, calculator: Calculator, feverSystem: FeverSystem, buffSystem: BuffSystem) {
         self.user = user
         self.calculator = calculator
         self.feverSystem = feverSystem
+        self.buffSystem = buffSystem
     }
 
     func startGame() {
@@ -26,12 +28,12 @@ final class TapGame: Game {
 
     @discardableResult
     func didPerformAction() async -> Int {
-        feverSystem.gainFever(3)
+        feverSystem.gainFever(33)
         let gainGold = calculator.calculateGoldGained(
             game: kind,
             user: user,
             feverMultiplier: feverSystem.feverMultiplier,
-            buffMultiplier: 1
+            buffMultiplier: buffSystem.multiplier
         )
         user.wallet.addGold(gainGold)
         return gainGold

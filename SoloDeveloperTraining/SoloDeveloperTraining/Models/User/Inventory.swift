@@ -6,7 +6,9 @@
 //
 
 import Foundation
+import Observation
 
+@Observable
 final class Inventory {
     
     // MARK: - 장비 아이템
