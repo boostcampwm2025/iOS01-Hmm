@@ -17,11 +17,23 @@ final class TapGame: Game {
         self.feverSystem = feverSystem
     }
 
-    func start() {}
-    func end() {}
+    func startGame() {
+        feverSystem.start()
+    }
+    func stopGame() {
+        feverSystem.stop()
+    }
 
-    func didPerformAction() async {
-        let goldGained = calculator.calculateGoldGained()
-//        await user.wallet.addGold(goldGained)
+    @discardableResult
+    func didPerformAction() async -> Int {
+        feverSystem.gainFever(3)
+        let gainGold = calculator.calculateGoldGained(
+            game: kind,
+            user: user,
+            feverMultiplier: feverSystem.feverMultiplier,
+            buffMultiplier: 1
+        )
+        user.wallet.addGold(gainGold)
+        return gainGold
     }
 }

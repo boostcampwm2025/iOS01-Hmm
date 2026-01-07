@@ -8,19 +8,41 @@
 import SwiftUI
 
 struct ContentView: View {
-    let user = User(
-        nickname: "test",
-        wallet: .init(),
-        inventory: .init(),
-        record: .init()
-    )
+    let user: User
+    let game: TapGame
+    
+    init() {
+        let user = User(
+            nickname: "test",
+            wallet: .init(),
+            inventory: .init(),
+            record: .init()
+        )
+        self.user = user
+        self.game = .init(
+            user: user,
+            calculator: .init(),
+            feverSystem: .init(
+                decreaseInterval: 0.1,
+                decreasePercentPerTick: 1
+            )
+        )
+        self.game.startGame()
+    }
     
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            Text("gold: \(user.wallet.gold)")
+            Text("fever: \(game.feverSystem.feverPercent)")
+            Text("feverStage: \(game.feverSystem.feverStage)")
+            Button {
+                Task {
+                    await game.didPerformAction()
+                }
+            } label: {
+                Rectangle()
+            }
+
         }
         .padding()
     }

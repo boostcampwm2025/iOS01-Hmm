@@ -18,11 +18,12 @@ protocol Game {
     var feverSystem: FeverSystem { get set }
     
     /// 게임 시작
-    func start()
+    func startGame()
     /// 게임 종료
-    func end()
+    func stopGame()
     /// action 수행
-    func didPerformAction() async
+    @discardableResult
+    func didPerformAction() async -> Int
 }
 
 enum GameKind {

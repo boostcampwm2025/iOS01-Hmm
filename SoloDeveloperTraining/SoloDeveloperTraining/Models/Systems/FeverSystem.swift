@@ -7,7 +7,9 @@
 
 
 import Foundation
+import Observation
 
+@Observable
 final class FeverSystem {
     
     // MARK: - Properties
@@ -27,6 +29,16 @@ final class FeverSystem {
     private var decreaseTimer: Timer?
     /// 피버 시스템 실행 중 여부
     private(set) var isRunning: Bool = false
+    /// 피버 단계별 배수
+    var feverMultiplier: Double {
+        switch feverStage {
+        case 0: return 1.0   // 일반
+        case 1: return 1.2   // 피버 1단계
+        case 2: return 1.5   // 피버 2단계
+        case 3: return 2.0   // 피버 3단계 (MAX)
+        default: return 1.0
+        }
+    }
     
     // MARK: - Initialization
     init(decreaseInterval: TimeInterval, decreasePercentPerTick: Double) {
@@ -91,7 +103,6 @@ final class FeverSystem {
         }
         
         if newStage != feverStage {
-            let oldStage = feverStage
             feverStage = newStage
         }
     }

@@ -7,9 +7,6 @@
 
 import Foundation
 
-class Calculator {
-    func calculateGoldGained() -> Int { 1 }
-}
 class Achievements {}
 class Quiz {}
 
