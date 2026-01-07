@@ -13,5 +13,5 @@ enum Housing {
     case villa
     case apartment
     case house
-    case penthHouse
+    case pentHouse
 }
