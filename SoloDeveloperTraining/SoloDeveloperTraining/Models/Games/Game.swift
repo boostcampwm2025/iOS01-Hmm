@@ -16,6 +16,8 @@ protocol Game {
     var calculator: Calculator { get set }
     /// 피버 시스템
     var feverSystem: FeverSystem { get set }
+    /// 버프 시스템
+    var buffSystem: BuffSystem { get set }
     
     /// 게임 시작
     func startGame()
