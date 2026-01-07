@@ -46,4 +46,21 @@ final class Inventory {
         self.energyDrinkCount = energyDrinkCount
         self.housing = housing
     }
+    
+    
+    /// 커피 아이템을 사용합니다.
+    /// - Returns: 사용 성공 여부
+    func drinkCoffee() -> Bool {
+        guard coffeeCount > 0 else { return false }
+        coffeeCount -= 1
+        return true
+    }
+    
+    /// 에너지 드링크 아이템을 사용합니다.
+    /// - Returns: 사용 성공 여부
+    func drinkEnergyDrink() -> Bool {
+        guard energyDrinkCount > 0 else { return false }
+        energyDrinkCount -= 1
+        return true
+    }
 }

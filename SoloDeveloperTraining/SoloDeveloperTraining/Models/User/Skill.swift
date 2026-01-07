@@ -15,10 +15,70 @@ final class Skill {
     /// 스킬 레벨
     var level: Int
     
+    /// 가중치
+    var multiplier: Double {
+        switch game {
+        case .tap:
+            switch tier {
+            case .beginner:
+                return Double(1 * level)
+            case .intermediate:
+                return Double(2 * level)
+            case .advanced:
+                return Double(3 * level)
+            }
+        case .language:
+            switch tier {
+            case .beginner:
+                return Double(1 * level)
+            case .intermediate:
+                return Double(2 * level)
+            case .advanced:
+                return Double(3 * level)
+            }
+        case .dodge:
+            switch tier {
+            case .beginner:
+                return Double(1 * level)
+            case .intermediate:
+                return Double(2 * level)
+            case .advanced:
+                return Double(3 * level)
+            }
+        case .stack:
+            switch tier {
+            case .beginner:
+                return Double(1 * level)
+            case .intermediate:
+                return Double(2 * level)
+            case .advanced:
+                return Double(3 * level)
+            }
+        }
+    }
+    
+    /// 업그레이드 비용
+    var upgradeCost: Cost {
+        switch tier {
+        case .beginner:
+            return .init(gold: (10 * level))
+        case .intermediate:
+            return .init(gold: (20 * level))
+        case .advanced:
+            return .init(gold: (30 * level))
+        }
+    }
+    
     init(game: GameKind, tier: SkillTier, level: Int) {
         self.game = game
         self.tier = tier
         self.level = level
+    }
+    
+    /// 해당 스킬의 레벨을 1 상승 시킵니다.
+    func upgrade() {
+        guard level < 9999 else { return }
+        level += 1
     }
 }
 
