@@ -5,8 +5,8 @@
 //  Created by SeoJunYoung on 1/6/26.
 //
 
-class TapGame: Game {
-    var kind: GameKind
+final class TapGame: Game {
+    var kind: GameKind = .tap
     var user: User
     var calculator: Calculator
     var feverSystem: FeverSystem

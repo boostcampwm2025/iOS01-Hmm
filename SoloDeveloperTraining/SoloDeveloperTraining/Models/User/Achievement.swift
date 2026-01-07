@@ -12,4 +12,8 @@ final class Achievement {
     
     /// 목표...
     /// 달성률...
+    ///
+    init(id: UUID) {
+        self.id = id
+    }
 }

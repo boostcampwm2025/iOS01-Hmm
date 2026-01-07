@@ -9,6 +9,6 @@
 class ShopSystem {
     func upgrade(skill: Skill, wallet: Wallet) {}
     func upgrade(equipment: Equipment, wallet: Wallet) -> Bool { return false }
-    func buyConsumable(item: Consumable, wallet: Wallet, inventory: Inventory) {}
+    func buyConsumable(item: Int, wallet: Wallet, inventory: Inventory) {}
     func buyHousing(item: Housing, wallet: Wallet, inventory: Inventory) {}
 }

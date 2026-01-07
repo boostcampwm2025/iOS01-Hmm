@@ -29,7 +29,10 @@ final class FeverSystem {
     private(set) var isRunning: Bool = false
     
     // MARK: - Initialization
-    init() {}
+    init(decreaseInterval: TimeInterval, decreasePercentPerTick: Double) {
+        self.decreaseInterval = decreaseInterval
+        self.decreasePercentPerTick = decreasePercentPerTick
+    }
     
     deinit {
         stop()

@@ -7,7 +7,4 @@
 
 
 struct BuffSystem {
-    func 소비아이템사용(종류: ) {
-        
-    }
 }
