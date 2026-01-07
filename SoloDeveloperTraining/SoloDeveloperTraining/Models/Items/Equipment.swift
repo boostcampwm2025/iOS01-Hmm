@@ -42,13 +42,9 @@ final class Equipment {
     }
 
     
-    /// 해당 장비의 티어를 업그레이드 합니다.
-    /// - Returns: 해당 장비의 다음 단계 장비( 최고 단계인 경우 최고단계로 고정)
-    func upgraded() -> Equipment {
-        guard let nextTier = EquipmentTier(rawValue: tier.rawValue + 1) else {
-            return self
-        }
-        return Equipment(tier: nextTier)
+    /// 해당 장비의 티어를 업그레이드 합니다. ( 최고 단계인 경우 최고단계로 고정)
+    func upgraded() {
+        self.tier = EquipmentTier(rawValue: tier.rawValue + 1) ?? .nationalTreasure
     }
 }
 
