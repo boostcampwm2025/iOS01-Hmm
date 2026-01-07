@@ -9,7 +9,7 @@ import Foundation
 
 final class Skill {
     /// 미니게임 종류
-    let game: GameKind
+    let game: GameType
     /// 스킬 등급
     var tier: SkillTier
     /// 스킬 레벨
@@ -69,7 +69,7 @@ final class Skill {
         }
     }
     
-    init(game: GameKind, tier: SkillTier, level: Int) {
+    init(game: GameType, tier: SkillTier, level: Int) {
         self.game = game
         self.tier = tier
         self.level = level

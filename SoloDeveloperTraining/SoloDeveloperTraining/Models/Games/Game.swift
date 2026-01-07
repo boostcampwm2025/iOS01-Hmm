@@ -9,7 +9,7 @@ import Foundation
 
 protocol Game {
     /// 게임 종류
-    var kind: GameKind { get set }
+    var kind: GameType { get set }
     /// 유저
     var user: User { get set }
     /// 계산기
@@ -28,7 +28,7 @@ protocol Game {
     func didPerformAction() async -> Int
 }
 
-enum GameKind {
+enum GameType {
     case tap
     case language
     case dodge

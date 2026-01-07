@@ -6,7 +6,7 @@
 //
 
 final class TapGame: Game {
-    var kind: GameKind = .tap
+    var kind: GameType = .tap
     var user: User
     var calculator: Calculator
     var feverSystem: FeverSystem
