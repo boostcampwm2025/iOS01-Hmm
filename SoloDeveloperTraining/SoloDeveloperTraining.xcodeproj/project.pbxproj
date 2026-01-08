@@ -28,6 +28,7 @@
 			membershipExceptions = (
 				App/Info.plist,
 				"App/Users/sunjae/sunjae/naver_boot/membership/iOS01-Hmm/SoloDeveloperTraining/SoloDeveloperTraining/App/Info-Dev.plist",
+				Devlopment/CheatSystem/CheatManager.swift,
 				Devlopment/Presentation/AchievementTestView.swift,
 				Devlopment/Presentation/ContentView.swift,
 				Devlopment/Presentation/ShopView.swift,
