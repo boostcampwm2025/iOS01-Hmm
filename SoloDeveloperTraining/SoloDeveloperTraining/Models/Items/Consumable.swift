@@ -7,15 +7,20 @@
 
 import Foundation
 
+/// 소비 아이템 클래스
 final class Consumable {
+    /// 소비 아이템 타입
     let type: ConsumableType
+    /// 보유 개수
     private(set) var count: Int
-    
+
+    /// 소비 아이템 초기화
     init(type: ConsumableType, count: Int) {
         self.type = type
         self.count = count
     }
-    
+
+    /// 화면에 표시될 제목
     var displayTitle: String {
         return type.displayTitle + " (보유:\(count)개)"
     }
@@ -31,10 +36,14 @@ final class Consumable {
     }
 }
 
+/// 소비 아이템 종류
 enum ConsumableType {
+    /// 커피
     case coffee
+    /// 에너지 드링크
     case energyDrink
-    
+
+    /// 화면에 표시될 제목
     var displayTitle: String {
         switch self {
         case .coffee:

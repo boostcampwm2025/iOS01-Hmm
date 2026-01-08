@@ -7,17 +7,23 @@
 
 import Foundation
 
+/// 자동 골드 획득 시스템
 final class AutoGainSystem {
+    /// 사용자 정보
     let user: User
+    /// 계산기
     let calculator: Calculator
-    
+
+    /// 타이머
     var timer: Timer?
-    
+
+    /// 자동 획득 시스템 초기화
     init(user: User, calculator: Calculator) {
         self.user = user
         self.calculator = calculator
     }
-    
+
+    /// 자동 획득 시스템 시작
     func startSystem() {
         timer = Timer.scheduledTimer(
             withTimeInterval: 1,
@@ -26,8 +32,9 @@ final class AutoGainSystem {
             self?.gainGold()
         }
     }
-    
-    func gainGold() {
+
+    /// 초당 골드 획득 처리
+    private func gainGold() {
         let goldPerSecond = calculator.calculateGoldPerSecond(user: user)
         user.wallet.addGold(goldPerSecond)
     }

@@ -7,10 +7,14 @@
 
 import Foundation
 
+/// 장비 아이템 클래스
 final class Equipment {
+    /// 장비 타입
     var type: EquipmentType
+    /// 장비 등급
     var tier: EquipmentTier
-    
+
+    /// 화면에 표시될 제목
     var displayTitle: String {
         return tier.displayTitle + " " + type.displayTitle
     }
@@ -147,11 +151,12 @@ final class Equipment {
         }
     }
 
+    /// 장비 초기화
     init(type: EquipmentType, tier: EquipmentTier) {
         self.type = type
         self.tier = tier
     }
-    
+
     /// 강화 확률에 따라 업그레이드
     func upgraded() {
         guard canUpgrade else { return }
@@ -164,12 +169,18 @@ final class Equipment {
     }
 }
 
+/// 장비 종류
 enum EquipmentType {
+    /// 키보드
     case keyboard
+    /// 마우스
     case mouse
+    /// 모니터
     case monitor
+    /// 의자
     case chair
-    
+
+    /// 화면에 표시될 제목
     var displayTitle: String {
         switch self {
         case .keyboard:
@@ -184,16 +195,26 @@ enum EquipmentType {
     }
 }
 
+/// 장비 등급
 enum EquipmentTier: Int {
+    /// 고장난
     case broken = 0
+    /// 싸구려
     case cheap = 1
+    /// 빈티지
     case vintage = 2
+    /// 쓸만한
     case decent = 3
+    /// 고급
     case premium = 4
+    /// 다이아
     case diamond = 5
+    /// 한정판
     case limited = 6
+    /// 국보급
     case nationalTreasure = 7
-    
+
+    /// 화면에 표시될 제목
     var displayTitle: String {
         switch self {
         case .broken: "고장난"

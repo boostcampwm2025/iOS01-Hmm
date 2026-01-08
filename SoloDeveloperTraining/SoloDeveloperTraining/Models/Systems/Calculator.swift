@@ -8,12 +8,14 @@
 import Foundation
 
 class Calculator {
+    /// 게임 액션당 획득 골드 계산
     func calculateGoldGained(game: GameType, user: User, feverMultiplier: Double, buffMultiplier: Double) -> Int {
         let actionPerGainGold = user.skills.filter { $0.game == .tap }.map { $0.multiplier }.reduce(0, +)
         let result = Double(actionPerGainGold) * feverMultiplier * buffMultiplier
         return Int(result)
     }
-    
+
+    /// 초당 획득 골드 계산
     func calculateGoldPerSecond(user: User) -> Int {
         let goldPerSecond = user.inventory.equipmentItems.map { $0.goldPerSecond }.reduce(0, +)
         return Int(goldPerSecond)
