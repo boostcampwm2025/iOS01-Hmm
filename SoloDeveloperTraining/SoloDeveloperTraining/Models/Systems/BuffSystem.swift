@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// 버프 시스템 관리 클래스
 final class BuffSystem {
     /// 감소 주기 (초 단위)
     private let decreaseInterval: TimeInterval = 1
@@ -16,13 +17,15 @@ final class BuffSystem {
     private(set) var isRunning: Bool = false
     /// 버프 배수
     var multiplier: Double = 1
-    
+
+    /// 남은 버프 시간 (초)
     var duration: Int = 0
-    
-    func useCoffee() {
+
+    /// 소비 아이템 사용
+    func useConsumableItem(type: ConsumableType) {
         isRunning = true
-        duration = 3
-        multiplier = 1.5
+        duration = type.duration
+        multiplier = type.buffMultiplier
         decreaseTimer = Timer.scheduledTimer(
             withTimeInterval: decreaseInterval,
             repeats: true
@@ -33,12 +36,9 @@ final class BuffSystem {
             }
         }
     }
-    
-    func useEnergyDrink() {
-        
-    }
-    
-    func stopTimer() {
+
+    /// 버프 타이머 종료
+    private func stopTimer() {
         decreaseTimer?.invalidate()
         decreaseTimer = nil
         multiplier = 1

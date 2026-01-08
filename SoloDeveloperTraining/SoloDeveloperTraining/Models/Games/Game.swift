@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// 게임 프로토콜
 protocol Game {
     /// 게임 종류
     var kind: GameType { get set }
@@ -18,7 +19,7 @@ protocol Game {
     var feverSystem: FeverSystem { get set }
     /// 버프 시스템
     var buffSystem: BuffSystem { get set }
-    
+
     /// 게임 시작
     func startGame()
     /// 게임 종료
@@ -28,12 +29,14 @@ protocol Game {
     func didPerformAction() async -> Int
 }
 
+/// 게임 타입
 enum GameType {
     case tap
     case language
     case dodge
     case stack
-    
+
+    /// 화면에 표시될 제목
     var displayTitle: String {
         switch self {
         case .tap: "코드짜기"
