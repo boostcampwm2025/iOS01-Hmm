@@ -9,7 +9,7 @@
 /* Begin PBXFileReference section */
 		08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoloDeveloperTraining.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2896AE422F100CD600D38732 /* SoloDeveloperTraining-Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SoloDeveloperTraining-Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2896AE442F100CD600D38732 /* SoloDeveloperTraining copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "SoloDeveloperTraining copy-Info.plist"; path = "/Users/sunjae/sunjae/naver_boot/membership/iOS01-Hmm/SoloDeveloperTraining/SoloDeveloperTraining copy-Info.plist"; sourceTree = "<absolute>"; };
+		2896AE442F100CD600D38732 /* SoloDeveloperTraining Dev-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "SoloDeveloperTraining Dev-Info.plist"; path = "/Users/sunjae/sunjae/naver_boot/membership/iOS01-Hmm/SoloDeveloperTraining/SoloDeveloperTraining Dev-Info.plist"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -70,7 +70,7 @@
 			isa = PBXGroup;
 			children = (
 				08267F2D2F0D06BC005A0066 /* SoloDeveloperTraining */,
-				2896AE442F100CD600D38732 /* SoloDeveloperTraining copy-Info.plist */,
+				2896AE442F100CD600D38732 /* SoloDeveloperTraining Dev-Info.plist */,
 				08267F2C2F0D06BC005A0066 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -454,7 +454,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "SoloDeveloperTraining copy-Info.plist";
+				INFOPLIST_FILE = "SoloDeveloperTraining Dev-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "1인 개발자 키우기 (Dev)";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -495,7 +495,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "SoloDeveloperTraining copy-Info.plist";
+				INFOPLIST_FILE = "SoloDeveloperTraining Dev-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "1인 개발자 키우기 (Dev)";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
