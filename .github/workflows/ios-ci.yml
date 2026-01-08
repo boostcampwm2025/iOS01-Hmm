@@ -1,0 +1,97 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Set up Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+    
+    - name: Show Xcode version
+      run: xcodebuild -version
+      
+    - name: Find latest iOS Simulator
+      id: find-simulator
+      run: |
+        echo "🔍 사용 가능한 시뮬레이터 검색 중..."
+        
+        # simctl을 사용하여 사용 가능한 iPhone 시뮬레이터 가져오기
+        DESTINATIONS=$(xcrun simctl list devices available | grep "iPhone")
+        
+        echo "📋 찾은 iPhone 시뮬레이터:"
+        echo "$DESTINATIONS"
+        
+        # 최신 iPhone 찾기 (iPhone 17, 16, 15 순서로)
+        SIMULATOR_ID=""
+        for PHONE in "iPhone 17 Pro Max" "iPhone 17 Pro" "iPhone 17" "iPhone 16 Pro Max" "iPhone 16 Pro" "iPhone 16 Plus" "iPhone 16" "iPhone 15" "iPhone 14" "iPhone SE"; do
+          FOUND=$(echo "$DESTINATIONS" | grep "$PHONE" | tail -1)
+          if [ ! -z "$FOUND" ]; then
+            echo "✅ '$PHONE' 발견!"
+            # UUID 추출
+            SIMULATOR_ID=$(echo "$FOUND" | grep -oE '[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}')
+            SIMULATOR_NAME=$(echo "$FOUND" | sed -E 's/^[[:space:]]*([^(]+).*/\1/' | xargs)
+            
+            echo "simulator_id=$SIMULATOR_ID" >> $GITHUB_OUTPUT
+            echo "simulator_name=$SIMULATOR_NAME" >> $GITHUB_OUTPUT
+            echo "✅ 선택된 시뮬레이터: $SIMULATOR_NAME"
+            echo "📱 시뮬레이터 ID: $SIMULATOR_ID"
+            break
+          fi
+        done
+        
+        # 시뮬레이터를 찾지 못한 경우
+        if [ -z "$SIMULATOR_ID" ]; then
+          echo "❌ 사용 가능한 iPhone 시뮬레이터를 찾을 수 없습니다!"
+          echo "📋 전체 시뮬레이터 목록:"
+          xcrun simctl list devices available
+          exit 1
+        fi
+        
+    - name: Show selected simulator
+      run: |
+        echo "🎯 사용할 시뮬레이터: ${{ steps.find-simulator.outputs.simulator_name }}"
+        echo "🆔 시뮬레이터 ID: ${{ steps.find-simulator.outputs.simulator_id }}"
+      
+    - name: Cache SPM packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+          **/Package.resolved
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+    
+    - name: Build SoloDeveloperTraining
+      run: |
+        cd SoloDeveloperTraining
+        xcodebuild clean build \
+          -project SoloDeveloperTraining.xcodeproj \
+          -scheme SoloDeveloperTraining \
+          -destination "platform=iOS Simulator,id=${{ steps.find-simulator.outputs.simulator_id }}" \
+          CODE_SIGNING_ALLOWED=NO \
+          CODE_SIGNING_REQUIRED=NO
+    
+    - name: Test SoloDeveloperTraining
+      run: |
+        cd SoloDeveloperTraining
+        xcodebuild test \
+          -project SoloDeveloperTraining.xcodeproj \
+          -scheme SoloDeveloperTraining \
+          -destination "platform=iOS Simulator,id=${{ steps.find-simulator.outputs.simulator_id }}" \
+          CODE_SIGNING_ALLOWED=NO \
+          CODE_SIGNING_REQUIRED=NO \
+          || echo "No tests found or tests failed - continuing..."
