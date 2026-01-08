@@ -74,6 +74,7 @@ private struct TabBarButton: View {
                     .offset(x: 4, y: 4)
                     .zIndex(-1)
             }
+            .animation(.none, value: isSelected)
         }
         .frame(width: 84, height: 54)
         .buttonStyle(PressableButtonStyle(isPressed: $isPressed))
