@@ -7,7 +7,9 @@
 
 import Foundation
 
-/// 게임 내 재화 관리 클래스
+import Observation
+
+@Observable
 final class Wallet {
     
     // MARK: - Properties

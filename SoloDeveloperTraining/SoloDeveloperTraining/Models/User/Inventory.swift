@@ -42,7 +42,7 @@ final class Inventory {
     func drink(_ type: ConsumableType) -> Bool {
         guard let targetItem = consumableItems.filter({ $0.type == type }).first else { return false }
         guard targetItem.count > 0 else { return false }
-        targetItem.count -= 1
+        targetItem.spendItem()
         return true
     }
     
@@ -53,5 +53,9 @@ final class Inventory {
     func count(_ type: ConsumableType) -> Int? {
         guard let targetItem = consumableItems.filter({ $0.type == type }).first else { return nil }
         return targetItem.count
+    }
+    
+    func gain(consumable: ConsumableType) {
+        consumableItems.filter { $0.type == consumable }.first?.addItem()
     }
 }

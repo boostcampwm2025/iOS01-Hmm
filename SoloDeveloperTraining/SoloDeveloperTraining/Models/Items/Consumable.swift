@@ -9,7 +9,7 @@ import Foundation
 
 final class Consumable {
     let type: ConsumableType
-    var count: Int
+    private(set) var count: Int
     
     init(type: ConsumableType, count: Int) {
         self.type = type
@@ -18,6 +18,16 @@ final class Consumable {
     
     var displayTitle: String {
         return type.displayTitle + " (보유:\(count)개)"
+    }
+    
+    /// 아이템 갯수 1 증가
+    func addItem() {
+        count += 1
+    }
+    
+    /// 아이템  갯수 1 감소
+    func spendItem() {
+        count -= 1
     }
 }
 

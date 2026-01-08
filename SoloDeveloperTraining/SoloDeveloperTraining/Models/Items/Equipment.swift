@@ -41,15 +41,43 @@ final class Equipment {
             return Cost(gold: 999_999_999_999)
         }
     }
+    
+    /// 업그레이드 성공 확률 (0.0 ~ 1.0)
+    var upgradeSuccessRate: Double {
+        switch tier {
+        case .broken:
+            return 1.0
+        case .cheap:
+            return 0.8
+        case .vintage:
+            return 0.6
+        case .decent:
+            return 0.4
+        case .premium:
+            return 0.3
+        case .diamond:
+            return 0.2
+        case .limited:
+            return 0.1
+        case .nationalTreasure:
+            return 0.0
+        }
+    }
 
     init(type: EquipmentType, tier: EquipmentTier) {
         self.type = type
         self.tier = tier
     }
     
-    /// 해당 장비의 티어를 업그레이드 합니다. ( 최고 단계인 경우 최고단계로 고정)
+    /// 강화 확률에 따라 업그레이드
     func upgraded() {
-        self.tier = EquipmentTier(rawValue: tier.rawValue + 1) ?? .nationalTreasure
+        guard canUpgrade else { return }
+        
+        let randomValue = Double.random(in: 0...1)
+        
+        if randomValue <= upgradeSuccessRate {
+            self.tier = EquipmentTier(rawValue: tier.rawValue + 1) ?? .nationalTreasure
+        }
     }
 }
 
