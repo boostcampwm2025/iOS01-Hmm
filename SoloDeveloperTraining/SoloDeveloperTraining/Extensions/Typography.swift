@@ -25,11 +25,19 @@
 
 import SwiftUI
 
-// MARK: - Font Name
-enum PFFontName {
-    static let regular = "PFStardust"
-    static let bold = "PFStardustBold"
-    static let extraBold = "PFStardustExtraBold"
+// MARK: - Font Weight
+enum PFFontWeight {
+    case regular
+    case bold
+    case extraBold
+
+    var fontName: String {
+        switch self {
+        case .regular: return "PFStardust"
+        case .bold: return "PFStardustBold"
+        case .extraBold: return "PFStardustExtraBold"
+        }
+    }
 }
 
 // MARK: - Typography Style
@@ -50,84 +58,84 @@ enum Typography {
 
     /// LargeTitle – ExtraBold, 34pt, 130%
     static let largeTitle = PFTextStyle(
-        fontName: PFFontName.extraBold,
+        fontName: PFFontWeight.extraBold.fontName,
         size: 34,
         lineHeight: 1.3
     )
 
     /// Title – Bold, 28pt, 140%
     static let title = PFTextStyle(
-        fontName: PFFontName.bold,
+        fontName: PFFontWeight.bold.fontName,
         size: 28,
         lineHeight: 1.4
     )
 
     /// Title2 – Bold, 22pt, 140%
     static let title2 = PFTextStyle(
-        fontName: PFFontName.bold,
+        fontName: PFFontWeight.bold.fontName,
         size: 22,
         lineHeight: 1.4
     )
 
     /// Title3 – Bold, 20pt, 140%
     static let title3 = PFTextStyle(
-        fontName: PFFontName.bold,
+        fontName: PFFontWeight.bold.fontName,
         size: 20,
         lineHeight: 1.4
     )
 
     /// Headline – ExtraBold, 17pt, 140%
     static let headline = PFTextStyle(
-        fontName: PFFontName.extraBold,
+        fontName: PFFontWeight.extraBold.fontName,
         size: 17,
         lineHeight: 1.4
     )
 
     /// Body – Bold, 17pt, 140%
     static let body = PFTextStyle(
-        fontName: PFFontName.bold,
+        fontName: PFFontWeight.bold.fontName,
         size: 17,
         lineHeight: 1.4
     )
 
     /// Callout – Bold, 16pt, 140%
     static let callout = PFTextStyle(
-        fontName: PFFontName.bold,
+        fontName: PFFontWeight.bold.fontName,
         size: 16,
         lineHeight: 1.4
     )
 
     /// Subheadline – ExtraBold, 15pt, 140%
     static let subheadline = PFTextStyle(
-        fontName: PFFontName.extraBold,
+        fontName: PFFontWeight.extraBold.fontName,
         size: 15,
         lineHeight: 1.4
     )
 
     /// Caption – ExtraBold, 12pt, 140%
     static let caption = PFTextStyle(
-        fontName: PFFontName.extraBold,
+        fontName: PFFontWeight.extraBold.fontName,
         size: 12,
         lineHeight: 1.4
     )
 
     /// Caption2 – Bold, 12pt, 140%
     static let caption2 = PFTextStyle(
-        fontName: PFFontName.bold,
+        fontName: PFFontWeight.bold.fontName,
         size: 12,
         lineHeight: 1.4
     )
 
     /// Label – Bold, 11pt, 140%
     static let label = PFTextStyle(
-        fontName: PFFontName.bold,
+        fontName: PFFontWeight.bold.fontName,
         size: 11,
         lineHeight: 1.4
     )
 
     /// LabelLined – Regular, 11pt, 140%
     static let labelLined = PFTextStyle(
-        fontName: PFFontName.regular,
+        fontName: PFFontWeight.regular.fontName,
         size: 11,
         lineHeight: 1.4
     )
@@ -202,47 +210,33 @@ extension Font {
     static func pfFont(_ style: TypographyStyle) -> Font {
         switch style {
         case .largeTitle:
-            return .custom(PFFontName.extraBold, size: 34)
+            return .custom(PFFontWeight.extraBold.fontName, size: 34)
         case .title:
-            return .custom(PFFontName.bold, size: 28)
+            return .custom(PFFontWeight.bold.fontName, size: 28)
         case .title2:
-            return .custom(PFFontName.bold, size: 22)
+            return .custom(PFFontWeight.bold.fontName, size: 22)
         case .title3:
-            return .custom(PFFontName.bold, size: 20)
+            return .custom(PFFontWeight.bold.fontName, size: 20)
         case .headline:
-            return .custom(PFFontName.extraBold, size: 17)
+            return .custom(PFFontWeight.extraBold.fontName, size: 17)
         case .body:
-            return .custom(PFFontName.bold, size: 17)
+            return .custom(PFFontWeight.bold.fontName, size: 17)
         case .callout:
-            return .custom(PFFontName.bold, size: 16)
+            return .custom(PFFontWeight.bold.fontName, size: 16)
         case .subheadline:
-            return .custom(PFFontName.extraBold, size: 15)
+            return .custom(PFFontWeight.extraBold.fontName, size: 15)
         case .caption:
-            return .custom(PFFontName.extraBold, size: 12)
+            return .custom(PFFontWeight.extraBold.fontName, size: 12)
         case .caption2:
-            return .custom(PFFontName.bold, size: 12)
+            return .custom(PFFontWeight.bold.fontName, size: 12)
         case .label:
-            return .custom(PFFontName.bold, size: 11)
+            return .custom(PFFontWeight.bold.fontName, size: 11)
         case .labelLined:
-            return .custom(PFFontName.regular, size: 11)
+            return .custom(PFFontWeight.regular.fontName, size: 11)
         }
     }
 
     static func pfCustom(_ weight: PFFontWeight, size: CGFloat) -> Font {
         return .custom(weight.fontName, size: size)
-    }
-}
-
-enum PFFontWeight {
-    case regular
-    case bold
-    case extraBold
-
-    var fontName: String {
-        switch self {
-        case .regular: return PFFontName.regular
-        case .bold: return PFFontName.bold
-        case .extraBold: return PFFontName.extraBold
-        }
     }
 }
