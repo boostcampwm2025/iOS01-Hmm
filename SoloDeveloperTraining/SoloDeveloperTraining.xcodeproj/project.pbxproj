@@ -17,21 +17,21 @@
 			membershipExceptions = (
 				App/Info.plist,
 				"App/Users/sunjae/sunjae/naver_boot/membership/iOS01-Hmm/SoloDeveloperTraining/SoloDeveloperTraining/App/Info-Dev.plist",
-				Views/MainView.swift,
-				Views/StatusBarView.swift,
-				Views/TabBarView.swift,
+				Production/Presentaion/MainView.swift,
+				Production/Presentaion/StatusBarView.swift,
+				Production/Presentaion/TabBarView.swift,
 			);
 			target = 2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */;
 		};
 		BC6322A72F0F41BB00EAD3F7 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				AchievementTestView.swift,
 				App/Info.plist,
 				"App/Users/sunjae/sunjae/naver_boot/membership/iOS01-Hmm/SoloDeveloperTraining/SoloDeveloperTraining/App/Info-Dev.plist",
-				ContentView.swift,
-				ShopView.swift,
-				TabGameView.swift,
+				Devlopment/Presentation/AchievementTestView.swift,
+				Devlopment/Presentation/ContentView.swift,
+				Devlopment/Presentation/ShopView.swift,
+				Devlopment/Presentation/TabGameView.swift,
 			);
 			target = 08267F2A2F0D06BC005A0066 /* SoloDeveloperTraining */;
 		};
