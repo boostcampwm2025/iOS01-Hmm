@@ -10,9 +10,22 @@
 		08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoloDeveloperTraining.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		BC6322A72F0F41BB00EAD3F7 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 08267F2A2F0D06BC005A0066 /* SoloDeveloperTraining */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		08267F2D2F0D06BC005A0066 /* SoloDeveloperTraining */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				BC6322A72F0F41BB00EAD3F7 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */,
+			);
 			path = SoloDeveloperTraining;
 			sourceTree = "<group>";
 		};
@@ -278,6 +291,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SoloDeveloperTraining/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -316,6 +330,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SoloDeveloperTraining/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
