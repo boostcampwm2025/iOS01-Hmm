@@ -20,8 +20,6 @@ actor User {
     let inventory: Inventory
     /// 게임 기록
     let record: Record
-    /// 보유 업적
-    let achievements: [Achievement]
     /// 보유 스킬
     let skills: [Skill]
 
@@ -41,7 +39,6 @@ actor User {
         self.wallet = wallet
         self.inventory = inventory
         self.record = record
-        self.achievements = achievements
         self.skills = skills
     }
 }
