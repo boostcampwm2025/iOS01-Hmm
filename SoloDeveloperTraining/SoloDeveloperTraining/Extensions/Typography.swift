@@ -1,12 +1,27 @@
 //
-//  Text+Style.swift
+//  Typography.swift
 //  SoloDeveloperTraining
 //
 //  Created by 김성훈 on 1/8/26.
 //
 //  사용 예시:
-//  Text("string")
-//      .textStyle(.caption)
+//
+//  1. Text (lineSpacing 자동 포함)
+//     Text("안녕하세요")
+//         .textStyle(.caption)
+//
+//  2. TextField (단일 라인 - lineSpacing 불필요)
+//     TextField("입력", text: $text)
+//         .font(.pfFont(.body))
+//
+//  3. TextEditor (다중 라인 - lineSpacing 필요)
+//     TextEditor(text: $longText)
+//         .font(.pfFont(.body))
+//         .lineSpacing(TypographyStyle.body.lineSpacing)
+//
+//  4. 커스텀 크기
+//     Text("특별한 크기")
+//         .font(.pfCustom(.extraBold, size: 25))
 
 import SwiftUI
 
@@ -118,7 +133,7 @@ enum Typography {
     )
 }
 
-enum TextStyle {
+enum TypographyStyle {
     case largeTitle
     case title
     case title2
@@ -131,10 +146,28 @@ enum TextStyle {
     case caption2
     case label
     case labelLined
+
+    var lineSpacing: CGFloat {
+        switch self {
+        case .largeTitle: return 34 * (1.3 - 1)
+        case .title: return 28 * (1.4 - 1)
+        case .title2: return 22 * (1.4 - 1)
+        case .title3: return 20 * (1.4 - 1)
+        case .headline: return 17 * (1.4 - 1)
+        case .body: return 17 * (1.4 - 1)
+        case .callout: return 16 * (1.4 - 1)
+        case .subheadline: return 15 * (1.4 - 1)
+        case .caption: return 12 * (1.4 - 1)
+        case .caption2: return 12 * (1.4 - 1)
+        case .label: return 11 * (1.4 - 1)
+        case .labelLined: return 11 * (1.4 - 1)
+        }
+    }
 }
 
+// MARK: - Text Extension
 extension Text {
-    func textStyle(_ style: TextStyle) -> some View {
+    func textStyle(_ style: TypographyStyle) -> some View {
         switch style {
         case .largeTitle:
             self.modifier(Typography.largeTitle)
@@ -160,6 +193,56 @@ extension Text {
             self.modifier(Typography.label)
         case .labelLined:
             self.modifier(Typography.labelLined)
+        }
+    }
+}
+
+// MARK: - Font Extension
+extension Font {
+    static func pfFont(_ style: TypographyStyle) -> Font {
+        switch style {
+        case .largeTitle:
+            return .custom(PFFontName.extraBold, size: 34)
+        case .title:
+            return .custom(PFFontName.bold, size: 28)
+        case .title2:
+            return .custom(PFFontName.bold, size: 22)
+        case .title3:
+            return .custom(PFFontName.bold, size: 20)
+        case .headline:
+            return .custom(PFFontName.extraBold, size: 17)
+        case .body:
+            return .custom(PFFontName.bold, size: 17)
+        case .callout:
+            return .custom(PFFontName.bold, size: 16)
+        case .subheadline:
+            return .custom(PFFontName.extraBold, size: 15)
+        case .caption:
+            return .custom(PFFontName.extraBold, size: 12)
+        case .caption2:
+            return .custom(PFFontName.bold, size: 12)
+        case .label:
+            return .custom(PFFontName.bold, size: 11)
+        case .labelLined:
+            return .custom(PFFontName.regular, size: 11)
+        }
+    }
+
+    static func pfCustom(_ weight: PFFontWeight, size: CGFloat) -> Font {
+        return .custom(weight.fontName, size: size)
+    }
+}
+
+enum PFFontWeight {
+    case regular
+    case bold
+    case extraBold
+
+    var fontName: String {
+        switch self {
+        case .regular: return PFFontName.regular
+        case .bold: return PFFontName.bold
+        case .extraBold: return PFFontName.extraBold
         }
     }
 }
