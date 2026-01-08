@@ -20,6 +20,89 @@ final class Equipment {
         return tier != .nationalTreasure
     }
     
+    /// 초 당 획득 골드
+    var goldPerSecond: Double {
+        switch type {
+        case .keyboard:
+            switch tier {
+            case .broken:
+                return 100
+            case .cheap:
+                return 150
+            case .vintage:
+                return 200
+            case .decent:
+                return 300
+            case .premium:
+                return 500
+            case .diamond:
+                return 1000
+            case .limited:
+                return 2000
+            case .nationalTreasure:
+                return 5000
+            }
+        case .mouse:
+            switch tier {
+            case .broken:
+                return 100
+            case .cheap:
+                return 150
+            case .vintage:
+                return 200
+            case .decent:
+                return 300
+            case .premium:
+                return 500
+            case .diamond:
+                return 1000
+            case .limited:
+                return 2000
+            case .nationalTreasure:
+                return 5000
+            }
+        case .monitor:
+            switch tier {
+            case .broken:
+                return 100
+            case .cheap:
+                return 150
+            case .vintage:
+                return 200
+            case .decent:
+                return 300
+            case .premium:
+                return 500
+            case .diamond:
+                return 1000
+            case .limited:
+                return 2000
+            case .nationalTreasure:
+                return 5000
+            }
+        case .chair:
+            switch tier {
+            case .broken:
+                return 100
+            case .cheap:
+                return 150
+            case .vintage:
+                return 200
+            case .decent:
+                return 300
+            case .premium:
+                return 500
+            case .diamond:
+                return 1000
+            case .limited:
+                return 2000
+            case .nationalTreasure:
+                return 5000
+            }
+        }
+    }
+    
+    
     /// 업그레이드 비용
     var upgradeCost: Cost {
         switch tier {

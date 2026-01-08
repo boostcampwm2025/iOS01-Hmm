@@ -11,11 +11,11 @@ struct TabGameView: View {
     let user: User
     let game: TapGame
     
-    init(user: User) {
+    init(user: User, calculator: Calculator) {
         self.user = user
         self.game = .init(
             user: user,
-            calculator: .init(),
+            calculator: calculator,
             feverSystem: .init(
                 decreaseInterval: 0.1,
                 decreasePercentPerTick: 10
@@ -63,5 +63,5 @@ struct TabGameView: View {
             .init(game: .tap, tier: .advanced, level: 1000),
         ]
     )
-    TabGameView(user: user)
+    TabGameView(user: user, calculator: .init())
 }

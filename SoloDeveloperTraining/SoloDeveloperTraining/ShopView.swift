@@ -10,16 +10,18 @@ import SwiftUI
 struct ShopView: View {
     let user: User
     let shopSystem: ShopSystem
+    let calculator: Calculator
     
-    init(user: User) {
+    init(user: User, calculator: Calculator) {
         self.user = user
         self.shopSystem = .init(user: user)
+        self.calculator = calculator
     }
     var body: some View {
         VStack {
             Text("보유 골드: \(user.wallet.gold)")
             Text("보유 다이아: \(user.wallet.diamond)")
-            Text("초당 획득 골드")
+            Text("초당 획득 골드: \(calculator.calculateGoldPerSecond(user: user))")
             
             List(shopSystem.itemList()) { item in
                 itemRowView(item: item)
@@ -65,5 +67,5 @@ struct ShopView: View {
             .init(game: .tap, tier: .advanced, level: 1000),
         ]
     )
-    ShopView(user: user)
+    ShopView(user: user, calculator: .init())
 }
