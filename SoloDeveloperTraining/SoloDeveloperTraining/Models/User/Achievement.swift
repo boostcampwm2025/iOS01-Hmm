@@ -42,7 +42,17 @@ final class Achievement {
     /// 보상
     var reward: Cost
 
-    init(id: Int, title: String, description: String, targetValue: Int, currentValue: Int = 0, state: AchievementState = .inProgress, updateCondition: @escaping (Record) -> Int, completeCondition: @escaping (Record) -> Bool, reward: Cost) {
+    init(
+        id: Int,
+        title: String,
+        description: String,
+        targetValue: Int,
+        currentValue: Int = 0,
+        state: AchievementState = .inProgress,
+        updateCondition: @escaping (Record) -> Int,
+        completeCondition: @escaping (Record) -> Bool,
+        reward: Cost
+    ) {
         self.id = id
         self.title = title
         self.description = description
