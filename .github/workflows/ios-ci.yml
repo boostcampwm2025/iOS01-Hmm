@@ -39,7 +39,7 @@ jobs:
         xcodebuild clean build \
           -project SoloDeveloperTraining.xcodeproj \
           -scheme SoloDeveloperTraining \
-          -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+          -destination 'platform=iOS Simulator,name=iPhone 16' \
           CODE_SIGNING_ALLOWED=NO \
           CODE_SIGNING_REQUIRED=NO
     
@@ -49,7 +49,7 @@ jobs:
         xcodebuild test \
           -project SoloDeveloperTraining.xcodeproj \
           -scheme SoloDeveloperTraining \
-          -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+          -destination 'platform=iOS Simulator,name=iPhone 16' \
           CODE_SIGNING_ALLOWED=NO \
           CODE_SIGNING_REQUIRED=NO \
           || echo "No tests found or tests failed - continuing..."
