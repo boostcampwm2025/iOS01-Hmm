@@ -18,45 +18,8 @@ struct AchievementTestView: View {
     @State private var alertMessage = ""
 
     init() {
-        // 테스트용 업적들 생성
-        let achievements = [
-            Achievement(
-                id: 1,
-                title: "첫 걸음",
-                description: "탭 10회 달성",
-                targetValue: 10,
-                updateCondition: { $0.totalTapCount },
-                completeCondition: { $0.totalTapCount >= 10 },
-                reward: Cost(gold: 50)
-            ),
-            Achievement(
-                id: 2,
-                title: "초보 탭퍼",
-                description: "탭 100회 달성",
-                targetValue: 100,
-                updateCondition: { $0.totalTapCount },
-                completeCondition: { $0.totalTapCount >= 100 },
-                reward: Cost(gold: 100, diamond: 1)
-            ),
-            Achievement(
-                id: 3,
-                title: "중급 탭퍼",
-                description: "탭 1000회 달성",
-                targetValue: 1000,
-                updateCondition: { $0.totalTapCount },
-                completeCondition: { $0.totalTapCount >= 1000 },
-                reward: Cost(gold: 500, diamond: 5)
-            ),
-            Achievement(
-                id: 10001,
-                title: "신의 손가락",
-                description: "탭 100000회 달성",
-                targetValue: 100000,
-                updateCondition: { $0.totalTapCount },
-                completeCondition: { $0.totalTapCount >= 100000 },
-                reward: Cost(diamond: 30)
-            )
-        ]
+        // 팩토리를 사용하여 전체 업적 목록 생성
+        let achievements = AchievementFactory.createAllAchievements()
 
         _achievementSystem = State(initialValue: AchievementSystem(allAchievements: achievements))
         _record = State(initialValue: Record())
