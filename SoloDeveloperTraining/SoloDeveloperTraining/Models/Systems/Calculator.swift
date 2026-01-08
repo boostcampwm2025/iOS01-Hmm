@@ -18,6 +18,8 @@ class Calculator {
     /// 초당 획득 골드 계산
     func calculateGoldPerSecond(user: User) -> Int {
         let goldPerSecond = user.inventory.equipmentItems.map { $0.goldPerSecond }.reduce(0, +)
-        return Int(goldPerSecond)
+        let housingGoldPerSecond = user.inventory.housing.goldPerSecond
+        // 장비 아이템 + 부동산 아이템 초당 골드
+        return Int(goldPerSecond) + housingGoldPerSecond
     }
 }

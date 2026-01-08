@@ -22,8 +22,9 @@ struct ShopView: View {
             Text("보유 골드: \(user.wallet.gold)")
             Text("보유 다이아: \(user.wallet.diamond)")
             Text("초당 획득 골드: \(calculator.calculateGoldPerSecond(user: user))")
+            Text("부동산: \(user.inventory.housing.displayTitle)")
             
-            List(shopSystem.itemList()) { item in
+            List(shopSystem.itemList() + shopSystem.housingList()) { item in
                 itemRowView(item: item)
             }
         }
@@ -58,7 +59,7 @@ struct ShopView: View {
 #Preview {
     let user = User(
         nickname: "user",
-        wallet: .init(gold: 10000000000, diamond: 100),
+        wallet: .init(gold: 1000000000, diamond: 100),
         inventory: .init(),
         record: .init(),
         skills: [

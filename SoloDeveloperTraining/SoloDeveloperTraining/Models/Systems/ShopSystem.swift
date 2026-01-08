@@ -46,6 +46,19 @@ final class ShopSystem {
         }
         return consumableItems + equipmentItems
     }
+    
+    
+    func housingList() -> [Item] {
+        let housingItems: [Item] = Housing.allCases.map {
+            .init(
+                title: $0.displayTitle,
+                description: "temp",
+                cost: $0.cost,
+                type: .housing($0)
+            )
+        }
+        return housingItems
+    }
 
     /// 장비 아이템 업그레이드 시도
     private func upgrade(equipment: Equipment) {
@@ -54,8 +67,14 @@ final class ShopSystem {
     }
 
     /// 소비 아이템 구매
-    private func buyConsumable(type: ConsumableType) {
-        user.inventory.gain(consumable: type)
+    private func buy(consumable: Consumable) {
+        user.inventory.gain(consumable: consumable.type)
+    }
+    
+    /// 부동산 아이템 구매
+    private func buy(housing: Housing) {
+        user.wallet.addGold(user.inventory.housing.cost.gold / 2)
+        user.inventory.housing = housing
     }
 
     /// 아이템 구매
@@ -71,7 +90,10 @@ final class ShopSystem {
             upgrade(equipment: equipment)
             
         case .consumable(let consumable):
-            buyConsumable(type: consumable.type)
+            buy(consumable: consumable)
+            
+        case .housing(let housing):
+            buy(housing: housing)
         }
     }
 }
@@ -96,4 +118,6 @@ enum ItemType {
     case equipment(Equipment)
     /// 소비 아이템
     case consumable(Consumable)
+    /// 부동산 아이템
+    case housing(Housing)
 }
