@@ -25,7 +25,9 @@ enum Housing: CaseIterable {
         case .apartment: return "background_apartment"
         case .house: return "background_house"
         case .pentHouse: return "background_pentHouse"
-    
+        }
+    }
+
     var displayTitle: String {
         switch self {
         case .street:
