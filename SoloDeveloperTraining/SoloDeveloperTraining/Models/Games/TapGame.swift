@@ -40,7 +40,7 @@ final class TapGame: Game {
     @discardableResult
     func didPerformAction() async -> Int {
         feverSystem.gainFever(33)
-        let gainGold = calculator.calculateGoldGained(
+        let gainGold = calculator.calculateGoldPerAction(
             game: kind,
             user: user,
             feverMultiplier: feverSystem.feverMultiplier,
