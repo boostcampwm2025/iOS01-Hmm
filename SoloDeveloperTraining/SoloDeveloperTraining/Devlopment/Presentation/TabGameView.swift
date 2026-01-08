@@ -43,10 +43,10 @@ struct TabGameView: View {
                 }
                 Button {
                     Task {
-                        await CheatManager.performCheatingActions(game: game, count: 100_000)
+                        await CheatManager.performCheatingActions(game: game, count: 10000)
                     }
                 } label: {
-                    Text("탭 100,000번 수행하기")
+                    Text("탭 10,000번 수행하기")
                 }
             }
             Button {

@@ -9,9 +9,12 @@ import Foundation
 
 enum CheatManager {
     static func performCheatingActions(game: Game, count: Int) async {
-        for _ in 0..<count {
-            // 핵심 로직을 반복 호출하여 데이터와 업적 시스템을 한꺼번에 업데이트
-            _ = await game.didPerformAction()
-        }
+        /// 백그라운드에서 수행합니다.
+        await Task.detached(priority: .userInitiated) {
+            for _ in 0..<count {
+                /// 비즈니스 로직을 수행합니다.
+                _ = await game.didPerformAction()
+            }
+        }.value
     }
 }
