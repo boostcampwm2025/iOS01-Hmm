@@ -8,13 +8,29 @@
 
 /* Begin PBXFileReference section */
 		08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoloDeveloperTraining.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2896AE422F100CD600D38732 /* SoloDeveloperTraining-Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SoloDeveloperTraining-Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2896AE442F100CD600D38732 /* SoloDeveloperTraining copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "SoloDeveloperTraining copy-Info.plist"; path = "/Users/sunjae/sunjae/naver_boot/membership/iOS01-Hmm/SoloDeveloperTraining/SoloDeveloperTraining copy-Info.plist"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		BC6322A72F0F41BB00EAD3F7 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */ = {
+		2896AE432F100CD600D38732 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Views/MainView.swift,
+				Views/StatusBarView.swift,
+				Views/TabBarView.swift,
+			);
+			target = 2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */;
+		};
+		BC6322A72F0F41BB00EAD3F7 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AchievementTestView.swift,
+				ContentView.swift,
+				Info.plist,
+				ShopView.swift,
+				TabGameView.swift,
 			);
 			target = 08267F2A2F0D06BC005A0066 /* SoloDeveloperTraining */;
 		};
@@ -25,6 +41,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				BC6322A72F0F41BB00EAD3F7 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */,
+				2896AE432F100CD600D38732 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */,
 			);
 			path = SoloDeveloperTraining;
 			sourceTree = "<group>";
@@ -39,6 +56,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2896AE3C2F100CD600D38732 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -46,6 +70,7 @@
 			isa = PBXGroup;
 			children = (
 				08267F2D2F0D06BC005A0066 /* SoloDeveloperTraining */,
+				2896AE442F100CD600D38732 /* SoloDeveloperTraining copy-Info.plist */,
 				08267F2C2F0D06BC005A0066 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,6 +79,7 @@
 			isa = PBXGroup;
 			children = (
 				08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */,
+				2896AE422F100CD600D38732 /* SoloDeveloperTraining-Dev.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -82,6 +108,29 @@
 			);
 			productName = SoloDeveloperTraining;
 			productReference = 08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */;
+			productType = "com.apple.product-type.application";
+		};
+		2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2896AE3F2F100CD600D38732 /* Build configuration list for PBXNativeTarget "SoloDeveloperTraining-Dev" */;
+			buildPhases = (
+				2896AE3B2F100CD600D38732 /* Sources */,
+				2896AE3C2F100CD600D38732 /* Frameworks */,
+				2896AE3D2F100CD600D38732 /* Resources */,
+				2896AE3E2F100CD600D38732 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				08267F2D2F0D06BC005A0066 /* SoloDeveloperTraining */,
+			);
+			name = "SoloDeveloperTraining-Dev";
+			packageProductDependencies = (
+			);
+			productName = SoloDeveloperTraining;
+			productReference = 2896AE422F100CD600D38732 /* SoloDeveloperTraining-Dev.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -114,6 +163,7 @@
 			projectRoot = "";
 			targets = (
 				08267F2A2F0D06BC005A0066 /* SoloDeveloperTraining */,
+				2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */,
 			);
 		};
 /* End PBXProject section */
@@ -126,9 +176,33 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2896AE3D2F100CD600D38732 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		2896AE3E2F100CD600D38732 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]\nthen\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif command -v swiftlint >/dev/null 2>&1\nthen\n    swiftlint\nelse\n    echo \"warning: `swiftlint` command not found - See https://github.com/realm/SwiftLint#installation for installation instructions.\"\nfi\n";
+		};
 		B3D95AE82F0FA9850066BDF2 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -150,6 +224,13 @@
 
 /* Begin PBXSourcesBuildPhase section */
 		08267F272F0D06BC005A0066 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2896AE3B2F100CD600D38732 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -217,6 +298,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_SWIFT_FLAGS = "";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -274,6 +356,7 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_SWIFT_FLAGS = "";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
@@ -292,6 +375,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SoloDeveloperTraining/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "1인 개발자 키우기";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -331,6 +415,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SoloDeveloperTraining/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "1인 개발자 키우기";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -343,6 +428,88 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.codesquad.SoloDeveloperTraining;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		2896AE402F100CD600D38732 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B3PWYBKFUK;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "SoloDeveloperTraining copy-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "1인 개발자 키우기 (Dev)";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_SWIFT_FLAGS = "-DDEV_BUILD";
+				PRODUCT_BUNDLE_IDENTIFIER = com.codesquad.SoloDeveloperTraining.dev;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		2896AE412F100CD600D38732 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B3PWYBKFUK;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "SoloDeveloperTraining copy-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "1인 개발자 키우기 (Dev)";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_SWIFT_FLAGS = "-DDEV_BUILD";
+				PRODUCT_BUNDLE_IDENTIFIER = com.codesquad.SoloDeveloperTraining.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -375,6 +542,15 @@
 			buildConfigurations = (
 				08267F372F0D06BE005A0066 /* Debug */,
 				08267F382F0D06BE005A0066 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2896AE3F2F100CD600D38732 /* Build configuration list for PBXNativeTarget "SoloDeveloperTraining-Dev" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2896AE402F100CD600D38732 /* Debug */,
+				2896AE412F100CD600D38732 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
