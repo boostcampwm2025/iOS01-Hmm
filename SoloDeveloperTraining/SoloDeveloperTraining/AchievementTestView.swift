@@ -184,16 +184,6 @@ struct AchievementTestView: View {
                 }
             }
 
-            Button {
-                resetAll()
-            } label: {
-                Label("리셋", systemImage: "arrow.counterclockwise")
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.gray)
-                    .foregroundStyle(.white)
-                    .cornerRadius(10)
-            }
         }
         .padding()
         .background(
@@ -268,21 +258,6 @@ struct AchievementTestView: View {
         }
 
         alertMessage = message
-        showAlert = true
-    }
-
-    private func resetAll() {
-        record = Record()
-        wallet = Wallet()
-
-        // 업적들도 리셋
-        for achievement in achievementSystem.allAchievements {
-            achievement.state = .inProgress
-            achievement.currentValue = 0
-        }
-        achievementSystem.checkHasCompletedAchievement()
-
-        alertMessage = "모든 데이터가 초기화되었습니다"
         showAlert = true
     }
 }
