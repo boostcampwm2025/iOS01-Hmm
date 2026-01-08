@@ -15,7 +15,7 @@ struct ContentView: View {
     init() {
         let user = User(
             nickname: "user",
-            wallet: .init(diamond: 100),
+            wallet: .init(gold: 1000000, diamond: 100),
             inventory: .init(),
             record: .init(),
             skills: [

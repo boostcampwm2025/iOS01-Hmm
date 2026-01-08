@@ -158,13 +158,16 @@ final class Equipment {
     }
 
     /// 강화 확률에 따라 업그레이드
-    func upgraded() {
-        guard canUpgrade else { return }
+    func upgraded() -> Bool {
+        guard canUpgrade else { return false }
         
         let randomValue = Double.random(in: 0...1)
         
         if randomValue <= upgradeSuccessRate {
             self.tier = EquipmentTier(rawValue: tier.rawValue + 1) ?? .nationalTreasure
+            return true
+        } else {
+            return false
         }
     }
 }
