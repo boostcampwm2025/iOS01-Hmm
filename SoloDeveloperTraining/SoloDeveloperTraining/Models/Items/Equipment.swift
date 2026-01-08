@@ -8,6 +8,7 @@
 import Foundation
 
 final class Equipment {
+    var type: EquipmentType
     var tier: EquipmentTier
     
     /// 업그레이드 가능 여부
@@ -36,16 +37,23 @@ final class Equipment {
             return Cost(gold: 999_999_999_999)
         }
     }
-    
-    init(tier: EquipmentTier) {
+
+    init(type: EquipmentType, tier: EquipmentTier) {
+        self.type = type
         self.tier = tier
     }
-
     
     /// 해당 장비의 티어를 업그레이드 합니다. ( 최고 단계인 경우 최고단계로 고정)
     func upgraded() {
         self.tier = EquipmentTier(rawValue: tier.rawValue + 1) ?? .nationalTreasure
     }
+}
+
+enum EquipmentType: String {
+    case keyboard = "키보드"
+    case mouse = "마우스"
+    case monitor = "모니터"
+    case chair = "의자"
 }
 
 enum EquipmentTier: Int {

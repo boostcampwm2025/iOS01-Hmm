@@ -40,11 +40,11 @@ struct TabGameView: View {
             }
             
             Button {
-                if user.inventory.drinkCoffee() {
-                    game.buffSystem.useCoffee()
+                if user.inventory.drink(.coffee)  {
+                    game.buffSystem.useConsumableItem(type: .coffee)
                 }
             } label: {
-                Text("☕️ Coffee \(user.inventory.coffeeCount)")
+                Text("☕️ Coffee \(user.inventory.count(.coffee) ?? 0)")
             }
         }
         .padding()
@@ -56,7 +56,12 @@ struct TabGameView: View {
         nickname: "user",
         wallet: .init(),
         inventory: .init(),
-        record: .init()
+        record: .init(),
+        skills: [
+            .init(game: .tap, tier: .beginner, level: 1000),
+            .init(game: .tap, tier: .intermediate, level: 1000),
+            .init(game: .tap, tier: .advanced, level: 1000),
+        ]
     )
     TabGameView(user: user)
 }

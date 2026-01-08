@@ -11,58 +11,47 @@ import Observation
 @Observable
 final class Inventory {
     
-    // MARK: - 장비 아이템
-    /// 키보드
-    var keyboard: Equipment
-    /// 마우스
-    var mouse: Equipment
-    /// 모니터
-    var monitor: Equipment
-    /// 의자
-    var chair: Equipment
-    
-    // MARK: - 소비 아이템
-    /// 커피 갯수
-    var coffeeCount: Int
-    /// 에너지 드링크
-    var energyDrinkCount : Int
-
-    // MARK: - 부동산 아이템
+    /// 장비 아이템
+    let equipmentItems: [Equipment]
+    /// 소비 아이템
+    let consumableItems: [Consumable]
     /// 부동산
     var housing: Housing
     
     init(
-        keyboard: Equipment = .init(tier: .broken),
-        mouse: Equipment = .init(tier: .broken),
-        monitor: Equipment = .init(tier: .broken),
-        chair: Equipment = .init(tier: .broken),
-        coffeeCount: Int = 0,
-        energyDrinkCount: Int = 0,
+        equipmentItems: [Equipment] = [
+            .init(type: .keyboard, tier: .broken),
+            .init(type: .mouse, tier: .broken),
+            .init(type: .monitor, tier: .broken),
+            .init(type: .chair, tier: .broken),
+        ],
+        consumableItems: [Consumable] = [
+            .init(type: .coffee, count: 5),
+            .init(type: .energyDrink, count: 0),
+        ],
         housing: Housing = .street
     ) {
-        self.keyboard = keyboard
-        self.mouse = mouse
-        self.monitor = monitor
-        self.chair = chair
-        self.coffeeCount = coffeeCount
-        self.energyDrinkCount = energyDrinkCount
+        self.equipmentItems = equipmentItems
+        self.consumableItems = consumableItems
         self.housing = housing
     }
     
     
-    /// 커피 아이템을 사용합니다.
+    /// 소비 아이템을 사용합니다.
     /// - Returns: 사용 성공 여부
-    func drinkCoffee() -> Bool {
-        guard coffeeCount > 0 else { return false }
-        coffeeCount -= 1
+    func drink(_ type: ConsumableType) -> Bool {
+        guard let targetItem = consumableItems.filter({ $0.type == type }).first else { return false }
+        guard targetItem.count > 0 else { return false }
+        targetItem.count -= 1
         return true
     }
     
-    /// 에너지 드링크 아이템을 사용합니다.
-    /// - Returns: 사용 성공 여부
-    func drinkEnergyDrink() -> Bool {
-        guard energyDrinkCount > 0 else { return false }
-        energyDrinkCount -= 1
-        return true
+    
+    /// 소비 아이템 갯수
+    /// - Parameter type: 소비 아이템 타입
+    /// - Returns: 소비 아이템 갯수
+    func count(_ type: ConsumableType) -> Int? {
+        guard let targetItem = consumableItems.filter({ $0.type == type }).first else { return nil }
+        return targetItem.count
     }
 }

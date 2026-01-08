@@ -19,10 +19,10 @@ final class BuffSystem {
     
     var duration: Int = 0
     
-    func useCoffee() {
+    func useConsumableItem(type: ConsumableType) {
         isRunning = true
-        duration = 3
-        multiplier = 1.5
+        duration = type.duration
+        multiplier = type.buffMultiplier
         decreaseTimer = Timer.scheduledTimer(
             withTimeInterval: decreaseInterval,
             repeats: true
@@ -32,10 +32,6 @@ final class BuffSystem {
                 self?.stopTimer()
             }
         }
-    }
-    
-    func useEnergyDrink() {
-        
     }
     
     func stopTimer() {
