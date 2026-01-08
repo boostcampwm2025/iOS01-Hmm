@@ -18,7 +18,7 @@ struct StatusBarView: View {
         HStack(spacing: 16) {
             // 왼쪽: 프로필 + 커리어 + 진행바
             HStack(spacing: 6) {
-                Image("profile_\(career)")
+                Image(career.imageName)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 30, height: 30)

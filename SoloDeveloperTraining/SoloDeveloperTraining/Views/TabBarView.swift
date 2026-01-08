@@ -12,6 +12,15 @@ enum TabItem: String, CaseIterable {
     case enhance = "강화"
     case shop = "상점"
     case mission = "미션"
+
+    var imageName: String {
+        switch self {
+        case .work: return "tab_work"
+        case .enhance: return "tab_enhance"
+        case .shop: return "tab_shop"
+        case .mission: return "tab_mission"
+        }
+    }
 }
 
 struct TabBarView: View {
@@ -45,7 +54,7 @@ private struct TabBarButton: View {
         Button(action: action) {
             ZStack(alignment: .bottomTrailing) {
                 VStack(spacing: 2) {
-                    Image("tab_\(tab)")
+                    Image(tab.imageName)
                         .resizable()
                         .frame(width: 24, height: 24)
                     Text(tab.rawValue)

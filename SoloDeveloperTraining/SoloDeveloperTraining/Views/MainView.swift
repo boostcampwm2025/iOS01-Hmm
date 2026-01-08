@@ -21,7 +21,7 @@ struct MainView: View {
         VStack(spacing: 0) {
             // 배경 + 상태바
             ZStack(alignment: .top) {
-                Image("background_\(housing)")
+                Image(housing.imageName)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(maxWidth: .infinity)

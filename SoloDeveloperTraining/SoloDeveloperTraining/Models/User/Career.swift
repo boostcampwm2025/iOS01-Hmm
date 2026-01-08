@@ -43,7 +43,22 @@ enum Career: String, CaseIterable {
             return "0과 1로 대화 가능"
         }
     }
-    
+
+    var imageName: String {
+        switch self {
+        case .unemployed: return "profile_unemployed"
+        case .laptopOwner: return "profile_laptopOwner"
+        case .aspiringDeveloper: return "profile_aspiringDeveloper"
+        case .juniorDeveloper: return "profile_juniorDeveloper"
+        case .normalDeveloper: return "profile_normalDeveloper"
+        case .nightOwlDeveloper: return "profile_nightOwlDeveloper"
+        case .skilledDeveloper: return "profile_skilledDeveloper"
+        case .famousDeveloper: return "profile_famousDeveloper"
+        case .allRounderDeveloper: return "profile_allRounderDeveloper"
+        case .worldClassDeveloper: return "profile_worldClassDeveloper"
+        }
+    }
+
     /// 다음 단계로 업그레이드하기 위해 필요한 누적 재산
     var requiredWealth: Int {
         switch self {
