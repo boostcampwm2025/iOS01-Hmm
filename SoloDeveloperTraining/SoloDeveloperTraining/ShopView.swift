@@ -9,13 +9,19 @@ import SwiftUI
 
 struct ShopView: View {
     let user: User
+    let shopSystem: ShopSystem
     
     init(user: User) {
         self.user = user
+        self.shopSystem = .init(user: user)
     }
     var body: some View {
         VStack {
             Text("초당 획득 골드")
+            
+            List(shopSystem.itemList()) { item in
+                Text(item.title)
+            }
         }
     }
 }

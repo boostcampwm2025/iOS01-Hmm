@@ -11,6 +11,10 @@ final class Equipment {
     var type: EquipmentType
     var tier: EquipmentTier
     
+    var displayTitle: String {
+        return tier.displayTitle + " " + type.displayTitle
+    }
+    
     /// 업그레이드 가능 여부
     var canUpgrade: Bool {
         return tier != .nationalTreasure
@@ -49,11 +53,24 @@ final class Equipment {
     }
 }
 
-enum EquipmentType: String {
-    case keyboard = "키보드"
-    case mouse = "마우스"
-    case monitor = "모니터"
-    case chair = "의자"
+enum EquipmentType {
+    case keyboard
+    case mouse
+    case monitor
+    case chair
+    
+    var displayTitle: String {
+        switch self {
+        case .keyboard:
+            return "키보드"
+        case .mouse:
+            return "마우스"
+        case .monitor:
+            return "모니터"
+        case .chair:
+            return "의자"
+        }
+    }
 }
 
 enum EquipmentTier: Int {
