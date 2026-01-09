@@ -10,7 +10,7 @@ import SwiftUI
 struct TabGameView: View {
     let user: User
     let game: TapGame
-    
+
     init(user: User, calculator: Calculator) {
         self.user = user
         self.game = .init(
@@ -24,10 +24,10 @@ struct TabGameView: View {
         )
         self.game.startGame()
     }
-    
+
     var body: some View {
         VStack(spacing: 40) {
-            VStack{
+            VStack {
                 Text("gold: \(user.wallet.gold)")
                 Text("fever: \(game.feverSystem.feverPercent)")
                 Text("feverStage: \(game.feverSystem.feverStage)")
@@ -50,7 +50,7 @@ struct TabGameView: View {
                 }
             }
             Button {
-                if user.inventory.drink(.coffee)  {
+                if user.inventory.drink(.coffee) {
                     game.buffSystem.useConsumableItem(type: .coffee)
                 }
             } label: {
@@ -70,7 +70,7 @@ struct TabGameView: View {
         skills: [
             .init(game: .tap, tier: .beginner, level: 1000),
             .init(game: .tap, tier: .intermediate, level: 1000),
-            .init(game: .tap, tier: .advanced, level: 1000),
+            .init(game: .tap, tier: .advanced, level: 1000)
         ]
     )
     TabGameView(user: user, calculator: .init())

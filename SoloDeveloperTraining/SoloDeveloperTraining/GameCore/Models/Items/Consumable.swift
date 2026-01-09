@@ -24,12 +24,12 @@ final class Consumable {
     var displayTitle: String {
         return type.displayTitle + " (보유:\(count)개)"
     }
-    
+
     /// 아이템 갯수 1 증가
     func addItem() {
         count += 1
     }
-    
+
     /// 아이템  갯수 1 감소
     func spendItem() {
         count -= 1
@@ -52,7 +52,7 @@ enum ConsumableType {
             return "박하스"
         }
     }
-    
+
     /// 버프 가중치
     var buffMultiplier: Double {
         switch self {
@@ -62,7 +62,7 @@ enum ConsumableType {
             return 2.0
         }
     }
-    
+
     /// 지속시간
     var duration: Int {
         switch self {
@@ -72,7 +72,7 @@ enum ConsumableType {
             return 15
         }
     }
-    
+
     /// 비용
     var cost: Cost {
         switch self {

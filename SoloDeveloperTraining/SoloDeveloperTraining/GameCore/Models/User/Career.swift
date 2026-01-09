@@ -18,7 +18,7 @@ enum Career: String, CaseIterable {
     case famousDeveloper = "유명한 개발자"
     case allRounderDeveloper = "올라운더 개발자"
     case worldClassDeveloper = "월드클래스 개발자"
-    
+
     var description: String {
         switch self {
         case .unemployed:
@@ -84,16 +84,17 @@ enum Career: String, CaseIterable {
             return 100_000_000
         }
     }
-    
+
     /// 다음 Career 단계
     var nextCareer: Career? {
         guard let currentIndex = Career.allCases.firstIndex(of: self),
-              currentIndex < Career.allCases.count - 1 else {
+            currentIndex < Career.allCases.count - 1
+        else {
             return nil
         }
         return Career.allCases[currentIndex + 1]
     }
-    
+
     /// 현재 누적재산으로 업그레이드 가능한지 확인
     func canUpgrade(currentWealth: Int) -> Bool {
         guard let next = nextCareer else { return false }

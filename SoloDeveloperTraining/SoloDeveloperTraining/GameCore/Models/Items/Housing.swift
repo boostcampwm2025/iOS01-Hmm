@@ -46,7 +46,7 @@ enum Housing: CaseIterable {
             return "펜트 하우스"
         }
     }
-    
+
     /// 구입 비용
     var cost: Cost {
         switch self {
@@ -66,7 +66,7 @@ enum Housing: CaseIterable {
             return .init(gold: 50_000_000)
         }
     }
-    
+
     /// 초 당 획득 골드
     var goldPerSecond: Int {
         switch self {

@@ -5,13 +5,12 @@
 //  Created by SeoJunYoung on 1/6/26.
 //
 
-
 import Foundation
 import Observation
 
 @Observable
 final class FeverSystem {
-    
+
     // MARK: - Properties
     /// 피버 감소 주기 (초 단위)
     private let decreaseInterval: TimeInterval
@@ -32,24 +31,24 @@ final class FeverSystem {
     /// 피버 단계별 배수
     var feverMultiplier: Double {
         switch feverStage {
-        case 0: return 1.0   // 일반
-        case 1: return 1.2   // 피버 1단계
-        case 2: return 1.5   // 피버 2단계
-        case 3: return 2.0   // 피버 3단계 (MAX)
+        case 0: return 1.0  // 일반
+        case 1: return 1.2  // 피버 1단계
+        case 2: return 1.5  // 피버 2단계
+        case 3: return 2.0  // 피버 3단계 (MAX)
         default: return 1.0
         }
     }
-    
+
     // MARK: - Initialization
     init(decreaseInterval: TimeInterval, decreasePercentPerTick: Double) {
         self.decreaseInterval = decreaseInterval
         self.decreasePercentPerTick = decreasePercentPerTick
     }
-    
+
     deinit {
         stop()
     }
-    
+
     // MARK: - Public Methods
     /// 피버 획득
     /// - Parameter amount: 획득할 피버량
@@ -57,11 +56,11 @@ final class FeverSystem {
         let sumPercent = feverPercent + amount
         feverPercent = min(400, sumPercent)
     }
-    
+
     /// 피버 시스템 시작
     func start() {
         guard !isRunning else { return }
-        
+
         isRunning = true
         decreaseTimer = Timer.scheduledTimer(
             withTimeInterval: decreaseInterval,
@@ -70,16 +69,16 @@ final class FeverSystem {
             self?.decreaseFever()
         }
     }
-    
+
     /// 피버 시스템 종료
     func stop() {
         isRunning = false
         decreaseTimer?.invalidate()
         decreaseTimer = nil
     }
-    
+
     // MARK: - Private Methods
-    
+
     /// 피버 감소 (매 주기마다 호출)
     private func decreaseFever() {
         guard feverPercent > 0 else { return }
@@ -89,11 +88,11 @@ final class FeverSystem {
             feverPercent -= decreasePercentPerTick
         }
     }
-    
+
     /// 피버 단계 업데이트
     private func updateFeverStage() {
         let newStage: Int
-        
+
         switch feverPercent {
         case 0..<100:
             newStage = 0  // 일반
@@ -106,7 +105,7 @@ final class FeverSystem {
         default:
             newStage = 0
         }
-        
+
         if newStage != feverStage {
             feverStage = newStage
         }

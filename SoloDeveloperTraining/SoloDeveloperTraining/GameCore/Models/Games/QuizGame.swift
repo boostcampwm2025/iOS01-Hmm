@@ -5,6 +5,7 @@
 //  Created by SeoJunYoung on 1/6/26.
 //
 
+import Foundation
 
 class QuizGame {
     let user: User
