@@ -26,19 +26,29 @@ struct TabGameView: View {
     }
     
     var body: some View {
-        VStack {
-            Text("gold: \(user.wallet.gold)")
-            Text("fever: \(game.feverSystem.feverPercent)")
-            Text("feverStage: \(game.feverSystem.feverStage)")
-            Button {
-                Task {
-                    let gainGold = await game.didPerformAction()
-                    print(gainGold)
-                }
-            } label: {
-                Rectangle()
+        VStack(spacing: 40) {
+            VStack{
+                Text("gold: \(user.wallet.gold)")
+                Text("fever: \(game.feverSystem.feverPercent)")
+                Text("feverStage: \(game.feverSystem.feverStage)")
             }
-            
+            HStack(spacing: 30) {
+                Button {
+                    Task {
+                        let gainGold = await game.didPerformAction()
+                        print(gainGold)
+                    }
+                } label: {
+                    Text("탭 1번 수행하기")
+                }
+                Button {
+                    Task {
+                        await CheatManager.performCheatingActions(game: game, count: 10000)
+                    }
+                } label: {
+                    Text("탭 10,000번 수행하기")
+                }
+            }
             Button {
                 if user.inventory.drink(.coffee)  {
                     game.buffSystem.useConsumableItem(type: .coffee)

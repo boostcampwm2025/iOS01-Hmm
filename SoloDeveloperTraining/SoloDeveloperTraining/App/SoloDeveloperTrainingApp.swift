@@ -11,7 +11,13 @@ import SwiftUI
 struct SoloDeveloperTrainingApp: App {
     var body: some Scene {
         WindowGroup {
+            #if DEV_BUILD
+            // Dev 타깃용 루트뷰
             ContentView()
+            #else
+            // 운영 타깃용 뷰
+            MainView()
+            #endif
         }
     }
 }

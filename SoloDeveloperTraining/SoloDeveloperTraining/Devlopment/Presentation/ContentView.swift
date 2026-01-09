@@ -11,7 +11,7 @@ struct ContentView: View {
     let user: User
     let calculator: Calculator
     let autoGainSystem: AutoGainSystem
-    
+
     init() {
         let user = User(
             nickname: "user",
@@ -30,11 +30,28 @@ struct ContentView: View {
         self.autoGainSystem = .init(user: user, calculator: calculator)
         autoGainSystem.startSystem()
     }
-    
+
     var body: some View {
         TabView {
-            TabGameView(user: user, calculator: .init()).tag(1)
-            ShopView(user: user, calculator: .init()).tag(2)
+            TabGameView(user: user, calculator: calculator)
+                .tag(1)
+                .tabItem {
+                    Image(systemName: "gamecontroller")
+                    Text("탭 게임")
+                }
+
+            ShopView(user: user, calculator: calculator)
+                .tag(2)
+                .tabItem {
+                    Image(systemName: "cart")
+                    Text("상점")
+                }
+            AchievementTestView()
+                .tag(3)
+                .tabItem {
+                    Image(systemName: "note")
+                    Text("미션")
+                }
         }
     }
 }
