@@ -1,13 +1,13 @@
 //
-//  StatusBarView.swift
+//  StatusBar.swift
 //  SoloDeveloperTraining
 //
-//  Created by 김성훈 on 1/8/26.
+//  Created by 김성훈 on 1/11/26.
 //
 
 import SwiftUI
 
-struct StatusBarView: View {
+struct StatusBar: View {
     let career: Career
     let nickname: String
     let careerProgress: Double

@@ -16,10 +16,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				App/Info.plist,
-				"App/Users/sunjae/sunjae/naver_boot/membership/iOS01-Hmm/SoloDeveloperTraining/SoloDeveloperTraining/App/Info-Dev.plist",
 				Production/Presentaion/MainView.swift,
-				Production/Presentaion/StatusBarView.swift,
-				Production/Presentaion/TabBarView.swift,
 			);
 			target = 2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */;
 		};
@@ -27,7 +24,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				App/Info.plist,
-				"App/Users/sunjae/sunjae/naver_boot/membership/iOS01-Hmm/SoloDeveloperTraining/SoloDeveloperTraining/App/Info-Dev.plist",
 				Devlopment/CheatSystem/CheatManager.swift,
 				Devlopment/Presentation/AchievementTestView.swift,
 				Devlopment/Presentation/ContentView.swift,

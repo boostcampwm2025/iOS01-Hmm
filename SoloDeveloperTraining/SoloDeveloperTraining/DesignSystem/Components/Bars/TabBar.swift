@@ -1,8 +1,8 @@
 //
-//  TabBarView.swift
+//  TabBar.swift
 //  SoloDeveloperTraining
 //
-//  Created by 김성훈 on 1/8/26.
+//  Created by 김성훈 on 1/11/26.
 //
 
 import SwiftUI
@@ -23,7 +23,7 @@ enum TabItem: String, CaseIterable {
     }
 }
 
-struct TabBarView: View {
+struct TabBar: View {
     @Binding var selectedTab: TabItem
 
     var body: some View {
