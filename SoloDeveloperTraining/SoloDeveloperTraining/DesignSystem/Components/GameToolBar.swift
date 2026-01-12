@@ -13,7 +13,7 @@ struct GameToolBar: View {
     let coffeeButtonDidTapHandler: () -> Void
     let energyDrinkButtonDidTapHandler: () -> Void
 
-    let coffeCount: Binding<Int>
+    let coffeeCount: Binding<Int>
     let energyDrinkCount: Binding<Int>
 
     enum Constant {
@@ -26,10 +26,14 @@ struct GameToolBar: View {
     }
 
     var body: some View {
-        HStack {
+        HStack(spacing: 20) {
             closeButton
-            coffeeButton
-            energyDrinkButton
+            Rectangle()
+                .frame(height: 15)
+            HStack(spacing: 6) {
+                coffeeButton
+                energyDrinkButton
+            }
         }
     }
 
@@ -50,12 +54,16 @@ struct GameToolBar: View {
         return Button {
             coffeeButtonDidTapHandler()
         } label: {
-            Image(.coffee)
-                .resizable()
-                .frame(
-                    width: Constant.coffeeButtonWidth,
-                    height: Constant.coffeeButtonHeight
-                )
+            HStack(spacing: 2) {
+                Image(.coffee)
+                    .resizable()
+                    .frame(
+                        width: Constant.coffeeButtonWidth,
+                        height: Constant.coffeeButtonHeight
+                    )
+                Text("5")
+                    .textStyle(.caption2)
+            }
         }
     }
 
@@ -63,12 +71,16 @@ struct GameToolBar: View {
         return Button {
             energyDrinkButtonDidTapHandler()
         } label: {
-            Image(.energyDrink)
-                .resizable()
-                .frame(
-                    width: Constant.energyDrinkButtonWidth,
-                    height: Constant.energyDrinkButtonHeight
-                )
+            HStack(spacing: 2) {
+                Image(.energyDrink)
+                    .resizable()
+                    .frame(
+                        width: Constant.energyDrinkButtonWidth,
+                        height: Constant.energyDrinkButtonHeight
+                    )
+                Text("5")
+                    .textStyle(.caption2)
+            }
         }
     }
 }
@@ -84,7 +96,8 @@ struct GameToolBar: View {
         energyDrinkButtonDidTapHandler: {
             print("energyDrink")
         },
-        coffeCount: .constant(10),
+        coffeeCount: .constant(10),
         energyDrinkCount: .constant(10)
     )
+    .padding()
 }
