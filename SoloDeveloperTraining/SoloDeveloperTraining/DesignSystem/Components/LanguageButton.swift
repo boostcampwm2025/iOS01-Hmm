@@ -72,3 +72,21 @@ struct LanguageButton: View {
         }
     }
 }
+
+#Preview {
+    HStack(spacing: 20) {
+        LanguageButton(languageType: .swift) {
+            print("Swift 버튼이 눌렸습니다")
+        }
+        LanguageButton(languageType: .kotlin) {
+            print("Kotlin 버튼이 눌렸습니다")
+        }
+        LanguageButton(languageType: .dart) {
+            print("Dart 버튼이 눌렸습니다")
+        }
+        LanguageButton(languageType: .python) {
+            print("Python 버튼이 눌렸습니다")
+        }
+    }
+    .padding()
+}
