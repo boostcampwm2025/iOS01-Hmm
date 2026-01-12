@@ -77,17 +77,6 @@ private struct TabBarButton: View {
             .animation(.none, value: isSelected)
         }
         .frame(width: 84, height: 54)
-        .buttonStyle(PressableButtonStyle(isPressed: $isPressed))
-    }
-}
-
-struct PressableButtonStyle: ButtonStyle {
-    @Binding var isPressed: Bool
-
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .onChange(of: configuration.isPressed) { _, newValue in
-                isPressed = newValue
-            }
+        .buttonStyle(.pressable(isPressed: $isPressed))
     }
 }
