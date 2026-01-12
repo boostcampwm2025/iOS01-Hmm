@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct StatusBarView: View {
+struct StatusBar: View {
     let career: Career
     let nickname: String
     let careerProgress: Double
@@ -71,7 +71,7 @@ private struct ProgressBarView: View {
 }
 
 #Preview("Status Bar") {
-    StatusBarView(
+    StatusBar(
         career: .laptopOwner,
         nickname: "소피아",
         careerProgress: 0.42,
