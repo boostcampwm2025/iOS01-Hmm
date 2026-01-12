@@ -1,19 +1,8 @@
 {
   "images" : [
     {
-      "filename" : "energyDrink 2.png",
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "filename" : "energyDrink 1.png",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "energyDrink.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "energyDrink.pdf",
+      "idiom" : "universal"
     }
   ],
   "info" : {
