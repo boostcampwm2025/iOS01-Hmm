@@ -8,10 +8,17 @@
 import SwiftUI
 
 struct CurrencyLabel: View {
-    let axis: Axis
-    let icon: Icon
-    let textStyle: TypographyStyle
-    let value: Int
+    private let axis: Axis
+    private let icon: Icon
+    private let textStyle: TypographyStyle
+    private let value: Int
+
+    init(axis: Axis, icon: Icon, textStyle: TypographyStyle = .caption, value: Int) {
+        self.axis = axis
+        self.icon = icon
+        self.textStyle = textStyle
+        self.value = value
+    }
 
     var body: some View {
         switch axis {
