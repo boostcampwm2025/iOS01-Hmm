@@ -13,8 +13,8 @@ struct GameToolBar: View {
     let coffeeButtonDidTapHandler: () -> Void
     let energyDrinkButtonDidTapHandler: () -> Void
 
-    let feverPercent: Binding<Double>
-    let feverMultiplier: Binding<Double>
+    let feverState: FeverState
+
     let coffeeCount: Binding<Int>
     let energyDrinkCount: Binding<Int>
 
@@ -26,13 +26,13 @@ struct GameToolBar: View {
         static let energyDrinkButtonWidth: CGFloat = 20
         static let energyDrinkButtonHeight: CGFloat = 22
         static let consumableItemCountWidth: CGFloat = 16
+        static let feverBarHeight: CGFloat = 15
     }
 
     var body: some View {
         HStack(spacing: 20) {
             closeButton
-            Rectangle()
-                .frame(height: 15)
+            feverBar
             HStack(spacing: 6) {
                 coffeeButton
                 energyDrinkButton
@@ -51,6 +51,87 @@ struct GameToolBar: View {
                     height: Constant.closeButtonHeight
                 )
         }
+    }
+
+    var feverBar: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .leading) {
+                // 배경 (회색)
+                Rectangle()
+                    .frame(height: Constant.feverBarHeight)
+                    .foregroundStyle(backgroundFeverColor)
+
+                // 피버 게이지 - 현재 단계에 따라 색상 변경
+                Rectangle()
+                    .frame(
+                        width: currentFeverBarWidth(totalWidth: geometry.size.width),
+                        height: Constant.feverBarHeight
+                    )
+                    .foregroundStyle(currentFeverColor)
+
+                // 피버 텍스트
+                if feverState.feverStage != 0 {
+                    Text(String(format: "Fever %.1fx !!", feverState.feverMultiplier))
+                        .textStyle(.caption2)
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+        }
+        .frame(height: Constant.feverBarHeight)
+    }
+
+    /// 현재 피버 단계의 색상
+    private var currentFeverColor: Color {
+        switch feverState.feverStage {
+        case 0:
+            return .gray400
+        case 1:
+            return .accentYellow
+        case 2:
+            return .lightOrange
+        case 3:
+            return .accentRed
+        default:
+            return .gray400
+        }
+    }
+
+    /// 배경 피버바의 색상
+    private var backgroundFeverColor: Color {
+        switch feverState.feverStage {
+        case 0:
+            return .gray200
+        case 1:
+            return .gray400
+        case 2:
+            return .accentYellow
+        case 3:
+            return .lightOrange
+        default:
+            return .accentRed
+        }
+    }
+
+    /// 현재 피버 바 너비 (현재 단계 내에서의 진행도)
+    private func currentFeverBarWidth(totalWidth: CGFloat) -> CGFloat {
+        let percent = feverState.feverPercent
+        // 현재 단계 내에서의 진행도 계산
+        let progressInCurrentStage: Double
+
+        switch percent {
+        case 0..<100:
+            progressInCurrentStage = percent / 100.0
+        case 100..<200:
+            progressInCurrentStage = (percent - 100) / 100.0
+        case 200..<300:
+            progressInCurrentStage = (percent - 200) / 100.0
+        case 300...:
+            progressInCurrentStage = min((percent - 300) / 100.0, 1.0)
+        default:
+            progressInCurrentStage = 0
+        }
+        return totalWidth * progressInCurrentStage
     }
 
     var coffeeButton: some View {
@@ -95,8 +176,16 @@ struct GameToolBar: View {
 #Preview {
     @Previewable @State var coffeeCount: Int = 10
     @Previewable @State var drinkCount: Int = 10
-    @Previewable @State var feverPercent: Double = 0
-    @Previewable @State var feverMultiplier: Double = 0
+    let feverSystem = FeverSystem(decreaseInterval: 0.1, decreasePercentPerTick: 3)
+
+    Button {
+        if !feverSystem.isRunning {
+            feverSystem.start()
+        }
+        feverSystem.gainFever(20)
+    } label: {
+        Text("GainFever")
+    }
 
     GameToolBar(
         closeButtonDidTapHandler: {
@@ -108,8 +197,7 @@ struct GameToolBar: View {
         energyDrinkButtonDidTapHandler: {
             drinkCount -= 1
         },
-        feverPercent: $feverPercent,
-        feverMultiplier: $feverMultiplier,
+        feverState: feverSystem,
         coffeeCount: $coffeeCount,
         energyDrinkCount: $drinkCount
     )
