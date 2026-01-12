@@ -23,7 +23,7 @@ enum TabItem: String, CaseIterable {
     }
 }
 
-struct TabBarView: View {
+struct TabBar: View {
     @Binding var selectedTab: TabItem
 
     var body: some View {

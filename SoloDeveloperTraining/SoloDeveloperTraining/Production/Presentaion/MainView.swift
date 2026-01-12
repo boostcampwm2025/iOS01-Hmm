@@ -38,7 +38,7 @@ struct MainView: View {
             }
 
             // 탭바
-            TabBarView(selectedTab: $selectedTab)
+            TabBar(selectedTab: $selectedTab)
 
             // 탭별 콘텐츠
             Group {
