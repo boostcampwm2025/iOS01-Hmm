@@ -60,5 +60,6 @@ struct MainView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .ignoresSafeArea(edges: .bottom)
+        .background(Color.beige200)
     }
 }
