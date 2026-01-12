@@ -7,6 +7,24 @@
 
 import SwiftUI
 
+private enum Constant {
+    static let vStackSpacing: CGFloat = 8
+
+    enum Size {
+        static let imageWidth: CGFloat = 44
+        static let imageHeight: CGFloat = 44
+        static let buttonWidth: CGFloat = 77
+        static let buttonHeight: CGFloat = 77
+    }
+
+    enum Offset {
+        static let pressedX: CGFloat = 2
+        static let pressedY: CGFloat = 2
+        static let shadowX: CGFloat = 3
+        static let shadowY: CGFloat = 3
+    }
+}
+
 struct LanguageButton: View {
     let languageType: LanguageType
     let action: () -> Void
@@ -16,22 +34,22 @@ struct LanguageButton: View {
     var body: some View {
         Button(action: action) {
             ZStack(alignment: .bottomTrailing) {
-                VStack(spacing: 8) {
+                VStack(spacing: Constant.vStackSpacing) {
                     Image(languageType.imageName)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 44, height: 44)
+                        .frame(width: Constant.Size.imageWidth, height: Constant.Size.imageHeight)
                     Text(languageType.rawValue)
                         .textStyle(.caption)
                 }
-                .frame(width: 77, height: 77)
+                .frame(width: Constant.Size.buttonWidth, height: Constant.Size.buttonHeight)
                 .background(Rectangle().fill(pastelColor(for: languageType)))
-                .offset(x: isPressed ? 2 : 0, y: isPressed ? 2 : 0)
+                .offset(x: isPressed ? Constant.Offset.pressedX : 0, y: isPressed ? Constant.Offset.pressedY : 0)
 
                 Rectangle()
                     .fill(Color.black)
-                    .frame(width: 77, height: 77)
-                    .offset(x: 3, y: 3)
+                    .frame(width: Constant.Size.buttonWidth, height: Constant.Size.buttonHeight)
+                    .offset(x: Constant.Offset.shadowX, y: Constant.Offset.shadowY)
                     .zIndex(-1)
             }
             .animation(.none, value: isPressed)
