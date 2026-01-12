@@ -38,7 +38,7 @@ struct TabBar: View {
             }
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 15)
+        .padding(.vertical, 14)
         .background(Color(.clear))
     }
 }
@@ -60,8 +60,9 @@ private struct TabBarButton: View {
                 Text(tab.rawValue)
                     .textStyle(.caption)
             }
+            .padding(.vertical, 4.5)
             .foregroundStyle(isSelected ? .white : AppColors.orange500)
-            .frame(maxWidth: .infinity, minHeight: 52)
+            .frame(maxWidth: .infinity)
             .background(
                 Rectangle()
                     .fill(isSelected ? AppColors.orange300 : AppColors.beige300)
