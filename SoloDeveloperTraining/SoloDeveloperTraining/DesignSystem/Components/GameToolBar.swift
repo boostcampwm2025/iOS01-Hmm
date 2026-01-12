@@ -13,6 +13,8 @@ struct GameToolBar: View {
     let coffeeButtonDidTapHandler: () -> Void
     let energyDrinkButtonDidTapHandler: () -> Void
 
+    let feverPercent: Binding<Double>
+    let feverMultiplier: Binding<Double>
     let coffeeCount: Binding<Int>
     let energyDrinkCount: Binding<Int>
 
@@ -23,6 +25,7 @@ struct GameToolBar: View {
         static let coffeeButtonHeight: CGFloat = 22
         static let energyDrinkButtonWidth: CGFloat = 20
         static let energyDrinkButtonHeight: CGFloat = 22
+        static let consumableItemCountWidth: CGFloat = 16
     }
 
     var body: some View {
@@ -61,8 +64,10 @@ struct GameToolBar: View {
                         width: Constant.coffeeButtonWidth,
                         height: Constant.coffeeButtonHeight
                     )
-                Text("5")
+                Text("\(coffeeCount.wrappedValue)")
                     .textStyle(.caption2)
+                    .foregroundStyle(.black)
+                    .frame(width: Constant.consumableItemCountWidth)
             }
         }
     }
@@ -78,26 +83,35 @@ struct GameToolBar: View {
                         width: Constant.energyDrinkButtonWidth,
                         height: Constant.energyDrinkButtonHeight
                     )
-                Text("5")
+                Text("\(energyDrinkCount.wrappedValue)")
                     .textStyle(.caption2)
+                    .foregroundStyle(.black)
+                    .frame(width: Constant.consumableItemCountWidth)
             }
         }
     }
 }
 
 #Preview {
+    @Previewable @State var coffeeCount: Int = 10
+    @Previewable @State var drinkCount: Int = 10
+    @Previewable @State var feverPercent: Double = 0
+    @Previewable @State var feverMultiplier: Double = 0
+
     GameToolBar(
         closeButtonDidTapHandler: {
             print("Close")
         },
         coffeeButtonDidTapHandler: {
-            print("Coffee")
+            coffeeCount -= 1
         },
         energyDrinkButtonDidTapHandler: {
-            print("energyDrink")
+            drinkCount -= 1
         },
-        coffeeCount: .constant(10),
-        energyDrinkCount: .constant(10)
+        feverPercent: $feverPercent,
+        feverMultiplier: $feverMultiplier,
+        coffeeCount: $coffeeCount,
+        energyDrinkCount: $drinkCount
     )
     .padding()
 }
