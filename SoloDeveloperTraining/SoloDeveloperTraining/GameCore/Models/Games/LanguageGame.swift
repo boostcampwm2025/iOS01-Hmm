@@ -5,6 +5,7 @@
 //  Created by SeoJunYoung on 1/6/26.
 //
 
+import Foundation
 
 class LanguageGame {
     let user: User
@@ -20,5 +21,5 @@ class LanguageGame {
     func startGame() {}
     func endGame() {}
 
-    func actionDidOccur() { }
+    func actionDidOccur() {}
 }

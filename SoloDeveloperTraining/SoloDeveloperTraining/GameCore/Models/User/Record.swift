@@ -10,13 +10,13 @@ import Observation
 
 @Observable
 final class Record {
-    
+
     // MARK: - Tap Records
     /// 총 탭 횟수
     var totalTapCount: Int = 0
     /// 탭 게임 플레이 타임
     var tapGamePlayTime: TimeInterval = 0
-    
+
     // MARK: - Language Game Records
     /// 언어 맞추기 성공 횟수
     var languageCorrectCount: Int = 0
@@ -24,7 +24,7 @@ final class Record {
     var languageFailCount: Int = 0
     /// 언어 맞추기 게임 실행 횟수
     var pairGamePlayCount: Int = 0
-    
+
     // MARK: - Bug Dodging Records
     /// 버그 충돌 횟수
     var bugHitCount: Int = 0
@@ -34,9 +34,9 @@ final class Record {
     var dodgeGamePlayCount: Int = 0
     /// 버그피하기 게임 최고 점수
     var dodgeGameBestScore: Int = 0
-    
+
     // MARK: - Stacking Game Records
-    
+
     /// 물건 쌓기 성공 횟수
     var stackingSuccessCount: Int = 0
     /// 물건 쌓기 실패 횟수
@@ -51,7 +51,7 @@ final class Record {
     var stackConsecutiveFailures: Int = 0
     /// 물건 쌓기 게임 실행 횟수
     var stackGamePlayCount: Int = 0
-    
+
     // MARK: - Consumable Usage Records
     /// 소비 아이템 총 사용 횟수
     var totalConsumableUseCount: Int = 0
@@ -59,7 +59,7 @@ final class Record {
     var coffeeUseCount: Int = 0
     /// 에너지 드링크 사용 횟수
     var energyDrinkUseCount: Int = 0
-    
+
     // MARK: - Financial Records
     /// 누적 획득 재산
     var totalEarnedMoney: Int = 0

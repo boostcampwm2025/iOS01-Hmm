@@ -48,8 +48,7 @@ final class ShopSystem {
         }
         return consumableItems + equipmentItems
     }
-    
-    
+
     func housingList() -> [Item] {
         let housingItems: [Item] = Housing.allCases.map {
             .init(
@@ -77,7 +76,7 @@ final class ShopSystem {
         user.inventory.gain(consumable: consumable.type)
         return true
     }
-    
+
     /// 부동산 아이템 구매
     /// - Parameter housing: 부동산 아이템
     /// - Returns: 구입 결과
@@ -92,26 +91,26 @@ final class ShopSystem {
     func buy(item: Item) throws {
         guard item.cost.gold <= user.wallet.gold else { throw ShopSystemError.insufficientGold }
         guard item.cost.diamond <= user.wallet.diamond else { throw ShopSystemError.insufficientDiamond }
-        
+
         var buyResult: Bool
         switch item.type {
         case .equipment(let equipment):
             buyResult = upgrade(equipment: equipment)
-            
+
         case .consumable(let consumable):
             buyResult = buy(consumable: consumable)
-            
+
         case .housing(let housing):
             buyResult = buy(housing: housing)
         }
-        
+
         if buyResult {
             pay(item: item)
         } else {
             throw ShopSystemError.purchaseFailed
         }
     }
-    
+
     /// 유저의 지갑에서 요금이 결제됩니다.
     /// - Parameter item: 아이템
     func pay(item: Item) {

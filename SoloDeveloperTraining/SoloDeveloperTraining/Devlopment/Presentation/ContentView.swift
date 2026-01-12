@@ -21,7 +21,7 @@ struct ContentView: View {
             skills: [
                 .init(game: .tap, tier: .beginner, level: 1000),
                 .init(game: .tap, tier: .intermediate, level: 1000),
-                .init(game: .tap, tier: .advanced, level: 1000),
+                .init(game: .tap, tier: .advanced, level: 1000)
             ]
         )
         let calculator: Calculator = Calculator()
