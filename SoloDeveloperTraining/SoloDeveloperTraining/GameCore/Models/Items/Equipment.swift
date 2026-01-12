@@ -18,12 +18,12 @@ final class Equipment {
     var displayTitle: String {
         return tier.displayTitle + " " + type.displayTitle
     }
-    
+
     /// 업그레이드 가능 여부
     var canUpgrade: Bool {
         return tier != .nationalTreasure
     }
-    
+
     /// 초 당 획득 골드
     var goldPerSecond: Double {
         switch type {
@@ -105,8 +105,7 @@ final class Equipment {
             }
         }
     }
-    
-    
+
     /// 업그레이드 비용
     var upgradeCost: Cost {
         switch tier {
@@ -128,7 +127,7 @@ final class Equipment {
             return Cost(gold: 999_999_999_999)
         }
     }
-    
+
     /// 업그레이드 성공 확률 (0.0 ~ 1.0)
     var upgradeSuccessRate: Double {
         switch tier {
@@ -160,9 +159,9 @@ final class Equipment {
     /// 강화 확률에 따라 업그레이드
     func upgraded() -> Bool {
         guard canUpgrade else { return false }
-        
+
         let randomValue = Double.random(in: 0...1)
-        
+
         if randomValue <= upgradeSuccessRate {
             self.tier = EquipmentTier(rawValue: tier.rawValue + 1) ?? .nationalTreasure
             return true

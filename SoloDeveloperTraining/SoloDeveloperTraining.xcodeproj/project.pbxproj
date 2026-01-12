@@ -12,22 +12,21 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		2896AE432F100CD600D38732 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				App/Info.plist,
-				"App/Users/sunjae/sunjae/naver_boot/membership/iOS01-Hmm/SoloDeveloperTraining/SoloDeveloperTraining/App/Info-Dev.plist",
-				Production/Presentaion/MainView.swift,
-				Production/Presentaion/StatusBarView.swift,
-				Production/Presentaion/TabBarView.swift,
-			);
-			target = 2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */;
-		};
+	2896AE432F100CD600D38732 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */ = {
+		isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+		membershipExceptions = (
+			App/Info.plist,
+			"App/Info-Dev.plist",
+			Production/Presentaion/MainView.swift,
+			Production/Presentaion/StatusBarView.swift,
+			Production/Presentaion/TabBarView.swift,
+		);
+		target = 2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */;
+	};
 		BC6322A72F0F41BB00EAD3F7 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				App/Info.plist,
-				"App/Users/sunjae/sunjae/naver_boot/membership/iOS01-Hmm/SoloDeveloperTraining/SoloDeveloperTraining/App/Info-Dev.plist",
 				Devlopment/CheatSystem/CheatManager.swift,
 				Devlopment/Presentation/AchievementTestView.swift,
 				Devlopment/Presentation/ContentView.swift,
@@ -189,6 +188,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		2896AE3E2F100CD600D38732 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -206,6 +206,7 @@
 		};
 		B3D95AE82F0FA9850066BDF2 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);

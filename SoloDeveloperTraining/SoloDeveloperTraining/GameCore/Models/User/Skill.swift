@@ -14,7 +14,7 @@ final class Skill {
     var tier: SkillTier
     /// 스킬 레벨
     var level: Int
-    
+
     /// 가중치
     var multiplier: Double {
         switch game {
@@ -56,7 +56,7 @@ final class Skill {
             }
         }
     }
-    
+
     /// 업그레이드 비용
     var upgradeCost: Cost {
         switch tier {
@@ -68,13 +68,13 @@ final class Skill {
             return .init(gold: (30 * level))
         }
     }
-    
+
     init(game: GameType, tier: SkillTier, level: Int) {
         self.game = game
         self.tier = tier
         self.level = level
     }
-    
+
     /// 해당 스킬의 레벨을 1 상승 시킵니다.
     func upgrade() {
         guard level < 9999 else { return }
@@ -87,7 +87,7 @@ enum SkillTier: Int {
     case beginner = 0
     case intermediate = 1
     case advanced = 2
-    
+
     var displayTitle: String {
         switch self {
         case .beginner: "초급"

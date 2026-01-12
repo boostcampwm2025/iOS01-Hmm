@@ -16,30 +16,30 @@ struct AchievementFactory {
             // MARK: - 탭 관련 업적
             createTapAchievement(id: 1, title: "탭따구리", targetCount: 10000, reward: Cost(diamond: 15)),
             createTapAchievement(id: 6, title: "신의 손가락", targetCount: 100000, reward: Cost(diamond: 30)),
-            
+
             // MARK: - 아이템 사용 관련 업적
             createCoffeeAchievement(id: 2, title: "커피 학살자", targetCount: 10000, reward: Cost(gold: 150000)),
             createEnergyDrinkAchievement(id: 7, title: "에너지 수호자", targetCount: 10000, reward: Cost(gold: 150000)),
-            
+
             // MARK: - 플레이 시간 관련 업적
             createTotalPlayTimeAchievement(id: 3, title: "거북목의 형상", hours: 100, reward: Cost(gold: 150000)),
             createTapGamePlayTimeAchievement(id: 5, title: "판교의 등대", hours: 3, reward: Cost(diamond: 15)),
-            
+
             // MARK: - 튜토리얼 관련 업적
             createTutorialAchievement(id: 4, title: "충실한 기본기", reward: Cost(gold: 1000)),
-            
+
             // MARK: - 언어 맞추기 게임 관련 업적
             createLanguageGameAchievement(id: 8, title: "정답 자판기", targetCount: 1000, reward: Cost()),
             createLanguageGameAchievement(id: 9, title: "인간 스캐너", targetCount: 2000, reward: Cost()),
             createLanguageGameAchievement(id: 10, title: "명탐정의 돋보기", targetCount: 5000, reward: Cost()),
             createLanguageGameAchievement(id: 11, title: "현미경 눈동자", targetCount: 10000, reward: Cost()),
-            
+
             // MARK: - 버그 피하기 게임 관련 업적
             createDodgeGamePlayCountAchievement(id: 12, title: "로그는 쌓이고", targetCount: 1000, reward: Cost()),
             createDodgeGamePlayCountAchievement(id: 13, title: "버그와의 공존", targetCount: 10000, reward: Cost()),
             createDodgeGameBestScoreAchievement(id: 14, title: "정상이라는 착각", targetScore: 100, reward: Cost()),
             createDodgeGameBestScoreAchievement(id: 15, title: "러브버그", targetScore: 500, reward: Cost()),
-            
+
             // MARK: - 물건 쌓기 게임 관련 업적
             createStackingFailureAchievement(id: 16, title: "트롤의 왕", targetCount: 100, reward: Cost()),
             createStackingHeightAchievement(id: 17, title: "바벨탑 건축가", targetHeight: 1000, reward: Cost()),
@@ -47,7 +47,7 @@ struct AchievementFactory {
             createStackingBombCountAchievement(id: 19, title: "붐버맨", targetCount: 100, reward: Cost())
         ]
     }
-    
+
     // MARK: - 탭 관련 업적 생성
     private static func createTapAchievement(id: Int, title: String, targetCount: Int, reward: Cost) -> Achievement {
         Achievement(
@@ -60,7 +60,7 @@ struct AchievementFactory {
             reward: reward
         )
     }
-    
+
     // MARK: - 아이템 사용 관련 업적 생성
     private static func createCoffeeAchievement(id: Int, title: String, targetCount: Int, reward: Cost) -> Achievement {
         Achievement(
@@ -73,7 +73,7 @@ struct AchievementFactory {
             reward: reward
         )
     }
-    
+
     private static func createEnergyDrinkAchievement(id: Int, title: String, targetCount: Int, reward: Cost) -> Achievement {
         Achievement(
             id: id,
@@ -85,7 +85,7 @@ struct AchievementFactory {
             reward: reward
         )
     }
-    
+
     // MARK: - 플레이 시간 관련 업적 생성
     private static func createTotalPlayTimeAchievement(id: Int, title: String, hours: Int, reward: Cost) -> Achievement {
         let seconds = hours * 3600
@@ -99,7 +99,7 @@ struct AchievementFactory {
             reward: reward
         )
     }
-    
+
     private static func createTapGamePlayTimeAchievement(id: Int, title: String, hours: Int, reward: Cost) -> Achievement {
         let seconds = hours * 3600
         return Achievement(
@@ -112,7 +112,7 @@ struct AchievementFactory {
             reward: reward
         )
     }
-    
+
     // MARK: - 튜토리얼 관련 업적 생성
     private static func createTutorialAchievement(id: Int, title: String, reward: Cost) -> Achievement {
         Achievement(
@@ -125,7 +125,7 @@ struct AchievementFactory {
             reward: reward
         )
     }
-    
+
     // MARK: - 언어 맞추기 게임 관련 업적 생성
     private static func createLanguageGameAchievement(id: Int, title: String, targetCount: Int, reward: Cost) -> Achievement {
         Achievement(
@@ -138,7 +138,7 @@ struct AchievementFactory {
             reward: reward
         )
     }
-    
+
     // MARK: - 버그 피하기 게임 관련 업적 생성
     private static func createDodgeGamePlayCountAchievement(id: Int, title: String, targetCount: Int, reward: Cost) -> Achievement {
         Achievement(
@@ -151,7 +151,7 @@ struct AchievementFactory {
             reward: reward
         )
     }
-    
+
     private static func createDodgeGameBestScoreAchievement(id: Int, title: String, targetScore: Int, reward: Cost) -> Achievement {
         Achievement(
             id: id,
@@ -163,7 +163,7 @@ struct AchievementFactory {
             reward: reward
         )
     }
-    
+
     // MARK: - 물건 쌓기 게임 관련 업적 생성
     private static func createStackingFailureAchievement(id: Int, title: String, targetCount: Int, reward: Cost) -> Achievement {
         Achievement(
@@ -176,7 +176,7 @@ struct AchievementFactory {
             reward: reward
         )
     }
-    
+
     private static func createStackingHeightAchievement(id: Int, title: String, targetHeight: Int, reward: Cost) -> Achievement {
         Achievement(
             id: id,
@@ -188,7 +188,7 @@ struct AchievementFactory {
             reward: reward
         )
     }
-    
+
     private static func createStackingBombDodgeAchievement(id: Int, title: String, targetCount: Int, reward: Cost) -> Achievement {
         Achievement(
             id: id,
@@ -200,7 +200,7 @@ struct AchievementFactory {
             reward: reward
         )
     }
-    
+
     private static func createStackingBombCountAchievement(id: Int, title: String, targetCount: Int, reward: Cost) -> Achievement {
         Achievement(
             id: id,

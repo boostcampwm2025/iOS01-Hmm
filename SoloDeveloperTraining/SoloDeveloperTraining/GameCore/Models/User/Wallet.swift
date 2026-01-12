@@ -11,7 +11,7 @@ import Observation
 /// 게임 내 재화 관리 클래스
 @Observable
 final class Wallet {
-    
+
     // MARK: - Properties
     /// 현재 보유 골드
     private(set) var gold: Int
@@ -30,7 +30,7 @@ final class Wallet {
         guard amount > 0 else { return }
         gold += amount
     }
-    
+
     /// 골드 소모
     /// - Returns: 성공 여부
     @discardableResult
@@ -40,13 +40,13 @@ final class Wallet {
         gold -= amount
         return true
     }
-    
+
     /// 다이아몬드 획득
     func addDiamond(_ amount: Int) {
         guard amount > 0 else { return }
         diamond += amount
     }
-    
+
     /// 다이아몬드 소모
     /// - Returns: 성공 여부
     @discardableResult
