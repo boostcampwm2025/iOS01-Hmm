@@ -31,11 +31,15 @@ final class StackGameTestViewModel {
     func stopGame() {}
 
     func useCoffee() {
-        game.buffSystem.useConsumableItem(type: .coffee)
+        if game.user.inventory.drink(.coffee) {
+            game.buffSystem.useConsumableItem(type: .coffee)
+        }
     }
 
     func useEnergyDrink() {
-        game.buffSystem.useConsumableItem(type: .energyDrink)
+        if game.user.inventory.drink(.energyDrink) {
+            game.buffSystem.useConsumableItem(type: .energyDrink)
+        }
     }
 }
 
