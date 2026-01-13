@@ -138,22 +138,11 @@ final class LanguageGame: Game {
         for (index, item) in languageItemList.enumerated() {
             if item.state == .empty { continue }
 
-            if index < Constant.activeItemIndex {
-                languageItemList[index] = LanguageItem(
-                    languageType: item.languageType,
-                    state: .completed
-                )
-            } else if index == Constant.activeItemIndex {
-                languageItemList[index] = LanguageItem(
-                    languageType: item.languageType,
-                    state: .active
-                )
-            } else {
-                languageItemList[index] = LanguageItem(
-                    languageType: item.languageType,
-                    state: .upcoming
-                )
-            }
+            let newState: LanguageItemState = index < Constant.activeItemIndex ? .completed : index == Constant.activeItemIndex ? .active : .upcoming
+            languageItemList[index] = .init(
+                languageType: item.languageType,
+                state: newState
+            )
         }
     }
 }
