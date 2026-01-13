@@ -28,11 +28,14 @@ struct LanguageItem: View {
 
     var body: some View {
         VStack(alignment: .center, spacing: Constant.vStackSpacing) {
-            Image(languageType.imageName)
-                .resizable()
-                .scaledToFit()
-                .frame(width: iconSize, height: iconSize)
-                .opacity(opacity)
+            ZStack {
+                if state != .empty {
+                    Image(languageType.imageName)
+                        .resizable()
+                        .scaledToFit()
+                }
+            }
+            .frame(width: iconSize, height: iconSize)
 
             Text(languageType.rawValue)
                 .textStyle(textStyle)
