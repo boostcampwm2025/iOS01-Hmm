@@ -80,7 +80,8 @@ struct LanguageGameView: View {
                 ForEach(languageTypeList, id: \.self) { type in
                     LanguageButton(languageType: type, action: {
                         Task {
-                            let _ = await game.didPerformAction(type)
+                            let resultGold = await game.didPerformAction(type)
+                            print("재화 변화량: \(resultGold)")
                         }
                     })
                 }

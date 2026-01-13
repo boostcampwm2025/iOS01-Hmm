@@ -8,6 +8,10 @@
 import Foundation
 
 private enum Constant {
+    enum Fever {
+        static let successFever: Double = 33.0
+        static let failureFever: Double = 0.0
+    }
     static let activeItemIndex: Int = 2
 }
 
@@ -55,7 +59,7 @@ final class LanguageGame: Game {
     var buffSystem: BuffSystem
 
     // 한 화면에 보여지는 아이템: 5개로 고정
-    let languageItemList: [LanguageItem] = [
+    var languageItemList: [LanguageItem] = [
         LanguageItem(languageType: .empty, state: .empty),
         LanguageItem(languageType: .empty, state: .empty),
         LanguageItem(languageType: .dart, state: .active),
@@ -84,20 +88,72 @@ final class LanguageGame: Game {
     }
 
     func didPerformAction(_ input: LanguageType) async -> Int {
-        print("언어 맞추기 버튼 클릭")
-        languageButtonTapHandler(tappedItemType: input)
-        return 0
+        let isSuccess = languageButtonTapHandler(tappedItemType: input)
+        feverSystem
+            .gainFever(
+                isSuccess ? Constant.Fever.successFever : Constant.Fever.failureFever
+            )
+        let gainGold = calculator.calculateGoldPerAction(
+            game: kind,
+            user: user,
+            feverMultiplier: feverSystem.feverMultiplier,
+            buffMultiplier: buffSystem.multiplier
+        )
+        if isSuccess {
+            await user.wallet.addGold(gainGold)
+            return gainGold
+        }
+        await user.wallet.spendGold(gainGold / 2)
+        return (gainGold / 2) * -1
     }
 
-    private func languageButtonTapHandler(tappedItemType: LanguageType) {
+    private func languageButtonTapHandler(tappedItemType: LanguageType) -> Bool {
         let activeItem = languageItemList[Constant.activeItemIndex]
+        print("\n✅ \(tappedItemType) 버튼 클릭")
 
-        if activeItem.languageType == tappedItemType {
-            print("옳은 아이템")
-        } else {
-            print("잘못된 아이템")
+        guard activeItem.languageType == tappedItemType else {
+            print("잘못된 버튼을 클릭했습니다.")
+            return false
+        }
+
+        // 1. 처음 요소 제거
+        languageItemList.removeFirst()
+        // 2. 새 요소를 마지막에 추가
+        languageItemList.append(makeNewLanguageItem())
+        // 3. 상태 업데이트
+        updateLanguageItemList()
+
+        print("변경된 아이템 리스트")
+        languageItemList.forEach { print("언어: \($0.languageType), 상태: \($0.state)") }
+
+        return true
+    }
+
+    private func makeNewLanguageItem() -> LanguageItem {
+        let randomType: LanguageType = [.swift, .kotlin, .dart, .python].randomElement()!
+        return LanguageItem(languageType: randomType, state: .upcoming)
+    }
+
+    private func updateLanguageItemList() {
+        for (index, item) in languageItemList.enumerated() {
+            if item.state == .empty { continue }
+
+            if index < Constant.activeItemIndex {
+                languageItemList[index] = LanguageItem(
+                    languageType: item.languageType,
+                    state: .completed
+                )
+            } else if index == Constant.activeItemIndex {
+                languageItemList[index] = LanguageItem(
+                    languageType: item.languageType,
+                    state: .active
+                )
+            } else {
+                languageItemList[index] = LanguageItem(
+                    languageType: item.languageType,
+                    state: .upcoming
+                )
+            }
         }
     }
-
-
 }
