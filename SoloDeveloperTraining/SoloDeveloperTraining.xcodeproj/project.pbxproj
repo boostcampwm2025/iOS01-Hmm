@@ -12,17 +12,17 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-	2896AE432F100CD600D38732 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */ = {
-		isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-		membershipExceptions = (
-			App/Info.plist,
-			"App/Info-Dev.plist",
-			Production/Presentaion/MainView.swift,
-			Production/Presentaion/StatusBarView.swift,
-			Production/Presentaion/TabBarView.swift,
-		);
-		target = 2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */;
-	};
+		2896AE432F100CD600D38732 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"App/Info-Dev.plist",
+				App/Info.plist,
+				DesignSystem/Components/TabBar.swift,
+				Production/Presentaion/MainView.swift,
+				Production/Presentaion/StatusBarView.swift,
+			);
+			target = 2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */;
+		};
 		BC6322A72F0F41BB00EAD3F7 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
