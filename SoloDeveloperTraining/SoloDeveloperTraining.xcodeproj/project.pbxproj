@@ -29,7 +29,7 @@
 				Devlopment/CheatSystem/CheatManager.swift,
 				Devlopment/Presentation/AchievementTestView.swift,
 				Devlopment/Presentation/ContentView.swift,
-				Devlopment/Presentation/LanguageGameView.swift,
+				Devlopment/Presentation/LanguageGameTestView.swift,
 				Devlopment/Presentation/ShopView.swift,
 				Devlopment/Presentation/TabGameView.swift,
 			);

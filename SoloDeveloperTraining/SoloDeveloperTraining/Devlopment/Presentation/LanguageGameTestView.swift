@@ -15,7 +15,7 @@ private enum Constant {
     }
 }
 
-struct LanguageGameView: View {
+struct LanguageGameTestView: View {
     let user: User
     let game: LanguageGame
     let languageTypeList: [LanguageType] = [
