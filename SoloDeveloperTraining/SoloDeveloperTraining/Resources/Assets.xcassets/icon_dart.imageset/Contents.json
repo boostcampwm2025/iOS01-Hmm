@@ -1,15 +1,17 @@
 {
   "images" : [
     {
+      "filename" : "icon_dart@1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "profile_worldClassDeveloper.png",
+      "filename" : "icon_dart@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "icon_dart@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

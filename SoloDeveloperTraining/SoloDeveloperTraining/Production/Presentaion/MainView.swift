@@ -27,7 +27,7 @@ struct MainView: View {
                     .frame(maxWidth: .infinity)
                     .clipped()
 
-                StatusBarView(
+                StatusBar(
                     career: career,
                     nickname: nickname,
                     careerProgress: careerProgress,

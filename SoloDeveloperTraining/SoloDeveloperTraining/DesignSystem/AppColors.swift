@@ -39,4 +39,10 @@ enum AppColors {
     static let accentYellow = Color("AccentYellow")
     static let lightOrange  = Color("LightOrange")
     static let accentRed    = Color("AccentRed")
+
+    // MARK: - Pastel Colors
+    static let pastelYellow = Color("PastelYellow")
+    static let pastelPink   = Color("PastelPink")
+    static let pastelBlue   = Color("PastelBlue")
+    static let pastelGreen  = Color("PastelGreen")
 }
