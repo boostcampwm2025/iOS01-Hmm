@@ -20,9 +20,9 @@ struct DodgeGameTestView: View {
     @State private var showGoldAnimation: Bool = false
     @State private var goldPerAction: Int = 0
     @State private var sliderValue: Double = 0
-
-    private let gameAreaWidth: CGFloat = 300
-    private let gameAreaHeight: CGFloat = 400
+    @State private var gameAreaWidth: CGFloat = 300
+    @State private var gameAreaHeight: CGFloat = 400
+    @State private var goldAnimationTask: DispatchWorkItem?
 
     init(user: User, calculator: Calculator) {
         self.user = user
@@ -39,30 +39,39 @@ struct DodgeGameTestView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            // GameToolBar 추가
-            GameToolBar(
-                closeButtonDidTapHandler: {
-                    game.stopGame()
-                },
-                coffeeButtonDidTapHandler: {
-                    useCoffee()
-                },
-                energyDrinkButtonDidTapHandler: {
-                    useEnergyDrink()
-                },
-                feverState: game.feverSystem,
-                coffeeCount: $coffeeCount,
-                energyDrinkCount: $energyDrinkCount
-            )
-            .padding()
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                // GameToolBar 추가
+                GameToolBar(
+                    closeButtonDidTapHandler: {
+                        game.stopGame()
+                    },
+                    coffeeButtonDidTapHandler: {
+                        useCoffee()
+                    },
+                    energyDrinkButtonDidTapHandler: {
+                        useEnergyDrink()
+                    },
+                    feverState: game.feverSystem,
+                    coffeeCount: $coffeeCount,
+                    energyDrinkCount: $energyDrinkCount
+                )
+                .padding()
 
-            Spacer()
+                Spacer()
 
-            // 게임 영역
-            ZStack {
-                // 낙하물들
-                ForEach(game.gameCore.fallingItems) { item in
+                // 게임 영역
+                ZStack {
+                    // 배경
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.black.opacity(0.1))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(Color.gray.opacity(0.3), lineWidth: 2)
+                        )
+
+                    // 낙하물들
+                    ForEach(game.gameCore.fallingItems) { item in
                     DropItem(type: item.type)
                         .position(
                             x: gameAreaWidth / 2 + item.position.x,
@@ -76,7 +85,7 @@ struct DodgeGameTestView: View {
                     .frame(width: 40, height: 40)
                     .position(
                         x: gameAreaWidth / 2 + game.motionSystem.characterX,
-                        y: gameAreaHeight - 100
+                        y: gameAreaHeight - gameAreaHeight * 0.25
                     )
 
                 // 골드 변화 표시
@@ -87,7 +96,7 @@ struct DodgeGameTestView: View {
                         .foregroundColor(goldChange > 0 ? .green : .red)
                         .position(
                             x: gameAreaWidth / 2 + game.motionSystem.characterX,
-                            y: gameAreaHeight - 150
+                            y: gameAreaHeight - gameAreaHeight * 0.375
                         )
                         .transition(.move(edge: .top).combined(with: .opacity))
                 }
@@ -100,16 +109,18 @@ struct DodgeGameTestView: View {
             VStack(spacing: 10) {
                 Text("🎮 Simulator Control")
                     .font(.headline)
-                HStack {
+                HStack(spacing: 12) {
                     Text("←")
+                        .font(.title2)
                     Slider(value: .init(get: {
                         sliderValue
                     }, set: { value in
                         sliderValue = value
-                        game.motionSystem.characterX = value * 100
+                        game.motionSystem.characterX = value * game.motionSystem.screenLimit
                     }), in: -1...1)
-                    .frame(width: 250)
+                    .frame(width: max(gameAreaWidth - 80, 200))
                     Text("→")
+                        .font(.title2)
                 }
             }
             .padding()
@@ -164,10 +175,24 @@ struct DodgeGameTestView: View {
                 .padding(.top, 5)
             }
             .padding()
+            }
+            .onAppear {
+                updateGameArea(for: geometry.size)
+                setupGame()
+            }
         }
-        .onAppear {
-            setupGame()
-        }
+    }
+
+    private func updateGameArea(for size: CGSize) {
+        // 게임 영역 크기 계산
+        let availableWidth = size.width - 32 // padding 고려
+        let availableHeight = size.height * 0.5 // 화면의 50% 사용
+
+        gameAreaWidth = availableWidth
+        gameAreaHeight = availableHeight
+
+        // 게임 시스템에 크기 전달
+        game.configure(gameAreaWidth: availableWidth, gameAreaHeight: availableHeight)
     }
 
     private func setupGame() {
@@ -208,16 +233,25 @@ struct DodgeGameTestView: View {
     }
 
     private func showGoldChangeAnimation(_ goldDelta: Int) {
+        // 이전 애니메이션 작업 취소
+        goldAnimationTask?.cancel()
+
+        // 새 골드 변화 설정
         recentGoldChange = goldDelta
+
         withAnimation(.easeIn(duration: 0.2)) {
             showGoldAnimation = true
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        // 새 애니메이션 작업 생성
+        let task = DispatchWorkItem {
             withAnimation(.easeOut(duration: 0.3)) {
                 showGoldAnimation = false
             }
         }
+        goldAnimationTask = task
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: task)
     }
 
     private func updateGold() async {

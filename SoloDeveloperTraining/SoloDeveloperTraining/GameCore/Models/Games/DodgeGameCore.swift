@@ -34,10 +34,10 @@ final class DodgeGameCore {
     private let spawnInterval: TimeInterval = 0.5
     /// 낙하 속도 (120fps 기준)
     private let fallSpeed: CGFloat = 1.5
-    /// 게임 영역 너비
-    private let screenWidth: CGFloat = 300
-    /// 게임 영역 높이
-    private let screenHeight: CGFloat = 400
+    /// 게임 영역 너비 (동적으로 설정 가능)
+    var screenWidth: CGFloat = 300
+    /// 게임 영역 높이 (동적으로 설정 가능)
+    var screenHeight: CGFloat = 400
     /// 플레이어 크기
     private let playerSize: CGSize = CGSize(width: 40, height: 40)
 
@@ -61,6 +61,15 @@ final class DodgeGameCore {
 
     deinit {
         stop()
+    }
+
+    /// 게임 영역 크기 설정
+    /// - Parameters:
+    ///   - width: 게임 영역 너비
+    ///   - height: 게임 영역 높이
+    func configure(width: CGFloat, height: CGFloat) {
+        self.screenWidth = width
+        self.screenHeight = height
     }
 
     /// 게임을 시작하고 타이머를 활성화
@@ -145,11 +154,14 @@ private extension DodgeGameCore {
     func checkCollisions() {
         var collidedIndices: [Int] = []
 
+        // 플레이어 Y 위치 계산 (화면 하단에서 25%)
+        let playerYOffset = screenHeight * 0.25
+
         for (index, item) in fallingItems.enumerated() {
             // 플레이어 영역 계산
             let playerRect = CGRect(
                 x: playerX - playerSize.width / 2,
-                y: screenHeight/2 - 100 - playerSize.height / 2,
+                y: screenHeight/2 - playerYOffset - playerSize.height / 2,
                 width: playerSize.width,
                 height: playerSize.height
             )

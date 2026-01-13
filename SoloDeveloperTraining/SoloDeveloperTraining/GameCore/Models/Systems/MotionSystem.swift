@@ -31,10 +31,12 @@ final class MotionSystem {
     var gravityY: Double = 0
     /// Z축 중력 값 (-1.0 ~ 1.0)
     var gravityZ: Double = 0
-    /// 캐릭터의 X 위치 (-150 ~ 150)
+    /// 캐릭터의 X 위치
     var characterX: CGFloat = 0
     /// 보정된 X축 기울기 값 (-1.0 ~ 1.0)
     var calibratedGravityX: Double = 0
+    /// 화면 제한 범위 (동적으로 설정 가능)
+    var screenLimit: CGFloat = 150
 
     init() {
         startMotionUpdates()
@@ -42,6 +44,12 @@ final class MotionSystem {
 
     deinit {
         motionManager.stopDeviceMotionUpdates()
+    }
+
+    /// 화면 제한 범위 설정
+    /// - Parameter limit: 화면 제한 범위 (게임 영역 너비의 절반)
+    func configure(screenLimit limit: CGFloat) {
+        self.screenLimit = limit
     }
 
     /// 모션 업데이트를 시작하고 기기 기울기에 따라 캐릭터 위치를 업데이트
@@ -73,8 +81,7 @@ final class MotionSystem {
                 self.characterX += CGFloat(direction) * speedMultiplier * CGFloat(self.updateInterval)
 
                 // 화면 밖 방지
-                let screenLimit: CGFloat = 150
-                self.characterX = max(-screenLimit, min(screenLimit, self.characterX))
+                self.characterX = max(-self.screenLimit, min(self.screenLimit, self.characterX))
             }
         }
     }

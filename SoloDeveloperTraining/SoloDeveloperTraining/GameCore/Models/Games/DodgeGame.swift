@@ -67,6 +67,19 @@ final class DodgeGame: Game {
 
     // MARK: - Public Methods
 
+    /// 게임 영역 크기 설정
+    /// - Parameters:
+    ///   - width: 게임 영역 너비
+    ///   - height: 게임 영역 높이
+    ///
+    /// 이 메서드는 게임 시작 전에 호출되어야 합니다.
+    /// - gameCore의 화면 크기 설정
+    /// - motionSystem의 이동 제한 범위 설정
+    func configure(gameAreaWidth width: CGFloat, gameAreaHeight height: CGFloat) {
+        gameCore.configure(width: width, height: height)
+        motionSystem.configure(screenLimit: width / 2)
+    }
+
     /// 게임 시작
     /// - 피버 시스템 시작 (자동 감소 타이머 활성화)
     /// - 게임 코어 시작 (낙하물 생성 및 업데이트 타이머 활성화)
