@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    let user: User
+    @State var user: User
     let calculator: Calculator
     let autoGainSystem: AutoGainSystem
 
@@ -21,7 +21,8 @@ struct ContentView: View {
             skills: [
                 .init(game: .tap, tier: .beginner, level: 1000),
                 .init(game: .tap, tier: .intermediate, level: 1000),
-                .init(game: .tap, tier: .advanced, level: 1000)
+                .init(game: .tap, tier: .advanced, level: 1000),
+                .init(game: .stack, tier: .beginner, level: 1)
             ]
         )
         let calculator: Calculator = Calculator()
@@ -51,6 +52,12 @@ struct ContentView: View {
                 .tabItem {
                     Image(systemName: "note")
                     Text("미션")
+                }
+            StackGameTestView(user: user, calculator: calculator)
+                .tag(4)
+                .tabItem {
+                    Image(systemName: "square.stack.3d.up")
+                    Text("스택 게임")
                 }
         }
     }
