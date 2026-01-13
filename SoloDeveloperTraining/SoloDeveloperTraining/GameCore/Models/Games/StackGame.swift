@@ -2,24 +2,153 @@
 //  StackGame.swift
 //  SoloDeveloperTraining
 //
-//  Created by SeoJunYoung on 1/6/26.
+//  Created by 최범수 on 1/14/26.
 //
 
 import Foundation
 
-class StackGame {
-    let user: User
-    let calculator: Calculator
-    let feverSystem: FeverSystem
+private enum Constant {
+    static let initialBlockYPosition: CGFloat = 20
+}
 
-    init(user: User, calculator: Calculator, feverSystem: FeverSystem) {
+@Observable
+final class StackGame: Game {
+    var kind: GameType = .stack
+    var user: User
+    var calculator: Calculator
+    var feverSystem: FeverSystem = .init(decreaseInterval: 0.1, decreasePercentPerTick: 1)
+    var buffSystem: BuffSystem = .init()
+    var screenSize: CGSize = .init(width: 0, height: 0)
+
+    private(set) var score: Int = 0
+    private(set) var isPlaying: Bool = false
+    private(set) var blocks: [StackBlock] = []
+    private(set) var currentBlock: StackBlock?
+    private(set) var previousBlock: StackBlock?
+
+    init(user: User, calculator: Calculator) {
         self.user = user
         self.calculator = calculator
-        self.feverSystem = feverSystem
     }
 
-    func startGame() {}
-    func endGame() {}
+    func startGame() {
+        feverSystem.start()
+        isPlaying = true
+        score = 0
+        blocks = []
+        currentBlock = nil
+        previousBlock = nil
+    }
 
-    func actionDidOccur() { }
+    func stopGame() {
+        feverSystem.stop()
+        isPlaying = false
+    }
+
+    /// 액션 수행 (Game 프로토콜 요구사항)
+    @discardableResult
+    func didPerformAction() async -> Int { 0 }
+
+    /// 초기 블록을 추가합니다
+    /// 화면 크기를 기반으로 화면 중앙 하단에 배치합니다
+    func addInitialBlock() {
+        let blockType = BlockType.blue
+        let initialBlock = StackBlock(
+            type: blockType,
+            positionX: screenSize.width / 2,
+            positionY: Constant.initialBlockYPosition
+        )
+
+        blocks.append(initialBlock)
+        previousBlock = initialBlock
+    }
+
+    /// 떨어뜨릴 블록을 생성합니다
+    func spawnBlock(type: BlockType) {
+        currentBlock = StackBlock(
+            type: type,
+            positionX: 0,
+            positionY: 0
+        )
+    }
+
+    /// 블록 정렬 여부를 확인합니다
+    func checkAlignment() -> Bool {
+        guard
+            let currentBlock = currentBlock,
+            let previousBlock = previousBlock
+        else { return false }
+
+        let previousLeft = previousBlock.positionX - previousBlock.width / 2
+        let previousRight = previousBlock.positionX + previousBlock.width / 2
+        let previousRange = previousLeft...previousRight
+
+        return previousRange.contains(currentBlock.positionX)
+    }
+
+    /// 현재 블록의 위치를 업데이트합니다
+    func updateCurrentBlockPosition(positionX: CGFloat, positionY: CGFloat) {
+        currentBlock?.positionX = positionX
+        currentBlock?.positionY = positionY
+    }
+
+    /// 블록이 성공적으로 배치되었을 때 처리
+    func placeBlockSuccess() {
+        guard let block = currentBlock else { return }
+
+        blocks.append(block)
+        previousBlock = block
+        currentBlock = nil
+
+        score += 1
+        applyReward()
+    }
+
+    /// 블록 배치에 실패했을 때 처리
+    func placeBlockFail() {
+        currentBlock = nil
+        applyPenalty()
+    }
+
+    /// 폭탄 블록이 성공적으로 배치되었을 때 처리 (패널티)
+    func placeBombSuccess() {
+        currentBlock = nil
+        applyPenalty()
+    }
+
+    /// 폭탄 블록 배치에 실패했을 때 처리 (보상)
+    func placeBombFail() {
+        currentBlock = nil
+        applyReward()
+    }
+
+    /// 보상을 적용합니다 (골드 획득, 피버 증가)
+    private func applyReward() {
+        let goldEarned = calculateGold()
+        user.wallet.addGold(goldEarned)
+        feverSystem.gainFever(80)
+        #if DEV_BUILD
+        print("💰 골드 획득: \(goldEarned), 총액: \(user.wallet.gold)")
+        #endif
+    }
+
+    /// 패널티를 적용합니다 (골드 손실, 피버 감소)
+    private func applyPenalty() {
+        let goldLost = calculateGold()
+        user.wallet.spendGold(goldLost)
+        feverSystem.gainFever(-40)
+        #if DEV_BUILD
+        print("💸 골드 손실: \(goldLost), 총액: \(user.wallet.gold)")
+        #endif
+    }
+
+    /// 현재 상태에 따른 골드를 계산합니다
+    private func calculateGold() -> Int {
+        return calculator.calculateGoldPerAction(
+            game: .stack,
+            user: user,
+            feverMultiplier: feverSystem.feverMultiplier,
+            buffMultiplier: buffSystem.multiplier
+        )
+    }
 }
