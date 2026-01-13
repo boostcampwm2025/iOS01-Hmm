@@ -77,3 +77,45 @@ private struct SegmentButton: View {
         isSelected ? Constant.Color.selectedText : Constant.Color.unselectedText
     }
 }
+
+#Preview {
+    @Previewable @State var selection2 = 0
+    @Previewable @State var selection3 = 0
+    @Previewable @State var selection4 = 0
+
+    VStack(spacing: 40) {
+        VStack(spacing: 10) {
+            Text("2개 세그먼트")
+                .textStyle(.title)
+            DefaultSegmentControl(
+                selection: $selection2,
+                segments: ["아이템", "부동산"]
+            )
+            Text("선택된 인덱스: \(selection2)")
+                .textStyle(.body)
+        }
+
+        VStack(spacing: 10) {
+            Text("3개 세그먼트")
+                .textStyle(.title)
+            DefaultSegmentControl(
+                selection: $selection3,
+                segments: ["옵션 1", "옵션 2", "옵션 3"]
+            )
+            Text("선택된 인덱스: \(selection3)")
+                .textStyle(.body)
+        }
+
+        VStack(spacing: 10) {
+            Text("4개 세그먼트")
+                .textStyle(.title)
+            DefaultSegmentControl(
+                selection: $selection4,
+                segments: ["첫번째", "두번째", "세번째", "네번째"]
+            )
+            Text("선택된 인덱스: \(selection4)")
+                .textStyle(.body)
+        }
+    }
+    .padding()
+}
