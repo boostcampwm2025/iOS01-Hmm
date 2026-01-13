@@ -56,6 +56,7 @@ struct EffectLabel: View {
             HStack(spacing: Constant.Spacing.horizontal) {
                 if !isZero {
                     Image(isIncrease ? .iconPlus : .iconMinus)
+                        .renderingMode(.template)
                         .resizable()
                         .frame(
                             width: Constant.Size.icon.width,
