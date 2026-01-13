@@ -25,39 +25,45 @@ final class DodgeGame: Game {
     /// 게임 코어 시스템 (낙하물 생성, 충돌 감지)
     let gameCore: DodgeGameCore
 
-    // MARK: - Callbacks
-    /// 골드 변화 시 호출되는 콜백 (골드 변화량 전달)
-    var onGoldChanged: ((Int) -> Void)?
-
-    // MARK: - Private Properties
     /// 플레이어 위치 동기화 타이머 (120fps)
     private var positionSyncTimer: Timer?
+    /// 골드 변화 시 호출되는 콜백 핸들러
+    private var onGoldChangedHandler: (Int) -> Void
 
-    // MARK: - Initialization
-
-    /// DodgeGame 초기화
-    /// - Parameters:
-    ///   - user: 사용자 정보
-    ///   - calculator: 골드 계산기
-    ///   - feverSystem: 피버 시스템
-    ///   - buffSystem: 버프 시스템
-    ///
-    /// 초기화 시 자동으로 수행되는 작업:
-    /// - MotionSystem 및 DodgeGameCore 생성
-    /// - 충돌 콜백 설정
-    /// - 플레이어 위치 동기화 타이머 시작 (120fps)
-    init(user: User, calculator: Calculator, feverSystem: FeverSystem, buffSystem: BuffSystem) {
+    init(
+        user: User,
+        calculator: Calculator,
+        feverSystem: FeverSystem,
+        buffSystem: BuffSystem,
+        gameAreaSize: CGSize,
+        onGoldChanged: @escaping (Int) -> Void
+    ) {
         self.user = user
         self.calculator = calculator
         self.feverSystem = feverSystem
         self.buffSystem = buffSystem
-        self.motionSystem = MotionSystem()
-        self.gameCore = DodgeGameCore()
+        self.onGoldChangedHandler = onGoldChanged
+
+        // 게임 시스템 초기화 (크기 필수 전달)
+        self.motionSystem = MotionSystem(screenLimit: gameAreaSize.width / 2)
+        self.gameCore = DodgeGameCore(screenWidth: gameAreaSize.width, screenHeight: gameAreaSize.height)
 
         // 충돌 콜백 설정
-        setupCollisionHandler()
-        // 플레이어 위치 동기화 타이머 시작
-        startPlayerPositionSync()
+        gameCore.onCollision = { [weak self] itemType in
+            guard let self = self else { return }
+            Task {
+                let goldDelta = await self.handleItemCollision(type: itemType)
+                await MainActor.run {
+                    self.onGoldChangedHandler(goldDelta)
+                }
+            }
+        }
+
+        // 플레이어 위치 동기화 타이머 시작 (120fps)
+        positionSyncTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 120.0, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            self.gameCore.playerX = self.motionSystem.characterX
+        }
     }
 
     deinit {
@@ -65,43 +71,33 @@ final class DodgeGame: Game {
         positionSyncTimer = nil
     }
 
-    // MARK: - Public Methods
-
-    /// 게임 영역 크기 설정
-    /// - Parameters:
-    ///   - width: 게임 영역 너비
-    ///   - height: 게임 영역 높이
-    ///
-    /// 이 메서드는 게임 시작 전에 호출되어야 합니다.
-    /// - gameCore의 화면 크기 설정
-    /// - motionSystem의 이동 제한 범위 설정
-    func configure(gameAreaWidth width: CGFloat, gameAreaHeight height: CGFloat) {
-        gameCore.configure(width: width, height: height)
-        motionSystem.configure(screenLimit: width / 2)
-    }
-
-    /// 게임 시작
-    /// - 피버 시스템 시작 (자동 감소 타이머 활성화)
-    /// - 게임 코어 시작 (낙하물 생성 및 업데이트 타이머 활성화)
+    /// 게임 시작 (피버 시스템 및 게임 코어 타이머 활성화)
     func startGame() {
         feverSystem.start()
         gameCore.start()
     }
 
-    /// 게임 중지
-    /// - 피버 시스템 중지
-    /// - 게임 코어 중지 (모든 타이머 정지 및 낙하물 제거)
+    /// 게임 중지 (모든 타이머 정지 및 낙하물 제거)
     func stopGame() {
         feverSystem.stop()
         gameCore.stop()
     }
 
+    /// 게임 영역 크기 업데이트 (화면 크기 변경 시 호출)
+    func configure(gameAreaSize: CGSize) {
+        gameCore.screenWidth = gameAreaSize.width
+        gameCore.screenHeight = gameAreaSize.height
+        motionSystem.screenLimit = gameAreaSize.width / 2
+    }
+
+    /// 골드 변화 콜백 핸들러 설정
+    func setGoldChangedHandler(_ handler: @escaping (Int) -> Void) {
+        self.onGoldChangedHandler = handler
+    }
+
     /// 기본 액션 수행 (수동 탭 등)
-    /// - 피버 33 증가
-    /// - 스킬, 피버, 버프를 반영한 골드 계산
     /// - Returns: 획득한 기본 골드
     func didPerformAction() async -> Int {
-        // 기본 액션 수행 (피버 증가)
         feverSystem.gainFever(33)
         let baseGold = calculator.calculateGoldPerAction(
             game: kind,
@@ -120,12 +116,16 @@ final class DodgeGame: Game {
         case .smallGold:
             // 피버 증가
             feverSystem.gainFever(33)
+
+            // 기본 골드 계산
             let baseGold = calculator.calculateGoldPerAction(
                 game: kind,
                 user: user,
                 feverMultiplier: feverSystem.feverMultiplier,
                 buffMultiplier: buffSystem.multiplier
             )
+
+            // 0.8배 획득
             let gainGold = Int(Double(baseGold) * 0.8)
             await user.wallet.addGold(gainGold)
             return gainGold
@@ -133,12 +133,16 @@ final class DodgeGame: Game {
         case .largeGold:
             // 피버 증가
             feverSystem.gainFever(33)
+
+            // 기본 골드 계산
             let baseGold = calculator.calculateGoldPerAction(
                 game: kind,
                 user: user,
                 feverMultiplier: feverSystem.feverMultiplier,
                 buffMultiplier: buffSystem.multiplier
             )
+
+            // 1.2배 획득
             let gainGold = Int(Double(baseGold) * 1.2)
             await user.wallet.addGold(gainGold)
             return gainGold
@@ -146,42 +150,19 @@ final class DodgeGame: Game {
         case .bug:
             // 피버 감소
             feverSystem.gainFever(-50)
+
+            // 기본 골드 계산
             let baseGold = calculator.calculateGoldPerAction(
                 game: kind,
                 user: user,
                 feverMultiplier: feverSystem.feverMultiplier,
                 buffMultiplier: buffSystem.multiplier
             )
+
+            // 절반 손실
             let loseGold = baseGold / 2
             await user.wallet.spendGold(loseGold)
             return -loseGold
-        }
-    }
-}
-
-private extension DodgeGame {
-    /// 충돌 콜백 핸들러 설정
-    /// - gameCore의 onCollision 콜백에 아이템 충돌 처리 로직 연결
-    /// - 골드 변화 시 onGoldChanged 콜백 호출
-    func setupCollisionHandler() {
-        gameCore.onCollision = { [weak self] itemType in
-            guard let self = self else { return }
-            Task {
-                let goldDelta = await self.handleItemCollision(type: itemType)
-                await MainActor.run {
-                    self.onGoldChanged?(goldDelta)
-                }
-            }
-        }
-    }
-
-    /// 플레이어 위치 동기화 타이머 시작
-    /// - MotionSystem의 characterX를 DodgeGameCore의 playerX에 동기화
-    /// - 120fps 주기로 업데이트
-    func startPlayerPositionSync() {
-        positionSyncTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 120.0, repeats: true) { [weak self] _ in
-            guard let self = self else { return }
-            self.gameCore.playerX = self.motionSystem.characterX
         }
     }
 }

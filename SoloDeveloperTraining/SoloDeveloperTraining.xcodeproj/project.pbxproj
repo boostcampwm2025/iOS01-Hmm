@@ -12,17 +12,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-	2896AE432F100CD600D38732 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */ = {
-		isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-		membershipExceptions = (
-			App/Info.plist,
-			"App/Info-Dev.plist",
-			Production/Presentaion/MainView.swift,
-			Production/Presentaion/StatusBarView.swift,
-			Production/Presentaion/TabBarView.swift,
-		);
-		target = 2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */;
-	};
+		2896AE432F100CD600D38732 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"App/Info-Dev.plist",
+				App/Info.plist,
+				Production/Presentaion/MainView.swift,
+				Production/Presentaion/TabBarView.swift,
+			);
+			target = 2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */;
+		};
 		BC6322A72F0F41BB00EAD3F7 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -30,6 +29,7 @@
 				Devlopment/CheatSystem/CheatManager.swift,
 				Devlopment/Presentation/AchievementTestView.swift,
 				Devlopment/Presentation/ContentView.swift,
+				Devlopment/Presentation/DodgeGameTestView.swift,
 				Devlopment/Presentation/ShopView.swift,
 				Devlopment/Presentation/TabGameView.swift,
 			);

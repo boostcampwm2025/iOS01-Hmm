@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Dodge 게임 테스트 뷰
 struct DodgeGameTestView: View {
     let user: User
     let calculator: Calculator
@@ -27,15 +28,21 @@ struct DodgeGameTestView: View {
     init(user: User, calculator: Calculator) {
         self.user = user
         self.calculator = calculator
+
         let feverSystem = FeverSystem(decreaseInterval: 1.0, decreasePercentPerTick: 30)
         let buffSystem = BuffSystem()
-        let dodgeGame = DodgeGame(
+
+        // 초기 크기 (onAppear에서 실제 크기로 업데이트됨)
+        let initialSize = CGSize(width: 300, height: 400)
+
+        _game = State(initialValue: DodgeGame(
             user: user,
             calculator: calculator,
             feverSystem: feverSystem,
-            buffSystem: buffSystem
-        )
-        self.game = dodgeGame
+            buffSystem: buffSystem,
+            gameAreaSize: initialSize,
+            onGoldChanged: { _ in }  // 임시 빈 클로저, onAppear에서 설정
+        ))
     }
 
     var body: some View {
@@ -176,9 +183,11 @@ struct DodgeGameTestView: View {
             }
             .padding()
             }
+            .onChange(of: geometry.size) { oldSize, newSize in
+                updateGameArea(for: newSize)
+            }
             .onAppear {
-                updateGameArea(for: geometry.size)
-                setupGame()
+                setupGame(with: geometry.size)
             }
         }
     }
@@ -191,14 +200,17 @@ struct DodgeGameTestView: View {
         gameAreaWidth = availableWidth
         gameAreaHeight = availableHeight
 
-        // 게임 시스템에 크기 전달
-        game.configure(gameAreaWidth: availableWidth, gameAreaHeight: availableHeight)
+        // 게임 시스템에 크기 전달 (gameCore와 motionSystem 모두 업데이트)
+        game.configure(gameAreaSize: CGSize(width: availableWidth, height: availableHeight))
     }
 
-    private func setupGame() {
+    private func setupGame(with size: CGSize) {
+        // 게임 영역 크기 설정
+        updateGameArea(for: size)
+
         // 골드 변화 콜백 설정
-        game.onGoldChanged = { goldDelta in
-            self.showGoldChangeAnimation(goldDelta)
+        game.setGoldChangedHandler { goldDelta in
+            showGoldChangeAnimation(goldDelta)
         }
 
         // 초기 값 업데이트

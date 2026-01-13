@@ -34,52 +34,45 @@ final class DodgeGameCore {
     private let spawnInterval: TimeInterval = 0.5
     /// 낙하 속도 (120fps 기준)
     private let fallSpeed: CGFloat = 1.5
-    /// 게임 영역 너비 (동적으로 설정 가능)
-    var screenWidth: CGFloat = 300
-    /// 게임 영역 높이 (동적으로 설정 가능)
-    var screenHeight: CGFloat = 400
     /// 플레이어 크기
     private let playerSize: CGSize = CGSize(width: 40, height: 40)
 
     // MARK: - 게임 상태
     /// 현재 화면에 떨어지고 있는 아이템 목록
     var fallingItems: [FallingItem] = []
+    /// 게임 실행 여부
+    var isRunning: Bool = false
+
     /// 낙하물 생성 타이머
     private var spawnTimer: Timer?
     /// 게임 업데이트 타이머
     private var updateTimer: Timer?
-    /// 게임 실행 여부
-    var isRunning: Bool = false
 
     // MARK: - Public Properties
     /// 충돌 발생 시 호출되는 콜백
     var onCollision: ((DropItem.DropItemType) -> Void)?
     /// 플레이어의 X 위치 (MotionSystem에서 동기화)
     var playerX: CGFloat = 0
+    /// 게임 영역 너비
+    var screenWidth: CGFloat
+    /// 게임 영역 높이
+    var screenHeight: CGFloat
 
-    init() {}
+    init(screenWidth: CGFloat, screenHeight: CGFloat) {
+        self.screenWidth = screenWidth
+        self.screenHeight = screenHeight
+    }
 
     deinit {
         stop()
     }
 
-    /// 게임 영역 크기 설정
-    /// - Parameters:
-    ///   - width: 게임 영역 너비
-    ///   - height: 게임 영역 높이
-    func configure(width: CGFloat, height: CGFloat) {
-        self.screenWidth = width
-        self.screenHeight = height
-    }
-
-    /// 게임을 시작하고 타이머를 활성화
-    /// - 낙하물 생성 타이머 (0.5초 간격)
-    /// - 게임 업데이트 타이머 (120fps)
+    /// 게임 시작 (낙하물 생성 및 업데이트 타이머 활성화)
     func start() {
         guard !isRunning else { return }
         isRunning = true
 
-        // 낙하물 생성 타이머
+        // 낙하물 생성 타이머 (0.5초 간격)
         spawnTimer = Timer.scheduledTimer(withTimeInterval: spawnInterval, repeats: true) { [weak self] _ in
             self?.spawnItem()
         }
@@ -90,7 +83,7 @@ final class DodgeGameCore {
         }
     }
 
-    /// 게임을 중지하고 모든 타이머와 낙하물을 제거
+    /// 게임 중지 (모든 타이머 정지 및 낙하물 제거)
     func stop() {
         isRunning = false
         spawnTimer?.invalidate()
@@ -103,12 +96,10 @@ final class DodgeGameCore {
 
 // MARK: - Private Methods
 private extension DodgeGameCore {
-    /// 새로운 낙하물을 랜덤하게 생성하여 추가
+    /// 새로운 낙하물 생성
     /// - 생성 확률: smallGold 50%, largeGold 30%, bug 20%
-    /// - X 위치는 게임 영역 내에서 랜덤
-    /// - 초기 Y 위치는 화면 상단
     func spawnItem() {
-        // 랜덤 타입 생성 (smallGold: 50%, largeGold: 30%, bug: 20%)
+        // 랜덤 타입 생성
         let randomValue = Int.random(in: 0..<100)
         let type: DropItem.DropItemType
         if randomValue < 50 {
@@ -119,7 +110,7 @@ private extension DodgeGameCore {
             type = .bug
         }
 
-        // 랜덤 X 위치 생성
+        // 랜덤 X 위치 생성 (게임 영역 내)
         let randomX = CGFloat.random(in: -screenWidth/2...screenWidth/2)
         let item = FallingItem(
             type: type,
@@ -128,10 +119,7 @@ private extension DodgeGameCore {
         fallingItems.append(item)
     }
 
-    /// 모든 낙하물의 위치를 업데이트하고 충돌을 감지
-    /// - 낙하 속도만큼 Y 위치 증가
-    /// - 충돌 감지 수행
-    /// - 화면 밖으로 나간 아이템 제거
+    /// 모든 낙하물 위치 업데이트 및 충돌 감지
     func updateItems() {
         // 아이템 위치 업데이트
         for index in fallingItems.indices {
@@ -147,10 +135,7 @@ private extension DodgeGameCore {
         }
     }
 
-    /// 플레이어와 낙하물 간의 충돌을 감지
-    /// - CGRect의 intersects를 사용하여 충돌 판정
-    /// - 충돌 발생 시 onCollision 콜백 호출
-    /// - 충돌한 아이템은 즉시 제거
+    /// 플레이어와 낙하물 간의 충돌 감지
     func checkCollisions() {
         var collidedIndices: [Int] = []
 
@@ -181,7 +166,7 @@ private extension DodgeGameCore {
             }
         }
 
-        // 충돌한 아이템 제거 (역순으로 제거)
+        // 충돌한 아이템 제거 (역순으로 제거하여 인덱스 오류 방지)
         for index in collidedIndices.reversed() {
             fallingItems.remove(at: index)
         }

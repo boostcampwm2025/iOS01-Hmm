@@ -24,7 +24,6 @@ final class MotionSystem {
     /// 최소 이동 속도 (기울기 threshold일 때)
     private let minSpeed: CGFloat = 300.0
 
-    // MARK: - Public Properties
     /// X축 중력 값 (-1.0 ~ 1.0)
     var gravityX: Double = 0
     /// Y축 중력 값 (-1.0 ~ 1.0)
@@ -35,10 +34,11 @@ final class MotionSystem {
     var characterX: CGFloat = 0
     /// 보정된 X축 기울기 값 (-1.0 ~ 1.0)
     var calibratedGravityX: Double = 0
-    /// 화면 제한 범위 (동적으로 설정 가능)
-    var screenLimit: CGFloat = 150
+    /// 화면 제한 범위 (게임 영역 너비의 절반)
+    var screenLimit: CGFloat
 
-    init() {
+    init(screenLimit: CGFloat) {
+        self.screenLimit = screenLimit
         startMotionUpdates()
     }
 
@@ -46,14 +46,7 @@ final class MotionSystem {
         motionManager.stopDeviceMotionUpdates()
     }
 
-    /// 화면 제한 범위 설정
-    /// - Parameter limit: 화면 제한 범위 (게임 영역 너비의 절반)
-    func configure(screenLimit limit: CGFloat) {
-        self.screenLimit = limit
-    }
-
-    /// 모션 업데이트를 시작하고 기기 기울기에 따라 캐릭터 위치를 업데이트
-    ///
+    /// 모션 업데이트 시작 (120fps)
     /// - 기울기 강도에 따라 이동 속도가 비선형적으로 증가
     /// - 화면 밖으로 나가지 않도록 제한
     func startMotionUpdates() {
@@ -63,21 +56,23 @@ final class MotionSystem {
         motionManager.startDeviceMotionUpdates(to: .main) { [weak self] motion, _ in
             guard let self = self, let motion = motion else { return }
 
+            // 중력 값 저장
             self.gravityX = motion.gravity.x
             self.gravityY = motion.gravity.y
             self.gravityZ = motion.gravity.z
 
-            // 클램핑 (-1.0 ~ 1.0)
+            // 기울기 값 클램핑 (-1.0 ~ 1.0)
             let clampedInput = max(-1.0, min(1.0, motion.gravity.x))
             self.calibratedGravityX = clampedInput
 
-            // 캐릭터 이동 (기울기에 따라 속도 변화)
+            // 캐릭터 이동 (데드존 이상일 때만)
             if abs(clampedInput) > self.threshold {
                 // 기울기 강도에 따라 속도 계산 (비선형적으로 증가)
                 let tiltStrength = abs(clampedInput)
                 let speedMultiplier = self.minSpeed + (self.maxSpeed - self.minSpeed) * CGFloat(pow(tiltStrength, 1.5))
                 let direction = clampedInput > 0 ? 1.0 : -1.0
 
+                // 위치 업데이트
                 self.characterX += CGFloat(direction) * speedMultiplier * CGFloat(self.updateInterval)
 
                 // 화면 밖 방지
