@@ -1,5 +1,5 @@
 //
-//  StatusBarView.swift
+//  StatusBar.swift
 //  SoloDeveloperTraining
 //
 //  Created by 김성훈 on 1/8/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct StatusBarView: View {
+struct StatusBar: View {
     let career: Career
     let nickname: String
     let careerProgress: Double
@@ -30,6 +30,7 @@ struct StatusBarView: View {
                         .foregroundStyle(.primary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
+
                     ProgressBarView(progress: careerProgress)
                 }
             }
@@ -38,21 +39,9 @@ struct StatusBarView: View {
 
             // 오른쪽: 재산 + 다이아
             HStack(spacing: 12) {
-                HStack(spacing: 4) {
-                    Image("icon_coin_bag")
-                        .resizable()
-                        .frame(width: 15, height: 15)
-                    Text(gold.formatted())
-                        .textStyle(.caption)
-                }
+                CurrencyLabel(axis: .horizontal, icon: .gold, value: gold)
 
-                HStack(spacing: 4) {
-                    Image("icon_diamond_green")
-                        .resizable()
-                        .frame(width: 18, height: 18)
-                    Text(diamond.formatted())
-                        .textStyle(.caption)
-                }
+                CurrencyLabel(axis: .horizontal, icon: .diamond, value: diamond)
             }
         }
         .padding(.horizontal, 16)
@@ -69,13 +58,24 @@ private struct ProgressBarView: View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(Color("test_gray"))
+                    .fill(Color.gray200)
                     .frame(height: height)
+
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(Color("test_blue"))
+                    .fill(Color.lightOrange)
                     .frame(width: geometry.size.width * progress, height: height)
             }
         }
         .frame(width: 129, height: height)
     }
+}
+
+#Preview("Status Bar") {
+    StatusBar(
+        career: .laptopOwner,
+        nickname: "소피아",
+        careerProgress: 0.42,
+        gold: 1234,
+        diamond: 56
+    )
 }
