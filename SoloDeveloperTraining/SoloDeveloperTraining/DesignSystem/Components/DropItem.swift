@@ -26,7 +26,7 @@ extension DropItem {
     enum DropItemType {
         case smallGold
         case largeGold
-        case error
+        case bug
 
         var imageResource: ImageResource {
             switch self {
@@ -34,8 +34,8 @@ extension DropItem {
                 return .dropItemSmallGold
             case .largeGold:
                 return .dropItemLargeGold
-            case .error:
-                return .dropItemError
+            case .bug:
+                return .dropItemBug
             }
         }
     }
@@ -45,6 +45,6 @@ extension DropItem {
     HStack {
         DropItem(type: .smallGold)
         DropItem(type: .largeGold)
-        DropItem(type: .error)
+        DropItem(type: .bug)
     }
 }
