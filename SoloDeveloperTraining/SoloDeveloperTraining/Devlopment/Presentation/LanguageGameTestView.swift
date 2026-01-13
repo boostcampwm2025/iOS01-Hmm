@@ -59,7 +59,7 @@ struct LanguageGameTestView: View {
                 coffeeCount: $coffeeCount,
                 energyDrinkCount: $energyDrinkCount,
             )
-
+            Text("총 재화: \(user.wallet.gold)")
             Spacer()
 
             ScrollView(.horizontal) {
