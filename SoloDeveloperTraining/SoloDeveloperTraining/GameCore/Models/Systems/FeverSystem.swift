@@ -8,8 +8,14 @@
 import Foundation
 import Observation
 
+protocol FeverState {
+    var feverStage: Int { get }
+    var feverPercent: Double { get }
+    var feverMultiplier: Double { get }
+}
+
 @Observable
-final class FeverSystem {
+final class FeverSystem: FeverState {
 
     // MARK: - Properties
     /// 피버 감소 주기 (초 단위)
