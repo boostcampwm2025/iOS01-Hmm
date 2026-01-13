@@ -17,9 +17,9 @@ private enum Constant {
     }
 
     enum Animation {
-        // 전체 애니메이션 지속 시간
+        // 단계 별 애니메이션 지속 시간
         static let durationSec: Double = 1.5
-        // 각 단계의 상태 유지 시간
+        // 각 단계의 간격 시간
         static let sleepNanosec: UInt64 = 150_000_000
         // 각 단계에 따른 투명도, offsetY
         static let steps: [(Double, CGFloat)] = [
@@ -37,6 +37,7 @@ struct EffectLabel: View {
 
     @State private var opacity: Double = 1.0
     @State private var offsetY: CGFloat = 0
+    @State private var shouldShow = true
 
     private var isZero: Bool {
         value == 0
@@ -51,33 +52,34 @@ struct EffectLabel: View {
     }
 
     var body: some View {
-        HStack(spacing: Constant.Spacing.horizontal) {
+        if shouldShow {
+            HStack(spacing: Constant.Spacing.horizontal) {
+                if !isZero {
+                    Image(isIncrease ? .iconPlus : .iconMinus)
+                        .resizable()
+                        .frame(
+                            width: Constant.Size.icon.width,
+                            height: Constant.Size.icon.height
+                        )
+                        .foregroundStyle(color)
+                }
 
-            if !isZero {
-                Image(isIncrease ? .iconPlus : .iconMinus)
+                Image(.iconCoinStack)
                     .resizable()
                     .frame(
                         width: Constant.Size.icon.width,
                         height: Constant.Size.icon.height
                     )
+
+                Text(abs(value).formatted())
+                    .textStyle(.subheadline)
                     .foregroundStyle(color)
             }
-
-            Image(.iconCoinStack)
-                .resizable()
-                .frame(
-                    width: Constant.Size.icon.width,
-                    height: Constant.Size.icon.height
-                )
-
-            Text(abs(value).formatted())
-                .textStyle(.subheadline)
-                .foregroundStyle(color)
-        }
-        .opacity(opacity)
-        .offset(y: offsetY)
-        .onAppear {
-            runAnimation()
+            .opacity(opacity)
+            .offset(y: offsetY)
+            .onAppear {
+                runAnimation()
+            }
         }
     }
 
@@ -93,6 +95,7 @@ struct EffectLabel: View {
                 try? await Task
                     .sleep(nanoseconds: Constant.Animation.sleepNanosec)
             }
+            shouldShow = false
         }
     }
 }
