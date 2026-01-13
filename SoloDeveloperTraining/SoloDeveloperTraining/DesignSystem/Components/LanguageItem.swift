@@ -18,6 +18,7 @@ private enum Constant {
     enum Opacity {
         static let completed: Double = 0.5
         static let normal: Double = 1.0
+        static let empty: Double = 0.0
     }
 }
 
@@ -44,7 +45,7 @@ struct LanguageItem: View {
 
     private var iconSize: CGFloat {
         switch state {
-        case .completed, .upcoming:
+        case .completed, .upcoming, .empty:
             return Constant.IconSize.normal
         case .active:
             return Constant.IconSize.active
@@ -57,12 +58,14 @@ struct LanguageItem: View {
             return Constant.Opacity.completed
         case .active, .upcoming:
             return Constant.Opacity.normal
+        case .empty:
+            return Constant.Opacity.empty
         }
     }
 
     private var textStyle: TypographyStyle {
         switch state {
-        case .completed, .upcoming:
+        case .completed, .upcoming, .empty:
             return .caption
         case .active:
             return .title3

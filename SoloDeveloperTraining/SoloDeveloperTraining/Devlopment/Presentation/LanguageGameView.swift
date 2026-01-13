@@ -14,9 +14,16 @@ private enum Constant {
         static let buttonHorizontal: CGFloat = 17
     }
 }
+
 struct LanguageGameView: View {
     let user: User
     let game: LanguageGame
+    let languageTypeList: [LanguageType] = [
+        .swift,
+        .kotlin,
+        .dart,
+        .python
+    ]
 
     @State private var coffeeCount: Int = 0
     @State private var energyDrinkCount: Int = 0
@@ -66,10 +73,13 @@ struct LanguageGameView: View {
             }.scrollIndicators(.never)
 
             HStack(spacing: Constant.Spacing.buttonHorizontal) {
-                LanguageButton(languageType: .swift, action: {})
-                LanguageButton(languageType: .kotlin, action: {})
-                LanguageButton(languageType: .dart, action: {})
-                LanguageButton(languageType: .python, action: {})
+                ForEach(languageTypeList, id: \.self) { type in
+                    LanguageButton(languageType: type, action: {
+                        Task {
+                            let _ = await game.didPerformAction(type)
+                        }
+                    })
+                }
             }
         }.padding()
     }
