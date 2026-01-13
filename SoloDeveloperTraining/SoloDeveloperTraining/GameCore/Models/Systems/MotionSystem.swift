@@ -2,7 +2,7 @@
 //  MotionSystem.swift
 //  SoloDeveloperTraining
 //
-//  Created by Claude on 1/13/26.
+//  Created by SeoJunYoung on 1/13/26.
 //
 
 import CoreMotion
@@ -10,28 +10,44 @@ import Observation
 
 @Observable
 final class MotionSystem {
+    // MARK: - Properties
+    /// CoreMotion 매니저
     private let motionManager = CMMotionManager()
 
-    // 설정값
-    private let updateInterval = 1.0 / 120.0     // 주사율 120fps (8.33 ms)
-    private let threshold: Double = 0.05         // 데드존 (무반응 구간)
-    private let maxSpeed: CGFloat = 2000.0       // 최대 속도 (기울기 1.0일 때)
-    private let minSpeed: CGFloat = 300.0        // 최소 속도 (기울기 threshold일 때)
+    // MARK: - 설정값
+    /// 모션 업데이트 주사율 (120fps)
+    private let updateInterval = 1.0 / 120.0
+    /// 데드존 임계값 (이 값 이하의 기울기는 무시)
+    private let threshold: Double = 0.05
+    /// 최대 이동 속도 (기울기 1.0일 때)
+    private let maxSpeed: CGFloat = 2000.0
+    /// 최소 이동 속도 (기울기 threshold일 때)
+    private let minSpeed: CGFloat = 300.0
 
-    // View에서 사용할 데이터들
+    // MARK: - Public Properties
+    /// X축 중력 값 (-1.0 ~ 1.0)
     var gravityX: Double = 0
+    /// Y축 중력 값 (-1.0 ~ 1.0)
     var gravityY: Double = 0
+    /// Z축 중력 값 (-1.0 ~ 1.0)
     var gravityZ: Double = 0
+    /// 캐릭터의 X 위치 (-150 ~ 150)
     var characterX: CGFloat = 0
+    /// 보정된 X축 기울기 값 (-1.0 ~ 1.0)
     var calibratedGravityX: Double = 0
 
     init() {
         startMotionUpdates()
     }
+
     deinit {
         motionManager.stopDeviceMotionUpdates()
     }
 
+    /// 모션 업데이트를 시작하고 기기 기울기에 따라 캐릭터 위치를 업데이트
+    ///
+    /// - 기울기 강도에 따라 이동 속도가 비선형적으로 증가
+    /// - 화면 밖으로 나가지 않도록 제한
     func startMotionUpdates() {
         guard motionManager.isDeviceMotionAvailable else { return }
         motionManager.deviceMotionUpdateInterval = updateInterval
