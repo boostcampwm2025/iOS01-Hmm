@@ -38,19 +38,48 @@ enum LanguageItemState {
     case upcoming
 }
 
-class LanguageGame {
-    let user: User
-    let calculator: Calculator
-    let feverSystem: FeverSystem
+final class LanguageGame: Game {
+    var kind: GameType = .language
+    var user: User
+    var calculator: Calculator
+    var feverSystem: FeverSystem
+    var buffSystem: BuffSystem
 
-    init(user: User, calculator: Calculator, feverSystem: FeverSystem) {
+    let languageItemList: [LanguageItem] = [
+        LanguageItem(languageType: .swift, state: .active),
+        LanguageItem(languageType: .kotlin, state: .upcoming),
+        LanguageItem(languageType: .dart, state: .upcoming),
+        LanguageItem(languageType: .python, state: .upcoming),
+        LanguageItem(languageType: .swift, state: .upcoming),
+        LanguageItem(languageType: .kotlin, state: .upcoming),
+        LanguageItem(languageType: .dart, state: .upcoming),
+        LanguageItem(languageType: .python, state: .upcoming),
+    ]
+
+    init(
+        user: User,
+        calculator: Calculator,
+        feverSystem: FeverSystem,
+        buffSystem: BuffSystem
+    ) {
         self.user = user
         self.calculator = calculator
         self.feverSystem = feverSystem
+        self.buffSystem = buffSystem
     }
 
-    func startGame() {}
-    func endGame() {}
+    func startGame() {
+        feverSystem.start()
+    }
 
-    func actionDidOccur() {}
+    func stopGame() {
+        feverSystem.stop()
+    }
+
+    func didPerformAction() async -> Int {
+        print("언어 맞추기 버튼 클릭")
+        return 0
+    }
+
+
 }
