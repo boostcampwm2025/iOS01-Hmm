@@ -49,6 +49,7 @@ enum LanguageItemState {
     case empty
 }
 
+@Observable
 final class LanguageGame: Game {
     typealias ActionInput = LanguageType
     var kind: GameType = .language
@@ -121,11 +122,15 @@ final class LanguageGame: Game {
             return false
         }
 
-        // 1. 처음 요소 제거
-        itemList.removeFirst()
+        // 1. 복제 후 처음 요소 제거
+        var newItems = itemList
+        newItems.removeFirst()
         // 2. 새 요소를 마지막에 추가
-        itemList.append(makeNewLanguageItem())
-        // 3. 상태 업데이트
+        newItems.append(makeNewLanguageItem())
+        // 3. 요소 업데이트
+        self.itemList = newItems
+
+        // 4. 상태 업데이트
         updateLanguageItemList()
 
         print("변경된 아이템 리스트")
