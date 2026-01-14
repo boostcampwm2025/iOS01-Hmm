@@ -141,12 +141,24 @@ final class LanguageGame: Game {
 
     private func makeInitialItemList() -> [LanguageItem] {
         var items: [LanguageItem] = []
-        for _ in 0..<leadingAndTrailingItemCount {
-            items.append(.init(languageType: .empty, state: .empty))
+        let activeIndex = leadingAndTrailingItemCount // 중앙 인덱스
+
+        for i in 0..<itemCount {
+            if i < activeIndex {
+                // 1. 중앙 앞부분: 빈 아이템 (이미 지나간 영역)
+                items.append(.init(languageType: .empty, state: .empty))
+            } else if i == activeIndex {
+                // 2. 중앙: 실제 게임 타겟 (Active)
+                let newItem = makeNewLanguageItem()
+                items.append(.init(languageType: newItem.languageType, state: .active))
+            } else {
+                // 3. 중앙 뒷부분: 대기 중인 아이템 (Upcoming)
+                let newItem = makeNewLanguageItem()
+                items.append(.init(languageType: newItem.languageType, state: .upcoming))
+            }
         }
-        for _ in leadingAndTrailingItemCount..<itemCount {
-            items.append(makeNewLanguageItem())
-        }
+
+        print("초기 아이템 리스트 생성 완료 (중앙: \(activeIndex))")
         return items
     }
 
