@@ -44,7 +44,8 @@ final class BlockItem: SKSpriteNode {
                         scene.addChild(block)
 
                         return scene
-                    }()
+                    }(),
+                    options: [.allowsTransparency]
                 )
                 .frame(width: type.size.width, height: type.size.height)
             }
