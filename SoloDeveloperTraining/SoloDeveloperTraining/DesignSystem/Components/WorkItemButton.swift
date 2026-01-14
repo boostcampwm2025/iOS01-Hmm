@@ -24,15 +24,19 @@ private enum Constant {
 }
 
 struct WorkItemButton: View {
-
     let title: String
     let description: String
-    let imageResource: ImageResource
+    let imageName: String
     @Binding var buttonState: ButtonState
+    var onTap: (() -> Void)?
 
     var body: some View {
         Button {
-            changeState()
+            if let onTap = onTap {
+                onTap()
+            } else {
+                changeState()
+            }
         } label: {
             buttonContent
         }
@@ -85,7 +89,7 @@ private extension WorkItemButton {
     }
 
     var itemImage: some View {
-        Image(imageResource)
+        Image(imageName)
             .resizable()
             .padding(.top, Constant.Padding.imageTop)
             .padding(.horizontal, Constant.Padding.imageHorizontal)
@@ -106,7 +110,6 @@ private extension WorkItemButton {
 
             Image(.lock)
                 .resizable()
-            
                 .frame(
                     width: Constant.lockIconSize.width,
                     height: Constant.lockIconSize.height
@@ -170,19 +173,19 @@ extension WorkItemButton {
             WorkItemButton(
                 title: "타이틀",
                 description: "기본 상태",
-                imageResource: .backgroundHouse,
+                imageName: "background_house",
                 buttonState: $buttonState1
             )
             WorkItemButton(
                 title: "타이틀",
                 description: "선택 상태",
-                imageResource: .backgroundHouse,
+                imageName: "background_house",
                 buttonState: $buttonState2
             )
             WorkItemButton(
                 title: "타이틀",
                 description: "비활성 상태",
-                imageResource: .backgroundHouse,
+                imageName: "background_house",
                 buttonState: $buttonState3
             )
         }
