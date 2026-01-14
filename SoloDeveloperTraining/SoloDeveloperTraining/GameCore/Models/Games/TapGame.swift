@@ -7,6 +7,8 @@
 
 /// 탭 게임 클래스
 final class TapGame: Game {
+    typealias ActionInput = Void
+
     /// 게임 종류
     var kind: GameType = .tap
     /// 사용자 정보
@@ -38,7 +40,7 @@ final class TapGame: Game {
 
     /// 탭 액션 수행 및 골드 획득
     @discardableResult
-    func didPerformAction() async -> Int {
+    func didPerformAction(_ input: Void) async -> Int {
         feverSystem.gainFever(33)
         let gainGold = calculator.calculateGoldPerAction(
             game: kind,

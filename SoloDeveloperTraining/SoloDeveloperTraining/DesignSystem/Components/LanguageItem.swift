@@ -18,6 +18,7 @@ private enum Constant {
     enum Opacity {
         static let completed: Double = 0.5
         static let normal: Double = 1.0
+        static let empty: Double = 0.0
     }
 }
 
@@ -27,11 +28,15 @@ struct LanguageItem: View {
 
     var body: some View {
         VStack(alignment: .center, spacing: Constant.vStackSpacing) {
-            Image(languageType.imageName)
-                .resizable()
-                .scaledToFit()
-                .frame(width: iconSize, height: iconSize)
-                .opacity(opacity)
+            ZStack {
+                if state != .empty {
+                    Image(languageType.imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .opacity(opacity)
+                }
+            }
+            .frame(width: iconSize, height: iconSize)
 
             Text(languageType.rawValue)
                 .textStyle(textStyle)
@@ -44,7 +49,7 @@ struct LanguageItem: View {
 
     private var iconSize: CGFloat {
         switch state {
-        case .completed, .upcoming:
+        case .completed, .upcoming, .empty:
             return Constant.IconSize.normal
         case .active:
             return Constant.IconSize.active
@@ -57,12 +62,14 @@ struct LanguageItem: View {
             return Constant.Opacity.completed
         case .active, .upcoming:
             return Constant.Opacity.normal
+        case .empty:
+            return Constant.Opacity.empty
         }
     }
 
     private var textStyle: TypographyStyle {
         switch state {
-        case .completed, .upcoming:
+        case .completed, .upcoming, .empty:
             return .caption
         case .active:
             return .title3
