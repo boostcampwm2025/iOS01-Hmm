@@ -10,8 +10,11 @@ import SwiftUI
 private enum Constant {
     static let shadowOffsetX: CGFloat = 2
     static let shadowOffsetY: CGFloat = 3
+    static let cornerRadius: CGFloat = 5
     static let iconSize = CGSize(width: 15, height: 15)
+    static let lockIconSize = CGSize(width: 18, height: 18)
     static let contentSpacing: CGFloat = 3
+    static let disabledOverlayOpacity: Double = 0.9
 
     enum Padding {
         static let horizontal: CGFloat = 8
@@ -31,10 +34,15 @@ struct PriceButton: View {
             print("Tapped")
         } label: {
             buttonContent
+                .overlay {
+                    if isDisabled {
+                        disabledOverlay
+                    }
+                }
                 .background(
-                    // 그림자 (버튼과 같은 크기)
-                    RoundedRectangle(cornerRadius: 0)
-                        .foregroundStyle(.black)
+                    // 그림자 (버튼과 같은 크기, 라운드 5)
+                    RoundedRectangle(cornerRadius: Constant.cornerRadius)
+                        .foregroundStyle(isDisabled ? .gray400 : .black)
                         .offset(
                             x: Constant.shadowOffsetX,
                             y: Constant.shadowOffsetY
@@ -59,11 +67,26 @@ struct PriceButton: View {
         .padding(.horizontal, Constant.Padding.horizontal)
         .padding(.vertical, Constant.Padding.vertical)
         .background(.orange500)
+        .clipShape(RoundedRectangle(cornerRadius: Constant.cornerRadius))
         .offset(
             x: isPressed ? Constant.shadowOffsetX : 0,
             y: isPressed ? Constant.shadowOffsetY : 0
         )
         .animation(.none, value: isPressed)
+    }
+
+    var disabledOverlay: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: Constant.cornerRadius)
+                .foregroundStyle(Color.gray200.opacity(Constant.disabledOverlayOpacity))
+
+            Image("icon_coin_bag")
+                .resizable()
+                .frame(
+                    width: Constant.lockIconSize.width,
+                    height: Constant.lockIconSize.height
+                )
+        }
     }
 }
 
