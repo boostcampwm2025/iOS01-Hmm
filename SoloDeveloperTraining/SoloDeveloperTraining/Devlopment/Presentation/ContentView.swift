@@ -16,12 +16,27 @@ struct ContentView: View {
         let user = User(
             nickname: "user",
             wallet: .init(gold: 1000000, diamond: 100),
-            inventory: .init(),
+            inventory: .init(
+                equipmentItems: [
+                    .init(type: .keyboard, tier: .broken),
+                    .init(type: .mouse, tier: .broken),
+                    .init(type: .monitor, tier: .broken),
+                    .init(type: .chair, tier: .broken)
+                ],
+                consumableItems: [
+                    .init(type: .coffee, count: 5),
+                    .init(type: .energyDrink, count: 5)
+                ],
+                housing: .street
+            ),
             record: .init(),
             skills: [
                 .init(game: .tap, tier: .beginner, level: 1000),
                 .init(game: .tap, tier: .intermediate, level: 1000),
-                .init(game: .tap, tier: .advanced, level: 1000)
+                .init(game: .tap, tier: .advanced, level: 1000),
+                .init(game: .dodge, tier: .beginner, level: 500),
+                .init(game: .dodge, tier: .intermediate, level: 500),
+                .init(game: .dodge, tier: .advanced, level: 500)
             ]
         )
         let calculator: Calculator = Calculator()
@@ -56,6 +71,12 @@ struct ContentView: View {
                 .tabItem {
                     Image(systemName: "note")
                     Text("미션")
+                }
+            DodgeGameTestView(user: user, calculator: calculator)
+                .tag(4)
+                .tabItem {
+                    Image(systemName: "exclamationmark.triangle")
+                    Text("버그피하기")
                 }
         }
     }
