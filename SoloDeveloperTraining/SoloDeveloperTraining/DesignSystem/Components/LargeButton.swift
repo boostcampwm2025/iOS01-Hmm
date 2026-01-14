@@ -15,7 +15,6 @@ private enum Constant {
         static let buttonHeight: CGFloat = 46
         static let badgeWidth: CGFloat = 30
         static let badgeHeight: CGFloat = 30
-
     }
 
     enum Offset {
