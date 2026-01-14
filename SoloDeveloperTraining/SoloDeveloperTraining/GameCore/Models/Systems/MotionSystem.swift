@@ -24,12 +24,6 @@ final class MotionSystem {
     /// 최소 이동 속도 (기울기 threshold일 때)
     private let minSpeed: CGFloat = 300.0
 
-    /// X축 중력 값 (-1.0 ~ 1.0)
-    var gravityX: Double = 0
-    /// Y축 중력 값 (-1.0 ~ 1.0)
-    var gravityY: Double = 0
-    /// Z축 중력 값 (-1.0 ~ 1.0)
-    var gravityZ: Double = 0
     /// 캐릭터의 X 위치
     var characterX: CGFloat = 0
     /// 보정된 X축 기울기 값 (-1.0 ~ 1.0)
@@ -55,11 +49,6 @@ final class MotionSystem {
 
         motionManager.startDeviceMotionUpdates(to: .main) { [weak self] motion, _ in
             guard let self = self, let motion = motion else { return }
-
-            // 중력 값 저장
-            self.gravityX = motion.gravity.x
-            self.gravityY = motion.gravity.y
-            self.gravityZ = motion.gravity.z
 
             // 기울기 값 클램핑 (-1.0 ~ 1.0)
             let clampedInput = max(-1.0, min(1.0, motion.gravity.x))
