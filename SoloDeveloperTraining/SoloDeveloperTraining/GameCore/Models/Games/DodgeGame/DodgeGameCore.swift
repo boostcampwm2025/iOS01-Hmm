@@ -105,24 +105,8 @@ private extension DodgeGameCore {
         )
         fallingItems.append(item)
     }
-
-    /// 모든 낙하물 위치 업데이트 및 충돌 감지
-    func updateItems() {
-        // 아이템 위치 업데이트
-        for index in fallingItems.indices {
-            fallingItems[index].updatePosition(by: fallSpeed)
-        }
-
-        // 충돌 감지
-        checkCollisions()
-
-        // 화면 밖으로 나간 아이템 제거
-        fallingItems.removeAll { item in
-            item.position.y > screenHeight/2 + 50
-        }
-    }
     
-    func updateItem() {
+    func updateItems() {
         var indicesToRemove: [Int] = []
         let removalThreshold = screenHeight/2 + Constant.itemRemovalOffset
         
