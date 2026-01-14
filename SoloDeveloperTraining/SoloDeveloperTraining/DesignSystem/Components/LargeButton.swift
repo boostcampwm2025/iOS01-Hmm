@@ -29,23 +29,29 @@ private enum Constant {
     }
 }
 
-struct LargeButton: ButtonStyle {
-    @Environment(\.isEnabled) private var isEnabled
+struct LargeButton: View {
+    @State private var isPressed: Bool = false
 
+    let title: String
     var hasBadge: Bool = false
-    var backgroundColor: Color { isEnabled ? .orange500 : .gray200 }
+    var isEnabled: Bool = true
+    let action: () -> Void
 
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.pfFont(.body))
-            .foregroundColor(.white)
-            .frame(width: Constant.Size.buttonWidth, height: Constant.Size.buttonHeight)
-            .background(backgroundColor)
-            .cornerRadius(Constant.radius)
-            .opacity(configuration.isPressed ? Constant.Opacity.pressed : Constant.Opacity.unPressed)
-            .overlay(alignment: .topTrailing) {
-                if hasBadge { badge }
-            }
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.pfFont(.body))
+                .foregroundColor(.white)
+                .frame(width: Constant.Size.buttonWidth, height: Constant.Size.buttonHeight)
+                .background(isEnabled ? .orange500 : .gray200)
+                .cornerRadius(Constant.radius)
+                .opacity(isPressed ? Constant.Opacity.pressed : Constant.Opacity.unPressed)
+                .overlay(alignment: .topTrailing) {
+                    if hasBadge { badge }
+                }
+        }
+        .disabled(!isEnabled)
+        .buttonStyle(.pressable(isPressed: $isPressed))
     }
 
     private var badge: some View {
@@ -57,25 +63,21 @@ struct LargeButton: ButtonStyle {
 }
 
 #Preview {
-    Button("버튼 텍스트") {
-        print("버튼 클릭1")
-    }
-    .buttonStyle(LargeButton(hasBadge: false))
+    VStack(spacing: 20) {
+        LargeButton(title: "버튼 텍스트") {
+            print("버튼 클릭1")
+        }
 
-    Button("버튼 텍스트") {
-        print("버튼 클릭2")
-    }
-    .buttonStyle(LargeButton(hasBadge: false))
-    .disabled(true)
+        LargeButton(title: "버튼 텍스트", isEnabled: false) {
+            print("버튼 클릭2")
+        }
 
-    Button("버튼 텍스트") {
-        print("버튼 클릭3")
-    }
-    .buttonStyle(LargeButton(hasBadge: true))
-    .disabled(true)
+        LargeButton(title: "버튼 텍스트", hasBadge: true, isEnabled: false) {
+            print("버튼 클릭3")
+        }
 
-    Button("버튼 텍스트") {
-        print("버튼 클릭4")
+        LargeButton(title: "버튼 텍스트", hasBadge: true) {
+            print("버튼 클릭4")
+        }
     }
-    .buttonStyle(LargeButton(hasBadge: true))
 }
