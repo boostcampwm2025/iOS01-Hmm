@@ -31,16 +31,16 @@ struct WorkItemButton: View {
     var onTap: (() -> Void)?
 
     var body: some View {
-        Button {
-            if let onTap = onTap {
-                onTap()
-            } else {
-                changeState()
+        buttonContent
+            .disabled(buttonState.isDisabled)
+            .onTapGesture {
+                if let onTap = onTap {
+                    onTap()
+                } else {
+                    changeState()
+                }
             }
-        } label: {
-            buttonContent
-        }
-        .disabled(buttonState.isDisabled)
+        
     }
 }
 
