@@ -5,6 +5,10 @@
 //  Created by SeoJunYoung on 1/6/26.
 //
 
+private enum Constant {
+    static let successFever: Double = 33.0
+}
+
 /// 탭 게임 클래스
 final class TapGame: Game {
     /// 게임 종류
@@ -48,7 +52,7 @@ final class TapGame: Game {
     /// 탭 액션 수행 및 골드 획득
     @discardableResult
     func didPerformAction() async -> Int {
-        feverSystem.gainFever(33)
+        feverSystem.gainFever(Constant.successFever)
         let gainGold = calculator.calculateGoldPerAction(
             game: kind,
             user: user,
