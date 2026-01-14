@@ -142,11 +142,11 @@ final class LanguageGame: Game {
         var items: [LanguageItem] = []
         let activeIndex = leadingAndTrailingItemCount // 중앙 인덱스
 
-        for i in 0..<itemCount {
-            if i < activeIndex {
+        for index in 0..<itemCount {
+            if index < activeIndex {
                 // 1. 중앙 앞부분: 빈 아이템 (이미 지나간 영역)
                 items.append(.init(languageType: .empty, state: .empty))
-            } else if i == activeIndex {
+            } else if index == activeIndex {
                 // 2. 중앙: 실제 게임 타겟 (Active)
                 let newType = LanguageType.random()
                 items.append(.init(languageType: newType, state: .active))
