@@ -47,6 +47,7 @@ struct DefaultSegmentControl: View {
         .overlay {
             Rectangle()
                 .stroke(Constant.Color.border, lineWidth: Constant.lineWidth)
+                .animation(.none, value: selection)
         }
     }
 }
@@ -65,6 +66,7 @@ private struct SegmentButton: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: Constant.segmentHeight)
                 .background(backgroundColor)
+                .animation(.none, value: isSelected)
         }
         .buttonStyle(.plain)
     }
