@@ -44,22 +44,27 @@ struct MainView: View {
             Group {
                 switch selectedTab {
                 case .work:
-                    Color.white
-                        .overlay(Text("업무 화면").foregroundColor(.gray))
-                case .enhance:
-                    Color.white
-                        .overlay(Text("강화 화면").foregroundColor(.gray))
-                case .shop:
-                    Color.white
-                        .overlay(Text("상점 화면").foregroundColor(.gray))
-                case .mission:
-                    Color.white
-                        .overlay(Text("미션 화면").foregroundColor(.gray))
+                    NavigationStack {
+                        List {
+                            NavigationLink("물건 쌓기 게임") {
+                                StackGameView()
+                            }
+                        }
+                    }
+                    case .enhance:
+                        Color.white
+                            .overlay(Text("강화 화면").foregroundColor(.gray))
+                    case .shop:
+                        Color.white
+                            .overlay(Text("상점 화면").foregroundColor(.gray))
+                    case .mission:
+                        Color.white
+                            .overlay(Text("미션 화면").foregroundColor(.gray))
+                    }
                 }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .ignoresSafeArea(edges: .bottom)
+            .background(Color.beige200)
         }
-        .ignoresSafeArea(edges: .bottom)
-        .background(Color.beige200)
     }
-}
