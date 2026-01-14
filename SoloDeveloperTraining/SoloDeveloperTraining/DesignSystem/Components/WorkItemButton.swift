@@ -15,8 +15,8 @@ private enum Constant {
     static let disabledOverlayOpacity: Double = 0.5
 
     enum Padding {
-        static let titleLabelTop: CGFloat = 22
-        static let subTitleLabelTop: CGFloat = 4
+        static let titleTop: CGFloat = 22
+        static let descriptionTop: CGFloat = 4
         static let imageTop: CGFloat = 20
         static let imageHorizontal: CGFloat = 11
         static let imageBottom: CGFloat = 10
@@ -34,59 +34,102 @@ struct WorkItemButton: View {
         Button {
             changeState()
         } label: {
-            ZStack(alignment: .top) {
-                RoundedRectangle(cornerRadius: Constant.cornerRadius)
-                    .foregroundStyle(buttonState.backgroundColor)
-                    .overlay {
-                        if let borderColor = buttonState.borderColor {
-                            RoundedRectangle(cornerRadius: Constant.cornerRadius)
-                                .stroke(borderColor, lineWidth: Constant.borderWidth)
-                        }
-                    }
-                VStack {
-                    Text(title)
-                        .foregroundStyle(.black)
-                        .textStyle(.headline)
-                        .padding(.top, Constant.Padding.titleLabelTop)
-                    Text(description)
-                        .foregroundStyle(.black)
-                        .textStyle(.label)
-                        .padding(.top, Constant.Padding.subTitleLabelTop)
-
-                    ZStack {
-                        Image(imageResource)
-                            .resizable()
-                            .padding(.top, Constant.Padding.imageTop)
-                            .padding(.horizontal, Constant.Padding.imageHorizontal)
-                            .padding(.bottom, Constant.Padding.imageBottom)
-                            .overlay {
-                                // 비활성 상태일 때 어두운 오버레이 + 자물쇠 아이콘
-                                if buttonState == .disabled {
-                                    ZStack {
-                                        Rectangle()
-                                            .foregroundStyle(.black.opacity(Constant.disabledOverlayOpacity))
-                                            .padding(.top, Constant.Padding.imageTop)
-                                            .padding(.horizontal, Constant.Padding.imageHorizontal)
-                                            .padding(.bottom, Constant.Padding.imageBottom)
-
-                                        Image(.lock)
-                                            .resizable()
-                                            .frame(
-                                                width: Constant.lockIconSize.width,
-                                                height: Constant.lockIconSize.height
-                                            )
-                                    }
-                                }
-                            }
-                    }
-                }
-            }
-            .frame(height: Constant.buttonHeight)
+            buttonContent
         }
         .disabled(buttonState.isDisabled)
     }
 }
 
+// MARK: - Subviews
+private extension WorkItemButton {
+
+    var buttonContent: some View {
+        ZStack(alignment: .top) {
+            backgroundShape
+            contentStack
+        }
+        .frame(height: Constant.buttonHeight)
+    }
+
+    var backgroundShape: some View {
+        RoundedRectangle(cornerRadius: Constant.cornerRadius)
+            .foregroundStyle(buttonState.backgroundColor)
+            .overlay {
+                if let borderColor = buttonState.borderColor {
+                    RoundedRectangle(cornerRadius: Constant.cornerRadius)
+                        .stroke(borderColor, lineWidth: Constant.borderWidth)
+                }
+            }
+    }
+
+    var contentStack: some View {
+        VStack {
+            titleLabel
+            descriptionLabel
+            itemImage
+        }
+    }
+
+    var titleLabel: some View {
+        Text(title)
+            .foregroundStyle(.black)
+            .textStyle(.headline)
+            .padding(.top, Constant.Padding.titleTop)
+    }
+
+    var descriptionLabel: some View {
+        Text(description)
+            .foregroundStyle(.black)
+            .textStyle(.label)
+            .padding(.top, Constant.Padding.descriptionTop)
+    }
+
+    var itemImage: some View {
+        Image(imageResource)
+            .resizable()
+            .padding(.top, Constant.Padding.imageTop)
+            .padding(.horizontal, Constant.Padding.imageHorizontal)
+            .padding(.bottom, Constant.Padding.imageBottom)
+            .overlay {
+                if buttonState == .disabled {
+                    disabledOverlay
+                }
+            }
+    }
+
+    var disabledOverlay: some View {
+        ZStack {
+            Color.black.opacity(Constant.disabledOverlayOpacity)
+                .padding(.top, Constant.Padding.imageTop)
+                .padding(.horizontal, Constant.Padding.imageHorizontal)
+                .padding(.bottom, Constant.Padding.imageBottom)
+
+            Image(.lock)
+                .resizable()
+            
+                .frame(
+                    width: Constant.lockIconSize.width,
+                    height: Constant.lockIconSize.height
+                )
+        }
+    }
+}
+
+// MARK: - Helper
+private extension WorkItemButton {
+    func changeState() {
+        switch buttonState {
+        case .normal:
+            buttonState = .focused
+        case .focused:
+            buttonState = .normal
+        case .disabled:
+            break
+        }
+    }
+}
+
+// MARK: - ButtonState
 extension WorkItemButton {
     enum ButtonState {
         case focused
@@ -112,20 +155,7 @@ extension WorkItemButton {
         }
 
         var isDisabled: Bool {
-            switch self {
-            case .disabled:
-                return true
-            default:
-                return false
-            }
-        }
-    }
-
-    private func changeState() {
-        if buttonState == .normal {
-            buttonState = .focused
-        } else if buttonState == .focused {
-            buttonState = .normal
+            return self == .disabled
         }
     }
 }
