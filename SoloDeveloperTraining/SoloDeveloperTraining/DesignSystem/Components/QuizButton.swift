@@ -54,3 +54,32 @@ struct QuizButton: View {
         isSelected ? Constant.Color.selectedBackground : Constant.Color.defaultBackground
     }
 }
+
+#Preview {
+    VStack(spacing: 20) {
+        QuizButton {
+            print("버튼 클릭")
+        } label: {
+            Text("1. (함께 코드를 보며) 이 부분 빨리 수정 가능할까요?")
+        }
+
+        QuizButton {
+            print("버튼 클릭")
+        } label: {
+            Text("2. (함께 코드를 보며) 이 부분 빨리 수정 가능할까요?")
+        }
+
+        QuizButton {
+            print("버튼 클릭")
+        } label: {
+            Text("3. (함께 코드를 보며) 이 부분 빨리 수정 가능할까요?")
+        }
+
+        QuizButton {
+            print("버튼 클릭")
+        } label: {
+            Text("4. (함께 코드를 보며) 이 부분 빨리 수정 가능할까요?")
+        }
+    }
+    .padding()
+}
