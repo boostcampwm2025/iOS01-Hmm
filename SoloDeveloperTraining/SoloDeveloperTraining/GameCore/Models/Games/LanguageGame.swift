@@ -88,6 +88,8 @@ final class LanguageGame: Game {
 
     func stopGame() {
         feverSystem.stop()
+        if buffSystem.isRunning { buffSystem.stop() }
+        itemList = []
     }
 
     func didPerformAction(_ input: LanguageType) async -> Int {

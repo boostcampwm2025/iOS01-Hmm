@@ -37,6 +37,13 @@ final class BuffSystem {
         }
     }
 
+    /// 버프 시스템 종료
+    func stop() {
+        stopTimer()
+        duration = 0
+        isRunning = false
+    }
+
     /// 버프 타이머 종료
     private func stopTimer() {
         decreaseTimer?.invalidate()
