@@ -12,13 +12,13 @@ private enum Constants {
 }
 
 struct ProgressBar: View {
-    let maxValue: Int
-    let currentValue: Int
+    let maxValue: Double
+    let currentValue: Double
+    let text: String
 
     private var progress: Double {
-        return Double(currentValue) / Double(maxValue)
+        return currentValue / maxValue
     }
-    private var isCompleted: Bool { progress == 1 }
 
     var body: some View {
         ZStack {
@@ -31,7 +31,7 @@ struct ProgressBar: View {
                 .fill(.orange300)
                 .scaleEffect(x: progress, y: 1, anchor: .leading)
 
-            Text(isCompleted ? "제한 시간 종료" : "\(currentValue) s")
+            Text(text)
                 .textStyle(.caption2)
                 .foregroundColor(.white)
         }
@@ -40,9 +40,9 @@ struct ProgressBar: View {
 }
 
 #Preview {
-    ProgressBar(maxValue: 60, currentValue: 10)
-    ProgressBar(maxValue: 60, currentValue: 30)
-    ProgressBar(maxValue: 60, currentValue: 40)
-    ProgressBar(maxValue: 60, currentValue: 59)
-    ProgressBar(maxValue: 60, currentValue: 60)
+    ProgressBar(maxValue: 60, currentValue: 10, text: "10 s")
+    ProgressBar(maxValue: 60, currentValue: 30, text: "30 s")
+    ProgressBar(maxValue: 60, currentValue: 40, text: "40 s")
+    ProgressBar(maxValue: 60, currentValue: 59, text: "59 s")
+    ProgressBar(maxValue: 60, currentValue: 60, text: "제한 시간 종료")
 }
