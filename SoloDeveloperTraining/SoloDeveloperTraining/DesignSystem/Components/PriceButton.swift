@@ -25,11 +25,10 @@ struct PriceButton: View {
     let gold: Int
     let isDisabled: Bool
     let axis: Axis
+    let action: () -> Void
 
     var body: some View {
-        Button {
-            print("Tapped")
-        } label: {
+        Button(action: action) {
             buttonContent
                 .overlay {
                     if isDisabled {
@@ -103,9 +102,9 @@ struct PriceButton: View {
 
 #Preview {
     VStack(alignment: .center, spacing: 20) {
-        PriceButton(gold: 1_000_000, isDisabled: false, axis: .horizontal)
-        PriceButton(gold: 100_000, isDisabled: false, axis: .vertical)
-        PriceButton(gold: 1_000_000_000, isDisabled: true, axis: .horizontal)
-        PriceButton(gold: 1_000, isDisabled: true, axis: .vertical)
+        PriceButton(gold: 1_000_000, isDisabled: false, axis: .horizontal) {}
+        PriceButton(gold: 100_000, isDisabled: false, axis: .vertical) {}
+        PriceButton(gold: 1_000_000_000, isDisabled: true, axis: .horizontal) {}
+        PriceButton(gold: 1_000, isDisabled: true, axis: .vertical) {}
     }
 }
