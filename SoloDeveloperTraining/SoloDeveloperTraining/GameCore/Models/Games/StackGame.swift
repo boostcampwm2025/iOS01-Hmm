@@ -20,6 +20,8 @@ private enum Constant {
 
 @Observable
 final class StackGame: Game {
+    typealias ActionInput = BlockType
+
     var kind: GameType = .stack
     var user: User
     var calculator: Calculator
@@ -54,7 +56,7 @@ final class StackGame: Game {
 
     /// 액션 수행 (Game 프로토콜 요구사항)
     @discardableResult
-    func didPerformAction() async -> Int { 0 }
+    func didPerformAction(_ input: BlockType) async -> Int { 0 }
 
     /// 초기 블록을 추가합니다
     /// 화면 크기를 기반으로 화면 중앙 하단에 배치합니다
