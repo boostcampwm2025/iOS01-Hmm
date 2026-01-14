@@ -125,12 +125,7 @@ final class DodgeGame: Game {
             feverSystem.gainFever(Constant.defaultGainFever)
 
             // 기본 골드 계산
-            let baseGold = calculator.calculateGoldPerAction(
-                game: kind,
-                user: user,
-                feverMultiplier: feverSystem.feverMultiplier,
-                buffMultiplier: buffSystem.multiplier
-            )
+            let baseGold = getBaseGold()
 
             // 0.8배 획득
             let gainGold = Int(Double(baseGold) * Constant.smallGoldMultiplier)
@@ -142,12 +137,7 @@ final class DodgeGame: Game {
             feverSystem.gainFever(Constant.defaultGainFever)
 
             // 기본 골드 계산
-            let baseGold = calculator.calculateGoldPerAction(
-                game: kind,
-                user: user,
-                feverMultiplier: feverSystem.feverMultiplier,
-                buffMultiplier: buffSystem.multiplier
-            )
+            let baseGold = getBaseGold()
 
             // 1.2배 획득
             let gainGold = Int(Double(baseGold) * Constant.largeGoldMultiplier)
@@ -159,17 +149,24 @@ final class DodgeGame: Game {
             feverSystem.gainFever(Constant.bugGainFever)
 
             // 기본 골드 계산
-            let baseGold = calculator.calculateGoldPerAction(
-                game: kind,
-                user: user,
-                feverMultiplier: feverSystem.feverMultiplier,
-                buffMultiplier: buffSystem.multiplier
-            )
+            let baseGold = getBaseGold()
 
             // 절반 손실
             let loseGold = baseGold / 2
             await user.wallet.spendGold(loseGold)
             return -loseGold
         }
+    }
+}
+
+private extension DodgeGame {
+    func getBaseGold() -> Int {
+        let baseGold = calculator.calculateGoldPerAction(
+            game: kind,
+            user: user,
+            feverMultiplier: feverSystem.feverMultiplier,
+            buffMultiplier: buffSystem.multiplier
+        )
+        return baseGold
     }
 }
