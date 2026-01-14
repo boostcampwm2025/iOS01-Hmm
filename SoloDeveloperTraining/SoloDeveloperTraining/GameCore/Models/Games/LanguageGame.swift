@@ -42,7 +42,8 @@ enum LanguageType: String, CaseIterable {
     }
 
     static func random() -> Self {
-        return LanguageType.allCases.randomElement() ?? .swift
+        return LanguageType.allCases
+            .filter { $0 != .empty}.randomElement() ?? .swift
     }
 }
 
