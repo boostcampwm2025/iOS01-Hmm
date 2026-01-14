@@ -107,7 +107,7 @@ final class StackGameScene: SKScene {
     /// - 게임 코어에 초기 블록 등록
     private func putInitialBlock() {
         let firstBlockView = BlockItem(type: .blue)
-        firstBlockView.setupPhysicsBody(isDynamic: false)
+        firstBlockView.setupPhysicsBody()
         firstBlockView.position = CGPoint(x: size.width / 2, y: currentHeight)
 
         // 게임 코어에 초기 블록 등록
