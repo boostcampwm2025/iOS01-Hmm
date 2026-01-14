@@ -40,7 +40,8 @@ struct LanguageGameTestView: View {
                 decreaseInterval: 0.1,
                 decreasePercentPerTick: 10
             ),
-            buffSystem: .init()
+            buffSystem: .init(),
+            itemCount: 5 // 임시로 설정
         )
         self.game.startGame()
     }
@@ -65,8 +66,8 @@ struct LanguageGameTestView: View {
 
             ScrollView(.horizontal) {
                 HStack(spacing: Constant.Spacing.itemHorizontal) {
-                    ForEach(game.languageItemList.indices, id: \.self) { index in
-                        let item = game.languageItemList[index]
+                    ForEach(game.itemList.indices, id: \.self) { index in
+                        let item = game.itemList[index]
                         LanguageItem(
                             languageType: item.languageType,
                             state: item.state

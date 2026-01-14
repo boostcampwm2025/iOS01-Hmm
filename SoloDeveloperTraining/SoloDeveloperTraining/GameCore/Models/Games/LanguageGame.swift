@@ -12,7 +12,6 @@ private enum Constant {
         static let successFever: Double = 33.0
         static let failureFever: Double = 0.0
     }
-    static let activeItemIndex: Int = 2
 }
 
 enum LanguageType: String {
@@ -58,25 +57,29 @@ final class LanguageGame: Game {
     var feverSystem: FeverSystem
     var buffSystem: BuffSystem
 
-    // 한 화면에 보여지는 아이템: 5개로 고정
-    var languageItemList: [LanguageItem] = [
-        LanguageItem(languageType: .empty, state: .empty),
-        LanguageItem(languageType: .empty, state: .empty),
-        LanguageItem(languageType: .dart, state: .active),
-        LanguageItem(languageType: .python, state: .upcoming),
-        LanguageItem(languageType: .swift, state: .upcoming),
-    ]
+    let itemCount: Int
+
+    // 한 화면에 보여지는 아이템 리스트
+    var itemList: [LanguageItem] = []
+
+    // 활성화 아이템 외에 양쪽에 보여지는 아이템의 개수
+    var leadingAndTrailingItemCount: Int {
+        itemCount / 2
+    }
 
     init(
         user: User,
         calculator: Calculator,
         feverSystem: FeverSystem,
-        buffSystem: BuffSystem
+        buffSystem: BuffSystem,
+        itemCount: Int
     ) {
         self.user = user
         self.calculator = calculator
         self.feverSystem = feverSystem
         self.buffSystem = buffSystem
+        self.itemCount = itemCount
+        self.itemList = makeInitialItemList()
     }
 
     func startGame() {
@@ -108,7 +111,7 @@ final class LanguageGame: Game {
     }
 
     private func languageButtonTapHandler(tappedItemType: LanguageType) -> Bool {
-        let activeItem = languageItemList[Constant.activeItemIndex]
+        let activeItem = itemList[leadingAndTrailingItemCount]
         print("\n✅ \(tappedItemType) 버튼 클릭")
 
         guard activeItem.languageType == tappedItemType else {
@@ -117,16 +120,27 @@ final class LanguageGame: Game {
         }
 
         // 1. 처음 요소 제거
-        languageItemList.removeFirst()
+        itemList.removeFirst()
         // 2. 새 요소를 마지막에 추가
-        languageItemList.append(makeNewLanguageItem())
+        itemList.append(makeNewLanguageItem())
         // 3. 상태 업데이트
         updateLanguageItemList()
 
         print("변경된 아이템 리스트")
-        languageItemList.forEach { print("언어: \($0.languageType), 상태: \($0.state)") }
+        itemList.forEach { print("언어: \($0.languageType), 상태: \($0.state)") }
 
         return true
+    }
+
+    private func makeInitialItemList() -> [LanguageItem] {
+        var items: [LanguageItem] = []
+        for _ in 0..<leadingAndTrailingItemCount {
+            items.append(.init(languageType: .empty, state: .empty))
+        }
+        for _ in leadingAndTrailingItemCount..<itemCount {
+            items.append(makeNewLanguageItem())
+        }
+        return items
     }
 
     private func makeNewLanguageItem() -> LanguageItem {
@@ -135,11 +149,11 @@ final class LanguageGame: Game {
     }
 
     private func updateLanguageItemList() {
-        for (index, item) in languageItemList.enumerated() {
+        for (index, item) in itemList.enumerated() {
             if item.state == .empty { continue }
 
-            let newState: LanguageItemState = index < Constant.activeItemIndex ? .completed : index == Constant.activeItemIndex ? .active : .upcoming
-            languageItemList[index] = .init(
+            let newState: LanguageItemState = index < leadingAndTrailingItemCount ? .completed : index == leadingAndTrailingItemCount ? .active : .upcoming
+            itemList[index] = .init(
                 languageType: item.languageType,
                 state: newState
             )
