@@ -47,7 +47,7 @@ struct LanguageGameTestView: View {
     }
 
     var body: some View {
-        VStack {
+        VStack(alignment: .center) {
             GameToolBar(
                 closeButtonDidTapHandler: {},
                 coffeeButtonDidTapHandler: {
@@ -65,7 +65,8 @@ struct LanguageGameTestView: View {
             Spacer()
 
             ScrollView(.horizontal) {
-                HStack(spacing: Constant.Spacing.itemHorizontal) {
+                HStack(alignment: .center, spacing: Constant.Spacing.itemHorizontal) {
+                    Spacer(minLength: 0)
                     ForEach(game.itemList.indices, id: \.self) { index in
                         let item = game.itemList[index]
                         LanguageItem(
@@ -73,6 +74,7 @@ struct LanguageGameTestView: View {
                             state: item.state
                         )
                     }
+                    Spacer(minLength: 0)
                 }
             }.scrollIndicators(.never)
 
