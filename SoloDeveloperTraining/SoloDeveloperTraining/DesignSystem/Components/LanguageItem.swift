@@ -33,6 +33,7 @@ struct LanguageItem: View {
                     Image(languageType.imageName)
                         .resizable()
                         .scaledToFit()
+                        .opacity(opacity)
                 }
             }
             .frame(width: iconSize, height: iconSize)
