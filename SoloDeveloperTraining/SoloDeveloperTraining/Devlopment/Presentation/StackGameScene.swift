@@ -8,20 +8,26 @@
 import SpriteKit
 
 private enum Constant {
-    // 물리 엔진 중력
-    static let gravity = CGVector(dx: 0, dy: -9.8)
-    // 블록 스폰 Y 오프셋
-    static let spawnYOffset: CGFloat = 100
-    // 블록 평가 체크 간격 (초)
-    static let evaluationCheckInterval: TimeInterval = 0.05
-    // 폭탄 블록 제거 딜레이 (초)
-    static let bombRemovalDelay: TimeInterval = 0.8
-    // 카메라 이동 애니메이션 시간 (초)
-    static let cameraMoveAnimationDuration: TimeInterval = 0.3
-    // 다음 블록 생성 딜레이 (초)
-    static let nextBlockSpawnDelay: TimeInterval = 0.3
-    // 실패한 블록 제거 딜레이 (초)
-    static let failedBlockRemovalDelay: TimeInterval = 1.0
+    enum Physics {
+        static let gravity = CGVector(dx: 0, dy: -9.8)
+    }
+
+    enum Offset {
+        static let spawnYOffset: CGFloat = 100
+    }
+
+    enum Time {
+        // 블록 평가 체크 간격 (초)
+        static let evaluationCheckInterval: TimeInterval = 0.05
+        // 폭탄 블록 제거 딜레이 (초)
+        static let bombRemovalDelay: TimeInterval = 0.8
+        // 카메라 이동 애니메이션 시간 (초)
+        static let cameraMoveAnimationDuration: TimeInterval = 0.3
+        // 다음 블록 생성 딜레이 (초)
+        static let nextBlockSpawnDelay: TimeInterval = 0.3
+        // 실패한 블록 제거 딜레이 (초)
+        static let failedBlockRemovalDelay: TimeInterval = 1.0
+    }
 }
 
 final class StackGameScene: SKScene {
@@ -61,7 +67,7 @@ final class StackGameScene: SKScene {
     /// - 카메라 초기화
     private func setupScene() {
         backgroundColor = .white
-        physicsWorld.gravity = Constant.gravity
+        physicsWorld.gravity = Constant.Physics.gravity
 
         setupCamera()
     }
@@ -130,7 +136,7 @@ final class StackGameScene: SKScene {
         // 게임 코어에 블록 생성 알림
         stackGame.spawnBlock(type: blockType)
 
-        let spawnY = (camera?.position.y ?? size.height / 2) + size.height / 2 - Constant.spawnYOffset
+        let spawnY = (camera?.position.y ?? size.height / 2) + size.height / 2 - Constant.Offset.spawnYOffset
         let leftEdge = blockView.size.width / 2
         let rightEdge = size.width - blockView.size.width / 2
 
@@ -174,7 +180,7 @@ final class StackGameScene: SKScene {
             checkAlignmentAndHandle(targetY: targetY)
         } else {
             // 아직 도달하지 않았으면 재확인
-            DispatchQueue.global().asyncAfter(deadline: .now() + Constant.evaluationCheckInterval) { [weak self] in
+            DispatchQueue.global().asyncAfter(deadline: .now() + Constant.Time.evaluationCheckInterval) { [weak self] in
                 self?.evaluateBlock()
             }
         }
@@ -228,7 +234,7 @@ final class StackGameScene: SKScene {
         if currentBlock.type.isBomb {
             stackGame.placeBombSuccess()
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + Constant.bombRemovalDelay) { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + Constant.Time.bombRemovalDelay) { [weak self] in
                 block.removeFromParent()
                 self?.spawnBlock()
             }
@@ -244,12 +250,12 @@ final class StackGameScene: SKScene {
             // 카메라 이동
             if let camera = camera {
                 let newCameraY = camera.position.y + block.size.height
-                let moveCamera = SKAction.moveTo(y: newCameraY, duration: Constant.cameraMoveAnimationDuration)
+                let moveCamera = SKAction.moveTo(y: newCameraY, duration: Constant.Time.cameraMoveAnimationDuration)
                 moveCamera.timingMode = .easeInEaseOut
                 camera.run(moveCamera)
             }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + Constant.nextBlockSpawnDelay) { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + Constant.Time.nextBlockSpawnDelay) { [weak self] in
                 self?.spawnBlock()
             }
         }
@@ -275,7 +281,7 @@ final class StackGameScene: SKScene {
         }
 
         // 일정 시간 후 블록 제거 및 다음 블록 생성
-        DispatchQueue.main.asyncAfter(deadline: .now() + Constant.failedBlockRemovalDelay) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + Constant.Time.failedBlockRemovalDelay) { [weak self] in
             block.removeFromParent()
             self?.spawnBlock()
         }
