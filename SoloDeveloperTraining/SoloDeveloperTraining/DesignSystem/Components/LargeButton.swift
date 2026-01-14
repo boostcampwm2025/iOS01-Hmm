@@ -29,7 +29,7 @@ private enum Constant {
     }
 }
 
-struct LargeButtonStyle: ButtonStyle {
+struct LargeButton: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
 
     var hasBadge: Bool = false
@@ -60,22 +60,22 @@ struct LargeButtonStyle: ButtonStyle {
     Button("버튼 텍스트") {
         print("버튼 클릭1")
     }
-    .buttonStyle(LargeButtonStyle(hasBadge: false))
+    .buttonStyle(LargeButton(hasBadge: false))
 
     Button("버튼 텍스트") {
         print("버튼 클릭2")
     }
-    .buttonStyle(LargeButtonStyle(hasBadge: false))
+    .buttonStyle(LargeButton(hasBadge: false))
     .disabled(true)
 
     Button("버튼 텍스트") {
         print("버튼 클릭3")
     }
-    .buttonStyle(LargeButtonStyle(hasBadge: true))
+    .buttonStyle(LargeButton(hasBadge: true))
     .disabled(true)
 
     Button("버튼 텍스트") {
         print("버튼 클릭4")
     }
-    .buttonStyle(LargeButtonStyle(hasBadge: true))
+    .buttonStyle(LargeButton(hasBadge: true))
 }
