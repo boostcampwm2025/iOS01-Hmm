@@ -161,8 +161,14 @@ final class LanguageGame: Game {
     private func updateLanguageItemList() {
         for (index, item) in itemList.enumerated() {
             if item.state == .empty { continue }
-
-            let newState: LanguageItemState = index < leadingAndTrailingItemCount ? .completed : index == leadingAndTrailingItemCount ? .active : .upcoming
+            var newState: LanguageItemState
+            if index < leadingAndTrailingItemCount {
+                newState = .completed
+            } else if index == leadingAndTrailingItemCount {
+                newState = .active
+            } else {
+                newState = .upcoming
+            }
             itemList[index] = .init(
                 languageType: item.languageType,
                 state: newState
