@@ -8,7 +8,7 @@
 /// 탭 게임 클래스
 final class TapGame: Game {
     /// 게임 종류
-    var kind: GameType = .tap
+    var kind: GameType
     /// 사용자 정보
     var user: User
     /// 계산기
@@ -17,13 +17,22 @@ final class TapGame: Game {
     var feverSystem: FeverSystem
     /// 버프 시스템
     var buffSystem: BuffSystem
+    /// 인벤토리
+    let inventory: Inventory
 
     /// 탭 게임 초기화
-    init(user: User, calculator: Calculator, feverSystem: FeverSystem, buffSystem: BuffSystem) {
+    init(
+        user: User,
+        calculator: Calculator,
+        feverSystem: FeverSystem,
+        buffSystem: BuffSystem
+    ) {
+        self.kind = .tap
         self.user = user
         self.calculator = calculator
         self.feverSystem = feverSystem
         self.buffSystem = buffSystem
+        self.inventory = user.inventory
     }
 
     /// 게임 시작

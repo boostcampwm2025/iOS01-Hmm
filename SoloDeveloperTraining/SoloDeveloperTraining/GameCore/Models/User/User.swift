@@ -17,7 +17,7 @@ actor User {
     /// 지갑 [재산, 다이아]
     let wallet: Wallet
     /// 인벤토리 [장비, 소비, 부동산] 아이템
-    let inventory: Inventory
+    nonisolated let inventory: Inventory
     /// 게임 기록
     let record: Record
     /// 보유 스킬
