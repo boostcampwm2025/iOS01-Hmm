@@ -7,6 +7,13 @@
 
 import Foundation
 
+private enum Constant {
+    static let defaultGainFever: Double = 33
+    static let bugGainFever: Double = -50
+    static let smallGoldMultiplier: Double = 0.8
+    static let largeGoldMultiplier: Double = 1.2
+}
+
 final class DodgeGame: Game {
     /// 게임 종류
     var kind: GameType = .dodge
@@ -98,7 +105,7 @@ final class DodgeGame: Game {
     /// 기본 액션 수행 (수동 탭 등)
     /// - Returns: 획득한 기본 골드
     func didPerformAction() async -> Int {
-        feverSystem.gainFever(33)
+        feverSystem.gainFever(Constant.defaultGainFever)
         let baseGold = calculator.calculateGoldPerAction(
             game: kind,
             user: user,
@@ -115,7 +122,7 @@ final class DodgeGame: Game {
         switch type {
         case .smallGold:
             // 피버 증가
-            feverSystem.gainFever(33)
+            feverSystem.gainFever(Constant.defaultGainFever)
 
             // 기본 골드 계산
             let baseGold = calculator.calculateGoldPerAction(
@@ -126,13 +133,13 @@ final class DodgeGame: Game {
             )
 
             // 0.8배 획득
-            let gainGold = Int(Double(baseGold) * 0.8)
+            let gainGold = Int(Double(baseGold) * Constant.smallGoldMultiplier)
             await user.wallet.addGold(gainGold)
             return gainGold
 
         case .largeGold:
             // 피버 증가
-            feverSystem.gainFever(33)
+            feverSystem.gainFever(Constant.defaultGainFever)
 
             // 기본 골드 계산
             let baseGold = calculator.calculateGoldPerAction(
@@ -143,13 +150,13 @@ final class DodgeGame: Game {
             )
 
             // 1.2배 획득
-            let gainGold = Int(Double(baseGold) * 1.2)
+            let gainGold = Int(Double(baseGold) * Constant.largeGoldMultiplier)
             await user.wallet.addGold(gainGold)
             return gainGold
 
         case .bug:
             // 피버 감소
-            feverSystem.gainFever(-50)
+            feverSystem.gainFever(Constant.bugGainFever)
 
             // 기본 골드 계산
             let baseGold = calculator.calculateGoldPerAction(
