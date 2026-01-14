@@ -13,8 +13,10 @@ private enum Constant {
     }
 
     enum Fever {
-        static let successFever: Double = 80
-        static let failureFever: Double = -40
+        static let success: Double = 80
+        static let failure: Double = -40
+        static let decreaseInterval: TimeInterval = 0.1
+        static let decreasePercentPerTick: Double = 1
     }
 }
 
@@ -25,7 +27,10 @@ final class StackGame: Game {
     var kind: GameType = .stack
     var user: User
     var calculator: Calculator
-    var feverSystem: FeverSystem = .init(decreaseInterval: 0.1, decreasePercentPerTick: 1)
+    var feverSystem: FeverSystem = .init(
+        decreaseInterval: Constant.Fever.decreaseInterval,
+        decreasePercentPerTick: Constant.Fever.decreasePercentPerTick
+    )
     var buffSystem: BuffSystem = .init()
     var screenSize: CGSize = .init(width: 0, height: 0)
 
@@ -136,9 +141,9 @@ final class StackGame: Game {
     private func applyReward() {
         let goldEarned = calculateGold()
         user.wallet.addGold(goldEarned)
-        feverSystem.gainFever(Constant.Fever.successFever)
+        feverSystem.gainFever(Constant.Fever.success)
         #if DEV_BUILD
-        print("💰 골드 획득: \(goldEarned), 총액: \(user.wallet.gold)")
+            print("💰 골드 획득: \(goldEarned), 총액: \(user.wallet.gold)")
         #endif
     }
 
@@ -146,9 +151,9 @@ final class StackGame: Game {
     private func applyPenalty() {
         let goldLost = calculateGold()
         user.wallet.spendGold(goldLost)
-        feverSystem.gainFever(Constant.Fever.failureFever)
+        feverSystem.gainFever(Constant.Fever.failure)
         #if DEV_BUILD
-        print("💸 골드 손실: \(goldLost), 총액: \(user.wallet.gold)")
+            print("💸 골드 손실: \(goldLost), 총액: \(user.wallet.gold)")
         #endif
     }
 
