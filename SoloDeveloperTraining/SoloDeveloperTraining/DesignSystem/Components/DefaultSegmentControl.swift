@@ -47,7 +47,6 @@ struct DefaultSegmentControl: View {
         .overlay {
             Rectangle()
                 .stroke(Constant.Color.border, lineWidth: Constant.lineWidth)
-                .animation(.none, value: selection)
         }
     }
 }
