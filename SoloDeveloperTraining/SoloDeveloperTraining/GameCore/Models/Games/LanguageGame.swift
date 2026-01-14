@@ -32,6 +32,12 @@ enum LanguageType: String {
     }
 }
 
+enum LanguageItemState {
+    case completed
+    case active
+    case upcoming
+}
+
 class LanguageGame {
     let user: User
     let calculator: Calculator

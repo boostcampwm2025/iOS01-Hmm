@@ -38,7 +38,7 @@ struct MainView: View {
             }
 
             // 탭바
-            TabBarView(selectedTab: $selectedTab)
+            TabBar(selectedTab: $selectedTab)
 
             // 탭별 콘텐츠
             Group {
@@ -60,5 +60,6 @@ struct MainView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .ignoresSafeArea(edges: .bottom)
+        .background(Color.beige200)
     }
 }

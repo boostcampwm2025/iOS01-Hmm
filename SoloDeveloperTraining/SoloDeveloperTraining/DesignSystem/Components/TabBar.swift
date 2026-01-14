@@ -23,7 +23,7 @@ enum TabItem: String, CaseIterable {
     }
 }
 
-struct TabBarView: View {
+struct TabBar: View {
     @Binding var selectedTab: TabItem
 
     var body: some View {
@@ -38,7 +38,7 @@ struct TabBarView: View {
             }
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.vertical, 14)
         .background(Color(.clear))
     }
 }
@@ -52,31 +52,30 @@ private struct TabBarButton: View {
 
     var body: some View {
         Button(action: action) {
-            ZStack(alignment: .bottomTrailing) {
-                VStack(spacing: 2) {
-                    Image(tab.imageName)
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                    Text(tab.rawValue)
-                        .textStyle(.caption)
-                }
-                .foregroundStyle(isSelected ? .white : .primary)
-                .frame(width: 80, height: 50)
-                .background(
-                    Rectangle()
-                        .fill(isSelected ? Color("test_blue") : Color("test_gray"))
-                )
-                .offset(x: isPressed ? 2 : 0, y: isPressed ? 2 : 0)
+            VStack(spacing: 4) {
+                Image(tab.imageName)
+                    .resizable()
+                    .frame(width: 24, height: 24)
 
-                Rectangle()
-                    .fill(Color.black)
-                    .frame(width: 80, height: 50)
-                    .offset(x: 4, y: 4)
-                    .zIndex(-1)
+                Text(tab.rawValue)
+                    .textStyle(.caption)
             }
+            .padding(.vertical, 4.5)
+            .foregroundStyle(isSelected ? .white : AppColors.orange500)
+            .frame(maxWidth: .infinity)
+            .background(
+                Rectangle()
+                    .fill(isSelected ? AppColors.orange300 : AppColors.beige300)
+                    .shadow(color: .black, radius: 0, x: 2, y: 3)
+            )
+            .offset(x: isPressed ? 2 : 0, y: isPressed ? 2 : 0)
             .animation(.none, value: isSelected)
         }
-        .frame(width: 84, height: 54)
-        .buttonStyle(.pressable(isPressed: $isPressed))
+            .buttonStyle(.pressable(isPressed: $isPressed))
     }
+}
+
+#Preview {
+    @Previewable @State var selectedTab: TabItem = .work
+    TabBar(selectedTab: $selectedTab)
 }
