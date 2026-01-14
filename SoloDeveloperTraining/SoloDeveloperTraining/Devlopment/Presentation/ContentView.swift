@@ -54,15 +54,20 @@ struct ContentView: View {
                     Image(systemName: "gamecontroller")
                     Text("탭 게임")
                 }
-
-            ShopView(user: user, calculator: calculator)
+            LanguageGameTestView(user: user, calculator: calculator)
                 .tag(2)
+                .tabItem {
+                    Image(systemName: "gamecontroller")
+                    Text("언어 맞추기")
+                }
+            ShopView(user: user, calculator: calculator)
+                .tag(3)
                 .tabItem {
                     Image(systemName: "cart")
                     Text("상점")
                 }
             AchievementTestView()
-                .tag(3)
+                .tag(4)
                 .tabItem {
                     Image(systemName: "note")
                     Text("미션")

@@ -35,7 +35,7 @@ struct TabGameView: View {
             HStack(spacing: 30) {
                 Button {
                     Task {
-                        let gainGold = await game.didPerformAction()
+                        let gainGold = await game.didPerformAction(())
                         print(gainGold)
                     }
                 } label: {

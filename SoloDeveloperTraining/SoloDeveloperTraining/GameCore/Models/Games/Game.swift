@@ -9,6 +9,8 @@ import Foundation
 
 /// 게임 프로토콜
 protocol Game {
+    /// action parameter
+    associatedtype ActionInput
     /// 게임 종류
     var kind: GameType { get set }
     /// 유저
@@ -26,7 +28,7 @@ protocol Game {
     func stopGame()
     /// action 수행
     @discardableResult
-    func didPerformAction() async -> Int
+    func didPerformAction(_ input: ActionInput) async -> Int
 }
 
 /// 게임 타입

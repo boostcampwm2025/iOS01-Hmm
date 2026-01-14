@@ -15,6 +15,8 @@ private enum Constant {
 }
 
 final class DodgeGame: Game {
+    typealias ActionInput = DropItem.DropItemType
+
     /// 게임 종류
     var kind: GameType = .dodge
     /// 사용자 정보
@@ -59,7 +61,7 @@ final class DodgeGame: Game {
         gameCore.onCollision = { [weak self] itemType in
             guard let self = self else { return }
             Task {
-                let goldDelta = await self.handleItemCollision(type: itemType)
+                let goldDelta = await self.didPerformAction(itemType)
                 await MainActor.run {
                     self.onGoldChangedHandler(goldDelta)
                 }
@@ -102,24 +104,11 @@ final class DodgeGame: Game {
         self.onGoldChangedHandler = handler
     }
 
-    /// 기본 액션 수행 (수동 탭 등)
-    /// - Returns: 획득한 기본 골드
-    func didPerformAction() async -> Int {
-        feverSystem.gainFever(Constant.defaultGainFever)
-        let baseGold = calculator.calculateGoldPerAction(
-            game: kind,
-            user: user,
-            feverMultiplier: feverSystem.feverMultiplier,
-            buffMultiplier: buffSystem.multiplier
-        )
-        return baseGold
-    }
-
     /// 아이템 충돌 처리
     /// - Parameter type: 충돌한 아이템 타입
     /// - Returns: 획득/손실한 골드 (손실은 음수)
-    func handleItemCollision(type: DropItem.DropItemType) async -> Int {
-        switch type {
+    func didPerformAction(_ input: DropItem.DropItemType) async -> Int {
+        switch input {
         case .smallGold:
             // 피버 증가
             feverSystem.gainFever(Constant.defaultGainFever)
