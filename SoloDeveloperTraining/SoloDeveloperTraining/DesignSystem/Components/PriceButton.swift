@@ -11,15 +11,12 @@ private enum Constant {
     static let shadowOffsetX: CGFloat = 2
     static let shadowOffsetY: CGFloat = 3
     static let cornerRadius: CGFloat = 5
+    static let buttonHeight: CGFloat = 44
     static let iconSize = CGSize(width: 15, height: 15)
     static let lockIconSize = CGSize(width: 18, height: 18)
     static let contentSpacing: CGFloat = 3
     static let disabledOverlayOpacity: Double = 0.9
-
-    enum Padding {
-        static let horizontal: CGFloat = 8
-        static let vertical: CGFloat = 13.5
-    }
+    static let horizontalPadding: CGFloat = 8
 }
 
 struct PriceButton: View {
@@ -53,19 +50,21 @@ struct PriceButton: View {
         .disabled(isDisabled)
     }
 
+    @ViewBuilder
     var buttonContent: some View {
-        HStack(spacing: Constant.contentSpacing) {
-            Image("icon_coin_bag")
-                .frame(
-                    width: Constant.iconSize.width,
-                    height: Constant.iconSize.height
-                )
-            Text(gold.formatted())
-                .foregroundStyle(.white)
-                .textStyle(.caption)
+        Group {
+            if axis == .horizontal {
+                HStack(spacing: Constant.contentSpacing) {
+                    contentViews
+                }
+            } else {
+                VStack(spacing: Constant.contentSpacing) {
+                    contentViews
+                }
+            }
         }
-        .padding(.horizontal, Constant.Padding.horizontal)
-        .padding(.vertical, Constant.Padding.vertical)
+        .frame(height: Constant.buttonHeight)
+        .padding(.horizontal, Constant.horizontalPadding)
         .background(.orange500)
         .clipShape(RoundedRectangle(cornerRadius: Constant.cornerRadius))
         .offset(
@@ -75,12 +74,24 @@ struct PriceButton: View {
         .animation(.none, value: isPressed)
     }
 
+    @ViewBuilder
+    var contentViews: some View {
+        Image("icon_coin_bag")
+            .frame(
+                width: Constant.iconSize.width,
+                height: Constant.iconSize.height
+            )
+        Text(gold.formatted())
+            .foregroundStyle(.white)
+            .textStyle(.caption)
+    }
+
     var disabledOverlay: some View {
         ZStack {
             RoundedRectangle(cornerRadius: Constant.cornerRadius)
                 .foregroundStyle(Color.gray200.opacity(Constant.disabledOverlayOpacity))
 
-            Image("icon_coin_bag")
+            Image("lock")
                 .resizable()
                 .frame(
                     width: Constant.lockIconSize.width,
