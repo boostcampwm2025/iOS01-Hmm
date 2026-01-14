@@ -8,6 +8,10 @@
 import Foundation
 import SwiftUI
 
+private enum Constant {
+    static let itemRemovalOffset: CGFloat = 50
+}
+
 struct FallingItem: Identifiable {
     /// 고유 식별자
     let id = UUID()
@@ -132,6 +136,28 @@ private extension DodgeGameCore {
         // 화면 밖으로 나간 아이템 제거
         fallingItems.removeAll { item in
             item.position.y > screenHeight/2 + 50
+        }
+    }
+    
+    func updateItem() {
+        var indicesToRemove: [Int] = []
+        let removalThreshold = screenHeight/2 + Constant.itemRemovalOffset
+        
+        // 위치 업데이트 및 제거 대상 수집
+        for index in fallingItems.indices {
+            fallingItems[index].updatePosition(by: fallSpeed)
+            
+            if fallingItems[index].position.y > removalThreshold {
+                indicesToRemove.append(index)
+            }
+        }
+        
+        // 충돌 감지 (제거 전에 먼저 체크)
+        checkCollisions()
+        
+        // 역순으로 제거
+        for index in indicesToRemove.reversed() {
+            fallingItems.remove(at: index)
         }
     }
 
