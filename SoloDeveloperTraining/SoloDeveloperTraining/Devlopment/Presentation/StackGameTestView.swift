@@ -8,44 +8,8 @@
 import SpriteKit
 import SwiftUI
 
-@Observable
-final class StackGameTestViewModel {
-    let game: StackGame
-
-    var feverSystem: FeverSystem { game.feverSystem }
-    var gold: Int { game.user.wallet.gold }
-    var diamond: Int { game.user.wallet.diamond }
-
-    var coffeeCount: Int {
-        game.user.inventory.count(.coffee) ?? 0
-    }
-
-    var energyDrinkCount: Int {
-        game.user.inventory.count(.energyDrink) ?? 0
-    }
-
-    init(game: StackGame) {
-        self.game = game
-    }
-
-    func stopGame() {}
-
-    func useCoffee() {
-        if game.user.inventory.drink(.coffee) {
-            game.buffSystem.useConsumableItem(type: .coffee)
-        }
-    }
-
-    func useEnergyDrink() {
-        if game.user.inventory.drink(.energyDrink) {
-            game.buffSystem.useConsumableItem(type: .energyDrink)
-        }
-    }
-}
-
 struct StackGameTestView: View {
-    @State var viewModel: StackGameTestViewModel
-
+    @State private var game: StackGame
     private let scene: StackGameScene
 
     init(user: User, calculator: Calculator) {
@@ -53,14 +17,14 @@ struct StackGameTestView: View {
         let scene = StackGameScene(stackGame: game)
 
         self.scene = scene
-        self._viewModel = State(wrappedValue: .init(game: game))
+        self._game = State(wrappedValue: game)
     }
 
     var body: some View {
         VStack {
             VStack {
-                Text("골드: \(viewModel.gold)")
-                Text("다이아몬드: \(viewModel.diamond)")
+                Text("골드: \(game.user.wallet.gold)")
+                Text("다이아몬드: \(game.user.wallet.diamond)")
             }
             .frame(maxHeight: .infinity)
 
@@ -68,16 +32,30 @@ struct StackGameTestView: View {
                 SpriteView(scene: scene)
 
                 GameToolBar(
-                    closeButtonDidTapHandler: viewModel.stopGame,
-                    coffeeButtonDidTapHandler: viewModel.useCoffee,
-                    energyDrinkButtonDidTapHandler: viewModel.useEnergyDrink,
-                    feverState: viewModel.feverSystem,
-                    coffeeCount: .constant(viewModel.coffeeCount),
-                    energyDrinkCount: .constant(viewModel.energyDrinkCount)
+                    closeButtonDidTapHandler: stopGame,
+                    coffeeButtonDidTapHandler: useCoffee,
+                    energyDrinkButtonDidTapHandler: useEnergyDrink,
+                    feverState: game.feverSystem,
+                    coffeeCount: .constant(game.user.inventory.count(.coffee) ?? 0),
+                    energyDrinkCount: .constant(game.user.inventory.count(.energyDrink) ?? 0)
                 )
                 .padding()
             }
             .frame(maxHeight: .infinity)
+        }
+    }
+
+    private func stopGame() {}
+
+    private func useCoffee() {
+        if game.user.inventory.drink(.coffee) {
+            game.buffSystem.useConsumableItem(type: .coffee)
+        }
+    }
+
+    private func useEnergyDrink() {
+        if game.user.inventory.drink(.energyDrink) {
+            game.buffSystem.useConsumableItem(type: .energyDrink)
         }
     }
 }
