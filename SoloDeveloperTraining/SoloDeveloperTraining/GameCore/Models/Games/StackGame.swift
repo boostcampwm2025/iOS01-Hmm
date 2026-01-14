@@ -8,7 +8,14 @@
 import Foundation
 
 private enum Constant {
-    static let initialBlockYPosition: CGFloat = 20
+    enum Position {
+        static let initialBlockYPosition: CGFloat = 20
+    }
+
+    enum Fever {
+        static let successFever: Double = 80
+        static let failureFever: Double = -40
+    }
 }
 
 @Observable
@@ -56,7 +63,7 @@ final class StackGame: Game {
         let initialBlock = StackBlock(
             type: blockType,
             positionX: screenSize.width / 2,
-            positionY: Constant.initialBlockYPosition
+            positionY: Constant.Position.initialBlockYPosition
         )
 
         blocks.append(initialBlock)
@@ -126,7 +133,7 @@ final class StackGame: Game {
     private func applyReward() {
         let goldEarned = calculateGold()
         user.wallet.addGold(goldEarned)
-        feverSystem.gainFever(80)
+        feverSystem.gainFever(Constant.Fever.successFever)
         #if DEV_BUILD
         print("💰 골드 획득: \(goldEarned), 총액: \(user.wallet.gold)")
         #endif
@@ -136,7 +143,7 @@ final class StackGame: Game {
     private func applyPenalty() {
         let goldLost = calculateGold()
         user.wallet.spendGold(goldLost)
-        feverSystem.gainFever(-40)
+        feverSystem.gainFever(Constant.Fever.failureFever)
         #if DEV_BUILD
         print("💸 골드 손실: \(goldLost), 총액: \(user.wallet.gold)")
         #endif
