@@ -27,7 +27,7 @@ struct CurrencyLabel: View {
     var body: some View {
         switch axis {
         case .vertical:
-            VStack {
+            VStack(spacing: Constants.iconTextSpacing) {
                 switch icon {
                 case .diamond: Image(.iconDiamondGreen)
                 case .gold: Image(.iconCoinBag)
