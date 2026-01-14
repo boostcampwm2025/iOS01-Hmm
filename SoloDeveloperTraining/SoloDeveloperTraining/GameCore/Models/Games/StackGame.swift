@@ -51,6 +51,7 @@ final class StackGame: Game {
 
     func stopGame() {
         feverSystem.stop()
+        buffSystem.stop()
         isPlaying = false
     }
 
