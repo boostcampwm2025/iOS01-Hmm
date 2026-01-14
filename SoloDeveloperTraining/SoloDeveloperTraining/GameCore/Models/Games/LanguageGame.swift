@@ -115,10 +115,8 @@ final class LanguageGame: Game {
 
     private func languageButtonTapHandler(tappedItemType: LanguageType) -> Bool {
         let activeItem = itemList[leadingAndTrailingItemCount]
-        print("\n✅ \(tappedItemType) 버튼 클릭")
 
         guard activeItem.languageType == tappedItemType else {
-            print("잘못된 버튼을 클릭했습니다.")
             return false
         }
 
@@ -129,12 +127,8 @@ final class LanguageGame: Game {
         newItems.append(makeNewLanguageItem())
         // 3. 요소 업데이트
         self.itemList = newItems
-
         // 4. 상태 업데이트
         updateLanguageItemList()
-
-        print("변경된 아이템 리스트")
-        itemList.forEach { print("언어: \($0.languageType), 상태: \($0.state)") }
 
         return true
     }
@@ -157,8 +151,6 @@ final class LanguageGame: Game {
                 items.append(.init(languageType: newItem.languageType, state: .upcoming))
             }
         }
-
-        print("초기 아이템 리스트 생성 완료 (중앙: \(activeIndex))")
         return items
     }
 
