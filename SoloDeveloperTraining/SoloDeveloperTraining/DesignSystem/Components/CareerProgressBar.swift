@@ -20,11 +20,11 @@ private enum Constants {
 }
 
 struct CareerProgressBar: View {
-    let current: Career
+    let career: Career
     let currentGold: Int
 
     var progress: CGFloat {
-        Double(currentGold) / Double(current.nextCareer?.requiredWealth ?? 1)
+        Double(currentGold) / Double(career.nextCareer?.requiredWealth ?? 1)
     }
 
     var body: some View {
@@ -55,12 +55,12 @@ struct CareerProgressBar: View {
                     alignment: .trailing,
                     spacing: Constants.Spacing.trailingLabelSpacing
                 ) {
-                    Text(current.nextCareer?.rawValue ?? "").textStyle(.caption)
+                    Text(career.nextCareer?.rawValue ?? "").textStyle(.caption)
                     CurrencyLabel(
                         axis: .horizontal,
                         icon: .gold,
                         textStyle: .caption,
-                        value: current.nextCareer?.requiredWealth ?? 0
+                        value: career.nextCareer?.requiredWealth ?? 0
                     )
                 }
             }
@@ -69,7 +69,7 @@ struct CareerProgressBar: View {
 }
 
 #Preview {
-    CareerProgressBar(current: .unemployed, currentGold: 0)
-    CareerProgressBar(current: .laptopOwner, currentGold: 1200)
-    CareerProgressBar(current: .aspiringDeveloper, currentGold: 1800)
+    CareerProgressBar(career: .unemployed, currentGold: 0)
+    CareerProgressBar(career: .laptopOwner, currentGold: 1200)
+    CareerProgressBar(career: .aspiringDeveloper, currentGold: 1800)
 }
