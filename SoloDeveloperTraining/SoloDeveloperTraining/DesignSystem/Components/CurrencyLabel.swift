@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+private enum Constants {
+    static let iconTextSpacing: CGFloat = 3
+}
+
 struct CurrencyLabel: View {
     private let axis: Axis
     private let icon: Icon
@@ -23,7 +27,7 @@ struct CurrencyLabel: View {
     var body: some View {
         switch axis {
         case .vertical:
-            VStack {
+            VStack(spacing: Constants.iconTextSpacing) {
                 switch icon {
                 case .diamond: Image(.iconDiamondGreen)
                 case .gold: Image(.iconCoinBag)
@@ -34,7 +38,7 @@ struct CurrencyLabel: View {
             }
 
         case .horizontal:
-            HStack {
+            HStack(spacing: Constants.iconTextSpacing) {
                 switch icon {
                 case .diamond: Image(.iconDiamondGreen)
                 case .gold: Image(.iconCoinBag)
