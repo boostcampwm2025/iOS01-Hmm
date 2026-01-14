@@ -25,8 +25,8 @@ struct LanguageGameTestView: View {
         .python
     ]
 
-    @State private var coffeeCount: Int = 0
-    @State private var energyDrinkCount: Int = 0
+    @State private var coffeeCount: Int
+    @State private var energyDrinkCount: Int
 
     init(user: User, calculator: Calculator) {
         self.user = user
@@ -50,15 +50,16 @@ struct LanguageGameTestView: View {
             GameToolBar(
                 closeButtonDidTapHandler: {},
                 coffeeButtonDidTapHandler: {
-                    coffeeCount -= 1
+                    useConsumableItem(.coffee)
                 },
                 energyDrinkButtonDidTapHandler: {
-                    energyDrinkCount -= 1
+                    useConsumableItem(.energyDrink)
                 },
                 feverState: game.feverSystem,
                 coffeeCount: $coffeeCount,
                 energyDrinkCount: $energyDrinkCount,
             )
+
             Text("총 재화: \(user.wallet.gold)")
             Spacer()
 
@@ -87,5 +88,21 @@ struct LanguageGameTestView: View {
                 }
             }
         }.padding()
+    }
+}
+
+private extension LanguageGameTestView {
+    func useConsumableItem(_ type: ConsumableType) {
+        Task {
+            let isSuccess = await user.inventory.drink(.coffee)
+            if isSuccess {
+                self.updateConsumableItems()
+            }
+        }
+    }
+
+    func updateConsumableItems() {
+        coffeeCount = user.inventory.count(.coffee) ?? 0
+        energyDrinkCount = user.inventory.count(.energyDrink) ?? 0
     }
 }
