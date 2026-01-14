@@ -14,7 +14,7 @@ private enum Constant {
     }
 }
 
-enum LanguageType: String {
+enum LanguageType: String, CaseIterable {
     case swift = "Swift"
     case kotlin = "Kotlin"
     case dart = "Dart"
@@ -39,6 +39,10 @@ enum LanguageType: String {
         case .python: return "PastelGreen"
         case .empty: return ""
         }
+    }
+
+    static func random() -> Self {
+        return LanguageType.allCases.randomElement() ?? .swift
     }
 }
 
@@ -124,7 +128,7 @@ final class LanguageGame: Game {
         var newItems = itemList
         newItems.removeFirst()
         // 2. 새 요소를 마지막에 추가
-        newItems.append(makeNewLanguageItem())
+        newItems.append(.init(languageType: LanguageType.random(), state: .upcoming))
         // 3. 요소 업데이트
         self.itemList = newItems
         // 4. 상태 업데이트
@@ -143,20 +147,15 @@ final class LanguageGame: Game {
                 items.append(.init(languageType: .empty, state: .empty))
             } else if i == activeIndex {
                 // 2. 중앙: 실제 게임 타겟 (Active)
-                let newItem = makeNewLanguageItem()
-                items.append(.init(languageType: newItem.languageType, state: .active))
+                let newType = LanguageType.random()
+                items.append(.init(languageType: newType, state: .active))
             } else {
                 // 3. 중앙 뒷부분: 대기 중인 아이템 (Upcoming)
-                let newItem = makeNewLanguageItem()
-                items.append(.init(languageType: newItem.languageType, state: .upcoming))
+                let newType = LanguageType.random()
+                items.append(.init(languageType: newType, state: .upcoming))
             }
         }
         return items
-    }
-
-    private func makeNewLanguageItem() -> LanguageItem {
-        let randomType: LanguageType = [.swift, .kotlin, .dart, .python].randomElement()!
-        return LanguageItem(languageType: randomType, state: .upcoming)
     }
 
     private func updateLanguageItemList() {
