@@ -98,3 +98,30 @@ private extension TapGameView {
         }
     }
 }
+
+#Preview {
+    let tapGame = TapGame(
+        user: User(
+            nickname: "Preview User",
+            wallet: Wallet(gold: 10000, diamond: 50),
+            inventory: Inventory(
+                consumableItems: [
+                    Consumable(type: .coffee, count: 5),
+                    Consumable(type: .energyDrink, count: 3)
+                ]
+            ),
+            record: Record(),
+            skills: [
+                Skill(game: .tap, tier: .beginner, level: 10),
+                Skill(game: .tap, tier: .intermediate, level: 5)
+            ]
+        ),
+        calculator: Calculator(),
+        feverSystem: FeverSystem(decreaseInterval: 0.1, decreasePercentPerTick: 3),
+        buffSystem: BuffSystem()
+    )
+
+    tapGame.startGame()
+
+    return TapGameView(tapGame: tapGame, onClose: {}).frame(width: 300, height: 300)
+}
