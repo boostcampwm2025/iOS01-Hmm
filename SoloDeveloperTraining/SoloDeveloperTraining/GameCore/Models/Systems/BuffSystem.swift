@@ -23,6 +23,9 @@ final class BuffSystem {
 
     /// 소비 아이템 사용
     func useConsumableItem(type: ConsumableType) {
+        // 기존 타이머가 있으면 먼저 정리
+        stopTimer()
+
         isRunning = true
         duration = type.duration
         multiplier = type.buffMultiplier
@@ -30,9 +33,12 @@ final class BuffSystem {
             withTimeInterval: decreaseInterval,
             repeats: true
         ) { [weak self] _ in
-            self?.duration -= 1
-            if self?.duration == 0 {
-                self?.stopTimer()
+            guard let self = self else { return }
+            self.duration -= 1
+            // 0 이하로 내려가지 않도록 보장
+            if self.duration <= 0 {
+                self.duration = 0
+                self.stopTimer()
             }
         }
     }
@@ -42,5 +48,6 @@ final class BuffSystem {
         decreaseTimer?.invalidate()
         decreaseTimer = nil
         multiplier = 1
+        isRunning = false
     }
 }

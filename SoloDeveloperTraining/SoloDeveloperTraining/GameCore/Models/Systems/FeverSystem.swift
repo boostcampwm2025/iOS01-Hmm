@@ -60,7 +60,7 @@ final class FeverSystem: FeverState {
     /// - Parameter amount: 획득할 피버량
     func gainFever(_ amount: Double) {
         let sumPercent = feverPercent + amount
-        feverPercent = min(400, sumPercent)
+        feverPercent = min(400, max(0, sumPercent))
     }
 
     /// 피버 시스템 시작

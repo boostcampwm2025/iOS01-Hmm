@@ -30,6 +30,7 @@
 				Devlopment/CheatSystem/CheatManager.swift,
 				Devlopment/Presentation/AchievementTestView.swift,
 				Devlopment/Presentation/ContentView.swift,
+				Devlopment/Presentation/DodgeGameTestView.swift,
 				Devlopment/Presentation/ShopView.swift,
 				Devlopment/Presentation/TabGameView.swift,
 			);
