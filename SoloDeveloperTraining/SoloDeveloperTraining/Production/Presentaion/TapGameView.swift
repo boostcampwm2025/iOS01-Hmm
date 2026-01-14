@@ -12,10 +12,6 @@ private enum Constant {
         static let horizontal: CGFloat = 16
         static let toolBarBottom: CGFloat = 14
     }
-
-    enum Animation {
-        static let effectLabelDuration: TimeInterval = 1.5
-    }
 }
 
 struct TapGameView: View {
@@ -60,8 +56,11 @@ struct TapGameView: View {
                     .clipped()
 
                 ForEach(effectLabels) { effectLabel in
-                    EffectLabel(value: effectLabel.value)
-                        .position(effectLabel.position)
+                    EffectLabel(
+                        value: effectLabel.value,
+                        onComplete: { effectLabels.removeAll { $0.id == effectLabel.id } }
+                    )
+                    .position(effectLabel.position)
                 }
             }
             // 터치 가능한 영역 정의
@@ -98,15 +97,12 @@ private extension TapGameView {
     ///   - location: 터치한 위치
     ///   - value: 표시할 값
     func addEffectLabel(at location: CGPoint, value: Int) {
-        let id = UUID()
-        let labelData = EffectLabelData(id: id, position: location, value: value)
+        let labelData = EffectLabelData(
+            id: UUID(),
+            position: location,
+            value: value
+        )
         effectLabels.append(labelData)
-
-        // 애니메이션 종료 후 제거
-        Task {
-            try? await Task.sleep(for: .seconds(Constant.Animation.effectLabelDuration))
-            effectLabels.removeAll { $0.id == id }
-        }
     }
 }
 
