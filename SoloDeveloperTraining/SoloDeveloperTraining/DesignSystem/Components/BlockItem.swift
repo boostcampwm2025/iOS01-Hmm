@@ -33,7 +33,7 @@ final class BlockItem: SKSpriteNode {
     required init?(coder aDecoder: NSCoder) {
         return nil
     }
-    
+
     func startMoving(distance: CGFloat) {
         let duration = Double.random(in: Constant.moveDurationRange)
         let moveRight = SKAction.moveBy(x: distance, y: 0, duration: duration)
@@ -43,12 +43,12 @@ final class BlockItem: SKSpriteNode {
         self.moveAction = repeatAction
         self.run(repeatAction, withKey: "moving")
     }
-    
+
     func stopMoving() {
         self.removeAction(forKey: "moving")
         self.moveAction = nil
     }
-    
+
     func enableGravity() {
         self.physicsBody = SKPhysicsBody(rectangleOf: self.size)
         self.physicsBody?.isDynamic = true
@@ -57,12 +57,12 @@ final class BlockItem: SKSpriteNode {
         self.physicsBody?.restitution = Constant.physicsRestitution
         self.physicsBody?.friction = Constant.physicsFriction
     }
-    
+
     func fixPosition() {
         self.physicsBody?.isDynamic = false
         self.physicsBody?.allowsRotation = false
     }
-    
+
     func setupPhysicsBody(isDynamic: Bool = false) {
         self.physicsBody = SKPhysicsBody(rectangleOf: self.size)
         self.physicsBody?.isDynamic = isDynamic
