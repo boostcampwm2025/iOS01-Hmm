@@ -17,7 +17,6 @@
 			membershipExceptions = (
 				"App/Info-Dev.plist",
 				App/Info.plist,
-				DesignSystem/Components/TabBar.swift,
 				Production/Presentaion/MainView.swift,
 				Production/Presentaion/TapGameView.swift,
 			);
