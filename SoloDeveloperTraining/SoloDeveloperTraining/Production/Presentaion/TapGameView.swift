@@ -7,6 +7,17 @@
 
 import SwiftUI
 
+private enum Constant {
+    enum Padding {
+        static let horizontal: CGFloat = 16
+        static let toolBarBottom: CGFloat = 14
+    }
+
+    enum Animation {
+        static let effectLabelDuration: TimeInterval = 1.5
+    }
+}
+
 struct TapGameView: View {
     // MARK: - Properties
     /// 의존 게임
@@ -38,8 +49,8 @@ struct TapGameView: View {
                     set: { _ in }
                 )
             )
-            .padding(.horizontal, 16)
-            .padding(.vertical, 14)
+            .padding(.horizontal, Constant.Padding.horizontal)
+            .padding(.bottom, Constant.Padding.toolBarBottom)
 
             ZStack {
                 Image("background_tapGame")
@@ -93,7 +104,7 @@ private extension TapGameView {
 
         // 애니메이션 종료 후 제거
         Task {
-            try? await Task.sleep(for: .seconds(1.5))
+            try? await Task.sleep(for: .seconds(Constant.Animation.effectLabelDuration))
             effectLabels.removeAll { $0.id == id }
         }
     }
