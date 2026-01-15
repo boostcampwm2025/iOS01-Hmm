@@ -51,13 +51,20 @@ struct QuizButton: View {
                 .frame(height: Constant.height)
                 .background(backgroundColor)
                 .cornerRadius(Constant.cornerRadius)
-                .opacity(isPressed ? Constant.Opacity.pressed : Constant.Opacity.unPressed)
+                .opacity(opacity)
                 .animation(.none, value: isSelected)
         }
         .buttonStyle(.pressable(isPressed: $isPressed))
     }
+}
 
-    private var backgroundColor: SwiftUI.Color {
+// MARK: - Helper
+private extension QuizButton {
+    var opacity: Double {
+        isPressed ? Constant.Opacity.pressed : Constant.Opacity.unPressed
+    }
+
+    var backgroundColor: SwiftUI.Color {
         isSelected ? Constant.Color.selectedBackground : Constant.Color.defaultBackground
     }
 }
