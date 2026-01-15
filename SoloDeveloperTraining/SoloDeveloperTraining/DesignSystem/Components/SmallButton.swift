@@ -1,5 +1,5 @@
 //
-//  LargeButton.swift
+//  SmallButton.swift
 //  SoloDeveloperTraining
 //
 //  Created by 최범수 on 2026-01-14.
@@ -11,8 +11,8 @@ private enum Constant {
     static let radius: CGFloat = 8
 
     enum Size {
-        static let buttonWidth: CGFloat = 170
-        static let buttonHeight: CGFloat = 46
+        static let buttonWidth: CGFloat = 44
+        static let buttonHeight: CGFloat = 44
         static let badgeWidth: CGFloat = 30
         static let badgeHeight: CGFloat = 30
     }
@@ -28,7 +28,7 @@ private enum Constant {
     }
 }
 
-struct LargeButton: View {
+struct SmallButton: View {
     @State private var isPressed: Bool = false
 
     let title: String
@@ -63,19 +63,19 @@ struct LargeButton: View {
 
 #Preview {
     VStack(spacing: 20) {
-        LargeButton(title: "버튼 텍스트") {
+        SmallButton(title: "버튼") {
             print("버튼 클릭1")
         }
 
-        LargeButton(title: "버튼 텍스트", isEnabled: false) {
+        SmallButton(title: "버튼", isEnabled: false) {
             print("버튼 클릭2")
         }
 
-        LargeButton(title: "버튼 텍스트", hasBadge: true, isEnabled: false) {
+        SmallButton(title: "버튼", hasBadge: true, isEnabled: false) {
             print("버튼 클릭3")
         }
 
-        LargeButton(title: "버튼 텍스트", hasBadge: true) {
+        SmallButton(title: "버튼", hasBadge: true) {
             print("버튼 클릭4")
         }
     }
