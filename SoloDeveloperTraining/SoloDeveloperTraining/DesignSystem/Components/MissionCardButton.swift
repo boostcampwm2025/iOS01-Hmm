@@ -102,3 +102,21 @@ extension MissionCardButton {
         }
     }
 }
+
+#Preview {
+    @Previewable @State var buttonState1: MissionCardButton.ButtonState = .acquired
+    @Previewable @State var buttonState2: MissionCardButton.ButtonState = .completed
+
+    ZStack {
+        Rectangle()
+            .fill(AppColors.gray200)
+
+        VStack {
+            MissionCardButton(buttonState: $buttonState1)
+                .padding(.horizontal, 16)
+            MissionCardButton(buttonState: $buttonState2)
+                .padding(.horizontal, 16)
+        }
+    }
+    .padding()
+}
