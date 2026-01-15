@@ -181,7 +181,7 @@ final class StackGameScene: SKScene {
         // StackGame의 previousBlock 정보를 사용해 목표 Y 계산
         let targetY = previousBlock.positionY + previousBlock.height
 
-        if block.position.y <= targetY + block.size.height {
+        if block.position.y <= targetY {
             // 목표 위치에 도달했으므로 정렬 체크
             // 정렬 성공/실패에 따라 물리 처리를 다르게 적용
             checkAlignmentAndHandle(targetY: targetY)
