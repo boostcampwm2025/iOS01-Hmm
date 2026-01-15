@@ -24,18 +24,6 @@ private enum Constant {
         /// 캐릭터 방향 전환을 위한 최소 이동 거리
         static let directionChange: CGFloat = 0.1
     }
-
-    enum Duration {
-        /// 이펙트 표시 시간 (초)
-        static let effectDisplay: TimeInterval = 2.0
-    }
-}
-
-private struct GoldEffect: Identifiable {
-    let id = UUID()
-    let value: Int
-    let positionX: CGFloat
-    let positionY: CGFloat
 }
 
 struct DodgeGameView: View {
@@ -44,7 +32,7 @@ struct DodgeGameView: View {
     @State private var gameAreaWidth: CGFloat = 0
     @State private var gameAreaHeight: CGFloat = 0
     @State private var isFacingLeft: Bool = false
-    @State private var goldEffects: [GoldEffect] = []
+    @State private var goldEffects: [EffectLabelData] = []
 
     init(user: User) {
         self.user = user
@@ -106,8 +94,13 @@ struct DodgeGameView: View {
 
                     // 골드 변화 이펙트
                     ForEach(goldEffects) { effect in
-                        EffectLabel(value: effect.value)
-                            .position(x: effect.positionX, y: effect.positionY)
+                        EffectLabel(
+                            value: effect.value,
+                            onComplete: {
+                                goldEffects.removeAll { $0.id == effect.id }
+                            }
+                        )
+                        .position(effect.position)
                     }
                 }
             }
@@ -133,20 +126,16 @@ extension DodgeGameView {
     }
 
     private func showGoldChangeEffect(_ goldDelta: Int) {
-        let effect = GoldEffect(
-            value: goldDelta,
-            positionX: gameAreaWidth / 2 + game.motionSystem.characterX,
-            positionY: gameAreaHeight * (1 - Constant.Position.characterYRatio) - Constant.Position.effectOffset
+        let effect = EffectLabelData(
+            id: UUID(),
+            position: CGPoint(
+                x: gameAreaWidth / 2 + game.motionSystem.characterX,
+                y: gameAreaHeight * (1 - Constant.Position.characterYRatio) - Constant.Position.effectOffset
+            ),
+            value: goldDelta
         )
 
         goldEffects.append(effect)
-
-        Task {
-            try? await Task.sleep(nanoseconds: UInt64(Constant.Duration.effectDisplay * 1_000_000_000))
-            await MainActor.run {
-                goldEffects.removeAll { $0.id == effect.id }
-            }
-        }
     }
 
     private func useCoffee() {
