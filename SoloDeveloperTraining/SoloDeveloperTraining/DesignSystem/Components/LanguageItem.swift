@@ -40,7 +40,7 @@ struct LanguageItem: View {
 
             Text(languageType.rawValue)
                 .textStyle(textStyle)
-                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
                 .opacity(opacity)
         }
     }

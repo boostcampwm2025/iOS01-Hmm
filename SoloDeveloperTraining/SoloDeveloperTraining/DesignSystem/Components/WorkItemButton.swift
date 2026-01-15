@@ -40,7 +40,6 @@ struct WorkItemButton: View {
                     changeState()
                 }
             }
-        
     }
 }
 

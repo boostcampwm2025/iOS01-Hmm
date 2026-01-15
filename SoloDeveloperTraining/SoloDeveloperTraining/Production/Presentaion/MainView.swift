@@ -10,12 +10,20 @@ import SwiftUI
 struct MainView: View {
     @State private var selectedTab: TabItem = .work
 
+    @State var user = User(
+        nickname: "소피아",
+        wallet: .init(),
+        inventory: .init(),
+        record: .init(),
+        skills: [
+            .init(game: .tap, tier: .beginner, level: 100),
+            .init(game: .language, tier: .beginner, level: 100),
+            .init(game: .dodge, tier: .beginner, level: 100),
+            .init(game: .stack, tier: .beginner, level: 100)
+        ]
+    )
     let housing: Housing = .street
-    let career: Career = .unemployed
-    let nickname: String = "소피아"
     let careerProgress: Double = 0.3
-    let gold: Int = 20000
-    let diamond: Int = 20
 
     var body: some View {
         VStack(spacing: 0) {
@@ -28,11 +36,11 @@ struct MainView: View {
                     .clipped()
 
                 StatusBar(
-                    career: career,
-                    nickname: nickname,
+                    career: user.career,
+                    nickname: user.nickname,
                     careerProgress: careerProgress,
-                    gold: gold,
-                    diamond: diamond
+                    gold: user.wallet.gold,
+                    diamond: user.wallet.diamond
                 )
                 .background(Color.white.opacity(0.8))
             }
@@ -44,8 +52,7 @@ struct MainView: View {
             Group {
                 switch selectedTab {
                 case .work:
-                    Color.white
-                        .overlay(Text("업무 화면").foregroundColor(.gray))
+                    WorkSelectedView(user: user)
                 case .enhance:
                     Color.white
                         .overlay(Text("강화 화면").foregroundColor(.gray))
@@ -62,4 +69,8 @@ struct MainView: View {
         .ignoresSafeArea(edges: .bottom)
         .background(Color.beige200)
     }
+}
+
+#Preview {
+    MainView()
 }
