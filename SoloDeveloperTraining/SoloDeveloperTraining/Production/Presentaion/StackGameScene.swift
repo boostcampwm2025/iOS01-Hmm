@@ -247,10 +247,7 @@ final class StackGameScene: SKScene {
             }
         } else {
             blockViews.append(block)
-
-            // 높이 증가 (렌더링 정보)
-            currentHeight += block.size.height
-
+            
             // 코어에 블록 배치 성공 알림 (위치는 이미 업데이트됨)
             onBlockDropped(stackGame.placeBlockSuccess())
 
