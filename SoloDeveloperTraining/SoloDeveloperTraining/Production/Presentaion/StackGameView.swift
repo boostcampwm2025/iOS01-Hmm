@@ -10,16 +10,8 @@ import SpriteKit
 
 struct StackGameView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var game: StackGame
-    private let scene: StackGameScene
 
-    init(user: User, calculator: Calculator) {
-        let game = StackGame(user: user, calculator: calculator)
-        let scene = StackGameScene(stackGame: game)
-
-        self.scene = scene
-        self._game = State(wrappedValue: game)
-    }
+    let stackGame: StackGame
 
     var body: some View {
         VStack(spacing: 0) {
@@ -27,12 +19,12 @@ struct StackGameView: View {
                 closeButtonDidTapHandler: stopGame,
                 coffeeButtonDidTapHandler: useCoffee,
                 energyDrinkButtonDidTapHandler: useEnergyDrink,
-                feverState: game.feverSystem,
-                coffeeCount: .constant(game.user.inventory.count(.coffee) ?? 0),
-                energyDrinkCount: .constant(game.user.inventory.count(.energyDrink) ?? 0)
+                feverState: stackGame.feverSystem,
+                coffeeCount: .constant(stackGame.user.inventory.count(.coffee) ?? 0),
+                energyDrinkCount: .constant(stackGame.user.inventory.count(.energyDrink) ?? 0)
             )
             .padding(.horizontal)
-            SpriteView(scene: scene)
+            SpriteView(scene: StackGameScene(stackGame: stackGame))
         }
         .onDisappear {
             stopGame()
@@ -44,19 +36,19 @@ struct StackGameView: View {
 
 private extension StackGameView {
     func stopGame() {
-        game.stopGame()
+        stackGame.stopGame()
         dismiss()
     }
 
     func useCoffee() {
-        if game.user.inventory.drink(.coffee) {
-            game.buffSystem.useConsumableItem(type: .coffee)
+        if stackGame.user.inventory.drink(.coffee) {
+            stackGame.buffSystem.useConsumableItem(type: .coffee)
         }
     }
 
     func useEnergyDrink() {
-        if game.user.inventory.drink(.energyDrink) {
-            game.buffSystem.useConsumableItem(type: .energyDrink)
+        if stackGame.user.inventory.drink(.energyDrink) {
+            stackGame.buffSystem.useConsumableItem(type: .energyDrink)
         }
     }
 }

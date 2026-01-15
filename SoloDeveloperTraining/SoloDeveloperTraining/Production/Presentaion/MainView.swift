@@ -87,8 +87,10 @@ struct MainView: View {
                         List {
                             NavigationLink("물건 쌓기 게임") {
                                 StackGameView(
-                                    user: user,
-                                    calculator: calculator
+                                    stackGame: StackGame(
+                                        user: user,
+                                        calculator: calculator
+                                    )
                                 )
                             }
                         }
