@@ -11,8 +11,10 @@ private enum Constant {
     static let defaultImageName: String = "mission_card"
 
     enum Size {
+        static let icon: CGFloat = 16
         static let cardHeight: CGFloat = 180
         static let imageHeight: CGFloat = 72
+        static let progressHeight: CGFloat = 14
     }
 
     enum Padding {
@@ -22,6 +24,16 @@ private enum Constant {
         static let imageTop: CGFloat = 4
         static let conditionTop: CGFloat = 4
         static let bottom: CGFloat = 6
+    }
+
+    enum Spacing {
+        static let rewardIconText: CGFloat = 2
+    }
+
+    enum Typography {
+        static let titleLineLimit: Int = 1
+        static let conditionLineLimit: Int = 2
+        static let minimumScaleFactor: CGFloat = 0.7
     }
 
     enum Color {
@@ -98,13 +110,13 @@ private struct ContentView: View {
                 Text(title)
                     .textStyle(.subheadline)
                     .foregroundStyle(.black)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7) // lineLimit 넘어가면 축소
-                HStack(spacing: 2) {
+                    .lineLimit(Constant.Typography.titleLineLimit)
+                    .minimumScaleFactor(Constant.Typography.minimumScaleFactor)
+                HStack(spacing: Constant.Spacing.rewardIconText) {
                     Image(.iconDiamondGreen)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 16, height: 16)
+                        .frame(width: Constant.Size.icon, height: Constant.Size.icon)
                     Text(reward.formatted)
                         .textStyle(.label)
                         .foregroundStyle(.black)
@@ -128,8 +140,8 @@ private struct ContentView: View {
                 .foregroundStyle(.black)
                 .frame(maxWidth: .infinity)
                 .padding(.top, Constant.Padding.conditionTop)
-                .lineLimit(2)
-                .minimumScaleFactor(0.7)
+                .lineLimit(Constant.Typography.conditionLineLimit)
+                .minimumScaleFactor(Constant.Typography.minimumScaleFactor)
 
             Spacer()
 
@@ -169,7 +181,7 @@ private struct ProgressView: View {
                 .textStyle(.label)
                 .foregroundStyle(Constant.Color.progressText)
         }
-        .frame(height: 14)
+        .frame(height: Constant.Size.progressHeight)
         .frame(maxWidth: .infinity)
     }
 }
