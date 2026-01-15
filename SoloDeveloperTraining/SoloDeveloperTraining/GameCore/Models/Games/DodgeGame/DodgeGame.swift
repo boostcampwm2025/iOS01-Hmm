@@ -82,6 +82,7 @@ final class DodgeGame: Game {
 
     /// 게임 중지 (모든 타이머 정지 및 낙하물 제거)
     func stopGame() {
+        buffSystem.stop()
         feverSystem.stop()
         gameCore.stop()
     }
