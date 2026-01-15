@@ -62,7 +62,7 @@ struct MediumButton: View {
 
     private var backgroundColor: Color {
         if !isEnabled {
-            return .gray200
+            return fillStyle ? .gray200 : .white
         }
         return fillStyle ? .orange500 : .white
     }
