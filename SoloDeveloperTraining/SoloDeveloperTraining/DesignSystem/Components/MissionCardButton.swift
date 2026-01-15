@@ -28,18 +28,14 @@ private enum Constant {
 }
 
 struct MissionCardButton: View {
-    @Binding var buttonState: ButtonState
+    let buttonState: ButtonState
     var onTap: (() -> Void)?
 
     @State private var isPressed: Bool = false
 
     var body: some View {
         Button {
-            if let onTap = onTap {
-                onTap()
-            } else {
-                changeState()
-            }
+            onTap?()
         } label: {
             Text(buttonState.title)
                 .textStyle(.label)
@@ -51,12 +47,6 @@ struct MissionCardButton: View {
         }
         .disabled(!buttonState.isEnabled)
         .buttonStyle(.pressable(isPressed: $isPressed))
-    }
-
-    private func changeState() {
-        if buttonState == .acquired {
-            buttonState = .completed
-        }
     }
 }
 
@@ -105,16 +95,15 @@ extension MissionCardButton {
 }
 
 #Preview {
-    @Previewable @State var buttonState1: MissionCardButton.ButtonState = .acquired
-    @Previewable @State var buttonState2: MissionCardButton.ButtonState = .completed
-
     ZStack {
         Rectangle()
             .fill(AppColors.gray200)
 
         VStack {
-            MissionCardButton(buttonState: $buttonState1)
-            MissionCardButton(buttonState: $buttonState2)
+            MissionCardButton(buttonState: .acquired) {
+                print("획득하기 버튼 클릭")
+            }
+            MissionCardButton(buttonState: .completed)
         }
         .padding(.horizontal, 16)
     }
