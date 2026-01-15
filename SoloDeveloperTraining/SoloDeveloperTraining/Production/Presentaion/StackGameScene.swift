@@ -42,7 +42,7 @@ final class StackGameScene: SKScene {
     /// 블록 배치 처리 중 여부 (UI 인터랙션 차단용)
     private var isProcessing = false
 
-    private var onBlockDropped: ((Int) -> Void)
+    var onBlockDropped: ((Int) -> Void)
 
     init(stackGame: StackGame, onBlockDropped: @escaping ((Int) -> Void)) {
         self.stackGame = stackGame

@@ -15,6 +15,7 @@ private enum Constant {
 
 struct StackGameView: View {
     let stackGame: StackGame
+    let scene: StackGameScene
 
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
@@ -26,6 +27,10 @@ struct StackGameView: View {
     init(user: User, isGameStarted: Binding<Bool>) {
         self.stackGame = StackGame(user: user, calculator: .init())
         self._isGameStarted = isGameStarted
+        self.scene = StackGameScene(
+            stackGame: stackGame,
+            onBlockDropped: { _ in
+            })
         coffeeCount = user.inventory.count(.coffee) ?? 0
         energyDrinkCount = user.inventory.count(.energyDrink) ?? 0
     }
@@ -51,18 +56,18 @@ struct StackGameView: View {
                 .padding(.horizontal)
                 ZStack {
                     SpriteView(
-                        scene: StackGameScene(
-                            stackGame: stackGame,
-                            onBlockDropped: { gold in
-                                addEffectLabel(
-                                    at: CGPoint(
-                                        x: geometry.size.width * randomEffectXRatio,
-                                        y: randomEffectYOffset
-                                    ),
-                                    value: gold
-                                )
-                            })
-                    )
+                        scene: scene
+                    ).onAppear {
+                        scene.onBlockDropped = { gold in
+                            addEffectLabel(
+                                at: CGPoint(
+                                    x: geometry.size.width * randomEffectXRatio,
+                                    y: randomEffectYOffset
+                                ),
+                                value: gold
+                            )
+                        }
+                    }
                     ForEach(effectLabels) { effectLabel in
                         EffectLabel(
                             value: effectLabel.value,
@@ -75,7 +80,6 @@ struct StackGameView: View {
             .background(AppTheme.backgroundColor)
             .navigationBarBackButtonHidden(true) // 임시로 숨김
         }
-
     }
 }
 
