@@ -21,7 +21,7 @@ private enum Constant {
 
     enum EffectLabel {
         static let offsetY: CGFloat = -34
-        static let displayDuration: TimeInterval = 2.0
+        static let displayDuration: TimeInterval = 1.5
     }
 }
 
