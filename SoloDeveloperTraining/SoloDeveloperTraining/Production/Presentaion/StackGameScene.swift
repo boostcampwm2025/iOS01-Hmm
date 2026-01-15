@@ -13,7 +13,8 @@ private enum Constant {
     }
 
     enum Offset {
-        static let spawnYOffset: CGFloat = 100
+        // 최상단에서 블록을 살짝 안쪽으로 내려서 생성하기 위한 여백
+        static let spawnYOffset: CGFloat = 20
     }
 
     enum Time {
@@ -35,7 +36,8 @@ final class StackGameScene: SKScene {
 
     private var currentBlockView: BlockItem?
     private var blockViews: [BlockItem] = []
-    private var currentHeight: CGFloat = 20
+    /// 첫 블록의 바닥 기준 높이
+    private var currentHeight: CGFloat = 0
     /// 블록 배치 처리 중 여부 (UI 인터랙션 차단용)
     private var isProcessing = false
 
@@ -87,7 +89,7 @@ final class StackGameScene: SKScene {
     /// - 초기 블록 배치 및 첫 번째 블록 생성
     func startGame() {
         blockViews = []
-        currentHeight = 20
+        currentHeight = 0
         isProcessing = false
 
         stackGame.startGame()

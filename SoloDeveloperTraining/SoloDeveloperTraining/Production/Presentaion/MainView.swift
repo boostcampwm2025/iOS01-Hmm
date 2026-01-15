@@ -80,6 +80,7 @@ struct MainView: View {
             Group {
                 switch selectedTab {
                 case .work:
+                    // TODO: 실제 디자인으로 변경
                     NavigationStack {
                         List {
                             NavigationLink("물건 쌓기 게임") {
