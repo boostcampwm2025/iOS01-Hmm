@@ -56,33 +56,36 @@ private struct HousingCardContent: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // 상단 텍스트 영역
-            HStack(spacing: Constant.Padding.titleSpacing) {
-                Text(housing.displayTitle)
-                    .textStyle(.callout)
+            VStack(spacing: 0) {
+                // 상단 텍스트 영역
+                HStack(spacing: Constant.Padding.titleSpacing) {
+                    Text(housing.displayTitle)
+                        .textStyle(.callout)
 
-                Text("₩\(housing.cost.gold.formatted)")
-                    .textStyle(.caption2)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding(.horizontal, Constant.Padding.horizontal)
-            .padding(.top, Constant.Padding.top)
-
-            Text("초당 재화 획득량 \(housing.goldPerSecond)")
-                .textStyle(.label)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                    Text("₩\(housing.cost.gold.formatted)")
+                        .textStyle(.caption2)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
                 .padding(.horizontal, Constant.Padding.horizontal)
-                .padding(.top, Constant.Padding.textSpacing)
+                .padding(.top, Constant.Padding.top)
 
-            // 이미지 영역
-            Image(housing.imageName)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: Constant.cardWidth)
-                .frame(maxHeight: .infinity)
-                .clipped()
-                .padding(.top, Constant.Padding.imageTop)
-                .padding(.bottom, Constant.Padding.buttonTop)
+                Text("초당 재화 획득량 \(housing.goldPerSecond)")
+                    .textStyle(.label)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, Constant.Padding.horizontal)
+                    .padding(.top, Constant.Padding.textSpacing)
+
+                // 이미지 영역
+                Image(housing.imageName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: Constant.cardWidth)
+                    .frame(maxHeight: .infinity)
+                    .clipped()
+                    .padding(.top, Constant.Padding.imageTop)
+                    .padding(.bottom, Constant.Padding.buttonTop)
+            }
+            .contentShape(Rectangle())
 
             // 버튼 영역
             LargeButton(
