@@ -24,6 +24,11 @@ private enum Constant {
         /// 캐릭터 방향 전환을 위한 최소 이동 거리
         static let directionChange: CGFloat = 0.1
     }
+
+    enum Padding {
+        static let horizontal: CGFloat = 16
+        static let toolBarBottom: CGFloat = 14
+    }
 }
 
 struct DodgeGameView: View {
@@ -48,7 +53,7 @@ struct DodgeGameView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            VStack {
+            VStack(spacing: 0) {
                 GameToolBar(
                     closeButtonDidTapHandler: game.stopGame,
                     coffeeButtonDidTapHandler: useCoffee,
@@ -57,13 +62,11 @@ struct DodgeGameView: View {
                     coffeeCount: .constant(user.inventory.count(.coffee) ?? 0),
                     energyDrinkCount: .constant(user.inventory.count(.energyDrink) ?? 0)
                 )
-                .padding(.horizontal)
+                .padding(.horizontal, Constant.Padding.horizontal)
+                .padding(.bottom, Constant.Padding.toolBarBottom)
 
                 // 게임 영역
                 ZStack(alignment: .bottom) {
-                    // 배경
-                    Color.beige300
-
                     // 바닥
                     Image(.dodgeGround)
                         .resizable()
@@ -166,7 +169,7 @@ extension DodgeGameView {
         equipmentItems: [],
         consumableItems: [
             .init(type: .coffee, count: 5),
-            .init(type: .energyDrink, count: 5)
+            .init(type: .energyDrink, count: 5),
         ],
         housing: .street
     )
