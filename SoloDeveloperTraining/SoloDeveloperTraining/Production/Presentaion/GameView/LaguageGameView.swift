@@ -86,7 +86,6 @@ struct LaguageGameView: View {
 }
 
 // MARK: - View Components
-
 private extension LaguageGameView {
     /// 상단 툴바
     var toolbarSection: some View {
