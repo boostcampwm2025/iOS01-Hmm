@@ -22,11 +22,11 @@ final class DodgeGame: Game {
     /// 사용자 정보
     var user: User
     /// 골드 계산기
-    var calculator: Calculator
+    var calculator: Calculator = Calculator()
     /// 피버 시스템
-    var feverSystem: FeverSystem
+    var feverSystem: FeverSystem = FeverSystem(decreaseInterval: 1.0, decreasePercentPerTick: 30)
     /// 버프 시스템
-    var buffSystem: BuffSystem
+    var buffSystem: BuffSystem = BuffSystem()
 
     // MARK: - Game Systems
     /// 모션 시스템 (기기 기울기 감지 및 캐릭터 이동)
@@ -41,16 +41,10 @@ final class DodgeGame: Game {
 
     init(
         user: User,
-        calculator: Calculator,
-        feverSystem: FeverSystem,
-        buffSystem: BuffSystem,
         gameAreaSize: CGSize,
         onGoldChanged: @escaping (Int) -> Void
     ) {
         self.user = user
-        self.calculator = calculator
-        self.feverSystem = feverSystem
-        self.buffSystem = buffSystem
         self.onGoldChangedHandler = onGoldChanged
 
         // 게임 시스템 초기화 (크기 필수 전달)
@@ -118,7 +112,7 @@ final class DodgeGame: Game {
 
             // 0.8배 획득
             let gainGold = Int(Double(baseGold) * Constant.smallGoldMultiplier)
-            await user.wallet.addGold(gainGold)
+            user.wallet.addGold(gainGold)
             return gainGold
 
         case .largeGold:
@@ -130,7 +124,7 @@ final class DodgeGame: Game {
 
             // 1.2배 획득
             let gainGold = Int(Double(baseGold) * Constant.largeGoldMultiplier)
-            await user.wallet.addGold(gainGold)
+            user.wallet.addGold(gainGold)
             return gainGold
 
         case .bug:
@@ -142,7 +136,7 @@ final class DodgeGame: Game {
 
             // 절반 손실
             let loseGold = baseGold / 2
-            await user.wallet.spendGold(loseGold)
+            user.wallet.spendGold(loseGold)
             return -loseGold
         }
     }
