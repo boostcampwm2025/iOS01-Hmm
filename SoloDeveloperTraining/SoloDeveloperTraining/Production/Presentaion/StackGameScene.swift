@@ -15,7 +15,7 @@ private enum Constant {
 
     enum Offset {
         // 최상단에서 블록을 살짝 안쪽으로 내려서 생성하기 위한 여백
-        static let spawnYOffset: CGFloat = 20
+        static let spawnYOffset: CGFloat = 24
     }
 
     enum Time {
@@ -139,7 +139,8 @@ final class StackGameScene: SKScene {
         // 게임 코어에 블록 생성 알림
         stackGame.spawnBlock(type: blockType)
 
-        let spawnY = (camera?.position.y ?? size.height / 2) + size.height / 2 - Constant.Offset.spawnYOffset
+        let spawnY = (camera?.position.y ?? size.height / 2) + size.height / 2 - (
+            Constant.Offset.spawnYOffset + blockView.size.height / 2)
         let leftEdge = blockView.size.width / 2
         let rightEdge = size.width - blockView.size.width / 2
 

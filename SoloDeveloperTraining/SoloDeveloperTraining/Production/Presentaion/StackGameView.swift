@@ -8,10 +8,6 @@
 import SwiftUI
 import SpriteKit
 
-private enum Constants {
-    static let gameAreaTopSpacing: CGFloat = 14
-}
-
 struct StackGameView: View {
     @State private var game: StackGame
     private let scene: StackGameScene
@@ -26,7 +22,7 @@ struct StackGameView: View {
     }
 
     var body: some View {
-        VStack(spacing: Constants.gameAreaTopSpacing) {
+        VStack(spacing: 0) {
             GameToolBar(
                 closeButtonDidTapHandler: stopGame,
                 coffeeButtonDidTapHandler: useCoffee,
