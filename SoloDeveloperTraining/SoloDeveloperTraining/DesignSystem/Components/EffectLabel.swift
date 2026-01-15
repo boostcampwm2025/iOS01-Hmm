@@ -23,8 +23,8 @@ private enum Constant {
         static let sleepNanosec: UInt64 = 150_000_000
         // 각 단계에 따른 투명도, offsetY
         static let steps: [(Double, CGFloat)] = [
-            (1.0,   0),
-            (0.5,  -3),
+            (1.0, 0),
+            (0.5, -3),
             (0.2, -6),
             (0.1, -9),
             (0.0, -12)

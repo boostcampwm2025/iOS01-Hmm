@@ -10,7 +10,7 @@ import Foundation
 private enum Constant {
     enum Fever {
         static let successFever: Double = 33.0
-        static let failureFever: Double = 0.0
+        static let failureFever: Double = -successFever
     }
 }
 

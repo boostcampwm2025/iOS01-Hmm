@@ -17,7 +17,7 @@ struct DodgeGameTestView: View {
     @State private var coffeeCount: Int = 0
     @State private var energyDrinkCount: Int = 0
     @State private var buffDuration: Int = 0
-    @State private var recentGoldChange: Int? = nil
+    @State private var recentGoldChange: Int?
     @State private var showGoldAnimation: Bool = false
     @State private var goldPerAction: Int = 0
     @State private var sliderValue: Double = 0
@@ -29,19 +29,12 @@ struct DodgeGameTestView: View {
         self.user = user
         self.calculator = calculator
 
-        let feverSystem = FeverSystem(decreaseInterval: 1.0, decreasePercentPerTick: 30)
-        let buffSystem = BuffSystem()
-
         // 초기 크기 (onAppear에서 실제 크기로 업데이트됨)
         let initialSize = CGSize(width: 300, height: 400)
 
         _game = State(initialValue: DodgeGame(
             user: user,
-            calculator: calculator,
-            feverSystem: feverSystem,
-            buffSystem: buffSystem,
-            gameAreaSize: initialSize,
-            onGoldChanged: { _ in }  // 임시 빈 클로저, onAppear에서 설정
+            gameAreaSize: initialSize, onGoldChanged: { _ in }
         ))
     }
 
@@ -164,26 +157,29 @@ struct DodgeGameTestView: View {
                 }
 
                 // Start/Stop 버튼
-                Button(action: {
-                    if game.gameCore.isRunning == true {
-                        game.stopGame()
-                    } else {
-                        game.startGame()
+                Button(
+                    action: {
+                        if game.gameCore.isRunning == true {
+                            game.stopGame()
+                        } else {
+                            game.startGame()
+                        }
+                    },
+                    label: {
+                        Text(game.gameCore.isRunning == true ? "⏸ Stop" : "▶️ Start")
+                            .font(.headline)
+                            .padding(.horizontal, 40)
+                            .padding(.vertical, 12)
+                            .background(game.gameCore.isRunning == true ? Color.red : Color.green)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
                     }
-                }) {
-                    Text(game.gameCore.isRunning == true ? "⏸ Stop" : "▶️ Start")
-                        .font(.headline)
-                        .padding(.horizontal, 40)
-                        .padding(.vertical, 12)
-                        .background(game.gameCore.isRunning == true ? Color.red : Color.green)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                }
+                )
                 .padding(.top, 5)
             }
             .padding()
             }
-            .onChange(of: geometry.size) { oldSize, newSize in
+            .onChange(of: geometry.size) { _, newSize in
                 updateGameArea(for: newSize)
             }
             .onAppear {
@@ -324,3 +320,4 @@ struct DodgeGameTestView: View {
     let calculator = Calculator()
     DodgeGameTestView(user: user, calculator: calculator)
 }
+
