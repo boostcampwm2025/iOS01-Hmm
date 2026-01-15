@@ -19,6 +19,8 @@
 				App/Info.plist,
 				Production/Presentaion/DodgeGameView.swift,
 				Production/Presentaion/MainView.swift,
+				Production/Presentaion/StackGameScene.swift,
+				Production/Presentaion/StackGameView.swift,
 				Production/Presentaion/TapGameView.swift,
 			);
 			target = 2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */;

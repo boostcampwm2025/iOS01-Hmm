@@ -108,56 +108,58 @@ final class StackGame: Game {
     }
 
     /// 블록이 성공적으로 배치되었을 때 처리
-    func placeBlockSuccess() {
-        guard let block = currentBlock else { return }
+    func placeBlockSuccess() -> Int {
+        guard let block = currentBlock else { return 0 }
 
         blocks.append(block)
         previousBlock = block
         currentBlock = nil
 
         score += 1
-        applyReward()
+        return applyReward()
     }
 
     /// 블록 배치에 실패했을 때 처리
-    func placeBlockFail() {
+    func placeBlockFail() -> Int {
         currentBlock = nil
-        applyPenalty()
+        return applyPenalty()
     }
 
     /// 폭탄 블록이 성공적으로 배치되었을 때 처리 (패널티)
-    func placeBombSuccess() {
+    func placeBombSuccess() -> Int {
         currentBlock = nil
-        applyPenalty()
+        return applyPenalty()
     }
 
     /// 폭탄 블록 배치에 실패했을 때 처리 (보상)
-    func placeBombFail() {
+    func placeBombFail() -> Int {
         currentBlock = nil
-        applyReward()
+        return applyReward()
     }
 
     /// 보상을 적용합니다 (골드 획득, 피버 증가)
-    private func applyReward() {
+    private func applyReward() -> Int {
         let goldEarned = calculateGold()
         user.wallet.addGold(goldEarned)
         feverSystem.gainFever(Constant.Fever.success)
+        return goldEarned
         #if DEV_BUILD
             print("💰 골드 획득: \(goldEarned), 총액: \(user.wallet.gold)")
         #endif
     }
 
     /// 패널티를 적용합니다 (골드 손실, 피버 감소)
-    private func applyPenalty() {
+    private func applyPenalty() -> Int {
         let goldLost = calculateGold()
         user.wallet.spendGold(goldLost)
         feverSystem.gainFever(Constant.Fever.failure)
+        return -goldLost
         #if DEV_BUILD
             print("💸 골드 손실: \(goldLost), 총액: \(user.wallet.gold)")
         #endif
     }
 
-    /// 현재 상태에 따른 골드를 계산합니다
+    /// 현재 상태에 따른 골드 획득량을 계산합니다
     private func calculateGold() -> Int {
         return calculator.calculateGoldPerAction(
             game: .stack,

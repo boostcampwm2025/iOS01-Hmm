@@ -18,14 +18,14 @@ struct TapGameView: View {
     // MARK: - Properties
     /// 의존 게임
     let tapGame: TapGame
-    /// 닫기 버튼 핸들러
-    let onClose: () -> Void
+    /// 게임 시작 상태 (부모 뷰와 바인딩)
+    @Binding var isGameStarted: Bool
 
     // MARK: - State
     /// 터치한 위치에 표시될 EffectLabel들의 위치와 값
     @State private var effectLabels: [EffectLabelData] = []
 
-    init(user: User, onClose: @escaping () -> Void) {
+    init(user: User, isGameStarted: Binding<Bool>) {
         let tapGame = TapGame(
             user: user,
             calculator: Calculator(),
@@ -33,13 +33,13 @@ struct TapGameView: View {
         )
         tapGame.startGame()
         self.tapGame = tapGame
-        self.onClose = onClose
+        self._isGameStarted = isGameStarted
     }
 
     var body: some View {
         VStack(spacing: 0) {
             GameToolBar(
-                closeButtonDidTapHandler: { onClose() },
+                closeButtonDidTapHandler: { handleCloseButton() },
                 coffeeButtonDidTapHandler: {
                     handleItemButtonTap(type: .coffee)
                 },
@@ -86,6 +86,12 @@ struct TapGameView: View {
 
 // MARK: - Private Methods
 private extension TapGameView {
+    /// 게임 종료 처리
+    func handleCloseButton() {
+        tapGame.stopGame()
+        isGameStarted = false
+    }
+
     /// 소비 아이템 버튼 탭 처리
     func handleItemButtonTap(type: ConsumableType) {
         let success = tapGame.inventory.drink(type)
@@ -119,6 +125,7 @@ private extension TapGameView {
 }
 
 #Preview {
+    @Previewable @State var isGameStarted: Bool = true
     let user = User(
         nickname: "Preview User",
         wallet: Wallet(gold: 10000, diamond: 50),
@@ -135,5 +142,5 @@ private extension TapGameView {
         ]
     )
 
-    return TapGameView(user: user, onClose: {}).frame(width: 300, height: 300)
+    return TapGameView(user: user, isGameStarted: $isGameStarted)
 }

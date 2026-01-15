@@ -39,18 +39,13 @@ struct LaguageGameView: View {
     // MARK: State Properties
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
-    /// 커피 아이템 개수
-    @State private var coffeeCount: Int
-    /// 에너지 드링크 아이템 개수
-    @State private var energyDrinkCount: Int
+
     /// 획득한 골드를 표시하기 위한 효과 라벨 배열
     @State private var effectValues: [(id: UUID, value: Int)] = []
 
     init(user: User, isGameStarted: Binding<Bool>) {
         self._isGameStarted = isGameStarted
         self.user = user
-        coffeeCount = user.inventory.count(.coffee) ?? 0
-        energyDrinkCount = user.inventory.count(.energyDrink) ?? 0
 
         // 게임 초기화
         self.game = .init(
@@ -94,8 +89,8 @@ private extension LaguageGameView {
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
             feverState: game.feverSystem,
             buffSystem: game.buffSystem,
-            coffeeCount: $coffeeCount,
-            energyDrinkCount: $energyDrinkCount
+            coffeeCount: .constant(game.user.inventory.count(.coffee) ?? 0),
+            energyDrinkCount: .constant(game.user.inventory.count(.energyDrink) ?? 0)
         )
     }
 
@@ -153,24 +148,14 @@ private extension LaguageGameView {
 
     /// 소비 아이템 사용 처리
     func useConsumableItem(_ type: ConsumableType) {
-        Task {
-            let isSuccess = await user.inventory.drink(type)
-            if isSuccess {
-                game.buffSystem.useConsumableItem(type: type)
-                updateConsumableItems()
-            }
+        if game.user.inventory.drink(type) {
+            game.buffSystem.useConsumableItem(type: type)
         }
     }
 }
 
 // MARK: - Helper Methods
 private extension LaguageGameView {
-    /// 인벤토리에서 소비 아이템 개수 업데이트
-    func updateConsumableItems() {
-        coffeeCount = user.inventory.count(.coffee) ?? 0
-        energyDrinkCount = user.inventory.count(.energyDrink) ?? 0
-    }
-
     /// 획득한 골드를 표시하는 효과 라벨 추가
     /// - Parameter gainedGold: 획득한 골드 (음수일 경우 손실)
     func showEffectLabel(gainedGold: Int) {
