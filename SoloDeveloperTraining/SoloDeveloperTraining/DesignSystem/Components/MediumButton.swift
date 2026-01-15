@@ -40,7 +40,7 @@ struct MediumButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.pfFont(.caption))
+                .textStyle(.caption)
                 .foregroundColor(fillStyle ? .white : .black)
                 .frame(width: Constant.Size.buttonWidth, height: Constant.Size.buttonHeight)
                 .background(backgroundColor)
