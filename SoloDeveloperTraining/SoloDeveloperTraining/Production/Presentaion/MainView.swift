@@ -9,13 +9,48 @@ import SwiftUI
 
 struct MainView: View {
     @State private var selectedTab: TabItem = .work
+    @State private var user: User
 
     let housing: Housing = .street
-    let career: Career = .unemployed
-    let nickname: String = "소피아"
-    let careerProgress: Double = 0.3
-    let gold: Int = 20000
-    let diamond: Int = 20
+    let calculator: Calculator
+    let autoGainSystem: AutoGainSystem
+
+    init() {
+        let user = User(
+            nickname: "소피아",
+            wallet: .init(gold: 1000000, diamond: 100),
+            inventory: .init(
+                equipmentItems: [
+                    .init(type: .keyboard, tier: .broken),
+                    .init(type: .mouse, tier: .broken),
+                    .init(type: .monitor, tier: .broken),
+                    .init(type: .chair, tier: .broken)
+                ],
+                consumableItems: [
+                    .init(type: .coffee, count: 5),
+                    .init(type: .energyDrink, count: 5)
+                ],
+                housing: .street
+            ),
+            record: .init(),
+            skills: [
+                .init(game: .tap, tier: .beginner, level: 1000),
+                .init(game: .tap, tier: .intermediate, level: 1000),
+                .init(game: .tap, tier: .advanced, level: 1000),
+                .init(game: .dodge, tier: .beginner, level: 500),
+                .init(game: .dodge, tier: .intermediate, level: 500),
+                .init(game: .dodge, tier: .advanced, level: 500),
+                .init(game: .stack, tier: .beginner, level: 1)
+            ]
+        )
+        let calculator: Calculator = Calculator()
+        self.user = user
+        self.calculator = calculator
+        self.autoGainSystem = .init(user: user, calculator: calculator)
+        autoGainSystem.startSystem()
+    }
+
+    
 
     var body: some View {
         VStack(spacing: 0) {
@@ -28,11 +63,12 @@ struct MainView: View {
                     .clipped()
 
                 StatusBar(
-                    career: career,
-                    nickname: nickname,
-                    careerProgress: careerProgress,
-                    gold: gold,
-                    diamond: diamond
+                    career: user.career,
+                    nickname: user.nickname,
+                    // TODO: 진행도 계산 로직 추가
+                    careerProgress: 0.3,
+                    gold: user.wallet.gold,
+                    diamond: user.wallet.diamond
                 )
                 .background(Color.white.opacity(0.8))
             }
@@ -47,7 +83,10 @@ struct MainView: View {
                     NavigationStack {
                         List {
                             NavigationLink("물건 쌓기 게임") {
-                                StackGameView()
+                                StackGameView(
+                                    user: user,
+                                    calculator: calculator
+                                )
                             }
                         }
                     }
