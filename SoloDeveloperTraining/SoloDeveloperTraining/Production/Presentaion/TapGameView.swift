@@ -47,6 +47,7 @@ struct TapGameView: View {
                     handleItemButtonTap(type: .energyDrink)
                 },
                 feverState: tapGame.feverSystem,
+                buffSystem: tapGame.buffSystem,
                 coffeeCount: Binding(
                     get: { tapGame.inventory.count(.coffee) ?? 0 },
                     set: { _ in }

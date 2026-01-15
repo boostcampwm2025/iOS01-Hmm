@@ -93,6 +93,7 @@ private extension LaguageGameView {
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
             feverState: game.feverSystem,
+            buffSystem: game.buffSystem,
             coffeeCount: $coffeeCount,
             energyDrinkCount: $energyDrinkCount
         )

@@ -6,8 +6,10 @@
 //
 
 import Foundation
+import Observation
 
 /// 버프 시스템 관리 클래스
+@Observable
 final class BuffSystem {
     /// 감소 주기 (초 단위)
     private let decreaseInterval: TimeInterval = 1
