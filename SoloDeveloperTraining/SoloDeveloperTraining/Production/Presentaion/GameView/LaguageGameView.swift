@@ -9,25 +9,42 @@ import SwiftUI
 
 private enum Constant {
     enum Spacing {
-        static let vertical: CGFloat = 67
         static let itemHorizontal: CGFloat = 25
         static let buttonHorizontal: CGFloat = 17
+    }
+
+    enum Game {
+        static let itemCount: Int = 5
+        static let feverDecreaseInterval: Double = 0.1
+        static let feverDecreasePercentPerTick: Double = 5
+    }
+
+    enum EffectLabel {
+        static let offsetY: CGFloat = -34
+        static let displayDuration: TimeInterval = 2.0
     }
 }
 
 struct LaguageGameView: View {
+    // MARK: Properties
     let user: User
     let game: LanguageGame
-    let languageTypeList: [LanguageType] = [
+    /// 게임에 사용되는 언어 타입 목록
+    private let languageTypeList: [LanguageType] = [
         .swift,
         .kotlin,
         .dart,
         .python
     ]
 
+    // MARK: State Properties
+    /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
+    /// 커피 아이템 개수
     @State private var coffeeCount: Int
+    /// 에너지 드링크 아이템 개수
     @State private var energyDrinkCount: Int
+    /// 획득한 골드를 표시하기 위한 효과 라벨 배열
     @State private var effectValues: [(id: UUID, value: Int)] = []
 
     init(user: User, isGameStarted: Binding<Bool>) {
@@ -36,70 +53,31 @@ struct LaguageGameView: View {
         coffeeCount = user.inventory.count(.coffee) ?? 0
         energyDrinkCount = user.inventory.count(.energyDrink) ?? 0
 
+        // 게임 초기화
         self.game = .init(
             user: user,
             calculator: .init(),
             feverSystem: .init(
-                decreaseInterval: 0.1,
-                decreasePercentPerTick: 10
+                decreaseInterval: Constant.Game.feverDecreaseInterval,
+                decreasePercentPerTick: Constant.Game.feverDecreasePercentPerTick
             ),
             buffSystem: .init(),
-            itemCount: 5 // 임시로 설정
+            itemCount: Constant.Game.itemCount
         )
         self.game.startGame()
     }
 
     var body: some View {
-        GeometryReader { mainGeometry in
+        GeometryReader { _ in
             VStack(alignment: .center, spacing: 0) {
-                GameToolBar(
-                    closeButtonDidTapHandler: {
-                        game.stopGame()
-                        isGameStarted = false
-                    },
-                    coffeeButtonDidTapHandler: {
-                        useConsumableItem(.coffee)
-                    },
-                    energyDrinkButtonDidTapHandler: {
-                        useConsumableItem(.energyDrink)
-                    },
-                    feverState: game.feverSystem,
-                    coffeeCount: $coffeeCount,
-                    energyDrinkCount: $energyDrinkCount,
-                )
-
+                // 상단 툴바 (닫기, 아이템 버튼, 피버 게이지)
+                toolbarSection
                 Spacer()
-
-                HStack(alignment: .bottom, spacing: Constant.Spacing.itemHorizontal) {
-                    ForEach(Array(game.itemList.enumerated()), id: \.offset) { index, item in
-                        LanguageItem(
-                            languageType: item.languageType,
-                            state: item.state
-                        )
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .overlay(alignment: .top) {
-                    ZStack {
-                        ForEach(effectValues, id: \.id) { effect in
-                            EffectLabel(value: effect.value)
-                        }
-                    }
-                    .offset(y: -34)
-                }
-
+                // 중앙 언어 아이템 영역 (획득 골드 효과 포함)
+                languageItemsSection
                 Spacer()
-
-                HStack(spacing: Constant.Spacing.buttonHorizontal) {
-                    ForEach(languageTypeList, id: \.self) { type in
-                        LanguageButton(languageType: type, action: {
-                            Task {
-                                let gainedGold = await game.didPerformAction(type)
-                                showEffectLabel(gainedGold: gainedGold)
-                            }
-                        })
-                    }
-                }
+                // 하단 언어 선택 버튼 영역
+                languageButtonsSection
                 Spacer()
             }
             .padding()
@@ -107,28 +85,99 @@ struct LaguageGameView: View {
     }
 }
 
+// MARK: - View Components
+
 private extension LaguageGameView {
+    /// 상단 툴바
+    var toolbarSection: some View {
+        GameToolBar(
+            closeButtonDidTapHandler: handleCloseButton,
+            coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
+            energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
+            feverState: game.feverSystem,
+            coffeeCount: $coffeeCount,
+            energyDrinkCount: $energyDrinkCount
+        )
+    }
+
+    /// 중앙 언어 아이템 영역
+    var languageItemsSection: some View {
+        HStack(alignment: .bottom, spacing: Constant.Spacing.itemHorizontal) {
+            ForEach(Array(game.itemList.enumerated()), id: \.offset) { _, item in
+                LanguageItem(
+                    languageType: item.languageType,
+                    state: item.state
+                )
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .overlay(alignment: .top) {
+            // 획득한 골드를 표시하는 효과 라벨
+            ZStack {
+                ForEach(effectValues, id: \.id) { effect in
+                    EffectLabel(value: effect.value)
+                }
+            }
+            .offset(y: Constant.EffectLabel.offsetY)
+        }
+    }
+
+    /// 하단 언어 선택 버튼 영역
+    var languageButtonsSection: some View {
+        HStack(spacing: Constant.Spacing.buttonHorizontal) {
+            ForEach(languageTypeList, id: \.self) { type in
+                LanguageButton(languageType: type) {
+                    handleLanguageButtonTap(type)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Actions
+private extension LaguageGameView {
+    /// 닫기 버튼 클릭 처리
+    func handleCloseButton() {
+        game.stopGame()
+        isGameStarted = false
+    }
+
+    /// 언어 버튼 클릭 처리
+    func handleLanguageButtonTap(_ type: LanguageType) {
+        Task {
+            let gainedGold = await game.didPerformAction(type)
+            showEffectLabel(gainedGold: gainedGold)
+        }
+    }
+
+    /// 소비 아이템 사용 처리
     func useConsumableItem(_ type: ConsumableType) {
         Task {
             let isSuccess = await user.inventory.drink(type)
             if isSuccess {
-                self.game.buffSystem.useConsumableItem(type: type)
-                self.updateConsumableItems()
+                game.buffSystem.useConsumableItem(type: type)
+                updateConsumableItems()
             }
         }
     }
+}
 
+// MARK: - Helper Methods
+private extension LaguageGameView {
+    /// 인벤토리에서 소비 아이템 개수 업데이트
     func updateConsumableItems() {
         coffeeCount = user.inventory.count(.coffee) ?? 0
         energyDrinkCount = user.inventory.count(.energyDrink) ?? 0
     }
 
+    /// 획득한 골드를 표시하는 효과 라벨 표시
+    /// - Parameter gainedGold: 획득한 골드 (음수일 경우 손실)
     func showEffectLabel(gainedGold: Int) {
         let effectId = UUID()
         effectValues.append((id: effectId, value: gainedGold))
 
-        Task {
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
+        // 지정된 시간 후 효과 라벨 제거
+        DispatchQueue.main.asyncAfter(deadline: .now() + Constant.EffectLabel.displayDuration) {
             effectValues.removeAll { $0.id == effectId }
         }
     }
