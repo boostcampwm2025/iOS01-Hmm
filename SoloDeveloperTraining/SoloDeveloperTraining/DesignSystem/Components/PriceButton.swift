@@ -8,15 +8,26 @@
 import SwiftUI
 
 private enum Constant {
-    static let shadowOffsetX: CGFloat = 2
-    static let shadowOffsetY: CGFloat = 3
-    static let cornerRadius: CGFloat = 5
-    static let buttonHeight: CGFloat = 44
-    static let iconSize = CGSize(width: 15, height: 15)
-    static let lockIconSize = CGSize(width: 18, height: 18)
-    static let contentSpacing: CGFloat = 3
-    static let disabledOverlayOpacity: Double = 0.9
-    static let horizontalPadding: CGFloat = 8
+    enum Layout {
+        static let cornerRadius: CGFloat = 5
+        static let buttonHeight: CGFloat = 44
+        static let contentSpacing: CGFloat = 3
+        static let horizontalPadding: CGFloat = 8
+    }
+    
+    enum Shadow {
+        static let offsetX: CGFloat = 2
+        static let offsetY: CGFloat = 3
+    }
+    
+    enum Icon {
+        static let coinSize = CGSize(width: 15, height: 15)
+        static let lockSize = CGSize(width: 18, height: 18)
+    }
+    
+    enum Overlay {
+        static let disabledOpacity: Double = 0.9
+    }
 }
 
 struct PriceButton: View {
@@ -36,12 +47,11 @@ struct PriceButton: View {
                     }
                 }
                 .background(
-                    // 그림자 (버튼과 같은 크기, 라운드 5)
-                    RoundedRectangle(cornerRadius: Constant.cornerRadius)
+                    RoundedRectangle(cornerRadius: Constant.Layout.cornerRadius)
                         .foregroundStyle(isDisabled ? .gray400 : .black)
                         .offset(
-                            x: Constant.shadowOffsetX,
-                            y: Constant.shadowOffsetY
+                            x: Constant.Shadow.offsetX,
+                            y: Constant.Shadow.offsetY
                         )
                 )
         }
@@ -53,22 +63,22 @@ struct PriceButton: View {
     var buttonContent: some View {
         Group {
             if axis == .horizontal {
-                HStack(spacing: Constant.contentSpacing) {
+                HStack(spacing: Constant.Layout.contentSpacing) {
                     contentViews
                 }
             } else {
-                VStack(spacing: Constant.contentSpacing) {
+                VStack(spacing: Constant.Layout.contentSpacing) {
                     contentViews
                 }
             }
         }
-        .frame(height: Constant.buttonHeight)
-        .padding(.horizontal, Constant.horizontalPadding)
+        .frame(height: Constant.Layout.buttonHeight)
+        .padding(.horizontal, Constant.Layout.horizontalPadding)
         .background(.orange500)
-        .clipShape(RoundedRectangle(cornerRadius: Constant.cornerRadius))
+        .clipShape(RoundedRectangle(cornerRadius: Constant.Layout.cornerRadius))
         .offset(
-            x: isPressed ? Constant.shadowOffsetX : 0,
-            y: isPressed ? Constant.shadowOffsetY : 0
+            x: isPressed ? Constant.Shadow.offsetX : 0,
+            y: isPressed ? Constant.Shadow.offsetY : 0
         )
         .animation(.none, value: isPressed)
     }
@@ -77,8 +87,8 @@ struct PriceButton: View {
     var contentViews: some View {
         Image("icon_coin_bag")
             .frame(
-                width: Constant.iconSize.width,
-                height: Constant.iconSize.height
+                width: Constant.Icon.coinSize.width,
+                height: Constant.Icon.coinSize.height
             )
         Text(gold.formatted())
             .foregroundStyle(.white)
@@ -87,14 +97,14 @@ struct PriceButton: View {
 
     var disabledOverlay: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: Constant.cornerRadius)
-                .foregroundStyle(Color.gray200.opacity(Constant.disabledOverlayOpacity))
+            RoundedRectangle(cornerRadius: Constant.Layout.cornerRadius)
+                .foregroundStyle(Color.gray200.opacity(Constant.Overlay.disabledOpacity))
 
             Image("lock")
                 .resizable()
                 .frame(
-                    width: Constant.lockIconSize.width,
-                    height: Constant.lockIconSize.height
+                    width: Constant.Icon.lockSize.width,
+                    height: Constant.Icon.lockSize.height
                 )
         }
     }
