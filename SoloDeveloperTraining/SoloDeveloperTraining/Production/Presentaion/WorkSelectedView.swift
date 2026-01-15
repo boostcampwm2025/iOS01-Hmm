@@ -111,7 +111,7 @@ private extension WorkSelectedView {
         case 0:
             Color.white.overlay(Text("코드 짜기").foregroundColor(.gray))
         case 1:
-            LaguageGameView(user: user)
+            LaguageGameView(user: user, isGameStarted: $isGameStarted)
         case 2:
             Color.white.overlay(Text("버그 피하기").foregroundColor(.gray))
         case 3:

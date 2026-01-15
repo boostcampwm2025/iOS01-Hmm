@@ -25,11 +25,13 @@ struct LaguageGameView: View {
         .python
     ]
 
+    @Binding var isGameStarted: Bool
     @State private var coffeeCount: Int
     @State private var energyDrinkCount: Int
     @State private var effectValues: [(id: UUID, value: Int)] = []
 
-    init(user: User) {
+    init(user: User, isGameStarted: Binding<Bool>) {
+        self._isGameStarted = isGameStarted
         self.user = user
         coffeeCount = user.inventory.count(.coffee) ?? 0
         energyDrinkCount = user.inventory.count(.energyDrink) ?? 0
@@ -51,7 +53,10 @@ struct LaguageGameView: View {
         GeometryReader { mainGeometry in
             VStack(alignment: .center, spacing: 0) {
                 GameToolBar(
-                    closeButtonDidTapHandler: {},
+                    closeButtonDidTapHandler: {
+                        game.stopGame()
+                        isGameStarted = false
+                    },
                     coffeeButtonDidTapHandler: {
                         useConsumableItem(.coffee)
                     },
@@ -65,24 +70,23 @@ struct LaguageGameView: View {
 
                 Spacer()
 
-                VStack(spacing: 0) {
+                HStack(alignment: .bottom, spacing: Constant.Spacing.itemHorizontal) {
+                    ForEach(Array(game.itemList.enumerated()), id: \.offset) { index, item in
+                        LanguageItem(
+                            languageType: item.languageType,
+                            state: item.state
+                        )
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .overlay(alignment: .top) {
                     ZStack {
                         ForEach(effectValues, id: \.id) { effect in
                             EffectLabel(value: effect.value)
                         }
                     }
-                    .frame(height: 24)
-
-                    HStack(alignment: .bottom, spacing: Constant.Spacing.itemHorizontal) {
-                        ForEach(Array(game.itemList.enumerated()), id: \.offset) { index, item in
-                            LanguageItem(
-                                languageType: item.languageType,
-                                state: item.state
-                            )
-                        }
-                    }
+                    .offset(y: -34)
                 }
-                .frame(maxWidth: .infinity)
 
                 Spacer()
 
@@ -131,14 +135,22 @@ private extension LaguageGameView {
 }
 
 #Preview {
-    let user = User(
-        nickname: "Test",
-        wallet: .init(),
-        inventory: .init(),
-        record: .init(),
-        skills: [
-            .init(game: .language, tier: .beginner, level: 1000)
-        ]
-    )
-    LaguageGameView(user: user)
+    struct PreviewWrapper: View {
+        @State private var isGameStarted = true
+        let user = User(
+            nickname: "Test",
+            wallet: .init(),
+            inventory: .init(),
+            record: .init(),
+            skills: [
+                .init(game: .language, tier: .beginner, level: 1000)
+            ]
+        )
+
+        var body: some View {
+            LaguageGameView(user: user, isGameStarted: $isGameStarted)
+        }
+    }
+
+    return PreviewWrapper()
 }
