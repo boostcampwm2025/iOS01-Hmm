@@ -7,13 +7,6 @@
 
 import SwiftUI
 
-enum HousingCardState {
-    case normal
-    case selected
-    case equipped
-    case equippedSelected
-}
-
 private enum Constant {
     static let cardWidth: CGFloat = 225
     static let cornerRadius: CGFloat = 6
@@ -24,6 +17,7 @@ private enum Constant {
         static let top: CGFloat = 16
         static let bottom: CGFloat = 15
         static let textSpacing: CGFloat = 4
+        static let titleSpacing: CGFloat = 15
         static let imageTop: CGFloat = 19
         static let buttonTop: CGFloat = 14
     }
@@ -31,20 +25,45 @@ private enum Constant {
 
 struct HousingCard: View {
     let housing: Housing
-    @Binding var state: HousingCardState
+    let isEquipped: Bool
+    let isSelected: Bool
+    let onTap: () -> Void
+    let onButtonTap: () -> Void
+
+    var body: some View {
+        HousingCardContent(
+            housing: housing,
+            buttonTitle: isEquipped ? "장착중" : "이사하기",
+            isButtonEnabled: !isEquipped,
+            onButtonTap: onButtonTap
+        )
+        .contentShape(RoundedRectangle(cornerRadius: Constant.cornerRadius))
+        .overlay {
+            if isSelected {
+                RoundedRectangle(cornerRadius: Constant.cornerRadius)
+                    .stroke(Color.black, lineWidth: Constant.lineWidth)
+            }
+        }
+        .onTapGesture { onTap() }
+    }
+}
+
+private struct HousingCardContent: View {
+    let housing: Housing
+    let buttonTitle: String
+    let isButtonEnabled: Bool
     let onButtonTap: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
             // 상단 텍스트 영역
-            HStack {
+            HStack(spacing: Constant.Padding.titleSpacing) {
                 Text(housing.displayTitle)
                     .textStyle(.callout)
 
-                Spacer()
-
                 Text("₩\(housing.cost.gold.formatted)")
                     .textStyle(.caption2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(.horizontal, Constant.Padding.horizontal)
             .padding(.top, Constant.Padding.top)
@@ -68,7 +87,7 @@ struct HousingCard: View {
             // 버튼 영역
             LargeButton(
                 title: buttonTitle,
-                isEnabled: state != .equipped && state != .equippedSelected
+                isEnabled: isButtonEnabled
             ) {
                 onButtonTap()
             }
@@ -79,70 +98,23 @@ struct HousingCard: View {
         .frame(width: Constant.cardWidth)
         .background(AppColors.gray100)
         .cornerRadius(Constant.cornerRadius)
-        .overlay {
-            if state == .selected || state == .equippedSelected {
-                RoundedRectangle(cornerRadius: Constant.cornerRadius)
-                    .stroke(Color.black, lineWidth: Constant.lineWidth)
-            }
-        }
-        .onTapGesture {
-            toggleSelection()
-        }
-    }
-}
-
-// MARK: - Helper
-private extension HousingCard {
-    func toggleSelection() {
-        switch state {
-        case .normal:
-            state = .selected
-        case .selected:
-            state = .normal
-        case .equipped:
-            state = .equippedSelected
-        case .equippedSelected:
-            state = .equipped
-        }
-    }
-
-    var buttonTitle: String {
-        switch state {
-        case .normal, .selected:
-            return "이사하기"
-        case .equipped, .equippedSelected:
-            return "장착중"
-        }
     }
 }
 
 #Preview {
-    struct PreviewWrapper: View {
-        @State private var state1: HousingCardState = .normal
-        @State private var state2: HousingCardState = .normal
-        @State private var state3: HousingCardState = .normal
+    @Previewable @State var isSelected = false
+    @Previewable @State var isEquipped = false
 
-        var body: some View {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
-                    HousingCard(housing: .street, state: $state1) {
-                        state1 = .equipped
-                    }
-                    .frame(height: 300)
-
-                    HousingCard(housing: .pentHouse, state: $state2) {
-                        state2 = .equipped
-                    }
-                    .frame(height: 400)
-
-                    HousingCard(housing: .villa, state: $state3) {
-                        state3 = .equipped
-                    }
-                    .frame(height: 500)
-                }
-                .padding(.horizontal)
-            }
+    HousingCard(
+        housing: .villa,
+        isEquipped: isEquipped,
+        isSelected: isSelected,
+        onTap: {
+            isSelected.toggle()
+        },
+        onButtonTap: {
+            isEquipped = true
         }
-    }
-    return PreviewWrapper()
+    )
+    .frame(height: 500)
 }
