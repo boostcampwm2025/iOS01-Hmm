@@ -70,9 +70,6 @@ struct StackGameView: View {
                     }
                 }
             }
-            .onDisappear {
-                stopGame()
-            }
             .background(AppTheme.backgroundColor)
             .navigationBarBackButtonHidden(true) // 임시로 숨김
         }
