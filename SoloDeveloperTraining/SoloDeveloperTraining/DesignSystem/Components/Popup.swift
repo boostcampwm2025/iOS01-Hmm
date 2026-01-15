@@ -62,3 +62,61 @@ struct Popup<ContentView: View>: View {
         }
     }
 }
+
+#Preview {
+    VStack(spacing: 30) {
+        // ViewBuilder를 통한 클로저 방식
+        Popup(title: "튜토리얼") {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("당신은 취직에 실패한 개발자. 이대로 물러설 수는 없다. 나의 꿈은 1인 개발자로 성공하기 ~! 내 이름은!!")
+                    .textStyle(.body)
+                    .foregroundColor(.black)
+
+                TextField("닉네임", text: .constant(""))
+                    .textFieldStyle(.roundedBorder)
+
+                HStack(spacing: 10) {
+                    Spacer()
+                    MediumButton(title: "바로 시작", isFilled: false) {
+                        print("바로 시작")
+                    }
+
+                    MediumButton(title: "튜토리얼", isFilled: true) {
+                        print("튜토리얼")
+                    }
+                    Spacer()
+                }
+            }
+        }
+
+        // View 인스턴스를 직접 전달하는 방식
+        let customContentView = VStack(alignment: .leading, spacing: 10) {
+            Text("팝업 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용")
+                .textStyle(.body)
+                .foregroundColor(.black)
+
+            HStack(spacing: 10) {
+                Spacer()
+                MediumButton(title: "취소", isFilled: false) {
+                    print("취소")
+                }
+
+                MediumButton(title: "확인", isFilled: true) {
+                    print("확인")
+                }
+                Spacer()
+            }
+        }
+        Popup(title: "팝업 타이틀", contentView: customContentView)
+
+        // 간단한 텍스트만 있는 팝업
+        Popup(title: "알림") {
+            Text("간단한 메시지 팝업입니다.")
+                .textStyle(.body)
+                .foregroundColor(.black)
+                .frame(maxWidth: .infinity, alignment: .center)
+        }
+    }
+    .padding()
+    .background(Color.gray.opacity(0.1))
+}
