@@ -53,17 +53,7 @@ struct StackGameView: View {
                 ZStack {
                     SpriteView(
                         scene: scene
-                    ).onAppear {
-                        scene.onBlockDropped = { gold in
-                            addEffectLabel(
-                                at: CGPoint(
-                                    x: geometry.size.width * randomEffectXRatio,
-                                    y: randomEffectYOffset
-                                ),
-                                value: gold
-                            )
-                        }
-                    }
+                    )
                     ForEach(effectLabels) { effectLabel in
                         EffectLabel(
                             value: effectLabel.value,
@@ -75,6 +65,17 @@ struct StackGameView: View {
             }
             .background(AppTheme.backgroundColor)
             .navigationBarBackButtonHidden(true) // 임시로 숨김
+            .onAppear {
+                scene.onBlockDropped = { gold in
+                    addEffectLabel(
+                        at: CGPoint(
+                            x: geometry.size.width * randomEffectXRatio,
+                            y: randomEffectYOffset
+                        ),
+                        value: gold
+                    )
+                }
+            }
         }
     }
 }
