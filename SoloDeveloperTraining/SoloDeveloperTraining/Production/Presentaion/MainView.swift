@@ -44,8 +44,7 @@ struct MainView: View {
             Group {
                 switch selectedTab {
                 case .work:
-                    Color.white
-                        .overlay(Text("업무 화면").foregroundColor(.gray))
+                    WorkSelectedView()
                 case .enhance:
                     Color.white
                         .overlay(Text("강화 화면").foregroundColor(.gray))
@@ -62,4 +61,8 @@ struct MainView: View {
         .ignoresSafeArea(edges: .bottom)
         .background(Color.beige200)
     }
+}
+
+#Preview {
+    MainView()
 }
