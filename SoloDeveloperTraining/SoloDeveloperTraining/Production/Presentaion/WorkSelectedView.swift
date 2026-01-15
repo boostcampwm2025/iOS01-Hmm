@@ -108,9 +108,7 @@ private extension WorkSelectedView {
     func gameView(for index: Int) -> some View {
         switch index {
         case 0:
-            TapGameView(user: user, onClose: {
-                isGameStarted = false
-            })
+            TapGameView(user: user, isGameStarted: $isGameStarted)
         case 1:
             LaguageGameView(user: user, isGameStarted: $isGameStarted)
         case 2:
