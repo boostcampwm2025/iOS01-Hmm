@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+enum AppTheme {
+    static let backgroundColor: Color = AppColors.beige200
+}
+
 struct MainView: View {
     @State private var selectedTab: TabItem = .work
 
@@ -67,7 +71,7 @@ struct MainView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .ignoresSafeArea(edges: .bottom)
-        .background(Color.beige200)
+        .background(AppTheme.backgroundColor)
     }
 }
 

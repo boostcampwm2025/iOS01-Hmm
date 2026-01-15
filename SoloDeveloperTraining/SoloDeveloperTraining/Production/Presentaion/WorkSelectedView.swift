@@ -98,7 +98,7 @@ private extension WorkSelectedView {
                 title: "물건 쌓기",
                 description: "효과 설명",
                 imageName: "background_street",
-                isDisabled: true
+                isDisabled: false
             )
         ]
     }
@@ -107,15 +107,13 @@ private extension WorkSelectedView {
     func gameView(for index: Int) -> some View {
         switch index {
         case 0:
-            TapGameView(user: user, onClose: {
-                isGameStarted = false
-            })
+            TapGameView(user: user, isGameStarted: $isGameStarted)
         case 1:
             LaguageGameView(user: user, isGameStarted: $isGameStarted)
         case 2:
             DodgeGameView(user: user, isGameStarted: $isGameStarted)
         case 3:
-            Color.white.overlay(Text("물건 쌓기").foregroundColor(.gray))
+            StackGameView(user: user, isGameStarted: $isGameStarted)
         default:
             EmptyView()
         }
