@@ -173,3 +173,34 @@ private struct ProgressView: View {
         .frame(maxWidth: .infinity)
     }
 }
+
+#Preview {
+    HStack(spacing: 12) {
+        MissionCard(
+            title: "탭따구리",
+            reward: 15,
+            condition: "탭 10,000회 달성",
+            buttonState: .acquired,
+            onButtonTap: {
+                print("미션 1 보상 획득")
+            }
+        )
+
+        MissionCard(
+            title: "정상이라는 착각",
+            reward: 15,
+            condition: "버그 피하기 1000회달성",
+            buttonState: .completed
+        )
+
+        MissionCard(
+            title: "명탐정의 돋보기",
+            reward: 15,
+            imageName: "background_street",
+            condition: "탭 10,000회 달성",
+            currentValue: 7356,
+            totalValue: 10000
+        )
+    }
+    .padding()
+}
