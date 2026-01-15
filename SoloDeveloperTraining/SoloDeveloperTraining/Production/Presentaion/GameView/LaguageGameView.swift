@@ -21,7 +21,6 @@ private enum Constant {
 
     enum EffectLabel {
         static let offsetY: CGFloat = -34
-        static let displayDuration: TimeInterval = 1.5
     }
 }
 
@@ -114,7 +113,9 @@ private extension LaguageGameView {
             // 획득한 골드를 표시하는 효과 라벨
             ZStack {
                 ForEach(effectValues, id: \.id) { effect in
-                    EffectLabel(value: effect.value)
+                    EffectLabel(value: effect.value) {
+                        removeEffectLabel(id: effect.id)
+                    }
                 }
             }
             .offset(y: Constant.EffectLabel.offsetY)
@@ -169,17 +170,17 @@ private extension LaguageGameView {
         energyDrinkCount = user.inventory.count(.energyDrink) ?? 0
     }
 
-    /// 획득한 골드를 표시하는 효과 라벨 표시
+    /// 획득한 골드를 표시하는 효과 라벨 추가
     /// - Parameter gainedGold: 획득한 골드 (음수일 경우 손실)
     func showEffectLabel(gainedGold: Int) {
         let effectId = UUID()
         effectValues.append((id: effectId, value: gainedGold))
+    }
 
-        // 지정된 시간 후 효과 라벨 제거
-        Task {
-            try? await Task.sleep(for: .seconds(Constant.EffectLabel.displayDuration))
-            effectValues.removeAll { $0.id == effectId }
-        }
+    /// 효과 라벨 제거 (애니메이션 완료 시 콜백으로 호출)
+    /// - Parameter id: 제거할 효과 라벨의 ID
+    func removeEffectLabel(id: UUID) {
+        effectValues.removeAll { $0.id == id }
     }
 }
 
