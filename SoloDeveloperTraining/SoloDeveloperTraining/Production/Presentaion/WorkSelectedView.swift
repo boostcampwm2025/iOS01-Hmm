@@ -82,8 +82,7 @@ private extension WorkSelectedView {
             .init(
                 title: "코드짜기",
                 description: "효과 설명",
-                imageName: "background_street",
-                isDisabled: true
+                imageName: "background_street"
             ),
             .init(
                 title: "언어 맞추기",
@@ -109,7 +108,9 @@ private extension WorkSelectedView {
     func gameView(for index: Int) -> some View {
         switch index {
         case 0:
-            Color.white.overlay(Text("코드 짜기").foregroundColor(.gray))
+            TapGameView(user: user, onClose: {
+                isGameStarted = false
+            })
         case 1:
             LaguageGameView(user: user, isGameStarted: $isGameStarted)
         case 2:
