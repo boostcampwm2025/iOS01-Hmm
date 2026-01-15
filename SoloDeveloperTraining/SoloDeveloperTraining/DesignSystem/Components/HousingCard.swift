@@ -115,3 +115,34 @@ private extension HousingCard {
         }
     }
 }
+
+#Preview {
+    struct PreviewWrapper: View {
+        @State private var state1: HousingCardState = .normal
+        @State private var state2: HousingCardState = .normal
+        @State private var state3: HousingCardState = .normal
+
+        var body: some View {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 16) {
+                    HousingCard(housing: .street, state: $state1) {
+                        state1 = .equipped
+                    }
+                    .frame(height: 300)
+
+                    HousingCard(housing: .pentHouse, state: $state2) {
+                        state2 = .equipped
+                    }
+                    .frame(height: 400)
+
+                    HousingCard(housing: .villa, state: $state3) {
+                        state3 = .equipped
+                    }
+                    .frame(height: 500)
+                }
+                .padding(.horizontal)
+            }
+        }
+    }
+    return PreviewWrapper()
+}
