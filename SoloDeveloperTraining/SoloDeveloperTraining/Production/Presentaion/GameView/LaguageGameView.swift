@@ -74,8 +74,7 @@ struct LaguageGameView: View {
                     .frame(height: 24)
 
                     HStack(alignment: .bottom, spacing: Constant.Spacing.itemHorizontal) {
-                        ForEach(game.itemList.indices, id: \.self) { index in
-                            let item = game.itemList[index]
+                        ForEach(Array(game.itemList.enumerated()), id: \.offset) { index, item in
                             LanguageItem(
                                 languageType: item.languageType,
                                 state: item.state
@@ -97,6 +96,7 @@ struct LaguageGameView: View {
                         })
                     }
                 }
+                Spacer()
             }
             .padding()
         }
@@ -106,8 +106,9 @@ struct LaguageGameView: View {
 private extension LaguageGameView {
     func useConsumableItem(_ type: ConsumableType) {
         Task {
-            let isSuccess = await user.inventory.drink(.coffee)
+            let isSuccess = await user.inventory.drink(type)
             if isSuccess {
+                self.game.buffSystem.useConsumableItem(type: type)
                 self.updateConsumableItems()
             }
         }

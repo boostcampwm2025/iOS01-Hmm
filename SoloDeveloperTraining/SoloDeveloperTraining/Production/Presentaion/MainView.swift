@@ -16,7 +16,10 @@ struct MainView: View {
         inventory: .init(),
         record: .init(),
         skills: [
-            .init(game: .language, tier: .beginner, level: 100)
+            .init(game: .tap, tier: .beginner, level: 100),
+            .init(game: .language, tier: .beginner, level: 100),
+            .init(game: .dodge, tier: .beginner, level: 100),
+            .init(game: .stack, tier: .beginner, level: 100)
         ]
     )
     let housing: Housing = .street
