@@ -47,6 +47,7 @@ struct MissionCardButton: View {
                 .frame(height: Constant.buttonHeight)
                 .frame(maxWidth: Constant.buttonWidth)
                 .background(buttonState.backgroundColor)
+                .animation(.none, value: buttonState)
         }
         .disabled(!buttonState.isEnabled)
         .buttonStyle(.pressable(isPressed: $isPressed))
@@ -113,10 +114,9 @@ extension MissionCardButton {
 
         VStack {
             MissionCardButton(buttonState: $buttonState1)
-                .padding(.horizontal, 16)
             MissionCardButton(buttonState: $buttonState2)
-                .padding(.horizontal, 16)
         }
+        .padding(.horizontal, 16)
     }
     .padding()
 }
