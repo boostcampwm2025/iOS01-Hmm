@@ -34,7 +34,6 @@ private enum Constant {
 struct DodgeGameView: View {
     private var game: DodgeGame
 
-    @State private var user: User
     @State private var gameAreaWidth: CGFloat = 0
     @State private var gameAreaHeight: CGFloat = 0
     @State private var isFacingLeft: Bool = false
@@ -43,7 +42,6 @@ struct DodgeGameView: View {
     @Binding var isGameStarted: Bool
 
     init(user: User, isGameStarted: Binding<Bool>) {
-        self.user = user
         self._isGameStarted = isGameStarted
         self.game = DodgeGame(
             user: user,
@@ -57,11 +55,15 @@ struct DodgeGameView: View {
             VStack(spacing: 0) {
                 GameToolBar(
                     closeButtonDidTapHandler: closeGame,
-                    coffeeButtonDidTapHandler: useCoffee,
-                    energyDrinkButtonDidTapHandler: useEnergyDrink,
+                    coffeeButtonDidTapHandler: {
+                        useConsumable(item: .coffee)
+                    },
+                    energyDrinkButtonDidTapHandler: {
+                        useConsumable(item: .energyDrink)
+                    },
                     feverState: game.feverSystem,
-                    coffeeCount: .constant(user.inventory.count(.coffee) ?? 0),
-                    energyDrinkCount: .constant(user.inventory.count(.energyDrink) ?? 0)
+                    coffeeCount: .constant(game.user.inventory.count(.coffee) ?? 0),
+                    energyDrinkCount: .constant(game.user.inventory.count(.energyDrink) ?? 0)
                 )
                 .padding(.horizontal, Constant.Padding.horizontal)
                 .padding(.bottom, Constant.Padding.toolBarBottom)
@@ -118,8 +120,8 @@ struct DodgeGameView: View {
     }
 }
 
-extension DodgeGameView {
-    private func setupGame(with size: CGSize) {
+private extension DodgeGameView {
+    func setupGame(with size: CGSize) {
         gameAreaWidth = size.width
         gameAreaHeight = size.height
 
@@ -129,7 +131,7 @@ extension DodgeGameView {
         game.startGame()
     }
 
-    private func showGoldChangeEffect(_ goldDelta: Int) {
+    func showGoldChangeEffect(_ goldDelta: Int) {
         let effect = EffectLabelData(
             id: UUID(),
             position: CGPoint(
@@ -142,28 +144,21 @@ extension DodgeGameView {
         goldEffects.append(effect)
     }
 
-    private func useCoffee() {
-        let success = game.user.inventory.drink(.coffee)
+    func useConsumable(item: ConsumableType) {
+        let success = game.user.inventory.drink(item)
         if success {
-            game.buffSystem.useConsumableItem(type: .coffee)
-        }
-    }
-
-    private func useEnergyDrink() {
-        let success = game.user.inventory.drink(.energyDrink)
-        if success {
-            game.buffSystem.useConsumableItem(type: .energyDrink)
+            game.buffSystem.useConsumableItem(type: item)
         }
     }
 
     // 캐릭터의 진행 방향을 업데이트 합니다.
-    private func updateCharacterDirection(oldPositionX: CGFloat, newPositionX: CGFloat) {
+    func updateCharacterDirection(oldPositionX: CGFloat, newPositionX: CGFloat) {
         if abs(newPositionX - oldPositionX) > Constant.Threshold.directionChange {
             isFacingLeft = newPositionX < oldPositionX
         }
     }
 
-    private func closeGame() {
+    func closeGame() {
         game.stopGame()
         isGameStarted = false
     }
