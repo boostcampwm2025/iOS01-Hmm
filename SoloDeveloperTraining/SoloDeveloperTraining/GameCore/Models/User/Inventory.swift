@@ -27,7 +27,7 @@ final class Inventory {
         ],
         consumableItems: [Consumable] = [
             .init(type: .coffee, count: 5),
-            .init(type: .energyDrink, count: 0)
+            .init(type: .energyDrink, count: 5)
         ],
         housing: Housing = .street
     ) {
