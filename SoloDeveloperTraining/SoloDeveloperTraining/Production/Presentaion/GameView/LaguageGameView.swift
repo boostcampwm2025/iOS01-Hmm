@@ -48,33 +48,32 @@ struct LaguageGameView: View {
     }
 
     var body: some View {
-        VStack(alignment: .center) {
-            GameToolBar(
-                closeButtonDidTapHandler: {},
-                coffeeButtonDidTapHandler: {
-                    useConsumableItem(.coffee)
-                },
-                energyDrinkButtonDidTapHandler: {
-                    useConsumableItem(.energyDrink)
-                },
-                feverState: game.feverSystem,
-                coffeeCount: $coffeeCount,
-                energyDrinkCount: $energyDrinkCount,
-            )
+        GeometryReader { mainGeometry in
+            VStack(alignment: .center, spacing: 0) {
+                GameToolBar(
+                    closeButtonDidTapHandler: {},
+                    coffeeButtonDidTapHandler: {
+                        useConsumableItem(.coffee)
+                    },
+                    energyDrinkButtonDidTapHandler: {
+                        useConsumableItem(.energyDrink)
+                    },
+                    feverState: game.feverSystem,
+                    coffeeCount: $coffeeCount,
+                    energyDrinkCount: $energyDrinkCount,
+                )
 
-            Spacer()
+                Spacer()
 
-            VStack(spacing: 0) {
-                ZStack {
-                    ForEach(effectValues, id: \.id) { effect in
-                        EffectLabel(value: effect.value)
+                VStack(spacing: 0) {
+                    ZStack {
+                        ForEach(effectValues, id: \.id) { effect in
+                            EffectLabel(value: effect.value)
+                        }
                     }
-                }
-                .frame(height: 24)
+                    .frame(height: 24)
 
-                ScrollView(.horizontal) {
-                    HStack(alignment: .center, spacing: Constant.Spacing.itemHorizontal) {
-                        Spacer(minLength: 0)
+                    HStack(alignment: .bottom, spacing: Constant.Spacing.itemHorizontal) {
                         ForEach(game.itemList.indices, id: \.self) { index in
                             let item = game.itemList[index]
                             LanguageItem(
@@ -82,24 +81,25 @@ struct LaguageGameView: View {
                                 state: item.state
                             )
                         }
-                        Spacer(minLength: 0)
                     }
-                }.scrollIndicators(.never)
-            }
+                }
+                .frame(maxWidth: .infinity)
 
-            Spacer()
+                Spacer()
 
-            HStack(spacing: Constant.Spacing.buttonHorizontal) {
-                ForEach(languageTypeList, id: \.self) { type in
-                    LanguageButton(languageType: type, action: {
-                        Task {
-                            let gainedGold = await game.didPerformAction(type)
-                            showEffectLabel(gainedGold: gainedGold)
-                        }
-                    })
+                HStack(spacing: Constant.Spacing.buttonHorizontal) {
+                    ForEach(languageTypeList, id: \.self) { type in
+                        LanguageButton(languageType: type, action: {
+                            Task {
+                                let gainedGold = await game.didPerformAction(type)
+                                showEffectLabel(gainedGold: gainedGold)
+                            }
+                        })
+                    }
                 }
             }
-        }.padding()
+            .padding()
+        }
     }
 }
 
