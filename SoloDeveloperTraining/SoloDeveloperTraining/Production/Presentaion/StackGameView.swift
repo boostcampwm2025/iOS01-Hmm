@@ -36,9 +36,10 @@ struct StackGameView: View {
                 energyDrinkCount: .constant(game.user.inventory.count(.energyDrink) ?? 0)
             )
             .padding(.horizontal)
-            SpriteView(scene: scene).background(.beige200)
-        }.background(.beige200)
-        .navigationBarBackButtonHidden(true)
+            SpriteView(scene: scene)
+        }
+        .background(AppTheme.backgroundColor)
+        .navigationBarBackButtonHidden(true) // 임시로 숨김
     }
 }
 

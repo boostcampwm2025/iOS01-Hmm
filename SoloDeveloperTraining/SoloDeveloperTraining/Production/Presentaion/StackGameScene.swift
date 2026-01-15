@@ -5,6 +5,7 @@
 //  Created by sunjae on 1/15/26.
 //
 
+import SwiftUI
 import SpriteKit
 
 private enum Constant {
@@ -64,11 +65,11 @@ final class StackGameScene: SKScene {
     }
 
     /// 씬의 초기 설정을 수행합니다.
-    /// - 배경색을 흰색으로 설정
+    /// - 배경색을 앱 테마 배경색으로 설정
     /// - 물리 엔진의 중력 설정
     /// - 카메라 초기화
     private func setupScene() {
-        backgroundColor = .white
+        backgroundColor = UIColor(AppTheme.backgroundColor)
         physicsWorld.gravity = Constant.Physics.gravity
 
         setupCamera()

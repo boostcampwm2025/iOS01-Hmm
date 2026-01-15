@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+enum AppTheme {
+    static let backgroundColor: Color = AppColors.beige200
+}
+
 struct MainView: View {
     @State private var selectedTab: TabItem = .work
     @State private var user: User
@@ -50,8 +54,6 @@ struct MainView: View {
         autoGainSystem.startSystem()
     }
 
-    
-
     var body: some View {
         VStack(spacing: 0) {
             // 배경 + 상태바
@@ -91,20 +93,20 @@ struct MainView: View {
                             }
                         }
                     }
-                    case .enhance:
-                        Color.white
-                            .overlay(Text("강화 화면").foregroundColor(.gray))
-                    case .shop:
-                        Color.white
-                            .overlay(Text("상점 화면").foregroundColor(.gray))
-                    case .mission:
-                        Color.white
-                            .overlay(Text("미션 화면").foregroundColor(.gray))
-                    }
+                case .enhance:
+                    Color.white
+                        .overlay(Text("강화 화면").foregroundColor(.gray))
+                case .shop:
+                    Color.white
+                        .overlay(Text("상점 화면").foregroundColor(.gray))
+                case .mission:
+                    Color.white
+                        .overlay(Text("미션 화면").foregroundColor(.gray))
                 }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .ignoresSafeArea(edges: .bottom)
-            .background(Color.beige200)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .ignoresSafeArea(edges: .bottom)
+        .background(AppTheme.backgroundColor)
     }
+}
