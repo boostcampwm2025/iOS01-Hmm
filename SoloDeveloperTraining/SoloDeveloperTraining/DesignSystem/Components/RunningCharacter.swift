@@ -13,6 +13,7 @@ private enum Constant {
 
 struct RunningCharacter: View {
     @State private var currentFrame = 0
+    @State private var animationTimer: Timer?
 
     private let frameImages: [ImageResource] = [
         .dodgeCharacter1,
@@ -38,12 +39,20 @@ struct RunningCharacter: View {
             .onAppear {
                 startAnimation()
             }
+            .onDisappear {
+                stopAnimation()
+            }
     }
 
     private func startAnimation() {
-        Timer.scheduledTimer(withTimeInterval: Constant.animationSpeed, repeats: true) { _ in
+        animationTimer = Timer.scheduledTimer(withTimeInterval: Constant.animationSpeed, repeats: true) { _ in
             currentFrame = (currentFrame + 1) % frameImages.count
         }
+    }
+
+    private func stopAnimation() {
+        animationTimer?.invalidate()
+        animationTimer = nil
     }
 }
 
