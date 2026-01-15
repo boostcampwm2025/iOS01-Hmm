@@ -187,7 +187,7 @@ final class StackGameScene: SKScene {
             checkAlignmentAndHandle(targetY: targetY)
         } else {
             // 아직 도달하지 않았으면 재확인
-            DispatchQueue.global().asyncAfter(deadline: .now() + Constant.Time.evaluationCheckInterval) { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + Constant.Time.evaluationCheckInterval) { [weak self] in
                 self?.evaluateBlock()
             }
         }
@@ -247,7 +247,6 @@ final class StackGameScene: SKScene {
             }
         } else {
             blockViews.append(block)
-            
             // 코어에 블록 배치 성공 알림 (위치는 이미 업데이트됨)
             onBlockDropped(stackGame.placeBlockSuccess())
 
@@ -263,7 +262,6 @@ final class StackGameScene: SKScene {
                 self?.spawnBlock()
             }
         }
-
         currentBlockView = nil
     }
 
