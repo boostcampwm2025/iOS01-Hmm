@@ -39,7 +39,7 @@ struct LargeButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.pfFont(.body))
+                .textStyle(.body)
                 .foregroundColor(.white)
                 .frame(width: Constant.Size.buttonWidth, height: Constant.Size.buttonHeight)
                 .background(isEnabled ? .orange500 : .gray200)
