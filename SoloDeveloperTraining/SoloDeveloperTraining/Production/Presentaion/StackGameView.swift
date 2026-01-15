@@ -20,8 +20,6 @@ struct StackGameView: View {
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
 
-    @State private var coffeeCount: Int
-    @State private var energyDrinkCount: Int
     @State private var effectLabels: [EffectLabelData] = []
 
     init(user: User, isGameStarted: Binding<Bool>) {
@@ -31,8 +29,6 @@ struct StackGameView: View {
             stackGame: stackGame,
             onBlockDropped: { _ in
             })
-        coffeeCount = user.inventory.count(.coffee) ?? 0
-        energyDrinkCount = user.inventory.count(.energyDrink) ?? 0
     }
 
     var randomEffectXRatio: CGFloat {
@@ -50,8 +46,8 @@ struct StackGameView: View {
                     coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
                     energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
                     feverState: stackGame.feverSystem,
-                    coffeeCount: $coffeeCount,
-                    energyDrinkCount: $energyDrinkCount
+                    coffeeCount: .constant(stackGame.user.inventory.count(.coffee) ?? 0),
+                    energyDrinkCount: .constant(stackGame.user.inventory.count(.energyDrink) ?? 0)
                 )
                 .padding(.horizontal)
                 ZStack {
@@ -90,18 +86,9 @@ private extension StackGameView {
     }
 
     func useConsumableItem(_ type: ConsumableType) {
-        Task {
-            let isSuccess = await stackGame.user.inventory.drink(type)
-            if isSuccess {
-                stackGame.buffSystem.useConsumableItem(type: type)
-                updateConsumableItems()
-            }
+        if stackGame.user.inventory.drink(type) {
+            stackGame.buffSystem.useConsumableItem(type: type)
         }
-    }
-
-    func updateConsumableItems() {
-        coffeeCount = stackGame.user.inventory.count(.coffee) ?? 0
-        energyDrinkCount = stackGame.user.inventory.count(.energyDrink) ?? 0
     }
 
     func addEffectLabel(at location: CGPoint, value: Int) {
