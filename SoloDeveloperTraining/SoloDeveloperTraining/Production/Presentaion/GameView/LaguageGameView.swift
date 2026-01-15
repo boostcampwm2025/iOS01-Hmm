@@ -176,7 +176,8 @@ private extension LaguageGameView {
         effectValues.append((id: effectId, value: gainedGold))
 
         // 지정된 시간 후 효과 라벨 제거
-        DispatchQueue.main.asyncAfter(deadline: .now() + Constant.EffectLabel.displayDuration) {
+        Task {
+            try? await Task.sleep(for: .seconds(Constant.EffectLabel.displayDuration))
             effectValues.removeAll { $0.id == effectId }
         }
     }
