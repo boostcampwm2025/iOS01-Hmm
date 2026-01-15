@@ -32,22 +32,23 @@ private enum Constant {
 }
 
 struct DodgeGameView: View {
+    private var game: DodgeGame
+
     @State private var user: User
-    @State private var game: DodgeGame
     @State private var gameAreaWidth: CGFloat = 0
     @State private var gameAreaHeight: CGFloat = 0
     @State private var isFacingLeft: Bool = false
     @State private var goldEffects: [EffectLabelData] = []
 
-    init(user: User) {
-        self.user = user
+    @Binding var isGameStarted: Bool
 
-        self._game = State(
-            wrappedValue: DodgeGame(
-                user: user,
-                gameAreaSize: CGSize.zero,
-                onGoldChanged: { _ in }
-            )
+    init(user: User, isGameStarted: Binding<Bool>) {
+        self.user = user
+        self._isGameStarted = isGameStarted
+        self.game = DodgeGame(
+            user: user,
+            gameAreaSize: CGSize.zero,
+            onGoldChanged: { _ in }
         )
     }
 
@@ -55,7 +56,7 @@ struct DodgeGameView: View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
                 GameToolBar(
-                    closeButtonDidTapHandler: game.stopGame,
+                    closeButtonDidTapHandler: closeGame,
                     coffeeButtonDidTapHandler: useCoffee,
                     energyDrinkButtonDidTapHandler: useEnergyDrink,
                     feverState: game.feverSystem,
@@ -161,9 +162,16 @@ extension DodgeGameView {
             isFacingLeft = newPositionX < oldPositionX
         }
     }
+
+    private func closeGame() {
+        game.stopGame()
+        isGameStarted = false
+    }
 }
 
 #Preview {
+    @Previewable @State var isGameStarted = true
+
     let wallet = Wallet(gold: 1000, diamond: 0)
     let inventory = Inventory(
         equipmentItems: [],
@@ -190,7 +198,7 @@ extension DodgeGameView {
                 .frame(maxHeight: .infinity)
                 .background(Color.gray.opacity(0.2))
 
-            DodgeGameView(user: user)
+            DodgeGameView(user: user, isGameStarted: $isGameStarted)
                 .ignoresSafeArea()
                 .frame(height: geometry.size.height / 2 - Constant.Size.ground)
         }
