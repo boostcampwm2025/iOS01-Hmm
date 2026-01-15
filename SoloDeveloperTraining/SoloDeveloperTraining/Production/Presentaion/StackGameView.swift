@@ -11,21 +11,26 @@ import SpriteKit
 struct StackGameView: View {
     @Environment(\.dismiss) private var dismiss
 
+    @State private var coffeeCount: Int
+    @State private var energyDrinkCount: Int
+
     let stackGame: StackGame
 
     init(user: User) {
         self.stackGame = StackGame(user: user, calculator: .init())
+        coffeeCount = user.inventory.count(.coffee) ?? 0
+        energyDrinkCount = user.inventory.count(.energyDrink) ?? 0
     }
 
     var body: some View {
         VStack(spacing: 0) {
             GameToolBar(
                 closeButtonDidTapHandler: stopGame,
-                coffeeButtonDidTapHandler: useCoffee,
-                energyDrinkButtonDidTapHandler: useEnergyDrink,
+                coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
+                energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
                 feverState: stackGame.feverSystem,
-                coffeeCount: .constant(stackGame.user.inventory.count(.coffee) ?? 0),
-                energyDrinkCount: .constant(stackGame.user.inventory.count(.energyDrink) ?? 0)
+                coffeeCount: $coffeeCount,
+                energyDrinkCount: $energyDrinkCount
             )
             .padding(.horizontal)
             SpriteView(scene: StackGameScene(stackGame: stackGame))
@@ -44,15 +49,18 @@ private extension StackGameView {
         dismiss()
     }
 
-    func useCoffee() {
-        if stackGame.user.inventory.drink(.coffee) {
-            stackGame.buffSystem.useConsumableItem(type: .coffee)
+    func useConsumableItem(_ type: ConsumableType) {
+        Task {
+            let isSuccess = await stackGame.user.inventory.drink(type)
+            if isSuccess {
+                stackGame.buffSystem.useConsumableItem(type: type)
+                updateConsumableItems()
+            }
         }
     }
 
-    func useEnergyDrink() {
-        if stackGame.user.inventory.drink(.energyDrink) {
-            stackGame.buffSystem.useConsumableItem(type: .energyDrink)
-        }
+    func updateConsumableItems() {
+        coffeeCount = stackGame.user.inventory.count(.coffee) ?? 0
+        energyDrinkCount = stackGame.user.inventory.count(.energyDrink) ?? 0
     }
 }
