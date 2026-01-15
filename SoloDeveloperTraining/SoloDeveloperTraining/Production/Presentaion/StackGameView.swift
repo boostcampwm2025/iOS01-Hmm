@@ -14,16 +14,18 @@ private enum Constant {
 }
 
 struct StackGameView: View {
-    @Environment(\.dismiss) private var dismiss
+    let stackGame: StackGame
+
+    /// 게임 시작 상태 (부모 뷰와 바인딩)
+    @Binding var isGameStarted: Bool
 
     @State private var coffeeCount: Int
     @State private var energyDrinkCount: Int
     @State private var effectLabels: [EffectLabelData] = []
 
-    let stackGame: StackGame
-
-    init(user: User) {
+    init(user: User, isGameStarted: Binding<Bool>) {
         self.stackGame = StackGame(user: user, calculator: .init())
+        self._isGameStarted = isGameStarted
         coffeeCount = user.inventory.count(.coffee) ?? 0
         energyDrinkCount = user.inventory.count(.energyDrink) ?? 0
     }
@@ -80,7 +82,7 @@ struct StackGameView: View {
 private extension StackGameView {
     func stopGame() {
         stackGame.stopGame()
-        dismiss()
+        isGameStarted = false
     }
 
     func useConsumableItem(_ type: ConsumableType) {
