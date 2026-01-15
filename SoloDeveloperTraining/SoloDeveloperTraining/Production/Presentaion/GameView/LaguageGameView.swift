@@ -27,6 +27,7 @@ struct LaguageGameView: View {
 
     @State private var coffeeCount: Int
     @State private var energyDrinkCount: Int
+    @State private var effectValues: [(id: UUID, value: Int)] = []
 
     init(user: User) {
         self.user = user
@@ -63,19 +64,28 @@ struct LaguageGameView: View {
 
             Spacer()
 
-            ScrollView(.horizontal) {
-                HStack(alignment: .center, spacing: Constant.Spacing.itemHorizontal) {
-                    Spacer(minLength: 0)
-                    ForEach(game.itemList.indices, id: \.self) { index in
-                        let item = game.itemList[index]
-                        LanguageItem(
-                            languageType: item.languageType,
-                            state: item.state
-                        )
+            VStack(spacing: 0) {
+                ZStack {
+                    ForEach(effectValues, id: \.id) { effect in
+                        EffectLabel(value: effect.value)
                     }
-                    Spacer(minLength: 0)
                 }
-            }.scrollIndicators(.never)
+                .frame(height: 24)
+
+                ScrollView(.horizontal) {
+                    HStack(alignment: .center, spacing: Constant.Spacing.itemHorizontal) {
+                        Spacer(minLength: 0)
+                        ForEach(game.itemList.indices, id: \.self) { index in
+                            let item = game.itemList[index]
+                            LanguageItem(
+                                languageType: item.languageType,
+                                state: item.state
+                            )
+                        }
+                        Spacer(minLength: 0)
+                    }
+                }.scrollIndicators(.never)
+            }
 
             Spacer()
 
@@ -83,7 +93,8 @@ struct LaguageGameView: View {
                 ForEach(languageTypeList, id: \.self) { type in
                     LanguageButton(languageType: type, action: {
                         Task {
-                            _ = await game.didPerformAction(type)
+                            let gainedGold = await game.didPerformAction(type)
+                            showEffectLabel(gainedGold: gainedGold)
                         }
                     })
                 }
@@ -106,6 +117,16 @@ private extension LaguageGameView {
         coffeeCount = user.inventory.count(.coffee) ?? 0
         energyDrinkCount = user.inventory.count(.energyDrink) ?? 0
     }
+
+    func showEffectLabel(gainedGold: Int) {
+        let effectId = UUID()
+        effectValues.append((id: effectId, value: gainedGold))
+
+        Task {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            effectValues.removeAll { $0.id == effectId }
+        }
+    }
 }
 
 #Preview {
@@ -113,7 +134,10 @@ private extension LaguageGameView {
         nickname: "Test",
         wallet: .init(),
         inventory: .init(),
-        record: .init()
+        record: .init(),
+        skills: [
+            .init(game: .language, tier: .beginner, level: 1000)
+        ]
     )
     LaguageGameView(user: user)
 }
