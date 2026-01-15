@@ -8,11 +8,17 @@
 import SwiftUI
 import SpriteKit
 
+private enum Constant {
+    static let effectLabelXRatios: [CGFloat] = [0.3, 0.4, 0.7]
+    static let effectLabelYPositions: [CGFloat] = [150, 200, 250]
+}
+
 struct StackGameView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var coffeeCount: Int
     @State private var energyDrinkCount: Int
+    @State private var effectLabels: [EffectLabelData] = []
 
     let stackGame: StackGame
 
@@ -22,24 +28,55 @@ struct StackGameView: View {
         energyDrinkCount = user.inventory.count(.energyDrink) ?? 0
     }
 
+    var randomEffectXRatio: CGFloat {
+        Constant.effectLabelXRatios.randomElement() ?? 0.4
+    }
+    var randomEffectYOffset: CGFloat {
+        Constant.effectLabelYPositions.randomElement() ?? 200
+    }
+
     var body: some View {
-        VStack(spacing: 0) {
-            GameToolBar(
-                closeButtonDidTapHandler: stopGame,
-                coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
-                energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
-                feverState: stackGame.feverSystem,
-                coffeeCount: $coffeeCount,
-                energyDrinkCount: $energyDrinkCount
-            )
-            .padding(.horizontal)
-            SpriteView(scene: StackGameScene(stackGame: stackGame))
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                GameToolBar(
+                    closeButtonDidTapHandler: stopGame,
+                    coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
+                    energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
+                    feverState: stackGame.feverSystem,
+                    coffeeCount: $coffeeCount,
+                    energyDrinkCount: $energyDrinkCount
+                )
+                .padding(.horizontal)
+                ZStack {
+                    SpriteView(
+                        scene: StackGameScene(
+                            stackGame: stackGame,
+                            onBlockDropped: { gold in
+                                addEffectLabel(
+                                    at: CGPoint(
+                                        x: geometry.size.width * randomEffectXRatio,
+                                        y: randomEffectYOffset
+                                    ),
+                                    value: gold
+                                )
+                            })
+                    )
+                    ForEach(effectLabels) { effectLabel in
+                        EffectLabel(
+                            value: effectLabel.value,
+                            onComplete: { effectLabels.removeAll { $0.id == effectLabel.id } }
+                        )
+                        .position(effectLabel.position)
+                    }
+                }
+            }
+            .onDisappear {
+                stopGame()
+            }
+            .background(AppTheme.backgroundColor)
+            .navigationBarBackButtonHidden(true) // 임시로 숨김
         }
-        .onDisappear {
-            stopGame()
-        }
-        .background(AppTheme.backgroundColor)
-        .navigationBarBackButtonHidden(true) // 임시로 숨김
+
     }
 }
 
@@ -62,5 +99,14 @@ private extension StackGameView {
     func updateConsumableItems() {
         coffeeCount = stackGame.user.inventory.count(.coffee) ?? 0
         energyDrinkCount = stackGame.user.inventory.count(.energyDrink) ?? 0
+    }
+
+    func addEffectLabel(at location: CGPoint, value: Int) {
+        let labelData = EffectLabelData(
+            id: UUID(),
+            position: location,
+            value: value
+        )
+        effectLabels.append(labelData)
     }
 }

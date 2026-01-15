@@ -42,8 +42,11 @@ final class StackGameScene: SKScene {
     /// 블록 배치 처리 중 여부 (UI 인터랙션 차단용)
     private var isProcessing = false
 
-    init(stackGame: StackGame) {
+    private var onBlockDropped: ((Int) -> Void)
+
+    init(stackGame: StackGame, onBlockDropped: @escaping ((Int) -> Void)) {
         self.stackGame = stackGame
+        self.onBlockDropped = onBlockDropped
         super.init(size: .zero)
         self.scaleMode = .resizeFill
     }
@@ -236,7 +239,7 @@ final class StackGameScene: SKScene {
 
         // 폭탄 블록 체크
         if currentBlock.type.isBomb {
-            stackGame.placeBombSuccess()
+            onBlockDropped(stackGame.placeBombSuccess())
 
             DispatchQueue.main.asyncAfter(deadline: .now() + Constant.Time.bombRemovalDelay) { [weak self] in
                 block.removeFromParent()
@@ -249,7 +252,7 @@ final class StackGameScene: SKScene {
             currentHeight += block.size.height
 
             // 코어에 블록 배치 성공 알림 (위치는 이미 업데이트됨)
-            stackGame.placeBlockSuccess()
+            onBlockDropped(stackGame.placeBlockSuccess())
 
             // 카메라 이동
             if let camera = camera {
@@ -279,9 +282,9 @@ final class StackGameScene: SKScene {
 
         // 폭탄 블록 실패 = 보상, 일반 블록 실패 = 패널티
         if currentBlock.type.isBomb {
-            stackGame.placeBombFail()
+            onBlockDropped(stackGame.placeBombFail())
         } else {
-            stackGame.placeBlockFail()
+            onBlockDropped(stackGame.placeBlockFail())
         }
 
         // 일정 시간 후 블록 제거 및 다음 블록 생성
