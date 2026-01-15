@@ -15,6 +15,7 @@ private enum Constant {
 
 struct WorkSelectedView: View {
 
+    let user: User
     @State var selectedIndex: Int?
     @State var isGameStarted: Bool = false
 
@@ -110,7 +111,7 @@ private extension WorkSelectedView {
         case 0:
             Color.white.overlay(Text("코드 짜기").foregroundColor(.gray))
         case 1:
-            Color.white.overlay(Text("언어 맞추기").foregroundColor(.gray))
+            LaguageGameView(user: user)
         case 2:
             Color.white.overlay(Text("버그 피하기").foregroundColor(.gray))
         case 3:
@@ -122,5 +123,12 @@ private extension WorkSelectedView {
 }
 
 #Preview {
-    WorkSelectedView()
+    let user = User(
+        nickname: "Test",
+        wallet: .init(),
+        inventory: .init(),
+        record: .init()
+    )
+
+    WorkSelectedView(user: user)
 }
