@@ -13,6 +13,10 @@ struct StackGameView: View {
 
     let stackGame: StackGame
 
+    init(user: User) {
+        self.stackGame = StackGame(user: user, calculator: .init())
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             GameToolBar(
