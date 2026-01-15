@@ -9,6 +9,7 @@ import SwiftUI
 import SpriteKit
 
 struct StackGameView: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var game: StackGame
     private let scene: StackGameScene
 
@@ -18,7 +19,6 @@ struct StackGameView: View {
 
         self.scene = scene
         self._game = State(wrappedValue: game)
-        print("물건 쌓기 게임을 시작합니다.")
     }
 
     var body: some View {
@@ -34,6 +34,9 @@ struct StackGameView: View {
             .padding(.horizontal)
             SpriteView(scene: scene)
         }
+        .onDisappear {
+            stopGame()
+        }
         .background(AppTheme.backgroundColor)
         .navigationBarBackButtonHidden(true) // 임시로 숨김
     }
@@ -41,7 +44,8 @@ struct StackGameView: View {
 
 private extension StackGameView {
     func stopGame() {
-        print("게임을 종료합니다.")
+        game.stopGame()
+        dismiss()
     }
 
     func useCoffee() {
