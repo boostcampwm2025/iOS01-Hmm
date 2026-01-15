@@ -32,7 +32,7 @@ struct MediumButton: View {
     @State private var isPressed: Bool = false
 
     let title: String
-    var fillStyle: Bool = false
+    var isFilled: Bool = false
     var hasBadge: Bool = false
     var isEnabled: Bool = true
     let action: () -> Void
@@ -41,13 +41,13 @@ struct MediumButton: View {
         Button(action: action) {
             Text(title)
                 .textStyle(.caption)
-                .foregroundColor(fillStyle ? .white : .black)
+                .foregroundColor(isFilled ? .white : .black)
                 .frame(width: Constant.Size.buttonWidth, height: Constant.Size.buttonHeight)
                 .background(backgroundColor)
                 .cornerRadius(Constant.radius)
                 .opacity(isPressed ? Constant.Opacity.pressed : Constant.Opacity.unPressed)
                 .overlay {
-                    if !fillStyle {
+                    if !isFilled {
                         RoundedRectangle(cornerRadius: Constant.radius)
                             .stroke()
                     }
@@ -62,9 +62,9 @@ struct MediumButton: View {
 
     private var backgroundColor: Color {
         if !isEnabled {
-            return fillStyle ? .gray200 : .white
+            return isFilled ? .gray200 : .white
         }
-        return fillStyle ? .orange500 : .white
+        return isFilled ? .orange500 : .white
     }
 
     private var badge: some View {
@@ -77,27 +77,27 @@ struct MediumButton: View {
 
 #Preview {
     VStack(spacing: 20) {
-        MediumButton(title: "버튼 텍스트", fillStyle: true) {
+        MediumButton(title: "버튼 텍스트", isFilled: true) {
             print("버튼 클릭1")
         }
 
-        MediumButton(title: "버튼 텍스트", fillStyle: true, isEnabled: false) {
+        MediumButton(title: "버튼 텍스트", isFilled: true, isEnabled: false) {
             print("버튼 클릭2")
         }
 
-        MediumButton(title: "버튼 텍스트", fillStyle: true, hasBadge: true) {
+        MediumButton(title: "버튼 텍스트", isFilled: true, hasBadge: true) {
             print("버튼 클릭3")
         }
 
-        MediumButton(title: "버튼 텍스트", fillStyle: true, hasBadge: true, isEnabled: false) {
+        MediumButton(title: "버튼 텍스트", isFilled: true, hasBadge: true, isEnabled: false) {
             print("버튼 클릭4")
         }
 
-        MediumButton(title: "버튼 텍스트", fillStyle: false) {
+        MediumButton(title: "버튼 텍스트", isFilled: false) {
             print("버튼 클릭5")
         }
 
-        MediumButton(title: "버튼 텍스트", fillStyle: false, hasBadge: true) {
+        MediumButton(title: "버튼 텍스트", isFilled: false, hasBadge: true) {
             print("버튼 클릭6")
         }
     }
