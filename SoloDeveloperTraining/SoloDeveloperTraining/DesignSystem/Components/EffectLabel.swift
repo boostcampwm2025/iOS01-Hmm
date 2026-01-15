@@ -32,12 +32,28 @@ private enum Constant {
     }
 }
 
+/// EffectLabel 데이터 모델
+struct EffectLabelData: Identifiable {
+    let id: UUID
+    let position: CGPoint
+    let value: Int
+}
+
 struct EffectLabel: View {
     let value: Int
+    let onComplete: () -> Void
 
     @State private var opacity: Double = 1.0
     @State private var offsetY: CGFloat = 0
     @State private var shouldShow = true
+
+    init(
+        value: Int,
+        onComplete: @escaping () -> Void = {}
+    ) {
+        self.value = value
+        self.onComplete = onComplete
+    }
 
     private var isZero: Bool {
         value == 0
@@ -97,6 +113,7 @@ struct EffectLabel: View {
                     .sleep(nanoseconds: Constant.Animation.sleepNanosec)
             }
             shouldShow = false
+            onComplete()
         }
     }
 }

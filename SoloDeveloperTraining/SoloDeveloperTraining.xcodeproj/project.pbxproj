@@ -17,8 +17,8 @@
 			membershipExceptions = (
 				"App/Info-Dev.plist",
 				App/Info.plist,
-				DesignSystem/Components/TabBar.swift,
 				Production/Presentaion/MainView.swift,
+				Production/Presentaion/TapGameView.swift,
 			);
 			target = 2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */;
 		};
@@ -32,6 +32,8 @@
 				Devlopment/Presentation/LanguageGameTestView.swift,
 				Devlopment/Presentation/DodgeGameTestView.swift,
 				Devlopment/Presentation/ShopView.swift,
+				Devlopment/Presentation/StackGameScene.swift,
+				Devlopment/Presentation/StackGameTestView.swift,
 				Devlopment/Presentation/TabGameView.swift,
 			);
 			target = 08267F2A2F0D06BC005A0066 /* SoloDeveloperTraining */;

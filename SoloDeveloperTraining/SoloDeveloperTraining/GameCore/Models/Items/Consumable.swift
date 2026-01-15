@@ -8,6 +8,7 @@
 import Foundation
 
 /// 소비 아이템 클래스
+@Observable
 final class Consumable {
     /// 소비 아이템 타입
     let type: ConsumableType
