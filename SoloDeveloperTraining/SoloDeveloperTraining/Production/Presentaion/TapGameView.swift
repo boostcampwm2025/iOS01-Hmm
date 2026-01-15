@@ -124,7 +124,6 @@ private extension TapGameView {
             ]
         ),
         calculator: Calculator(),
-        feverSystem: FeverSystem(decreaseInterval: 0.1, decreasePercentPerTick: 3),
         buffSystem: BuffSystem()
     )
 

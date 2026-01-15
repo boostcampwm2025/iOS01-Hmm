@@ -30,7 +30,7 @@ final class TapGame: Game {
     init(
         user: User,
         calculator: Calculator,
-        feverSystem: FeverSystem,
+        feverSystem: FeverSystem = FeverSystem(decreaseInterval: 0.1, decreasePercentPerTick: 3),
         buffSystem: BuffSystem
     ) {
         self.kind = .tap
