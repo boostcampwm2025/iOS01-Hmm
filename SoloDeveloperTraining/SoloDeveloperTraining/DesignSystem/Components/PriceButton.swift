@@ -100,7 +100,7 @@ struct PriceButton: View {
             RoundedRectangle(cornerRadius: Constant.Layout.cornerRadius)
                 .foregroundStyle(Color.gray200.opacity(Constant.Overlay.disabledOpacity))
 
-            Image("lock")
+            Image(.iconLock)
                 .resizable()
                 .frame(
                     width: Constant.Icon.lockSize.width,

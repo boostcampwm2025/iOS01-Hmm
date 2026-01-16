@@ -31,11 +31,11 @@ extension DropItem {
         var imageResource: ImageResource {
             switch self {
             case .smallGold:
-                return .dropItemSmallGold
+                return .dodgeDropSmallGold
             case .largeGold:
-                return .dropItemLargeGold
+                return .dodgeDropLargeGold
             case .bug:
-                return .dropItemBug
+                return .dodgeDropBug
             }
         }
     }
