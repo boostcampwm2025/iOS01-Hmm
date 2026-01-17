@@ -9,6 +9,7 @@ import SwiftUI
 
 private enum Constant {
     static let defaultImageName: String = "mission_card"
+    static let cardColor = AppColors.orange100
 
     enum Size {
         static let icon: CGFloat = 16
@@ -34,13 +35,6 @@ private enum Constant {
         static let titleLineLimit: Int = 1
         static let conditionLineLimit: Int = 2
         static let minimumScaleFactor: CGFloat = 0.7
-    }
-
-    enum Color {
-        static let card = AppColors.orange100
-        static let progressText = SwiftUI.Color.black
-        static let progressCurrentBackground = AppColors.orange100
-        static let progressTotalBackground = SwiftUI.Color.white
     }
 }
 
@@ -89,7 +83,7 @@ struct MissionCard: View {
         .padding(.top, Constant.Padding.titleTop)
         .padding(.bottom, Constant.Padding.bottom)
         .frame(height: Constant.Size.cardHeight)
-        .background { Rectangle().fill(Constant.Color.card) }
+        .background { Rectangle().fill(Constant.cardColor) }
     }
 }
 
@@ -145,44 +139,13 @@ private struct ContentView: View {
 
             Spacer()
 
-            // MissionCardButton 또는 ProgressView (가운데 정렬)
+            // MissionCardButton (가운데 정렬)
             if let buttonState = buttonState {
                 MissionCardButton(buttonState: buttonState) {
                     onButtonTap?()
                 }
-            } else if let currentValue = currentValue, let totalValue = totalValue {
-                ProgressView(currentValue: currentValue, totalValue: totalValue)
             }
         }
-    }
-}
-
-// MARK: - 하단 ProgressView
-private struct ProgressView: View {
-    let currentValue: Int
-    let totalValue: Int
-
-    private var progress: Double {
-        min(Double(currentValue) / Double(totalValue), 1.0)
-    }
-
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .fill(Constant.Color.progressTotalBackground)
-
-            GeometryReader { geometry in
-                Rectangle()
-                    .fill(Constant.Color.progressCurrentBackground)
-                    .frame(width: geometry.size.width * progress)
-            }
-
-            Text("\(currentValue.formatted)/\(totalValue.formatted)")
-                .textStyle(.label)
-                .foregroundStyle(Constant.Color.progressText)
-        }
-        .frame(height: Constant.Size.progressHeight)
-        .frame(maxWidth: .infinity)
     }
 }
 
@@ -210,8 +173,7 @@ private struct ProgressView: View {
             reward: 15,
             imageName: "background_street",
             condition: "탭 10,000회 달성",
-            currentValue: 7356,
-            totalValue: 10000
+            buttonState: .progress(currentValue: 7356, totalValue: 10000)
         )
     }
     .padding()
