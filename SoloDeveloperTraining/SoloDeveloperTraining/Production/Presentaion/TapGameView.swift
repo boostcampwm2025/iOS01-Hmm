@@ -37,48 +37,50 @@ struct TapGameView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            GameToolBar(
-                closeButtonDidTapHandler: { handleCloseButton() },
-                coffeeButtonDidTapHandler: {
-                    handleItemButtonTap(type: .coffee)
-                },
-                energyDrinkButtonDidTapHandler: {
-                    handleItemButtonTap(type: .energyDrink)
-                },
-                feverState: tapGame.feverSystem,
-                buffSystem: tapGame.buffSystem,
-                coffeeCount: Binding(
-                    get: { tapGame.inventory.count(.coffee) ?? 0 },
-                    set: { _ in }
-                ),
-                energyDrinkCount: Binding(
-                    get: { tapGame.inventory.count(.energyDrink) ?? 0 },
-                    set: { _ in }
-                )
-            )
-            .padding(.horizontal, Constant.Padding.horizontal)
-            .padding(.bottom, Constant.Padding.toolBarBottom)
-
-            ZStack {
-                Image("background_tapGame")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .clipped()
-
-                ForEach(effectLabels) { effectLabel in
-                    EffectLabel(
-                        value: effectLabel.value,
-                        onComplete: { effectLabels.removeAll { $0.id == effectLabel.id } }
+        GeometryReader { _ in
+            VStack(spacing: 0) {
+                GameToolBar(
+                    closeButtonDidTapHandler: { handleCloseButton() },
+                    coffeeButtonDidTapHandler: {
+                        handleItemButtonTap(type: .coffee)
+                    },
+                    energyDrinkButtonDidTapHandler: {
+                        handleItemButtonTap(type: .energyDrink)
+                    },
+                    feverState: tapGame.feverSystem,
+                    buffSystem: tapGame.buffSystem,
+                    coffeeCount: Binding(
+                        get: { tapGame.inventory.count(.coffee) ?? 0 },
+                        set: { _ in }
+                    ),
+                    energyDrinkCount: Binding(
+                        get: { tapGame.inventory.count(.energyDrink) ?? 0 },
+                        set: { _ in }
                     )
-                    .position(effectLabel.position)
+                )
+                .padding(.horizontal, Constant.Padding.horizontal)
+                .padding(.bottom, Constant.Padding.toolBarBottom)
+
+                ZStack {
+                    Image("background_tapGame")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .clipped()
+
+                    ForEach(effectLabels) { effectLabel in
+                        EffectLabel(
+                            value: effectLabel.value,
+                            onComplete: { effectLabels.removeAll { $0.id == effectLabel.id } }
+                        )
+                        .position(effectLabel.position)
+                    }
                 }
-            }
-            // 터치 가능한 영역 정의
-            .contentShape(Rectangle())
-            .onTapGesture { location in
-                Task { await handleTap(at: location) }
+                // 터치 가능한 영역 정의
+                .contentShape(Rectangle())
+                .onTapGesture { location in
+                    Task { await handleTap(at: location) }
+                }
             }
         }
     }
