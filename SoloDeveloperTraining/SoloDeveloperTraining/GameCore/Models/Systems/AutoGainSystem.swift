@@ -23,12 +23,18 @@ final class AutoGainSystem {
 
     /// 자동 획득 시스템 시작
     func startSystem() {
-        timer = Timer.scheduledTimer(
-            withTimeInterval: 1,
-            repeats: true
-        ) { [weak self] _ in
+        // 기존 타이머가 있으면 정리
+        stopSystem()
+
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             self?.gainGold()
         }
+    }
+
+    /// 자동 획득 시스템 중지
+    func stopSystem() {
+        timer?.invalidate()
+        timer = nil
     }
 
     /// 초당 골드 획득 처리
