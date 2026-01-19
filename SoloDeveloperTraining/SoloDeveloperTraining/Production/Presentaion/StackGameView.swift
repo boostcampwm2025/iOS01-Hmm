@@ -11,6 +11,10 @@ import SpriteKit
 private enum Constant {
     static let effectLabelXRatios: [CGFloat] = [0.3, 0.4, 0.7]
     static let effectLabelYPositions: [CGFloat] = [150, 200, 250]
+
+    enum Padding {
+        static let horizontal: CGFloat = 16
+    }
 }
 
 struct StackGameView: View {
@@ -31,74 +35,112 @@ struct StackGameView: View {
             })
     }
 
-    var randomEffectXRatio: CGFloat {
-        Constant.effectLabelXRatios.randomElement() ?? 0.4
-    }
-    var randomEffectYOffset: CGFloat {
-        Constant.effectLabelYPositions.randomElement() ?? 200
-    }
-
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
-                GameToolBar(
-                    closeButtonDidTapHandler: stopGame,
-                    coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
-                    energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
-                    feverState: stackGame.feverSystem,
-                    buffSystem: stackGame.buffSystem,
-                    coffeeCount: .constant(stackGame.user.inventory.count(.coffee) ?? 0),
-                    energyDrinkCount: .constant(stackGame.user.inventory.count(.energyDrink) ?? 0)
-                )
-                .padding(.horizontal)
-                ZStack {
-                    SpriteView(
-                        scene: scene
-                    )
-                    ForEach(effectLabels) { effectLabel in
-                        EffectLabel(
-                            value: effectLabel.value,
-                            onComplete: { effectLabels.removeAll { $0.id == effectLabel.id } }
-                        )
-                        .position(effectLabel.position)
-                    }
-                }
+                // 상단 툴바 (닫기, 아이템 버튼, 피버 게이지)
+                toolbarSection
+                // 게임 영역 (SpriteKit 씬, 골드 이펙트)
+                gameAreaSection
             }
             .background(AppTheme.backgroundColor)
             .navigationBarBackButtonHidden(true) // 임시로 숨김
             .onAppear {
-                scene.onBlockDropped = { gold in
-                    addEffectLabel(
-                        at: CGPoint(
-                            x: geometry.size.width * randomEffectXRatio,
-                            y: randomEffectYOffset
-                        ),
-                        value: gold
-                    )
-                }
+                setupGameCallbacks(with: geometry)
             }
         }
     }
 }
 
+// MARK: - View Components
 private extension StackGameView {
-    func stopGame() {
+    /// 상단 툴바
+    var toolbarSection: some View {
+        GameToolBar(
+            closeButtonDidTapHandler: handleCloseButton,
+            coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
+            energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
+            feverState: stackGame.feverSystem,
+            buffSystem: stackGame.buffSystem,
+            coffeeCount: .constant(stackGame.user.inventory.count(.coffee) ?? 0),
+            energyDrinkCount: .constant(stackGame.user.inventory.count(.energyDrink) ?? 0)
+        )
+        .padding(.horizontal, Constant.Padding.horizontal)
+    }
+
+    /// 게임 영역
+    var gameAreaSection: some View {
+        ZStack {
+            SpriteView(scene: scene)
+
+            ForEach(effectLabels) { effectLabel in
+                EffectLabel(
+                    value: effectLabel.value,
+                    onComplete: { removeEffectLabel(id: effectLabel.id) }
+                )
+                .position(effectLabel.position)
+            }
+        }
+    }
+}
+
+// MARK: - Actions
+private extension StackGameView {
+    /// 닫기 버튼 클릭 처리
+    func handleCloseButton() {
         stackGame.stopGame()
         isGameStarted = false
     }
 
+    /// 소비 아이템 사용 처리
     func useConsumableItem(_ type: ConsumableType) {
         if stackGame.user.inventory.drink(type) {
             stackGame.buffSystem.useConsumableItem(type: type)
         }
     }
+}
 
-    func addEffectLabel(at location: CGPoint, value: Int) {
+// MARK: - Helper Methods
+private extension StackGameView {
+    /// 게임 콜백 설정
+    func setupGameCallbacks(with geometry: GeometryProxy) {
+        scene.onBlockDropped = { gold in
+            showEffectLabel(
+                at: CGPoint(
+                    x: geometry.size.width * randomEffectXRatio,
+                    y: randomEffectYOffset
+                ),
+                value: gold
+            )
+        }
+    }
+
+    /// 효과 라벨 추가
+    /// - Parameters:
+    ///   - location: 표시할 위치
+    ///   - value: 표시할 값
+    func showEffectLabel(at location: CGPoint, value: Int) {
         let labelData = EffectLabelData(
             id: UUID(),
             position: location,
             value: value
         )
         effectLabels.append(labelData)
+    }
+
+    /// 효과 라벨 제거 (애니메이션 완료 시 콜백으로 호출)
+    /// - Parameter id: 제거할 효과 라벨의 ID
+    func removeEffectLabel(id: UUID) {
+        effectLabels.removeAll { $0.id == id }
+    }
+
+    /// 랜덤 효과 라벨 X 위치 비율
+    var randomEffectXRatio: CGFloat {
+        Constant.effectLabelXRatios.randomElement() ?? 0.4
+    }
+
+    /// 랜덤 효과 라벨 Y 오프셋
+    var randomEffectYOffset: CGFloat {
+        Constant.effectLabelYPositions.randomElement() ?? 200
     }
 }
