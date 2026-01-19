@@ -46,6 +46,7 @@ struct StackGameView: View {
                     coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
                     energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
                     feverState: stackGame.feverSystem,
+                    buffSystem: stackGame.buffSystem,
                     coffeeCount: .constant(stackGame.user.inventory.count(.coffee) ?? 0),
                     energyDrinkCount: .constant(stackGame.user.inventory.count(.energyDrink) ?? 0)
                 )

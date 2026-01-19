@@ -22,6 +22,7 @@ private enum Constant {
 
     static let itemCountLabelWidth: CGFloat = 16
     static let feverBarHeight: CGFloat = 15
+    static let disabledAlpha: CGFloat = 0.3
 }
 
 struct GameToolBar: View {
@@ -36,6 +37,9 @@ struct GameToolBar: View {
 
     /// 피버 상태 관리 객체
     let feverState: FeverState
+
+    /// 버프 시스템
+    let buffSystem: BuffSystem
 
     /// 커피 보유 개수
     let coffeeCount: Binding<Int>
@@ -117,6 +121,8 @@ private extension GameToolBar {
                     .frame(width: Constant.itemCountLabelWidth)
             }
         }
+        .disabled(isCoffeeBuffActive)
+        .opacity(isCoffeeBuffActive ? Constant.disabledAlpha : 1.0)
     }
 
     /// 에너지 드링크 아이템 버튼
@@ -137,11 +143,23 @@ private extension GameToolBar {
                     .frame(width: Constant.itemCountLabelWidth)
             }
         }
+        .disabled(isEnergyDrinkBuffActive)
+        .opacity(isEnergyDrinkBuffActive ? Constant.disabledAlpha : 1.0)
     }
 }
 
 // MARK: - Helper
 private extension GameToolBar {
+    /// 커피 버프 활성화 여부
+    var isCoffeeBuffActive: Bool {
+        buffSystem.coffeeDuration > 0
+    }
+
+    /// 에너지 드링크 버프 활성화 여부
+    var isEnergyDrinkBuffActive: Bool {
+        buffSystem.energyDrinkDuration > 0
+    }
+
     /// 피버 바 전경 색상 (현재 단계)
     var feverBarFillColor: Color {
         switch feverState.feverStage {
@@ -192,6 +210,7 @@ private extension GameToolBar {
     @Previewable @State var coffeeCount: Int = 10
     @Previewable @State var drinkCount: Int = 10
     let feverSystem = FeverSystem(decreaseInterval: 0.1, decreasePercentPerTick: 3)
+    let buffSystem = BuffSystem()
 
     VStack {
         Button {
@@ -201,6 +220,18 @@ private extension GameToolBar {
             feverSystem.gainFever(20)
         } label: {
             Text("GainFever")
+        }
+
+        Button {
+            buffSystem.useConsumableItem(type: .coffee)
+        } label: {
+            Text("Use Coffee")
+        }
+
+        Button {
+            buffSystem.useConsumableItem(type: .energyDrink)
+        } label: {
+            Text("Use Energy Drink")
         }
 
         GameToolBar(
@@ -214,6 +245,7 @@ private extension GameToolBar {
                 drinkCount -= 1
             },
             feverState: feverSystem,
+            buffSystem: buffSystem,
             coffeeCount: $coffeeCount,
             energyDrinkCount: $drinkCount
         )
