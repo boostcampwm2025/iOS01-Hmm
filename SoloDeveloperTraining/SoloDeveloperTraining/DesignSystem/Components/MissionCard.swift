@@ -69,7 +69,7 @@ struct MissionCard: View {
     }
 
     var body: some View {
-        ContentView(
+        MissionCardContentView(
             title: title,
             reward: reward,
             imageName: imageName,
@@ -87,7 +87,7 @@ struct MissionCard: View {
     }
 }
 
-private struct ContentView: View {
+private struct MissionCardContentView: View {
     let title: String
     let reward: Int
     let imageName: String
