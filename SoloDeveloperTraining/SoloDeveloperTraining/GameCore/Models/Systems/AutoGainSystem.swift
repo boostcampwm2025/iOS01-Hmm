@@ -10,17 +10,15 @@ import Foundation
 /// 자동 골드 획득 시스템
 final class AutoGainSystem {
     /// 사용자 정보
-    let user: User
+    private let user: User
     /// 계산기
-    let calculator: Calculator
-
+    private let calculator: Calculator = Calculator()
     /// 타이머
-    var timer: Timer?
+    private var timer: Timer?
 
     /// 자동 획득 시스템 초기화
-    init(user: User, calculator: Calculator) {
+    init(user: User) {
         self.user = user
-        self.calculator = calculator
     }
 
     /// 자동 획득 시스템 시작
