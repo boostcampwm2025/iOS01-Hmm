@@ -51,7 +51,6 @@ private extension WorkItemButton {
             backgroundShape
             contentStack
         }
-        .frame(height: Constant.buttonHeight)
     }
 
     var backgroundShape: some View {

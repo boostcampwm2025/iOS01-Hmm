@@ -8,7 +8,11 @@
 import SwiftUI
 
 private enum Constant {
-    static let horizontalPadding: CGFloat = 16
+    enum Padding {
+        static let horizontal: CGFloat = 16
+        static let selectionViewBottom: CGFloat = 30
+    }
+
     static let contentSpacing: CGFloat = 17
     static let descriptionSpacing: CGFloat = 10
 }
@@ -39,7 +43,8 @@ private extension WorkSelectedView {
             descriptionStack
             startButton
         }
-        .padding(.horizontal, Constant.horizontalPadding)
+        .padding(.horizontal, Constant.Padding.horizontal)
+        .padding(.bottom, Constant.Padding.selectionViewBottom)
     }
 
     var workSegmentControl: some View {
