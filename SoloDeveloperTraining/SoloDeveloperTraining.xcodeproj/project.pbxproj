@@ -18,7 +18,7 @@
 				"App/Info-Dev.plist",
 				App/Info.plist,
 				Production/Presentaion/DodgeGameView.swift,
-				Production/Presentaion/GameView/LaguageGameView.swift,
+				Production/Presentaion/LaguageGameView.swift,
 				Production/Presentaion/MainView.swift,
 				Production/Presentaion/StackGameScene.swift,
 				Production/Presentaion/StackGameView.swift,

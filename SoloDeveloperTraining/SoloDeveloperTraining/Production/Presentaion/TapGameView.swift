@@ -39,69 +39,68 @@ struct TapGameView: View {
     var body: some View {
         GeometryReader { _ in
             VStack(spacing: 0) {
-                GameToolBar(
-                    closeButtonDidTapHandler: { handleCloseButton() },
-                    coffeeButtonDidTapHandler: {
-                        handleItemButtonTap(type: .coffee)
-                    },
-                    energyDrinkButtonDidTapHandler: {
-                        handleItemButtonTap(type: .energyDrink)
-                    },
-                    feverState: tapGame.feverSystem,
-                    buffSystem: tapGame.buffSystem,
-                    coffeeCount: Binding(
-                        get: { tapGame.inventory.count(.coffee) ?? 0 },
-                        set: { _ in }
-                    ),
-                    energyDrinkCount: Binding(
-                        get: { tapGame.inventory.count(.energyDrink) ?? 0 },
-                        set: { _ in }
-                    )
-                )
-                .padding(.horizontal, Constant.Padding.horizontal)
-                .padding(.bottom, Constant.Padding.toolBarBottom)
-
-                ZStack {
-                    Image("background_tapGame")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .clipped()
-
-                    ForEach(effectLabels) { effectLabel in
-                        EffectLabel(
-                            value: effectLabel.value,
-                            onComplete: { effectLabels.removeAll { $0.id == effectLabel.id } }
-                        )
-                        .position(effectLabel.position)
-                    }
-                }
-                // 터치 가능한 영역 정의
-                .contentShape(Rectangle())
-                .onTapGesture { location in
-                    Task { await handleTap(at: location) }
-                }
+                // 상단 툴바 (닫기, 아이템 버튼, 피버 게이지)
+                toolbarSection
+                // 터치 가능한 게임 영역
+                tapAreaSection
             }
         }
     }
 }
 
-// MARK: - Private Methods
+// MARK: - View Components
 private extension TapGameView {
-    /// 게임 종료 처리
+    /// 상단 툴바
+    var toolbarSection: some View {
+        GameToolBar(
+            closeButtonDidTapHandler: handleCloseButton,
+            coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
+            energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
+            feverState: tapGame.feverSystem,
+            buffSystem: tapGame.buffSystem,
+            coffeeCount: Binding(
+                get: { tapGame.inventory.count(.coffee) ?? 0 },
+                set: { _ in }
+            ),
+            energyDrinkCount: Binding(
+                get: { tapGame.inventory.count(.energyDrink) ?? 0 },
+                set: { _ in }
+            )
+        )
+        .padding(.horizontal, Constant.Padding.horizontal)
+        .padding(.bottom, Constant.Padding.toolBarBottom)
+    }
+
+    /// 터치 가능한 게임 영역
+    var tapAreaSection: some View {
+        ZStack {
+            Image("background_tapGame")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipped()
+
+            ForEach(effectLabels) { effectLabel in
+                EffectLabel(
+                    value: effectLabel.value,
+                    onComplete: { removeEffectLabel(id: effectLabel.id) }
+                )
+                .position(effectLabel.position)
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture { location in
+            Task { await handleTap(at: location) }
+        }
+    }
+}
+
+// MARK: - Actions
+private extension TapGameView {
+    /// 닫기 버튼 클릭 처리
     func handleCloseButton() {
         tapGame.stopGame()
         isGameStarted = false
-    }
-
-    /// 소비 아이템 버튼 탭 처리
-    func handleItemButtonTap(type: ConsumableType) {
-        let success = tapGame.inventory.drink(type)
-
-        if success {
-            // 버프 시스템에 아이템 사용 알림
-            tapGame.buffSystem.useConsumableItem(type: type)
-        }
     }
 
     /// 터치 이벤트 처리
@@ -109,20 +108,36 @@ private extension TapGameView {
     @MainActor
     func handleTap(at location: CGPoint) async {
         let gainGold = await tapGame.didPerformAction()
-        addEffectLabel(at: location, value: gainGold)
+        showEffectLabel(at: location, value: gainGold)
     }
 
-    /// 터치 위치에 EffectLabel 추가
+    /// 소비 아이템 사용 처리
+    func useConsumableItem(_ type: ConsumableType) {
+        if tapGame.inventory.drink(type) {
+            tapGame.buffSystem.useConsumableItem(type: type)
+        }
+    }
+}
+
+// MARK: - Helper Methods
+private extension TapGameView {
+    /// 터치 위치에 효과 라벨 추가
     /// - Parameters:
     ///   - location: 터치한 위치
     ///   - value: 표시할 값
-    func addEffectLabel(at location: CGPoint, value: Int) {
+    func showEffectLabel(at location: CGPoint, value: Int) {
         let labelData = EffectLabelData(
             id: UUID(),
             position: location,
             value: value
         )
         effectLabels.append(labelData)
+    }
+
+    /// 효과 라벨 제거 (애니메이션 완료 시 콜백으로 호출)
+    /// - Parameter id: 제거할 효과 라벨의 ID
+    func removeEffectLabel(id: UUID) {
+        effectLabels.removeAll { $0.id == id }
     }
 }
 
