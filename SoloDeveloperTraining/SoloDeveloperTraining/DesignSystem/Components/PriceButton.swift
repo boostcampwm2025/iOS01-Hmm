@@ -10,7 +10,7 @@ import SwiftUI
 private enum Constant {
     enum Layout {
         static let cornerRadius: CGFloat = 5
-        static let buttonHeight: CGFloat = 44
+        static let buttonHeight: CGFloat = 38
         static let contentSpacing: CGFloat = 3
         static let horizontalPadding: CGFloat = 8
     }

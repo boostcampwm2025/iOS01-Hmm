@@ -17,6 +17,11 @@ private enum Constant {
         static let horizontal: CGFloat = 8
         static let vertical: CGFloat = 4
     }
+
+    enum Padding {
+        static let horizontal: CGFloat = 16
+        static let vertical: CGFloat = 8
+    }
 }
 
 struct ItemRow: View {
@@ -53,6 +58,8 @@ struct ItemRow: View {
                 action: action
             )
         }
+        .padding(.horizontal, Constant.Padding.horizontal)
+        .padding(.vertical, Constant.Padding.vertical)
     }
 }
 
@@ -77,5 +84,4 @@ struct ItemRow: View {
             print("Tapped")
         }
     }
-    .padding(.horizontal)
 }
