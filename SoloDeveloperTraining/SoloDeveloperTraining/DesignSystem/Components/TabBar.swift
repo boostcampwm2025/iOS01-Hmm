@@ -52,23 +52,30 @@ private struct TabBarButton: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 4) {
-                Image(tab.imageName)
-                    .resizable()
-                    .frame(width: 24, height: 24)
+            ZStack(alignment: .bottomTrailing) {
+                VStack(spacing: 4) {
+                    Image(tab.imageName)
+                        .resizable()
+                        .frame(width: 24, height: 24)
 
-                Text(tab.rawValue)
-                    .textStyle(.caption)
-            }
-            .padding(.vertical, 4.5)
-            .foregroundStyle(isSelected ? .white : AppColors.orange500)
-            .frame(maxWidth: .infinity)
-            .background(
+                    Text(tab.rawValue)
+                        .textStyle(.caption)
+                }
+                .padding(.vertical, 4.5)
+                .foregroundStyle(isSelected ? .white : AppColors.orange500)
+                .frame(maxWidth: .infinity)
+                .background(
+                    Rectangle()
+                        .fill(isSelected ? AppColors.orange300 : AppColors.beige300)
+                )
+                .offset(x: isPressed ? 2 : 0, y: isPressed ? 3 : 0)
+                .layoutPriority(1)
+
                 Rectangle()
-                    .fill(isSelected ? AppColors.orange300 : AppColors.beige300)
-                    .shadow(color: .black, radius: 0, x: 2, y: 3)
-            )
-            .offset(x: isPressed ? 2 : 0, y: isPressed ? 2 : 0)
+                    .fill(Color.black)
+                    .offset(x: 2, y: 3)
+                    .zIndex(-1)
+            }
             .animation(.none, value: isSelected)
         }
             .buttonStyle(.pressable(isPressed: $isPressed))
