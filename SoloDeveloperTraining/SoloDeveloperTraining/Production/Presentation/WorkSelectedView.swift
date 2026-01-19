@@ -64,12 +64,10 @@ private extension WorkSelectedView {
     }
 
     var startButton: some View {
-        Button {
+        LargeButton(title: "시작하기") {
             isGameStarted = true
-        } label: {
-            Text("시작하기")
-                .frame(maxWidth: .infinity)
         }
+        .frame(maxWidth: .infinity, alignment: .center)
         .disabled(selectedIndex == nil)
     }
 }
