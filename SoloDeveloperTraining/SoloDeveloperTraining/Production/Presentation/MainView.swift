@@ -68,7 +68,7 @@ struct MainView: View {
                         .overlay(Text("미션 화면").foregroundColor(.gray))
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
         .ignoresSafeArea(edges: .bottom)
         .background(AppTheme.backgroundColor)

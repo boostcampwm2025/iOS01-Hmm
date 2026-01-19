@@ -14,6 +14,7 @@ private enum Constant {
 
     enum Padding {
         static let horizontal: CGFloat = 16
+        static let toolBarBottom: CGFloat = 14
     }
 }
 
@@ -66,6 +67,7 @@ private extension StackGameView {
             energyDrinkCount: .constant(stackGame.user.inventory.count(.energyDrink) ?? 0)
         )
         .padding(.horizontal, Constant.Padding.horizontal)
+        .padding(.bottom, Constant.Padding.toolBarBottom)
     }
 
     /// 게임 영역

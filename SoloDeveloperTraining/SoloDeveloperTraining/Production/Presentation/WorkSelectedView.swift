@@ -109,7 +109,7 @@ private extension WorkSelectedView {
         case 0:
             TapGameView(user: user, isGameStarted: $isGameStarted)
         case 1:
-            LaguageGameView(user: user, isGameStarted: $isGameStarted)
+            LanguageGameView(user: user, isGameStarted: $isGameStarted)
         case 2:
             DodgeGameView(user: user, isGameStarted: $isGameStarted)
         case 3:
