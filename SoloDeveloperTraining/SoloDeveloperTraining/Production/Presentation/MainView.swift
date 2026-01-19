@@ -35,6 +35,7 @@ struct MainView: View {
                 ZStack(alignment: .top) {
                     Image(housing.imageName)
                         .resizable()
+                        .aspectRatio(contentMode: .fill)
                         .frame(maxWidth: .infinity)
                         .frame(height: geometry.size.height * 0.45)
                         .clipped()
