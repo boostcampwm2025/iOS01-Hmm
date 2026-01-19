@@ -57,6 +57,7 @@ struct LanguageGameTestView: View {
                     useConsumableItem(.energyDrink)
                 },
                 feverState: game.feverSystem,
+                buffSystem: game.buffSystem,
                 coffeeCount: $coffeeCount,
                 energyDrinkCount: $energyDrinkCount,
             )

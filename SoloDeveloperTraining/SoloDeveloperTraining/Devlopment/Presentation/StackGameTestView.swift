@@ -36,6 +36,7 @@ struct StackGameTestView: View {
                     coffeeButtonDidTapHandler: useCoffee,
                     energyDrinkButtonDidTapHandler: useEnergyDrink,
                     feverState: game.feverSystem,
+                    buffSystem: game.buffSystem,
                     coffeeCount: .constant(game.user.inventory.count(.coffee) ?? 0),
                     energyDrinkCount: .constant(game.user.inventory.count(.energyDrink) ?? 0)
                 )
