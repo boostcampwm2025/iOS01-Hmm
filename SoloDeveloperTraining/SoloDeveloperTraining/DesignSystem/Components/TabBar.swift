@@ -52,7 +52,7 @@ struct TabBar: View {
     @Binding var selectedTab: TabItem
 
     var body: some View {
-        HStack(spacing: Constant.Spacing.hStack) {
+        HStack(alignment: .center, spacing: Constant.Spacing.hStack) {
             ForEach(TabItem.allCases, id: \.self) { tab in
                 TabBarButton(
                     tab: tab,

@@ -38,13 +38,12 @@ struct WorkSelectedView: View {
 private extension WorkSelectedView {
 
     var selectionView: some View {
-        VStack(alignment: .leading, spacing: Constant.contentSpacing) {
+        VStack(spacing: Constant.contentSpacing) {
             workSegmentControl
             descriptionStack
             startButton
         }
         .padding(.horizontal, Constant.Padding.horizontal)
-        .padding(.bottom, Constant.Padding.selectionViewBottom)
     }
 
     var workSegmentControl: some View {
@@ -72,7 +71,8 @@ private extension WorkSelectedView {
         LargeButton(title: "시작하기") {
             isGameStarted = true
         }
-        .frame(maxWidth: .infinity, alignment: .center)
+        .frame(maxWidth: .infinity, alignment: .bottom)
+        .padding(.bottom, Constant.Padding.selectionViewBottom)
         .disabled(selectedIndex == nil)
     }
 }

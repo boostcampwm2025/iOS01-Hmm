@@ -30,48 +30,48 @@ struct MainView: View {
     let careerProgress: Double = 0.3
 
     var body: some View {
-        VStack(spacing: 0) {
-            // 배경 + 상태바
-            ZStack(alignment: .top) {
-                Image(housing.imageName)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(maxWidth: .infinity)
-                    .clipped()
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                ZStack(alignment: .top) {
+                    Image(housing.imageName)
+                        .resizable()
+                        .frame(maxWidth: .infinity)
+                        .frame(height: geometry.size.height * 0.45)
+                        .clipped()
 
-                StatusBar(
-                    career: user.career,
-                    nickname: user.nickname,
-                    careerProgress: careerProgress,
-                    gold: user.wallet.gold,
-                    diamond: user.wallet.diamond
-                )
-                .background(Color.white.opacity(0.8))
-            }
-
-            // 탭바
-            TabBar(selectedTab: $selectedTab)
-
-            // 탭별 콘텐츠
-            Group {
-                switch selectedTab {
-                case .work:
-                    WorkSelectedView(user: user)
-                case .enhance:
-                    Color.white
-                        .overlay(Text("강화 화면").foregroundColor(.gray))
-                case .shop:
-                    Color.white
-                        .overlay(Text("상점 화면").foregroundColor(.gray))
-                case .mission:
-                    Color.white
-                        .overlay(Text("미션 화면").foregroundColor(.gray))
+                    StatusBar(
+                        career: user.career,
+                        nickname: user.nickname,
+                        careerProgress: careerProgress,
+                        gold: user.wallet.gold,
+                        diamond: user.wallet.diamond
+                    )
+                    .background(Color.white.opacity(0.8))
                 }
+
+                // 탭바
+                TabBar(selectedTab: $selectedTab)
+
+                Group {
+                    switch selectedTab {
+                    case .work:
+                        WorkSelectedView(user: user)
+                    case .enhance:
+                        Color.white
+                            .overlay(Text("강화 화면").foregroundColor(.gray))
+                    case .shop:
+                        Color.white
+                            .overlay(Text("상점 화면").foregroundColor(.gray))
+                    case .mission:
+                        Color.white
+                            .overlay(Text("미션 화면").foregroundColor(.gray))
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .ignoresSafeArea(edges: .bottom)
+            .background(AppTheme.backgroundColor)
         }
-        .ignoresSafeArea(edges: .bottom)
-        .background(AppTheme.backgroundColor)
     }
 }
 
