@@ -17,7 +17,6 @@ struct MainView: View {
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
-
     let careerProgress: Double = 0.3
 
     init(user: User) {
@@ -90,7 +89,7 @@ struct MainView: View {
                 .init(type: .monitor, tier: .broken),
                 .init(type: .mouse, tier: .broken)
             ],
-            housing: .pentHouse
+            housing: .init(tier: .street)
         ),
         record: .init(),
         skills: [

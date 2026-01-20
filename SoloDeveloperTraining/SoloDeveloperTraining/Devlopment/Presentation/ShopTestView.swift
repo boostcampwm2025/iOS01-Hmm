@@ -1,5 +1,5 @@
 //
-//  ShopView.swift
+//  ShopTestView.swift
 //  SoloDeveloperTraining
 //
 //  Created by SeoJunYoung on 1/7/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ShopView: View {
+struct ShopTestView: View {
     let user: User
     let shopSystem: ShopSystem
     let calculator: Calculator
@@ -24,33 +24,26 @@ struct ShopView: View {
             Text("초당 획득 골드: \(calculator.calculateGoldPerSecond(user: user))")
             Text("부동산: \(user.inventory.housing.displayTitle)")
 
-            List(shopSystem.itemList() + shopSystem.housingList()) { item in
-                itemRowView(item: item)
-            }
-        }
-    }
-
-    func itemRowView(item: Item) -> some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(item.title)
-                Text(item.description)
-            }
-            Spacer()
-            Button {
-                do {
-                    try shopSystem.buy(item: item)
-                } catch {
-
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    ForEach(shopSystem.itemList(itemTypes: [.consumable, .equipment, .housing])) { item in
+                        ItemRow(
+                            title: item.displayTitle + "\(item.isEquipped ? "-착용중" : "")",
+                            description: item.description,
+                            imageName: item.imageName,
+                            cost: item.cost,
+                            isDisabled: !item.isPurchasable
+                        ) {
+                            do {
+                                try shopSystem.buy(item: item)
+                            } catch {
+                                print(error)
+                            }
+                        }
+                    }
                 }
-
-            } label: {
-                VStack(alignment: .trailing) {
-                    Text("💰 \(item.cost.gold)")
-                    Text("💎 \(item.cost.diamond)")
-                }
-                .border(.black)
             }
+            .scrollBounceBehavior(.basedOnSize)
         }
     }
 }
@@ -58,7 +51,7 @@ struct ShopView: View {
 #Preview {
     let user = User(
         nickname: "user",
-        wallet: .init(gold: 1000000000, diamond: 100),
+        wallet: .init(gold: 1000000, diamond: 100),
         inventory: .init(),
         record: .init(),
         skills: [
@@ -67,5 +60,5 @@ struct ShopView: View {
             .init(game: .tap, tier: .advanced, level: 1000)
         ]
     )
-    ShopView(user: user, calculator: .init())
+    ShopTestView(user: user, calculator: .init())
 }

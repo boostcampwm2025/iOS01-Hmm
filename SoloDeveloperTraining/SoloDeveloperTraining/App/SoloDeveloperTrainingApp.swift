@@ -19,7 +19,7 @@ struct SoloDeveloperTrainingApp: App {
                 .init(type: .monitor, tier: .broken),
                 .init(type: .mouse, tier: .broken)
             ],
-            housing: .rooftop
+            housing: .init(tier: .rooftop)
         ),
         record: .init(),
         skills: [

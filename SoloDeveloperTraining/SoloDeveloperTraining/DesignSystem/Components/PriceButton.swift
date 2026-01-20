@@ -33,45 +33,61 @@ private enum Constant {
 struct PriceButton: View {
 
     @State private var isPressed: Bool = false
-    let gold: Int
+    let currencyType: CurrencyType
+    let price: Int
     let isDisabled: Bool
     let axis: Axis
     let width: CGFloat?
     let action: () -> Void
 
     init(
-        gold: Int,
+        price: Int,
         isDisabled: Bool,
         axis: Axis,
         width: CGFloat? = nil,
+        currencyType: CurrencyType = .gold,
         action: @escaping () -> Void
     ) {
-        self.gold = gold
+        self.price = price
         self.isDisabled = isDisabled
         self.axis = axis
         self.width = width
         self.action = action
+        self.currencyType = currencyType
     }
 
     var body: some View {
-        Button(action: action) {
-            buttonContent
-                .overlay {
-                    if isDisabled {
-                        disabledOverlay
-                    }
+        buttonContent
+            .overlay {
+                if isDisabled {
+                    disabledOverlay
                 }
-                .background(
-                    RoundedRectangle(cornerRadius: Constant.Layout.cornerRadius)
-                        .foregroundStyle(isDisabled ? .gray400 : .black)
-                        .offset(
-                            x: Constant.Shadow.offsetX,
-                            y: Constant.Shadow.offsetY
-                        )
-                )
-        }
-        .buttonStyle(.pressable(isPressed: $isPressed))
-        .disabled(isDisabled)
+            }
+            .background(
+                RoundedRectangle(cornerRadius: Constant.Layout.cornerRadius)
+                    .foregroundStyle(isDisabled ? .gray400 : .black)
+                    .offset(
+                        x: Constant.Shadow.offsetX,
+                        y: Constant.Shadow.offsetY
+                    )
+            )
+            .contentShape(Rectangle())
+            .onTapGesture {
+                if !isDisabled {
+                    action()
+                }
+            }
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in
+                        if !isDisabled && !isPressed {
+                            isPressed = true
+                        }
+                    }
+                    .onEnded { _ in
+                        isPressed = false
+                    }
+            )
     }
 
     @ViewBuilder
@@ -100,12 +116,12 @@ struct PriceButton: View {
 
     @ViewBuilder
     var contentViews: some View {
-        Image("icon_coin_bag")
+        Image(currencyType.iconName)
             .frame(
                 width: Constant.Icon.coinSize.width,
                 height: Constant.Icon.coinSize.height
             )
-        Text(gold.formatted())
+        Text(price.formatted())
             .foregroundStyle(.white)
             .textStyle(.caption)
     }
@@ -128,24 +144,38 @@ struct PriceButton: View {
 #Preview {
     VStack(alignment: .center, spacing: 20) {
         PriceButton(
-            gold: 1_000_000,
+            price: 1_000_000,
             isDisabled: false,
             axis: .horizontal
         ) {}
         PriceButton(
-            gold: 100_000,
+            price: 100_000,
             isDisabled: false,
             axis: .vertical
         ) {}
         PriceButton(
-            gold: 1_000_000_000,
+            price: 1_000_000_000,
             isDisabled: true,
             axis: .horizontal
         ) {}
         PriceButton(
-            gold: 1_000,
+            price: 1_000,
             isDisabled: true,
             axis: .vertical
         ) {}
+    }
+}
+
+enum CurrencyType {
+    case gold
+    case diamond
+
+    var iconName: String {
+        switch self {
+        case .gold:
+            return "icon_coin_bag"
+        case .diamond:
+            return "icon_diamond_green"
+        }
     }
 }
