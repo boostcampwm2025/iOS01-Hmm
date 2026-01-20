@@ -11,8 +11,7 @@ final class Skill: Hashable {
     /// 고유 스킬 정보 (게임 종류, 스킬 티어)
     let key: SkillKey
     /// 스킬 레벨
-    var level: Int
-
+    private(set) var level: Int
     /// 획득 재화량
     var gainGold: Double {
         switch key.game {
@@ -69,12 +68,12 @@ final class Skill: Hashable {
 
     init(key: SkillKey, level: Int) {
         self.key = key
-        self.level = level
+        self.level = key.tier.levelRange.clamped(level)
     }
 
     /// 해당 스킬의 레벨을 1 상승 시킵니다.
     func upgrade() throws {
-        guard level < key.tier.levelRange.maxValue else {
+        guard key.tier.levelRange.canUpgrade(from: level) else {
             throw SkillError.levelExceeded
         }
         level += 1
@@ -123,8 +122,12 @@ struct LevelRange {
     let minValue: Int
     let maxValue: Int
 
-    func contains(_ level: Int) -> Bool {
-        minValue <= level && level <= maxValue
+    func clamped(_ level: Int) -> Int {
+        max(minValue, min(maxValue, level))
+    }
+
+    func canUpgrade(from level: Int) -> Bool {
+        level < maxValue
     }
 }
 
