@@ -94,7 +94,7 @@ struct SkillKey: Hashable {
 }
 
 /// 스킬 등급
-enum SkillTier: Int {
+enum SkillTier: Int, CaseIterable {
     case beginner = 0
     case intermediate = 1
     case advanced = 2

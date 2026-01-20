@@ -32,11 +32,11 @@ protocol Game {
 }
 
 /// 게임 타입
-enum GameType {
-    case tap
-    case language
-    case dodge
-    case stack
+enum GameType: Int, CaseIterable {
+    case tap = 0
+    case language = 1
+    case dodge = 2
+    case stack = 3
 
     /// 화면에 표시될 제목
     var displayTitle: String {
