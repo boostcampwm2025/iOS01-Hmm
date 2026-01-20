@@ -103,3 +103,24 @@ jobs:
           CODE_SIGNING_ALLOWED=NO \
           CODE_SIGNING_REQUIRED=NO \
           || echo "No tests found or tests failed - continuing..."
+    
+    - name: Build SoloDeveloperTraining-Dev
+      run: |
+        cd SoloDeveloperTraining
+        xcodebuild clean build \
+          -project SoloDeveloperTraining.xcodeproj \
+          -scheme SoloDeveloperTraining-Dev \
+          -destination "platform=iOS Simulator,id=${{ steps.find-simulator.outputs.simulator_id }}" \
+          CODE_SIGNING_ALLOWED=NO \
+          CODE_SIGNING_REQUIRED=NO
+    
+    - name: Test SoloDeveloperTraining-Dev
+      run: |
+        cd SoloDeveloperTraining
+        xcodebuild test \
+          -project SoloDeveloperTraining.xcodeproj \
+          -scheme SoloDeveloperTraining-Dev \
+          -destination "platform=iOS Simulator,id=${{ steps.find-simulator.outputs.simulator_id }}" \
+          CODE_SIGNING_ALLOWED=NO \
+          CODE_SIGNING_REQUIRED=NO \
+          || echo "No tests found or tests failed - continuing..."
