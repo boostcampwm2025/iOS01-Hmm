@@ -76,13 +76,16 @@ struct PriceButton: View {
             .animation(.none, value: isDisabled)
             .contentShape(Rectangle())
             .onTapGesture {
-                guard !isDisabled else { return }
-                action()
+                if !isDisabled {
+                    action()
+                }
             }
             .simultaneousGesture(
-                isDisabled ? nil : DragGesture(minimumDistance: 0)
+                DragGesture(minimumDistance: 0)
                     .onChanged { _ in
-                        isPressed = true
+                        if !isDisabled && !isPressed {
+                            isPressed = true
+                        }
                     }
                     .onEnded { _ in
                         isPressed = false

@@ -56,7 +56,6 @@ final class SkillSystem {
             throw PurchasingError.insufficientDiamond
         }
 
-        // upgrade() 전에 비용 저장 (upgrade 후 skill.upgradeCost는 증가된 레벨의 비용을 반환)
         let costBeforeUpgrade = skill.upgradeCost
         try skill.upgrade()
         pay(cost: costBeforeUpgrade)
