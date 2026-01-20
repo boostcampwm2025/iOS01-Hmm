@@ -64,7 +64,7 @@ struct TabBar: View {
         }
         .padding(.horizontal, Constant.Padding.horizontal)
         .padding(.vertical, Constant.Padding.vertical)
-        .background(Color(.clear))
+        .background(Color(AppTheme.backgroundColor))
     }
 }
 

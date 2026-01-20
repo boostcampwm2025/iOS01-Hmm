@@ -33,13 +33,7 @@ struct MainView: View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
                 ZStack(alignment: .top) {
-                    Image(housing.imageName)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: geometry.size.height * 0.45)
-                        .clipped()
-
+                    Color.clear
                     StatusBar(
                         career: user.career,
                         nickname: user.nickname,
@@ -48,6 +42,12 @@ struct MainView: View {
                         diamond: user.wallet.diamond
                     )
                 }
+                .frame(height: geometry.size.height * 0.45)
+                .background(
+                    Image(housing.imageName)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                )
 
                 // 탭바
                 TabBar(selectedTab: $selectedTab)
