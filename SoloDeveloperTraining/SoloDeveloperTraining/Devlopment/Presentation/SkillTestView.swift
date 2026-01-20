@@ -63,7 +63,7 @@ private extension SkillTestView {
 
             Button {
                 do {
-                    try skillSystem.buy(skill: skillState.skill)
+                    try skillSystem.upgrade(skill: skillState.skill)
                 } catch {
                     print(error.localizedDescription)
                 }

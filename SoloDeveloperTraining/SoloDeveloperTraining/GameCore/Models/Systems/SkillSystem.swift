@@ -40,7 +40,7 @@ final class SkillSystem {
     }
 
     /// 스킬 항목을 구매하여 레벨 업그레이드
-    func buy(skill: Skill) throws {
+    func upgrade(skill: Skill) throws {
         guard canUnlock(skill: skill) else {
             throw PurchasingError.locked
         }
