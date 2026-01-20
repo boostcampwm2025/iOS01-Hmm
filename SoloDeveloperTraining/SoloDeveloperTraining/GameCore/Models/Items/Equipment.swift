@@ -28,6 +28,7 @@ final class Equipment: Item {
     var imageName: String {
         return "item_\(type.imageName)_\(tier.imageName)"
     }
+    var category: ItemCategory = .equipment
 
     // MARK: - Equipment
     /// 장비 타입

@@ -18,7 +18,7 @@ final class ShopSystem {
     }
 
     /// 상점에 표시될 아이템 목록 생성
-    func itemList(itemTypes: [ItemType]) -> [DisplayItem] {
+    func itemList(itemTypes: [ItemCategory]) -> [DisplayItem] {
         return []
     }
 

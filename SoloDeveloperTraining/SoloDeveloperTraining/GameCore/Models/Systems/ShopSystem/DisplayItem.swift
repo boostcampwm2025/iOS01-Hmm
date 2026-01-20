@@ -7,5 +7,27 @@
 
 import Foundation
 
-struct DisplayItem {
+struct DisplayItem: Identifiable, Item {
+    // MARK: - Item
+    var displayTitle: String {
+        return item.displayTitle
+    }
+    var description: String {
+        return item.description
+    }
+    var cost: Cost {
+        return item.cost
+    }
+    var imageName: String {
+        return item.imageName
+    }
+    var category: ItemCategory {
+        return item.category
+    }
+
+    // MARK: - DisplayItem
+    let id = UUID()
+    let item: Item
+    let isEquipped: Bool?
+    let isPurchasable: Bool?
 }

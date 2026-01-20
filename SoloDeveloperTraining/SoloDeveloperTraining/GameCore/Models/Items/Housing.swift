@@ -27,6 +27,7 @@ struct Housing: Item {
     var imageName: String {
         return tier.imageName
     }
+    var category: ItemCategory = .housing
 
     // MARK: - Housing
     /// 초 당 획득 골드

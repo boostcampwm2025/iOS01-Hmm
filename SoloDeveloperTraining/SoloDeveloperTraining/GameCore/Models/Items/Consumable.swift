@@ -23,6 +23,7 @@ final class Consumable: Item {
     var imageName: String {
         return type.imageName
     }
+    var category: ItemCategory = .consumable
 
     // MARK: - Consumable
     /// 소비 아이템 타입
