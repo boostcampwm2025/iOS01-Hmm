@@ -43,7 +43,7 @@ struct ContentView: View {
         let calculator: Calculator = Calculator()
         self.user = user
         self.calculator = calculator
-        self.autoGainSystem = .init(user: user, calculator: calculator)
+        self.autoGainSystem = .init(user: user)
         autoGainSystem.startSystem()
     }
 
