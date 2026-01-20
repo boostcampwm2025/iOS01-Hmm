@@ -12,22 +12,18 @@ enum AppTheme {
 }
 
 struct MainView: View {
+    @Environment(\.scenePhase) var scenePhase
     @State private var selectedTab: TabItem = .work
 
-    @State var user = User(
-        nickname: "소피아",
-        wallet: .init(),
-        inventory: .init(),
-        record: .init(),
-        skills: [
-            .init(game: .tap, tier: .beginner, level: 100),
-            .init(game: .language, tier: .beginner, level: 100),
-            .init(game: .dodge, tier: .beginner, level: 100),
-            .init(game: .stack, tier: .beginner, level: 100)
-        ]
-    )
-    let housing: Housing = .street
+    private var autoGainSystem: AutoGainSystem
+    private let user: User
+
     let careerProgress: Double = 0.3
+
+    init(user: User) {
+        self.autoGainSystem = AutoGainSystem(user: user)
+        self.user = user
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -44,7 +40,7 @@ struct MainView: View {
                 }
                 .frame(height: geometry.size.height * 0.5)
                 .background(
-                    Image(housing.imageName)
+                    Image(user.inventory.housing.imageName)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                 )
@@ -71,10 +67,38 @@ struct MainView: View {
             }
             .ignoresSafeArea(edges: [.top, .bottom])
             .background(AppTheme.backgroundColor)
+            .onAppear(perform: autoGainSystem.startSystem)
+            .onChange(of: scenePhase) { _, newValue in
+                if newValue == .active {
+                    autoGainSystem.startSystem()
+                } else if newValue == .inactive || newValue == .background {
+                    autoGainSystem.stopSystem()
+                }
+            }
         }
     }
 }
 
 #Preview {
-    MainView()
+    let user = User(
+        nickname: "소피아",
+        wallet: .init(),
+        inventory: Inventory(
+            equipmentItems: [
+                .init(type: .chair, tier: .broken),
+                .init(type: .keyboard, tier: .broken),
+                .init(type: .monitor, tier: .broken),
+                .init(type: .mouse, tier: .broken)
+            ],
+            housing: .pentHouse
+        ),
+        record: .init(),
+        skills: [
+            .init(game: .tap, tier: .beginner, level: 100),
+            .init(game: .language, tier: .beginner, level: 100),
+            .init(game: .dodge, tier: .beginner, level: 100),
+            .init(game: .stack, tier: .beginner, level: 100)
+        ]
+    )
+    MainView(user: user)
 }
