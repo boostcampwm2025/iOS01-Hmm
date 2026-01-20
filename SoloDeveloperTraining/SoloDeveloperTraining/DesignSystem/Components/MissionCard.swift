@@ -155,7 +155,7 @@ private struct MissionCardContentView: View {
             title: "탭따구리",
             reward: 15,
             condition: "탭 10,000회 달성",
-            buttonState: .acquired,
+            buttonState: .claimable,
             onButtonTap: {
                 print("미션 1 보상 획득")
             }
@@ -165,7 +165,7 @@ private struct MissionCardContentView: View {
             title: "정상이라는 착각",
             reward: 15,
             condition: "버그 피하기 1000회달성",
-            buttonState: .completed
+            buttonState: .claimed
         )
 
         MissionCard(
@@ -173,7 +173,7 @@ private struct MissionCardContentView: View {
             reward: 15,
             imageName: "background_street",
             condition: "탭 10,000회 달성",
-            buttonState: .progress(currentValue: 7356, totalValue: 10000)
+            buttonState: .inProgress(currentValue: 7356, totalValue: 10000)
         )
     }
     .padding()

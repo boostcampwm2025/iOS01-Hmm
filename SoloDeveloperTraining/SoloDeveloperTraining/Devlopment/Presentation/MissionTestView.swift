@@ -204,13 +204,13 @@ struct MissionTestView: View {
     }
 
     private func acquireMission(_ mission: Mission) {
-        guard mission.state == .completed else {
+        guard mission.state == .claimable else {
             alertMessage = "수령할 수 없는 업적입니다"
             showAlert = true
             return
         }
 
-        missionSystem.acquireMission(mission: mission, wallet: wallet)
+        missionSystem.claimMissionReward(mission: mission, wallet: wallet)
 
         var message = "미션 '\(mission.title)' 보상을 수령했습니다!\n"
         if mission.reward.gold > 0 {
@@ -232,25 +232,25 @@ struct MissionCardTest: View {
 
     private var stateColor: Color {
         switch mission.state {
-        case .progress: return .gray
-        case .completed: return .green
-        case .acquired: return .blue
+        case .inProgress: return .gray
+        case .claimable: return .green
+        case .claimed: return .blue
         }
     }
 
     private var stateIcon: String {
         switch mission.state {
-        case .progress: return "clock.fill"
-        case .completed: return "gift.fill"
-        case .acquired: return "checkmark.circle.fill"
+        case .inProgress: return "clock.fill"
+        case .claimable: return "gift.fill"
+        case .claimed: return "checkmark.circle.fill"
         }
     }
 
     private var stateText: String {
         switch mission.state {
-        case .progress: return "진행 중"
-        case .completed: return "수령 가능"
-        case .acquired: return "완료"
+        case .inProgress: return "진행 중"
+        case .claimable: return "수령 가능"
+        case .claimed: return "완료"
         }
     }
 
@@ -313,7 +313,7 @@ struct MissionCardTest: View {
 
                 Spacer()
 
-                if mission.state == .completed {
+                if mission.state == .claimable {
                     Button {
                         onAcquire()
                     } label: {

@@ -9,12 +9,12 @@ import Foundation
 import Observation
 
 enum MissionState {
-    /// 수령
-    case acquired
-    /// 미수령
-    case completed
-    /// 진행중
-    case progress
+    /// "달성 완료"
+    case claimed
+    /// "획득하기"
+    case claimable
+    /// "진행중"
+    case inProgress
 }
 
 @Observable
@@ -34,7 +34,7 @@ final class Mission {
         min(Double(currentValue) / Double(targetValue), 1.0)
     }
     /// 현재 미션 상태
-    var state: MissionState = .progress
+    var state: MissionState = .inProgress
     /// 업데이트 조건
     var updateCondition: (Record) -> Int
     /// 달성 조건
@@ -48,7 +48,7 @@ final class Mission {
         description: String,
         targetValue: Int,
         currentValue: Int = 0,
-        state: MissionState = .progress,
+        state: MissionState = .inProgress,
         updateCondition: @escaping (Record) -> Int,
         completeCondition: @escaping (Record) -> Bool,
         reward: Cost
@@ -63,22 +63,23 @@ final class Mission {
         self.completeCondition = completeCondition
         self.reward = reward
     }
+
     /// 최신 기록으로 업데이트 합니다.
     func update(record: Record) {
-        guard state == .progress else { return }
+        guard state == .inProgress else { return }
         currentValue = updateCondition(record)
     }
 
-    /// 미션 완료상태로 전환합니다.
+    /// 미션을 "획득하기"상태로 전환합니다.
     func complete() {
-        guard state == .progress else { return }
-        state = .completed
+        guard state == .inProgress else { return }
+        state = .claimable
     }
 
     /// 미션을 완료하고 보상을 리턴합니다.
-    func acquire() -> Cost {
-        guard state == .completed else { return Cost() }
-        state = .acquired
+    func claim() -> Cost {
+        guard state == .claimable else { return Cost() }
+        state = .claimed
 
         return reward
     }

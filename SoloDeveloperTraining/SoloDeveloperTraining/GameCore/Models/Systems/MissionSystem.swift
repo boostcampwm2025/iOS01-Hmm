@@ -21,7 +21,7 @@ final class MissionSystem {
 
     /// 기록을 통하여 현재 미션의 상태들을 업데이트 합니다.
     func updateCompletedMissions(record: Record) {
-        let inProgress = missions.filter { $0.state == .progress }
+        let inProgress = missions.filter { $0.state == .inProgress }
         inProgress.forEach { mission in
             mission.update(record: record)
             if mission.completeCondition(record) {
@@ -32,8 +32,8 @@ final class MissionSystem {
         checkHasCompletedMission()
     }
 
-    func acquireMission(mission: Mission, wallet: Wallet) {
-        let reward = mission.acquire()
+    func claimMissionReward(mission: Mission, wallet: Wallet) {
+        let reward = mission.claim()
         wallet.addGold(reward.gold)
         wallet.addDiamond(reward.diamond)
 
@@ -41,6 +41,6 @@ final class MissionSystem {
     }
 
     private func checkHasCompletedMission() {
-        hasCompletedMission = missions.contains { $0.state == .completed }
+        hasCompletedMission = missions.contains { $0.state == .claimable }
     }
 }
