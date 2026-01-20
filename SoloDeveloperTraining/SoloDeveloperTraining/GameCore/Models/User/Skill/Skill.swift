@@ -7,6 +7,13 @@
 
 import Foundation
 
+
+/// 스킬 정보를 키로 식별하여 관리
+struct SkillKey: Hashable {
+    let game: GameType
+    let tier: SkillTier
+}
+
 final class Skill: Hashable {
     /// 고유 스킬 정보 (게임 종류, 스킬 티어)
     let key: SkillKey
@@ -86,52 +93,4 @@ final class Skill: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(key)
     }
-}
-
-/// 스킬 정보를 키로 식별하여 관리
-struct SkillKey: Hashable {
-    let game: GameType
-    let tier: SkillTier
-}
-
-/// 스킬 등급
-enum SkillTier: Int, CaseIterable {
-    case beginner = 0
-    case intermediate = 1
-    case advanced = 2
-
-    var displayTitle: String {
-        switch self {
-        case .beginner: "초급"
-        case .intermediate: "중급"
-        case .advanced: "고급"
-        }
-    }
-
-    var levelRange: LevelRange {
-        switch self {
-        case .beginner: LevelRange(minValue: 1, maxValue: 9999)
-        case .intermediate: LevelRange(minValue: 0, maxValue: 9999)
-        case .advanced: LevelRange(minValue: 0, maxValue: 9999)
-        }
-    }
-}
-
-/// 레벨 범위 표현을 위한 타입
-struct LevelRange {
-    let minValue: Int
-    let maxValue: Int
-
-    func clamped(_ level: Int) -> Int {
-        max(minValue, min(maxValue, level))
-    }
-
-    func canUpgrade(from level: Int) -> Bool {
-        level < maxValue
-    }
-}
-
-enum SkillError: Error {
-    /// 레벨 한도 초과
-    case levelExceeded
 }
