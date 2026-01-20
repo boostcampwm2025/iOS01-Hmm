@@ -49,8 +49,9 @@ final class SkillSystem {
         }
         guard skill.upgradeCost.diamond <= user.wallet.diamond else { throw PurchasingError.insufficientDiamond }
 
+        let costBeforeUpgrade = skill.upgradeCost
         try skill.upgrade()
-        pay(cost: skill.upgradeCost)
+        pay(cost: costBeforeUpgrade)
     }
 }
 
