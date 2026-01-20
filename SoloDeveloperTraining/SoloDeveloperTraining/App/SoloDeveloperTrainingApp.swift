@@ -25,7 +25,7 @@ struct SoloDeveloperTrainingApp: App {
         skills: [
             // 코드짜기
             .init(key: SkillKey(game: .tap, tier: .beginner), level: 1),
-            .init(key: SkillKey(game: .tap, tier: .intermediate), level: 0),
+            .init(key: SkillKey(game: .tap, tier: .intermediate), level: 1),
             .init(key: SkillKey(game: .tap, tier: .advanced), level: 0),
             // 언어 맞추기
             .init(key: SkillKey(game: .language, tier: .beginner), level: 1),

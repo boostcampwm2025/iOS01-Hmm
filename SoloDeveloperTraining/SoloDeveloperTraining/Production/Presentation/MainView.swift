@@ -63,7 +63,7 @@ struct MainView: View {
                     case .work:
                         WorkSelectedView(user: user)
                     case .enhance:
-                        EnhanceView(user: user)
+                        EnhanceView(user: user, popupContent: $popupContent)
                     case .shop:
                         Color.white
                             .overlay(Text("상점 화면").foregroundColor(.gray))

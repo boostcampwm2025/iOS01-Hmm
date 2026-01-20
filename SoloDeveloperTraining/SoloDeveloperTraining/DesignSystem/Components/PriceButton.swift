@@ -106,7 +106,7 @@ struct PriceButton: View {
         }
         .frame(width: width ?? .none, height: Constant.Layout.buttonHeight)
         .padding(.horizontal, Constant.Layout.horizontalPadding)
-        .background(.orange500)
+        .background(state == .locked ? .gray300 : .orange500)
         .clipShape(RoundedRectangle(cornerRadius: Constant.Layout.cornerRadius))
         .offset(
             x: isPressed ? Constant.Shadow.offsetX : 0,
