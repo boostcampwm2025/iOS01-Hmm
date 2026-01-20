@@ -54,24 +54,37 @@ struct PriceButton: View {
     }
 
     var body: some View {
-        Button(action: action) {
-            buttonContent
-                .overlay {
-                    if isDisabled {
-                        disabledOverlay
-                    }
+        buttonContent
+            .overlay {
+                if isDisabled {
+                    disabledOverlay
                 }
-                .background(
-                    RoundedRectangle(cornerRadius: Constant.Layout.cornerRadius)
-                        .foregroundStyle(isDisabled ? .gray400 : .black)
-                        .offset(
-                            x: Constant.Shadow.offsetX,
-                            y: Constant.Shadow.offsetY
-                        )
-                )
-        }
-        .buttonStyle(.pressable(isPressed: $isPressed))
-        .disabled(isDisabled)
+            }
+            .background(
+                RoundedRectangle(cornerRadius: Constant.Layout.cornerRadius)
+                    .foregroundStyle(isDisabled ? .gray400 : .black)
+                    .offset(
+                        x: Constant.Shadow.offsetX,
+                        y: Constant.Shadow.offsetY
+                    )
+            )
+            .contentShape(Rectangle())
+            .onTapGesture {
+                if !isDisabled {
+                    action()
+                }
+            }
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in
+                        if !isDisabled && !isPressed {
+                            isPressed = true
+                        }
+                    }
+                    .onEnded { _ in
+                        isPressed = false
+                    }
+            )
     }
 
     @ViewBuilder
