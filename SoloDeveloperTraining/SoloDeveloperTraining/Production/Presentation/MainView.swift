@@ -47,7 +47,6 @@ struct MainView: View {
                         gold: user.wallet.gold,
                         diamond: user.wallet.diamond
                     )
-                    .background(Color.white.opacity(0.8))
                 }
 
                 // 탭바
@@ -70,7 +69,7 @@ struct MainView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
-            .ignoresSafeArea(edges: .bottom)
+            .ignoresSafeArea(edges: [.top, .bottom])
             .background(AppTheme.backgroundColor)
         }
     }
