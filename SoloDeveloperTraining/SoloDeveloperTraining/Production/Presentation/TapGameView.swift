@@ -74,12 +74,7 @@ private extension TapGameView {
     /// 터치 가능한 게임 영역
     var tapAreaSection: some View {
         ZStack {
-            Image("background_tapGame")
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .clipped()
-
+            Color.clear         // ZStack이 전체 영역을 차지하도록 함
             ForEach(effectLabels) { effectLabel in
                 EffectLabel(
                     value: effectLabel.value,
@@ -88,6 +83,11 @@ private extension TapGameView {
                 .position(effectLabel.position)
             }
         }
+        .background(
+            Image("background_tapGame")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+        )
         .contentShape(Rectangle())
         .onTapGesture { location in
             Task { await handleTap(at: location) }
