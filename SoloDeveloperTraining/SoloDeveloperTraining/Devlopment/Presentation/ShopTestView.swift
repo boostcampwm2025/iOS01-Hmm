@@ -9,12 +9,12 @@ import SwiftUI
 
 struct ShopTestView: View {
     let user: User
-//    let shopSystem: ShopSystem
+    let shopSystem: ShopSystem
     let calculator: Calculator
 
     init(user: User, calculator: Calculator) {
         self.user = user
-//        self.shopSystem = .init(user: user)
+        self.shopSystem = .init(user: user)
         self.calculator = calculator
     }
     var body: some View {
@@ -24,41 +24,30 @@ struct ShopTestView: View {
             Text("초당 획득 골드: \(calculator.calculateGoldPerSecond(user: user))")
             Text("부동산: \(user.inventory.housing.displayTitle)")
 
-//            List(shopSystem.itemList() + shopSystem.housingList()) { item in
-//                itemRowView(item: item)
-//            }
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    ForEach(shopSystem.itemList(itemTypes: [.consumable, .equipment, .housing])) { item in
+                        ItemRow(
+                            title: item.displayTitle + "\((item.isEquipped ?? true) ? "-착용중" : "")",
+                            description: item.description,
+                            imageName: item.imageName,
+                            cost: item.cost,
+                            isDisabled: !(item.isPurchasable ?? false)
+                        ) {
+                            print("Tapped")
+                        }
+                    }
+                }
+            }
+            .scrollBounceBehavior(.basedOnSize)
         }
     }
-
-//    func itemRowView(item: DisplayItem) -> some View {
-//        HStack {
-//            VStack(alignment: .leading) {
-//                Text(item.title)
-//                Text(item.description)
-//            }
-//            Spacer()
-//            Button {
-////                do {
-////                    try shopSystem.buy(item: item)
-////                } catch {
-////
-////                }
-//
-//            } label: {
-//                VStack(alignment: .trailing) {
-//                    Text("💰 \(item.cost.gold)")
-//                    Text("💎 \(item.cost.diamond)")
-//                }
-//                .border(.black)
-//            }
-//        }
-//    }
 }
 
 #Preview {
     let user = User(
         nickname: "user",
-        wallet: .init(gold: 1000000000, diamond: 100),
+        wallet: .init(gold: 1000000, diamond: 100),
         inventory: .init(),
         record: .init(),
         skills: [
