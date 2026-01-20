@@ -9,7 +9,7 @@ import Foundation
 
 struct SkillState {
     let skill: Skill
-    let canUnlock: Bool
+    let locked: Bool
 }
 
 final class SkillSystem {
@@ -19,7 +19,7 @@ final class SkillSystem {
         self.user = user
     }
 
-    /// 유저의 스킬 리스트를 정렬하여 반환
+    /// 스킬 리스트를 정렬하여 반환
     func skillList() -> [SkillState] {
         var buckets: [Skill?] = Array(
             repeating: nil,
@@ -35,7 +35,7 @@ final class SkillSystem {
             .compactMap { $0 }
             .map { skill in SkillState(
                 skill: skill,
-                canUnlock: canUnlock(skill: skill))
+                locked: !canUnlock(skill: skill))
             }
     }
 

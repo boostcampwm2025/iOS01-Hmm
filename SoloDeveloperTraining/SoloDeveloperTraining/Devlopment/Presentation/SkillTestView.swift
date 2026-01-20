@@ -32,7 +32,6 @@ struct SkillTestView: View {
 
 private extension SkillTestView {
     func itemRowView(_ skillState: SkillState) -> some View {
-        let locked = !skillState.canUnlock
 
         return HStack {
             VStack(alignment: .leading, spacing: 4) {
@@ -42,7 +41,7 @@ private extension SkillTestView {
                         "\(skillState.skill.key.tier.displayTitle) " +
                         "Lv.\(skillState.skill.level)"
                     )
-                    if locked {
+                    if skillState.locked {
                         Image(systemName: "lock.fill")
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -53,7 +52,7 @@ private extension SkillTestView {
                     .font(.caption)
                     .foregroundStyle(.secondary)
 
-                if locked {
+                if skillState.locked {
                     Text(unlockConditionText(skillState.skill))
                         .font(.caption2)
                         .foregroundStyle(.red)
@@ -76,13 +75,13 @@ private extension SkillTestView {
                 .padding(6)
                 .background(
                     RoundedRectangle(cornerRadius: 6)
-                        .stroke(locked ? .gray : .black)
+                        .stroke(skillState.locked ? .gray : .black)
                 )
             }
-            .disabled(locked)
+            .disabled(skillState.locked)
         }
         .padding(.vertical, 6)
-        .opacity(locked ? 0.45 : 1.0)
+        .opacity(skillState.locked ? 0.45 : 1.0)
     }
 
     func unlockConditionText(_ skill: Skill) -> String {
