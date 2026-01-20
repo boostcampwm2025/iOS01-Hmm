@@ -79,8 +79,8 @@ final class ShopSystem {
 
     /// 아이템 구매
     func buy(item: Item) throws {
-        guard item.cost.gold <= user.wallet.gold else { throw ShopSystemError.insufficientGold }
-        guard item.cost.diamond <= user.wallet.diamond else { throw ShopSystemError.insufficientDiamond }
+        guard item.cost.gold <= user.wallet.gold else { throw PurchasingError.insufficientGold }
+        guard item.cost.diamond <= user.wallet.diamond else { throw PurchasingError.insufficientDiamond }
 
         var buyResult: Bool
         switch item.type {
@@ -97,7 +97,7 @@ final class ShopSystem {
         if buyResult {
             pay(item: item)
         } else {
-            throw ShopSystemError.purchaseFailed
+            throw PurchasingError.purchaseFailed
         }
     }
 
