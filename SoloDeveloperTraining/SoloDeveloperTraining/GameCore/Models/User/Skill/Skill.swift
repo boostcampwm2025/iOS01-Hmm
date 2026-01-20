@@ -13,11 +13,12 @@ struct SkillKey: Hashable {
     let tier: SkillTier
 }
 
-final class Skill: Hashable {
+final class Skill: Hashable, Identifiable {
     /// 고유 스킬 정보 (게임 종류, 스킬 티어)
     let key: SkillKey
     /// 스킬 레벨
     private(set) var level: Int
+
     /// 획득 재화량
     var gainGold: Double {
         switch key.game {
@@ -58,6 +59,54 @@ final class Skill: Hashable {
                 return Double(3 * level)
             }
         }
+    }
+
+    /// 이미지 리소스
+    var imageName: String {
+        // TODO: 이미지 리소스 추가 후 리턴 변경
+        switch key.game {
+        case .tap:
+            switch key.tier {
+            case .beginner:
+                return "background_street"
+            case .intermediate:
+                return "background_street"
+            case .advanced:
+                return "background_street"
+            }
+        case .language:
+            switch key.tier {
+            case .beginner:
+                return "background_street"
+            case .intermediate:
+                return "background_street"
+            case .advanced:
+                return "background_street"
+            }
+        case .dodge:
+            switch key.tier {
+            case .beginner:
+                return "background_street"
+            case .intermediate:
+                return "background_street"
+            case .advanced:
+                return "background_street"
+            }
+        case .stack:
+            switch key.tier {
+            case .beginner:
+                return "background_street"
+            case .intermediate:
+                return "background_street"
+            case .advanced:
+                return "background_street"
+            }
+        }
+    }
+
+    /// 스킬 타이틀
+    var title: String {
+        return "\(key.game.displayTitle) \(key.tier.displayTitle) Lv.\(level)"
     }
 
     /// 업그레이드 비용

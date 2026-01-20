@@ -30,7 +30,7 @@ struct ItemRow: View {
     let description: String
     let imageName: String
     let cost: Cost
-    let isDisabled: Bool
+    let state: ItemState
     let action: () -> Void
 
     init(
@@ -38,14 +38,14 @@ struct ItemRow: View {
         description: String,
         imageName: String,
         cost: Cost,
-        isDisabled: Bool,
+        state: ItemState,
         action: @escaping () -> Void
     ) {
         self.title = title
         self.description = description
         self.imageName = imageName
         self.cost = cost
-        self.isDisabled = isDisabled
+        self.state = state
         self.action = action
     }
 
@@ -67,11 +67,10 @@ struct ItemRow: View {
             Spacer()
 
             PriceButton(
-                price: cost.diamond == 0 ? cost.gold : cost.diamond,
-                isDisabled: isDisabled,
+                cost: cost,
+                state: state,
                 axis: .horizontal,
                 width: Constant.priceButtonWidth,
-                currencyType: cost.diamond == 0 ? .gold : .diamond,
                 action: action
             )
         }
@@ -86,8 +85,8 @@ struct ItemRow: View {
             title: "강화 / 아이템 이름 이름 이름",
             description: "항목 설명 설명 설명",
             imageName: "background_street",
-            cost: .init(gold: 100),
-            isDisabled: false
+            cost: .init(gold: 1_000_000),
+            state: .available
         ) {
             print("Tapped")
         }
@@ -95,8 +94,17 @@ struct ItemRow: View {
             title: "강화 / 아이템 이름 이름 이름",
             description: "항목 설명 설명 설명",
             imageName: "background_street",
-            cost: .init(diamond: 5),
-            isDisabled: true
+            cost: .init(gold: 1_000_000),
+            state: .locked
+        ) {
+            print("Tapped")
+        }
+        ItemRow(
+            title: "강화 / 아이템 이름 이름 이름",
+            description: "항목 설명 설명 설명",
+            imageName: "background_street",
+            cost: .init(gold: 1_000_000),
+            state: .insufficient
         ) {
             print("Tapped")
         }

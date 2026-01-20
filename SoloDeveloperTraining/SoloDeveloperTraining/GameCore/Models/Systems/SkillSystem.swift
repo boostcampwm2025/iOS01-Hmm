@@ -9,7 +9,8 @@ import Foundation
 
 struct SkillState {
     let skill: Skill
-    let locked: Bool
+    let canUnlock: Bool
+    let itemState: ItemState
 }
 
 final class SkillSystem {
@@ -38,7 +39,8 @@ final class SkillSystem {
             .compactMap { $0 }
             .map { skill in SkillState(
                 skill: skill,
-                locked: !canUnlock(skill: skill))
+                canUnlock: canUnlock(skill: skill),
+                itemState: getItemState(for: skill))
             }
     }
 
@@ -50,8 +52,11 @@ final class SkillSystem {
         guard skill.upgradeCost.gold <= user.wallet.gold else {
             throw PurchasingError.insufficientGold
         }
-        guard skill.upgradeCost.diamond <= user.wallet.diamond else { throw PurchasingError.insufficientDiamond }
+        guard skill.upgradeCost.diamond <= user.wallet.diamond else {
+            throw PurchasingError.insufficientDiamond
+        }
 
+        // upgrade() 전에 비용 저장 (upgrade 후 skill.upgradeCost는 증가된 레벨의 비용을 반환)
         let costBeforeUpgrade = skill.upgradeCost
         try skill.upgrade()
         pay(cost: costBeforeUpgrade)
@@ -62,6 +67,20 @@ private extension SkillSystem {
     func pay(cost: Cost) {
         user.wallet.spendGold(cost.gold)
         user.wallet.spendDiamond(cost.diamond)
+    }
+
+    func getItemState(for skill: Skill) -> ItemState {
+        let canUnlock = canUnlock(skill: skill)
+        let cost = skill.upgradeCost
+        let canAfford = cost.gold <= user.wallet.gold && cost.diamond <= user.wallet.diamond
+
+        if !canUnlock {
+            return .locked
+        } else if !canAfford {
+            return .insufficient
+        } else {
+            return .available
+        }
     }
 
     func canUnlock(skill: Skill) -> Bool {
