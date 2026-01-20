@@ -68,9 +68,9 @@ struct TabGameView: View {
         inventory: .init(),
         record: .init(),
         skills: [
-            .init(game: .tap, tier: .beginner, level: 1000),
-            .init(game: .tap, tier: .intermediate, level: 1000),
-            .init(game: .tap, tier: .advanced, level: 1000)
+            .init(key: .init(game: .tap, tier: .beginner), level: 1000),
+            .init(key: .init(game: .tap, tier: .intermediate), level: 1000),
+            .init(key: .init(game: .tap, tier: .advanced), level: 1000)
         ]
     )
     TabGameView(user: user, calculator: .init())

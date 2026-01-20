@@ -185,7 +185,7 @@ private extension LanguageGameView {
             inventory: .init(),
             record: .init(),
             skills: [
-                .init(game: .language, tier: .beginner, level: 1000)
+                .init(key: SkillKey(game: .language, tier: .beginner), level: 1000)
             ]
         )
 

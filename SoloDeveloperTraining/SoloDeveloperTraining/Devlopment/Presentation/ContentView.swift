@@ -31,13 +31,28 @@ struct ContentView: View {
             ),
             record: .init(),
             skills: [
-                .init(game: .tap, tier: .beginner, level: 1000),
-                .init(game: .tap, tier: .intermediate, level: 1000),
-                .init(game: .tap, tier: .advanced, level: 1000),
-                .init(game: .dodge, tier: .beginner, level: 500),
-                .init(game: .dodge, tier: .intermediate, level: 500),
-                .init(game: .dodge, tier: .advanced, level: 500),
-                .init(game: .stack, tier: .beginner, level: 1)
+                .init(key: .init(game: .tap, tier: .beginner), level: 1000),
+                .init(
+                    key: .init(game: .tap, tier: .intermediate),
+                    level: 1000
+                ),
+                .init(
+                    key: .init(game: .tap, tier: .advanced),
+                    level: 1000
+                ),
+                .init(
+                    key: .init(game: .dodge, tier: .advanced),
+                    level: 500
+                ),
+                .init(
+                    key: .init(game: .dodge, tier: .intermediate),
+                    level: 500
+                ),
+                .init(
+                    key: .init(game: .dodge, tier: .advanced),
+                    level: 500
+                ),
+                .init(key: .init(game: .stack, tier: .beginner), level: 1)
             ]
         )
         let calculator: Calculator = Calculator()
@@ -74,16 +89,22 @@ struct ContentView: View {
                     Text("미션")
                 }
             DodgeGameTestView(user: user, calculator: calculator)
-                .tag(4)
+                .tag(5)
                 .tabItem {
                     Image(systemName: "exclamationmark.triangle")
                     Text("버그피하기")
                 }
             StackGameTestView(user: user, calculator: calculator)
-                .tag(5)
+                .tag(6)
                 .tabItem {
                     Image(systemName: "square.stack.3d.up")
                     Text("스택 게임")
+                }
+            SkillTestView(user: user, calculator: calculator)
+                .tag(7)
+                .tabItem {
+                    Image(systemName: "plus")
+                    Text("스킬 강화")
                 }
         }
     }

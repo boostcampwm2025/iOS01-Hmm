@@ -315,10 +315,9 @@ struct DodgeGameTestView: View {
         inventory: inventory,
         record: record,
         skills: [
-            .init(game: .dodge, tier: .beginner, level: 1000)
+            .init(key: SkillKey(game: .dodge, tier: .beginner), level: 1000)
         ]
     )
     let calculator = Calculator()
     DodgeGameTestView(user: user, calculator: calculator)
 }
-

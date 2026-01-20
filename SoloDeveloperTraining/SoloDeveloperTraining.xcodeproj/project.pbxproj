@@ -17,6 +17,9 @@
 			membershipExceptions = (
 				"App/Info-Dev.plist",
 				App/Info.plist,
+				"Production/Error/PurchasingError+UserReadableError.swift",
+				"Production/Error/SkillError+UserReadableError.swift",
+				Production/Error/UserReadableError.swift,
 				Production/Presentation/DodgeGameView.swift,
 				Production/Presentation/LanguageGameView.swift,
 				Production/Presentation/MainView.swift,
@@ -36,6 +39,7 @@
 				Devlopment/Presentation/ContentView.swift,
 				Devlopment/Presentation/DodgeGameTestView.swift,
 				Devlopment/Presentation/LanguageGameTestView.swift,
+				Devlopment/Presentation/SkillTestView.swift,
 				Devlopment/Presentation/ShopTestView.swift,
 				Devlopment/Presentation/StackGameScene.swift,
 				Devlopment/Presentation/StackGameTestView.swift,

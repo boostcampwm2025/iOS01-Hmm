@@ -20,8 +20,9 @@ actor User {
     let inventory: Inventory
     /// 게임 기록
     let record: Record
+
     /// 보유 스킬
-    let skills: [Skill]
+    let skills: Set<Skill>
 
     init(
         id: UUID = UUID(),
@@ -31,7 +32,7 @@ actor User {
         inventory: Inventory,
         record: Record,
         achievements: [Achievement] = [],
-        skills: [Skill] = []
+        skills: Set<Skill> = []
     ) {
         self.id = id
         self.nickname = nickname

@@ -34,9 +34,9 @@ final class ShopSystem {
         // 구매 가능 여부 확인 (골드 및 다이아몬드)
         guard user.wallet.canAfford(item.cost) else {
             if item.cost.gold > 0 {
-                throw ShopSystemError.insufficientGold
+                throw PurchasingError.insufficientGold
             } else {
-                throw ShopSystemError.insufficientDiamond
+                throw PurchasingError.insufficientDiamond
             }
         }
 
@@ -100,7 +100,7 @@ private extension ShopSystem {
     func buyConsumable(displayItem: DisplayItem) throws {
         // DisplayItem을 Consumable로 변환
         guard let consumable = displayItem.item as? Consumable else {
-            throw ShopSystemError.purchaseFailed
+            throw PurchasingError.purchaseFailed
         }
 
         // 재화 지불 (골드/다이아몬드)
@@ -123,7 +123,7 @@ private extension ShopSystem {
     func buyEquipment(displayItem: DisplayItem) throws {
         // DisplayItem을 Equipment로 변환
         guard let equipment = displayItem.item as? Equipment else {
-            throw ShopSystemError.purchaseFailed
+            throw PurchasingError.purchaseFailed
         }
 
         // 재화 지불 (골드/다이아몬드)
@@ -146,7 +146,7 @@ private extension ShopSystem {
     func buyHousing(displayItem: DisplayItem) throws {
         // DisplayItem을 Housing으로 변환
         guard let newHousing = displayItem.item as? Housing else {
-            throw ShopSystemError.purchaseFailed
+            throw PurchasingError.purchaseFailed
         }
 
         // 현재 보유 중인 부동산 정보
