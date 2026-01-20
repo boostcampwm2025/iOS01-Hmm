@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 /// 스킬 정보를 키로 식별하여 관리
 struct SkillKey: Hashable {
     let game: GameType
