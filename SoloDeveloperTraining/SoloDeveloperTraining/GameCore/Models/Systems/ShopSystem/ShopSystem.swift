@@ -18,12 +18,20 @@ final class ShopSystem {
     }
 
     /// 상점에 표시될 아이템 목록 생성
+    /// - Parameter itemTypes: 표시할 아이템 카테고리 목록
+    /// - Returns: 화면에 표시할 DisplayItem 배열
     func itemList(itemTypes: [ItemCategory]) -> [DisplayItem] {
-        return itemTypes.map { makeDisplayItemList(itemType: $0)}.flatMap { $0 }
+        return itemTypes.map { makeDisplayItems(for: $0)}.flatMap { $0 }
     }
 
+    /// 아이템 구매
+    /// - Parameter item: 구매할 아이템
+    /// - Throws:
+    ///   - ShopSystemError.insufficientGold: 골드 부족
+    ///   - ShopSystemError.insufficientDiamond: 다이아몬드 부족
+    ///   - ShopSystemError.purchaseFailed: 구매 처리 실패
     func buy(item: DisplayItem) throws {
-        // 구매 가능 여부 확인
+        // 구매 가능 여부 확인 (골드 및 다이아몬드)
         guard user.wallet.canAfford(item.cost) else {
             if item.cost.gold > 0 {
                 throw ShopSystemError.insufficientGold
@@ -32,63 +40,71 @@ final class ShopSystem {
             }
         }
 
-        // 아이템 타입별 처리
+        // 아이템 카테고리에 따른 구매 로직 실행
         switch item.category {
         case .consumable:
-            try buyConsumable(item: item)
+            try buyConsumable(displayItem: item)
         case .equipment:
-            try buyEquipment(item: item)
+            try buyEquipment(displayItem: item)
         case .housing:
-            try buyHousing(item: item)
+            try buyHousing(displayItem: item)
         }
     }
 }
 
 private extension ShopSystem {
-    func makeDisplayItemList(itemType: ItemCategory) -> [DisplayItem] {
-        switch itemType {
+    /// 아이템 카테고리에 따른 DisplayItem 목록 생성
+    /// - Parameter category: 아이템 카테고리
+    /// - Returns: 해당 카테고리의 DisplayItem 배열
+    func makeDisplayItems(for category: ItemCategory) -> [DisplayItem] {
+        switch category {
         case .consumable:
-            let consumableList = user.inventory.consumableItems
-            let displayList = consumableList.map {
+            // 소비 아이템 목록 생성
+            let consumables = user.inventory.consumableItems
+            return consumables.map { consumable in
                 DisplayItem(
-                    item: $0,
+                    item: consumable,
                     isEquipped: true,
-                    isPurchasable: user.wallet.canAfford($0.cost)
+                    isPurchasable: user.wallet.canAfford(consumable.cost)
                 )
             }
-            return displayList
+
         case .equipment:
-            let equipmentList = user.inventory.equipmentItems
-            let displayList = equipmentList.map {
+            // 장비 아이템 목록 생성
+            let equipments = user.inventory.equipmentItems
+            return equipments.map { equipment in
                 DisplayItem(
-                    item: $0,
+                    item: equipment,
                     isEquipped: true,
-                    isPurchasable: user.wallet.canAfford($0.cost)
+                    isPurchasable: user.wallet.canAfford(equipment.cost)
                 )
             }
-            return displayList
+
         case .housing:
-            let currentHousing = user.inventory.housing.tier.rawValue
-            let housingList = HousingTier.allCases.map { Housing(tier: $0) }
-            let displayList = housingList.map {
+            // 부동산 아이템 목록 생성 (모든 티어 표시)
+            let currentHousingTier = user.inventory.housing.tier.rawValue
+            let allHousings = HousingTier.allCases.map { Housing(tier: $0) }
+            return allHousings.map { housing in
                 DisplayItem(
-                    item: $0,
-                    isEquipped: $0.tier.rawValue == currentHousing,
-                    isPurchasable: user.wallet.canAfford($0.cost)
+                    item: housing,
+                    isEquipped: housing.tier.rawValue == currentHousingTier,
+                    isPurchasable: user.wallet.canAfford(housing.cost)
                 )
             }
-            return displayList
         }
     }
 
-    /// 소비 아이템 구매
-    func buyConsumable(item: DisplayItem) throws {
-        guard let consumable = item.item as? Consumable else {
+    /// 소비 아이템 구매 (개수 증가)
+    /// - Parameter displayItem: 구매할 소비 아이템
+    /// - Throws: ShopSystemError.purchaseFailed - 아이템 타입 변환 실패
+    func buyConsumable(displayItem: DisplayItem) throws {
+        // DisplayItem을 Consumable로 변환
+        guard let consumable = displayItem.item as? Consumable else {
             throw ShopSystemError.purchaseFailed
         }
 
-        // 비용 지불
-        let cost = item.cost
+        // 재화 지불 (골드/다이아몬드)
+        let cost = displayItem.cost
         if cost.gold > 0 {
             user.wallet.spendGold(cost.gold)
         }
@@ -96,18 +112,22 @@ private extension ShopSystem {
             user.wallet.spendDiamond(cost.diamond)
         }
 
-        // 아이템 추가
+        // 인벤토리에 소비 아이템 개수 증가
         user.inventory.gain(consumable: consumable.type)
     }
 
-    /// 장비 아이템 구매 (강화)
-    func buyEquipment(item: DisplayItem) throws {
-        guard let equipment = item.item as? Equipment else {
+    /// 장비 아이템 구매 (강화 시도)
+    /// - Parameter displayItem: 구매할 장비 아이템
+    /// - Throws: ShopSystemError.purchaseFailed - 아이템 타입 변환 실패
+    /// - Note: 비용 지불 후 강화를 시도하며, 성공 여부는 티어의 강화 확률에 따라 결정됨
+    func buyEquipment(displayItem: DisplayItem) throws {
+        // DisplayItem을 Equipment로 변환
+        guard let equipment = displayItem.item as? Equipment else {
             throw ShopSystemError.purchaseFailed
         }
 
-        // 비용 지불
-        let cost = item.cost
+        // 재화 지불 (골드/다이아몬드)
+        let cost = displayItem.cost
         if cost.gold > 0 {
             user.wallet.spendGold(cost.gold)
         }
@@ -115,35 +135,43 @@ private extension ShopSystem {
             user.wallet.spendDiamond(cost.diamond)
         }
 
-        // 강화 시도
+        // 장비 강화 시도 (성공 확률은 티어마다 다름)
         equipment.upgraded()
     }
 
-    /// 부동산 아이템 구매
-    func buyHousing(item: DisplayItem) throws {
-        guard let newHousing = item.item as? Housing else {
+    /// 부동산 아이템 구매 (교체 및 환불)
+    /// - Parameter displayItem: 구매할 부동산 아이템
+    /// - Throws: ShopSystemError.purchaseFailed - 아이템 타입 변환 실패
+    /// - Note: 기존 부동산 구입 금액의 50%를 환불받고, 실제 비용만 지불함
+    func buyHousing(displayItem: DisplayItem) throws {
+        // DisplayItem을 Housing으로 변환
+        guard let newHousing = displayItem.item as? Housing else {
             throw ShopSystemError.purchaseFailed
         }
 
-        // 현재 부동산 정보
+        // 현재 보유 중인 부동산 정보
         let currentHousing = user.inventory.housing
 
-        // 비용 지불 (새 부동산 비용 - 현재 부동산 환불)
-        let refund = currentHousing.cost.gold / 2
-        let actualCost = item.cost.gold - refund
+        // 기존 부동산 환불 금액 계산 (구입가의 50%)
+        let refundAmount = currentHousing.cost.gold / 2
 
-        if actualCost > 0 {
-            user.wallet.spendGold(actualCost)
+        // 실제 지불 금액 = 새 부동산 가격 - 환불 금액
+        let netGoldCost = displayItem.cost.gold - refundAmount
+
+        // 골드 지불 또는 환불
+        if netGoldCost > 0 {
+            user.wallet.spendGold(netGoldCost)
         } else {
-            // 환불액이 더 큰 경우 (일반적으로는 발생하지 않음)
-            user.wallet.addGold(-actualCost)
+            // 환불액이 더 큰 경우 골드 추가 (다운그레이드 시)
+            user.wallet.addGold(-netGoldCost)
         }
 
-        if item.cost.diamond > 0 {
-            user.wallet.spendDiamond(item.cost.diamond)
+        // 다이아몬드 비용 지불
+        if displayItem.cost.diamond > 0 {
+            user.wallet.spendDiamond(displayItem.cost.diamond)
         }
 
-        // 부동산 변경
+        // 인벤토리의 부동산을 새 부동산으로 교체
         user.inventory.housing = newHousing
     }
 }
