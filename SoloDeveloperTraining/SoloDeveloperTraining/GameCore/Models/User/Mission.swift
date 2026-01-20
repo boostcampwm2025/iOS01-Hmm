@@ -38,7 +38,7 @@ final class Mission {
     /// 업데이트 조건
     var updateCondition: (Record) -> Int
     /// 달성 조건
-    var completeCondition: (Record) -> Bool
+    var completeCondition: ((Record) -> Bool)?
     /// 보상
     var reward: Cost
 
@@ -50,7 +50,7 @@ final class Mission {
         currentValue: Int = 0,
         state: MissionState = .inProgress,
         updateCondition: @escaping (Record) -> Int,
-        completeCondition: @escaping (Record) -> Bool,
+        completeCondition: ((Record) -> Bool)? = nil,
         reward: Cost
     ) {
         self.id = id
@@ -64,16 +64,19 @@ final class Mission {
         self.reward = reward
     }
 
-    /// 최신 기록으로 업데이트 합니다.
+    /// 최신 기록으로 업데이트하고, 완료 조건을 체크
     func update(record: Record) {
         guard state == .inProgress else { return }
-        currentValue = updateCondition(record)
-    }
 
-    /// 미션을 "획득하기"상태로 전환합니다.
-    func complete() {
-        guard state == .inProgress else { return }
-        state = .claimable
+        // 현재 값 업데이트
+        currentValue = updateCondition(record)
+
+        // 완료 조건 체크
+        let isComplete = completeCondition?(record) ?? (currentValue >= targetValue)
+
+        if isComplete {
+            state = .claimable
+        }
     }
 
     /// 미션을 완료하고 보상을 리턴합니다.
