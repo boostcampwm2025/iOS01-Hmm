@@ -21,14 +21,17 @@ final class SkillSystem {
 
     /// 스킬 리스트를 정렬하여 반환
     func skillList() -> [SkillState] {
+        let gameTypeCount = GameType.allCases.count
+        let skillTierCount = SkillTier.allCases.count
+
         var buckets: [Skill?] = Array(
             repeating: nil,
-            count: GameType.allCases.count * SkillTier.allCases.count
+            count: gameTypeCount * skillTierCount
         )
         for skill in user.skills {
             let gameIndex = skill.key.game.rawValue
             let tierIndex = skill.key.tier.rawValue
-            let bucketIndex = gameIndex * SkillTier.allCases.count + tierIndex
+            let bucketIndex = gameIndex * skillTierCount + tierIndex
             buckets[bucketIndex] = skill
         }
         return buckets
