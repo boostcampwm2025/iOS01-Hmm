@@ -1,5 +1,5 @@
 //
-//  AchievementTestView.swift
+//  MissionTestView.swift
 //  SoloDeveloperTraining
 //
 //  Created by 최범수 on 2026-01-08.
@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct AchievementTestView: View {
+struct MissionTestView: View {
     // 시스템 객체들
-    @State private var achievementSystem: AchievementSystem
+    @State private var missionSystem: MissionSystem
     @State private var record: Record
     @State private var wallet: Wallet
 
@@ -18,10 +18,10 @@ struct AchievementTestView: View {
     @State private var alertMessage = ""
 
     init() {
-        // 팩토리를 사용하여 전체 업적 목록 생성
-        let achievements = AchievementFactory.createAllAchievements()
+        // 팩토리를 사용하여 전체 미션 목록 생성
+        let missions = MissionFactory.createAllMissions()
 
-        _achievementSystem = State(initialValue: AchievementSystem(allAchievements: achievements))
+        _missionSystem = State(initialValue: MissionSystem(missions: missions))
         _record = State(initialValue: Record())
         _wallet = State(initialValue: Wallet())
     }
@@ -36,17 +36,17 @@ struct AchievementTestView: View {
                     // 탭 카운터 섹션
                     tapCounterSection
 
-                    // 업적 완료 알림
-                    if achievementSystem.hasCompletedAchievement {
+                    // 미션 완료 알림
+                    if missionSystem.hasCompletedMission {
                         completionBanner
                     }
 
-                    // 업적 목록
-                    achievementsSection
+                    // 미션 목록
+                    missionsSection
                 }
                 .padding()
             }
-            .navigationTitle("업적 시스템 테스트")
+            .navigationTitle("미션 시스템 테스트")
             .alert("알림", isPresented: $showAlert) {
                 Button("확인", role: .cancel) {}
             } message: {
@@ -163,7 +163,7 @@ struct AchievementTestView: View {
                 .font(.title)
                 .foregroundStyle(.yellow)
 
-            Text("완료된 업적이 있습니다!")
+            Text("완료된 미션이 있습니다!")
                 .font(.headline)
 
             Spacer()
@@ -179,18 +179,18 @@ struct AchievementTestView: View {
         )
     }
 
-    // MARK: - Achievements Section
-    private var achievementsSection: some View {
+    // MARK: - Missions Section
+    private var missionsSection: some View {
         VStack(alignment: .leading, spacing: 15) {
-            Text("업적 목록")
+            Text("미션 목록")
                 .font(.title2)
                 .bold()
 
-            ForEach(achievementSystem.allAchievements, id: \.id) { achievement in
-                AchievementCard(
-                    achievement: achievement,
-                    onClaim: {
-                        claimAchievement(achievement)
+            ForEach(missionSystem.missions, id: \.id) { mission in
+                MissionCardTest(
+                    mission: mission,
+                    onAcquire: {
+                        acquireMission(mission)
                     }
                 )
             }
@@ -200,24 +200,24 @@ struct AchievementTestView: View {
     // MARK: - Actions
     private func performTap(count: Int = 1) {
         record.totalTapCount += count
-        achievementSystem.updateCompletedAchievements(record: record)
+        missionSystem.updateCompletedMissions(record: record)
     }
 
-    private func claimAchievement(_ achievement: Achievement) {
-        guard achievement.state == .unclaimed else {
+    private func acquireMission(_ mission: Mission) {
+        guard mission.state == .completed else {
             alertMessage = "수령할 수 없는 업적입니다"
             showAlert = true
             return
         }
 
-        achievementSystem.claimAchievement(achievement: achievement, wallet: wallet)
+        missionSystem.acquireMission(mission: mission, wallet: wallet)
 
-        var message = "업적 '\(achievement.title)' 보상을 수령했습니다!\n"
-        if achievement.reward.gold > 0 {
-            message += "골드 +\(achievement.reward.gold)\n"
+        var message = "미션 '\(mission.title)' 보상을 수령했습니다!\n"
+        if mission.reward.gold > 0 {
+            message += "골드 +\(mission.reward.gold)\n"
         }
-        if achievement.reward.diamond > 0 {
-            message += "다이아몬드 +\(achievement.reward.diamond)"
+        if mission.reward.diamond > 0 {
+            message += "다이아몬드 +\(mission.reward.diamond)"
         }
 
         alertMessage = message
@@ -225,32 +225,32 @@ struct AchievementTestView: View {
     }
 }
 
-// MARK: - Achievement Card
-struct AchievementCard: View {
-    let achievement: Achievement
-    let onClaim: () -> Void
+// MARK: - Mission Card
+struct MissionCardTest: View {
+    let mission: Mission
+    let onAcquire: () -> Void
 
     private var stateColor: Color {
-        switch achievement.state {
-        case .inProgress: return .gray
-        case .unclaimed: return .green
-        case .claimed: return .blue
+        switch mission.state {
+        case .progress: return .gray
+        case .completed: return .green
+        case .acquired: return .blue
         }
     }
 
     private var stateIcon: String {
-        switch achievement.state {
-        case .inProgress: return "clock.fill"
-        case .unclaimed: return "gift.fill"
-        case .claimed: return "checkmark.circle.fill"
+        switch mission.state {
+        case .progress: return "clock.fill"
+        case .completed: return "gift.fill"
+        case .acquired: return "checkmark.circle.fill"
         }
     }
 
     private var stateText: String {
-        switch achievement.state {
-        case .inProgress: return "진행 중"
-        case .unclaimed: return "수령 가능"
-        case .claimed: return "완료"
+        switch mission.state {
+        case .progress: return "진행 중"
+        case .completed: return "수령 가능"
+        case .acquired: return "완료"
         }
     }
 
@@ -258,10 +258,10 @@ struct AchievementCard: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(achievement.title)
+                    Text(mission.title)
                         .font(.headline)
 
-                    Text(achievement.description)
+                    Text(mission.description)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -282,40 +282,40 @@ struct AchievementCard: View {
             // 진행도 바
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
-                    Text("\(achievement.currentValue) / \(achievement.targetValue)")
+                    Text("\(mission.currentValue) / \(mission.targetValue)")
                         .font(.caption)
                         .foregroundStyle(.secondary)
 
                     Spacer()
 
-                    Text("\(Int(achievement.progress * 100))%")
+                    Text("\(Int(mission.progress * 100))%")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
 
-                ProgressView(value: achievement.progress)
+                ProgressView(value: mission.progress)
                     .tint(stateColor)
             }
 
             // 보상 표시
             HStack {
-                if achievement.reward.gold > 0 {
-                    Label("\(achievement.reward.gold)", systemImage: "dollarsign.circle.fill")
+                if mission.reward.gold > 0 {
+                    Label("\(mission.reward.gold)", systemImage: "dollarsign.circle.fill")
                         .font(.caption)
                         .foregroundStyle(.yellow)
                 }
 
-                if achievement.reward.diamond > 0 {
-                    Label("\(achievement.reward.diamond)", systemImage: "diamond.fill")
+                if mission.reward.diamond > 0 {
+                    Label("\(mission.reward.diamond)", systemImage: "diamond.fill")
                         .font(.caption)
                         .foregroundStyle(.cyan)
                 }
 
                 Spacer()
 
-                if achievement.state == .unclaimed {
+                if mission.state == .completed {
                     Button {
-                        onClaim()
+                        onAcquire()
                     } label: {
                         Text("수령")
                             .font(.caption)
@@ -343,5 +343,5 @@ struct AchievementCard: View {
 
 // MARK: - Preview
 #Preview {
-    AchievementTestView()
+    MissionTestView()
 }

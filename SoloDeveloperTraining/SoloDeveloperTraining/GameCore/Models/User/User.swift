@@ -30,7 +30,7 @@ actor User {
         wallet: Wallet,
         inventory: Inventory,
         record: Record,
-        achievements: [Achievement] = [],
+        missions: [Mission] = [],
         skills: [Skill] = []
     ) {
         self.id = id
