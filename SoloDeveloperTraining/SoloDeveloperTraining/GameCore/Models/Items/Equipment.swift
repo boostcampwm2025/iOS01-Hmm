@@ -14,7 +14,13 @@ final class Equipment: Item {
         return tier.displayTitle + " " + type.displayTitle
     }
     var description: String {
-        return "초 당 획득 골드 +\(goldPerSecond)"
+        guard canUpgrade else {
+            return "최종 단계"
+        }
+        let nextTier = EquipmentTier(rawValue: tier.rawValue + 1) ?? .nationalTreasure
+        let nextEquipment = Equipment(type: type, tier: nextTier)
+        let goldDifference = nextEquipment.goldPerSecond - goldPerSecond
+        return "초 당 획득 골드 +\(goldDifference)"
     }
     var cost: Cost {
         return tier.cost
@@ -41,7 +47,7 @@ final class Equipment: Item {
     }
 
     /// 초 당 획득 골드
-    var goldPerSecond: Double {
+    var goldPerSecond: Int {
         switch type {
         case .keyboard:
             switch tier {

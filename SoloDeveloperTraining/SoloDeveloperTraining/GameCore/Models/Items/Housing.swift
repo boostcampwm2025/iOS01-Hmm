@@ -13,7 +13,13 @@ struct Housing: Item {
         return tier.displayTitle
     }
     var description: String {
-        return "초 당 획득 골드 +\(goldPerSecond)"
+        guard tier != .pentHouse else {
+            return "최종 단계"
+        }
+        let nextTier = HousingTier(rawValue: tier.rawValue + 1) ?? .pentHouse
+        let nextHousing = Housing(tier: nextTier)
+        let goldDifference = nextHousing.goldPerSecond - goldPerSecond
+        return "초 당 획득 골드 +\(goldDifference)"
     }
     var cost: Cost {
         return tier.cost
@@ -45,14 +51,14 @@ struct Housing: Item {
     let tier: HousingTier
 }
 
-enum HousingTier: CaseIterable {
-    case street
-    case semiBasement
-    case rooftop
-    case villa
-    case apartment
-    case house
-    case pentHouse
+enum HousingTier: Int, CaseIterable {
+    case street = 0
+    case semiBasement = 1
+    case rooftop = 2
+    case villa = 3
+    case apartment = 4
+    case house = 5
+    case pentHouse = 6
 
     var imageName: String {
         switch self {
