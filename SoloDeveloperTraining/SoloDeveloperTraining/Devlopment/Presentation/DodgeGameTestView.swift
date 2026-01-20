@@ -321,4 +321,3 @@ struct DodgeGameTestView: View {
     let calculator = Calculator()
     DodgeGameTestView(user: user, calculator: calculator)
 }
-

@@ -77,7 +77,7 @@ final class Skill {
 
     /// 해당 스킬의 레벨을 1 상승 시킵니다.
     func upgrade() {
-        guard level < 9999 else { return }
+        guard level < tier.levelRange.maxValue else { return }
         level += 1
     }
 }
@@ -94,5 +94,27 @@ enum SkillTier: Int {
         case .intermediate: "중급"
         case .advanced: "고급"
         }
+    }
+
+    var levelRange: LevelRange {
+        switch self {
+        case .beginner: LevelRange(minValue: 1, maxValue: 9999)
+        case .intermediate: LevelRange(minValue: 0, maxValue: 9999)
+        case .advanced: LevelRange(minValue: 0, maxValue: 9999)
+        }
+    }
+}
+
+/// 레벨 범위 표현을 위한 타입
+struct LevelRange {
+    let minValue: Int
+    let maxValue: Int
+
+    func contains(_ level: Int) -> Bool {
+        minValue <= level && level <= maxValue
+    }
+
+    func clamped(_ level: Int) -> Int {
+        max(minValue, min(level, maxValue))
     }
 }
