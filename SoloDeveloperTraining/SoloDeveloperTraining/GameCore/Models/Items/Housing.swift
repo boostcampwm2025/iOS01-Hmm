@@ -13,13 +13,7 @@ struct Housing: Item {
         return tier.displayTitle
     }
     var description: String {
-        guard tier != .pentHouse else {
-            return "최종 단계"
-        }
-        let nextTier = HousingTier(rawValue: tier.rawValue + 1) ?? .pentHouse
-        let nextHousing = Housing(tier: nextTier)
-        let goldDifference = nextHousing.goldPerSecond - goldPerSecond
-        return "초 당 획득 골드 +\(goldDifference)"
+        return "초 당 획득 골드 +\(goldPerSecond)"
     }
     var cost: Cost {
         return tier.cost
@@ -32,22 +26,7 @@ struct Housing: Item {
     // MARK: - Housing
     /// 초 당 획득 골드
     var goldPerSecond: Int {
-        switch self.tier {
-        case .street:
-            return 0
-        case .semiBasement:
-            return 20
-        case .rooftop:
-            return 50
-        case .villa:
-            return 100
-        case .apartment:
-            return 250
-        case .house:
-            return 500
-        case .pentHouse:
-            return 1000
-        }
+        return tier.goldPerSecond
     }
     let tier: HousingTier
 }
