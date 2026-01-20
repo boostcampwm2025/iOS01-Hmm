@@ -16,7 +16,7 @@ struct SkillKey: Hashable {
 final class Skill: Hashable, Identifiable {
     /// 고유 스킬 정보 (게임 종류, 스킬 티어)
     let key: SkillKey
-    
+
     /// 스킬 레벨
     private(set) var level: Int
 
@@ -72,7 +72,7 @@ final class Skill: Hashable, Identifiable {
             case .stack: return "stack"
             }
         }()
-        
+
         let tierNumber: Int = {
             switch key.tier {
             case .beginner: return 1
@@ -80,7 +80,7 @@ final class Skill: Hashable, Identifiable {
             case .advanced: return 3
             }
         }()
-        
+
         return "enhance_\(gameName)_\(tierNumber)"
     }
 
