@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class Skill {
+final class Skill: Identifiable {
     /// 미니게임 종류
     let game: GameType
     /// 스킬 등급
@@ -55,6 +55,22 @@ final class Skill {
                 return Double(3 * level)
             }
         }
+    }
+
+    /// 이미지 리소스
+    var imageName: String {
+        // TODO: 리소스 추가 후 수정 필요
+        "background_street"
+    }
+
+    /// 스킬 타이틀
+    var title: String {
+        return "\(game.displayTitle) \(tier.displayTitle) Lv.\(level)"
+    }
+
+    var description: String {
+        // TODO: 현재는 가중치로 적용되었지만, Calculator 혹은 정확한 추가 골드를 표시하게 해야 하는지.
+        return "획득 골드 +\(Int(multiplier))"
     }
 
     /// 업그레이드 비용
