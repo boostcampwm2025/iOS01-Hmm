@@ -30,29 +30,29 @@ struct ShopTestView: View {
         }
     }
 
-    func itemRowView(item: Item) -> some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(item.title)
-                Text(item.description)
-            }
-            Spacer()
-            Button {
-//                do {
-//                    try shopSystem.buy(item: item)
-//                } catch {
+//    func itemRowView(item: DisplayItem) -> some View {
+//        HStack {
+//            VStack(alignment: .leading) {
+//                Text(item.title)
+//                Text(item.description)
+//            }
+//            Spacer()
+//            Button {
+////                do {
+////                    try shopSystem.buy(item: item)
+////                } catch {
+////
+////                }
 //
+//            } label: {
+//                VStack(alignment: .trailing) {
+//                    Text("💰 \(item.cost.gold)")
+//                    Text("💎 \(item.cost.diamond)")
 //                }
-
-            } label: {
-                VStack(alignment: .trailing) {
-                    Text("💰 \(item.cost.gold)")
-                    Text("💎 \(item.cost.diamond)")
-                }
-                .border(.black)
-            }
-        }
-    }
+//                .border(.black)
+//            }
+//        }
+//    }
 }
 
 #Preview {

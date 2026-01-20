@@ -7,7 +7,45 @@
 
 import Foundation
 
-enum Housing: CaseIterable {
+struct Housing: Item {
+    // MARK: - Item
+    var displayTitle: String {
+        return tier.displayTitle
+    }
+    var description: String {
+        return "초 당 획득 골드 +\(goldPerSecond)"
+    }
+    var cost: Cost {
+        return tier.cost
+    }
+    var imageName: String {
+        return tier.imageName
+    }
+
+    // MARK: - Housing
+    /// 초 당 획득 골드
+    var goldPerSecond: Int {
+        switch self.tier {
+        case .street:
+            return 0
+        case .semiBasement:
+            return 20
+        case .rooftop:
+            return 50
+        case .villa:
+            return 100
+        case .apartment:
+            return 250
+        case .house:
+            return 500
+        case .pentHouse:
+            return 1000
+        }
+    }
+    let tier: HousingTier
+}
+
+enum HousingTier: CaseIterable {
     case street
     case semiBasement
     case rooftop

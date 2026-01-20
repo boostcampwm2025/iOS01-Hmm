@@ -9,7 +9,22 @@ import Foundation
 
 /// 소비 아이템 클래스
 @Observable
-final class Consumable {
+final class Consumable: Item {
+    // MARK: - Item
+    var displayTitle: String {
+        return type.displayTitle + " (보유:\(count)개)"
+    }
+    var description: String {
+        return "사용시 골드 획득량 \(type.buffMultiplier)배 증가"
+    }
+    var cost: Cost {
+        return type.cost
+    }
+    var imageName: String {
+        return type.imageName
+    }
+
+    // MARK: - Consumable
     /// 소비 아이템 타입
     let type: ConsumableType
     /// 보유 개수
@@ -19,11 +34,6 @@ final class Consumable {
     init(type: ConsumableType, count: Int) {
         self.type = type
         self.count = count
-    }
-
-    /// 화면에 표시될 제목
-    var displayTitle: String {
-        return type.displayTitle + " (보유:\(count)개)"
     }
 
     /// 아이템 갯수 1 증가
@@ -81,6 +91,15 @@ enum ConsumableType {
             return .init(diamond: 5)
         case .energyDrink:
             return .init(diamond: 10)
+        }
+    }
+
+    var imageName: String {
+        switch self {
+        case .coffee:
+            return "icon_coffee"
+        case .energyDrink:
+            return "icon_energy_drink"
         }
     }
 }

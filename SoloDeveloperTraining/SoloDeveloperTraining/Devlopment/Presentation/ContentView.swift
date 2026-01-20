@@ -27,7 +27,7 @@ struct ContentView: View {
                     .init(type: .coffee, count: 5),
                     .init(type: .energyDrink, count: 5)
                 ],
-                housing: .street
+                housing: .init(tier: .street)
             ),
             record: .init(),
             skills: [

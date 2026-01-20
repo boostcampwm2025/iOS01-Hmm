@@ -26,7 +26,7 @@ struct MainView: View {
             .init(game: .stack, tier: .beginner, level: 100)
         ]
     )
-    let housing: Housing = .street
+    let housing: Housing = .init(tier: .street)
     let careerProgress: Double = 0.3
 
     var body: some View {
