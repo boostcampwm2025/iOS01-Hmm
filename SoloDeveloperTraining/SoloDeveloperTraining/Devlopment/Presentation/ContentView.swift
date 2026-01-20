@@ -27,7 +27,7 @@ struct ContentView: View {
                     .init(type: .coffee, count: 5),
                     .init(type: .energyDrink, count: 5)
                 ],
-                housing: .street
+                housing: .init(tier: .street)
             ),
             record: .init(),
             skills: [
@@ -58,7 +58,7 @@ struct ContentView: View {
         let calculator: Calculator = Calculator()
         self.user = user
         self.calculator = calculator
-        self.autoGainSystem = .init(user: user, calculator: calculator)
+        self.autoGainSystem = .init(user: user)
         autoGainSystem.startSystem()
     }
 
@@ -76,7 +76,7 @@ struct ContentView: View {
                     Image(systemName: "gamecontroller")
                     Text("언어 맞추기")
                 }
-            ShopView(user: user, calculator: calculator)
+            ShopTestView(user: user, calculator: calculator)
                 .tag(3)
                 .tabItem {
                     Image(systemName: "cart")

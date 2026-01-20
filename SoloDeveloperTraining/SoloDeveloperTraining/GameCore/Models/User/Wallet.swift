@@ -25,6 +25,11 @@ final class Wallet {
         self.diamond = diamond
     }
 
+    /// 비용 지불 가능 여부 확인
+    func canAfford(_ cost: Cost) -> Bool {
+        return gold >= cost.gold && diamond >= cost.diamond
+    }
+
     /// 골드 획득
     func addGold(_ amount: Int) {
         guard amount > 0 else { return }

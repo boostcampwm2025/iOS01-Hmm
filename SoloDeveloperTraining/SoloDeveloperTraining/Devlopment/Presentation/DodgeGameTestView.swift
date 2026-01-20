@@ -306,7 +306,7 @@ struct DodgeGameTestView: View {
             .init(type: .coffee, count: 5),
             .init(type: .energyDrink, count: 5)
         ],
-        housing: .street
+        housing: .init(tier: .street)
     )
     let record = Record()
     let user = User(
