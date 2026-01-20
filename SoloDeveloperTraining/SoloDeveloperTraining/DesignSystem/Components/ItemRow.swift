@@ -29,9 +29,28 @@ struct ItemRow: View {
     let title: String
     let description: String
     let imageName: String
+    let currencyType: CurrencyType
     let price: Int
     let isDisabled: Bool
     let action: () -> Void
+    
+    init(
+        title: String,
+        description: String,
+        imageName: String,
+        currencyType: CurrencyType = .gold,
+        price: Int,
+        isDisabled: Bool,
+        action: @escaping () -> Void
+    ) {
+        self.title = title
+        self.description = description
+        self.imageName = imageName
+        self.currencyType = currencyType
+        self.price = price
+        self.isDisabled = isDisabled
+        self.action = action
+    }
 
     var body: some View {
         HStack(spacing: Constant.Spacing.horizontal) {
@@ -51,10 +70,11 @@ struct ItemRow: View {
             Spacer()
 
             PriceButton(
-                gold: price,
+                price: price,
                 isDisabled: isDisabled,
                 axis: .horizontal,
                 width: Constant.priceButtonWidth,
+                currencyType: currencyType,
                 action: action
             )
         }
@@ -69,6 +89,7 @@ struct ItemRow: View {
             title: "강화 / 아이템 이름 이름 이름",
             description: "항목 설명 설명 설명",
             imageName: "background_street",
+            currencyType: .gold,
             price: 1_000_000,
             isDisabled: false
         ) {
@@ -78,6 +99,7 @@ struct ItemRow: View {
             title: "강화 / 아이템 이름 이름 이름",
             description: "항목 설명 설명 설명",
             imageName: "background_street",
+            currencyType: .diamond,
             price: 1_000_000,
             isDisabled: true
         ) {
