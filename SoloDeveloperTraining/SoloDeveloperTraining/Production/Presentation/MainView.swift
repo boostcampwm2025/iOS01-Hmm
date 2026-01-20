@@ -11,6 +11,16 @@ enum AppTheme {
     static let backgroundColor: Color = AppColors.beige200
 }
 
+private enum Constant {
+    enum Padding {
+        static let horizontalPadding: CGFloat = 25
+    }
+
+    enum Color {
+        static let overlay = SwiftUI.Color.black.opacity(0.3)
+    }
+}
+
 struct MainView: View {
     @State private var selectedTab: TabItem = .work
     @State private var popupContent: (String, AnyView)?
@@ -74,11 +84,11 @@ struct MainView: View {
             .overlay {
                 if let popupContent {
                     ZStack {
-                        Color.black.opacity(0.3)
+                        Constant.Color.overlay
                             .ignoresSafeArea()
 
                         Popup(title: popupContent.0, contentView: popupContent.1)
-                            .padding(.horizontal, 25)
+                            .padding(.horizontal, Constant.Padding.horizontalPadding)
                     }
                 }
             }

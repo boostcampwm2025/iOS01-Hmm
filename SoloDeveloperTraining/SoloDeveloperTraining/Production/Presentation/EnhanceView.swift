@@ -10,6 +10,7 @@ import SwiftUI
 private enum Constant {
     static let horizontalPadding: CGFloat = 16
     static let itemCardSpacing: CGFloat = 12
+    static let popupContentSpacing: CGFloat = 20
 }
 
 struct EnhanceView: View {
@@ -53,7 +54,7 @@ private extension EnhanceView {
 
         let message = "\(costText)를 사용하여 구매하시겠습니까?"
 
-        let contentView = VStack(spacing: 20) {
+        let contentView = VStack(spacing: Constant.popupContentSpacing) {
             Text(message)
                 .textStyle(.body)
                 .foregroundColor(.black)
