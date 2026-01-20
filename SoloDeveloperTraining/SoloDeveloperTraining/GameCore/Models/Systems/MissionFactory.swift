@@ -7,209 +7,386 @@
 
 import Foundation
 
+// swiftlint:disable function_body_length
+// swiftlint:disable type_body_length
+
 /// 미션 목록을 생성하는 팩토리
 struct MissionFactory {
-    /// 전체 미션 목록을 생성합니다.
-    /// - Returns: 모든 미션의 배열
+
+    // MARK: - Mission Type
+
+    /// 미션 타입별 업데이트 조건과 완료 조건 정의
+    enum MissionType {
+        case tap
+        case languageMatch
+        case bugDodge
+        case stackItem
+        case playTime
+        case coffee
+        case energyDrink
+        case languageConsecutive
+        case bugDodgeConsecutive
+        case stackConsecutive
+        case tutorial
+        case career
+
+        /// Record로부터 현재 값을 가져오는 조건
+        var updateCondition: (Record) -> Int {
+            switch self {
+            case .tap:
+                return { $0.totalTapCount }
+            case .languageMatch:
+                return { $0.languageCorrectCount }
+            case .bugDodge:
+                return { $0.goldHitCount }
+            case .stackItem:
+                return { $0.stackingSuccessCount }
+            case .playTime:
+                return { Int($0.totalPlayTime) }
+            case .coffee:
+                return { $0.coffeeUseCount }
+            case .energyDrink:
+                return { $0.energyDrinkUseCount }
+            case .languageConsecutive:
+                return { $0.languageConsecutiveCorrect }
+            case .bugDodgeConsecutive:
+                return { $0.dodgeConsecutiveSuccess }
+            case .stackConsecutive:
+                return { $0.stackConsecutiveSuccess }
+            case .tutorial:
+                return { $0.tutorialCompleted ? 1 : 0 }
+            case .career:
+                return { $0.hasAchievedJuniorDeveloper ? 1 : 0 }
+            }
+        }
+
+        /// 완료 조건 (nil이면 기본 체크: currentValue >= targetValue)
+        var completeCondition: ((Record) -> Bool)? {
+            switch self {
+            case .tutorial:
+                return { $0.tutorialCompleted }
+            case .career:
+                return { $0.hasAchievedJuniorDeveloper }
+            default:
+                return nil
+            }
+        }
+    }
+
+    // MARK: - Mission Configuration
+
+    /// 미션 생성을 위한 설정 구조체
+    struct MissionConfig {
+        let id: Int
+        let title: String
+        let description: String
+        let targetValue: Int
+        let reward: Cost
+        let type: MissionType
+    }
+
+    // MARK: - Factory Method
+
+    /// 전체 미션 목록 생성
+    /// - Returns: 모든 미션의 배열 (총 32개)
     static func createAllMissions() -> [Mission] {
-        [
-            // MARK: - 탭 관련 미션
-            createTapMission(id: 1, title: "탭따구리", targetCount: 10000, reward: Cost(diamond: 15)),
-            createTapMission(id: 6, title: "신의 손가락", targetCount: 100000, reward: Cost(diamond: 30)),
+        let configs: [MissionConfig] = [
+            // MARK: - 코드짜기 (탭)
+            MissionConfig(
+                id: MissionConstants.CodeTap.id1,
+                title: MissionConstants.CodeTap.title1,
+                description: MissionConstants.CodeTap.description1,
+                targetValue: MissionConstants.CodeTap.target1,
+                reward: MissionConstants.CodeTap.reward1,
+                type: .tap
+            ),
+            MissionConfig(
+                id: MissionConstants.CodeTap.id2,
+                title: MissionConstants.CodeTap.title2,
+                description: MissionConstants.CodeTap.description2,
+                targetValue: MissionConstants.CodeTap.target2,
+                reward: MissionConstants.CodeTap.reward2,
+                type: .tap
+            ),
+            MissionConfig(
+                id: MissionConstants.CodeTap.id3,
+                title: MissionConstants.CodeTap.title3,
+                description: MissionConstants.CodeTap.description3,
+                targetValue: MissionConstants.CodeTap.target3,
+                reward: MissionConstants.CodeTap.reward3,
+                type: .tap
+            ),
 
-            // MARK: - 아이템 사용 관련 미션
-            createCoffeeMission(id: 2, title: "커피 학살자", targetCount: 10000, reward: Cost(gold: 150000)),
-            createEnergyDrinkMission(id: 7, title: "에너지 수호자", targetCount: 10000, reward: Cost(gold: 150000)),
+            // MARK: - 언어맞추기 (맞춘 횟수)
+            MissionConfig(
+                id: MissionConstants.LanguageMatch.id1,
+                title: MissionConstants.LanguageMatch.title1,
+                description: MissionConstants.LanguageMatch.description1,
+                targetValue: MissionConstants.LanguageMatch.target1,
+                reward: MissionConstants.LanguageMatch.reward1,
+                type: .languageMatch
+            ),
+            MissionConfig(
+                id: MissionConstants.LanguageMatch.id2,
+                title: MissionConstants.LanguageMatch.title2,
+                description: MissionConstants.LanguageMatch.description2,
+                targetValue: MissionConstants.LanguageMatch.target2,
+                reward: MissionConstants.LanguageMatch.reward2,
+                type: .languageMatch
+            ),
+            MissionConfig(
+                id: MissionConstants.LanguageMatch.id3,
+                title: MissionConstants.LanguageMatch.title3,
+                description: MissionConstants.LanguageMatch.description3,
+                targetValue: MissionConstants.LanguageMatch.target3,
+                reward: MissionConstants.LanguageMatch.reward3,
+                type: .languageMatch
+            ),
 
-            // MARK: - 플레이 시간 관련 미션
-            createTotalPlayTimeMission(id: 3, title: "거북목의 형상", hours: 100, reward: Cost(gold: 150000)),
-            createTapGamePlayTimeMission(id: 5, title: "판교의 등대", hours: 3, reward: Cost(diamond: 15)),
+            // MARK: - 버그피하기 (골드 획득)
+            MissionConfig(
+                id: MissionConstants.BugDodge.id1,
+                title: MissionConstants.BugDodge.title1,
+                description: MissionConstants.BugDodge.description1,
+                targetValue: MissionConstants.BugDodge.target1,
+                reward: MissionConstants.BugDodge.reward1,
+                type: .bugDodge
+            ),
+            MissionConfig(
+                id: MissionConstants.BugDodge.id2,
+                title: MissionConstants.BugDodge.title2,
+                description: MissionConstants.BugDodge.description2,
+                targetValue: MissionConstants.BugDodge.target2,
+                reward: MissionConstants.BugDodge.reward2,
+                type: .bugDodge
+            ),
+            MissionConfig(
+                id: MissionConstants.BugDodge.id3,
+                title: MissionConstants.BugDodge.title3,
+                description: MissionConstants.BugDodge.description3,
+                targetValue: MissionConstants.BugDodge.target3,
+                reward: MissionConstants.BugDodge.reward3,
+                type: .bugDodge
+            ),
 
-            // MARK: - 튜토리얼 관련 미션
-            createTutorialMission(id: 4, title: "충실한 기본기", reward: Cost(gold: 1000)),
+            // MARK: - 물건쌓기
+            MissionConfig(
+                id: MissionConstants.StackItem.id1,
+                title: MissionConstants.StackItem.title1,
+                description: MissionConstants.StackItem.description1,
+                targetValue: MissionConstants.StackItem.target1,
+                reward: MissionConstants.StackItem.reward1,
+                type: .stackItem
+            ),
+            MissionConfig(
+                id: MissionConstants.StackItem.id2,
+                title: MissionConstants.StackItem.title2,
+                description: MissionConstants.StackItem.description2,
+                targetValue: MissionConstants.StackItem.target2,
+                reward: MissionConstants.StackItem.reward2,
+                type: .stackItem
+            ),
+            MissionConfig(
+                id: MissionConstants.StackItem.id3,
+                title: MissionConstants.StackItem.title3,
+                description: MissionConstants.StackItem.description3,
+                targetValue: MissionConstants.StackItem.target3,
+                reward: MissionConstants.StackItem.reward3,
+                type: .stackItem
+            ),
 
-            // MARK: - 언어 맞추기 게임 관련 미션
-            createLanguageGameMission(id: 8, title: "정답 자판기", targetCount: 1000, reward: Cost()),
-            createLanguageGameMission(id: 9, title: "인간 스캐너", targetCount: 2000, reward: Cost()),
-            createLanguageGameMission(id: 10, title: "명탐정의 돋보기", targetCount: 5000, reward: Cost()),
-            createLanguageGameMission(id: 11, title: "현미경 눈동자", targetCount: 10000, reward: Cost()),
+            // MARK: - 플레이타임
+            MissionConfig(
+                id: MissionConstants.PlayTime.id1,
+                title: MissionConstants.PlayTime.title1,
+                description: MissionConstants.PlayTime.description1,
+                targetValue: MissionConstants.PlayTime.targetHours1 * 3600,
+                reward: MissionConstants.PlayTime.reward1,
+                type: .playTime
+            ),
+            MissionConfig(
+                id: MissionConstants.PlayTime.id2,
+                title: MissionConstants.PlayTime.title2,
+                description: MissionConstants.PlayTime.description2,
+                targetValue: MissionConstants.PlayTime.targetHours2 * 3600,
+                reward: MissionConstants.PlayTime.reward2,
+                type: .playTime
+            ),
+            MissionConfig(
+                id: MissionConstants.PlayTime.id3,
+                title: MissionConstants.PlayTime.title3,
+                description: MissionConstants.PlayTime.description3,
+                targetValue: MissionConstants.PlayTime.targetHours3 * 3600,
+                reward: MissionConstants.PlayTime.reward3,
+                type: .playTime
+            ),
 
-            // MARK: - 버그 피하기 게임 관련 미션
-            createDodgeGamePlayCountMission(id: 12, title: "로그는 쌓이고", targetCount: 1000, reward: Cost()),
-            createDodgeGamePlayCountMission(id: 13, title: "버그와의 공존", targetCount: 10000, reward: Cost()),
-            createDodgeGameBestScoreMission(id: 14, title: "정상이라는 착각", targetScore: 100, reward: Cost()),
-            createDodgeGameBestScoreMission(id: 15, title: "러브버그", targetScore: 500, reward: Cost()),
+            // MARK: - 커피
+            MissionConfig(
+                id: MissionConstants.Coffee.id1,
+                title: MissionConstants.Coffee.title1,
+                description: MissionConstants.Coffee.description1,
+                targetValue: MissionConstants.Coffee.target1,
+                reward: MissionConstants.Coffee.reward1,
+                type: .coffee
+            ),
+            MissionConfig(
+                id: MissionConstants.Coffee.id2,
+                title: MissionConstants.Coffee.title2,
+                description: MissionConstants.Coffee.description2,
+                targetValue: MissionConstants.Coffee.target2,
+                reward: MissionConstants.Coffee.reward2,
+                type: .coffee
+            ),
+            MissionConfig(
+                id: MissionConstants.Coffee.id3,
+                title: MissionConstants.Coffee.title3,
+                description: MissionConstants.Coffee.description3,
+                targetValue: MissionConstants.Coffee.target3,
+                reward: MissionConstants.Coffee.reward3,
+                type: .coffee
+            ),
 
-            // MARK: - 물건 쌓기 게임 관련 미션
-            createStackingFailureMission(id: 16, title: "트롤의 왕", targetCount: 100, reward: Cost()),
-            createStackingHeightMission(id: 17, title: "바벨탑 건축가", targetHeight: 1000, reward: Cost()),
-            createStackingBombDodgeMission(id: 18, title: "회피의 달인", targetCount: 100, reward: Cost()),
-            createStackingBombCountMission(id: 19, title: "붐버맨", targetCount: 100, reward: Cost())
+            // MARK: - 박하스
+            MissionConfig(
+                id: MissionConstants.EnergyDrink.id1,
+                title: MissionConstants.EnergyDrink.title1,
+                description: MissionConstants.EnergyDrink.description1,
+                targetValue: MissionConstants.EnergyDrink.target1,
+                reward: MissionConstants.EnergyDrink.reward1,
+                type: .energyDrink
+            ),
+            MissionConfig(
+                id: MissionConstants.EnergyDrink.id2,
+                title: MissionConstants.EnergyDrink.title2,
+                description: MissionConstants.EnergyDrink.description2,
+                targetValue: MissionConstants.EnergyDrink.target2,
+                reward: MissionConstants.EnergyDrink.reward2,
+                type: .energyDrink
+            ),
+            MissionConfig(
+                id: MissionConstants.EnergyDrink.id3,
+                title: MissionConstants.EnergyDrink.title3,
+                description: MissionConstants.EnergyDrink.description3,
+                targetValue: MissionConstants.EnergyDrink.target3,
+                reward: MissionConstants.EnergyDrink.reward3,
+                type: .energyDrink
+            ),
+
+            // MARK: - 언어맞추기 (연속 성공)
+            MissionConfig(
+                id: MissionConstants.LanguageConsecutive.id1,
+                title: MissionConstants.LanguageConsecutive.title1,
+                description: MissionConstants.LanguageConsecutive.description1,
+                targetValue: MissionConstants.LanguageConsecutive.target1,
+                reward: MissionConstants.LanguageConsecutive.reward1,
+                type: .languageConsecutive
+            ),
+            MissionConfig(
+                id: MissionConstants.LanguageConsecutive.id2,
+                title: MissionConstants.LanguageConsecutive.title2,
+                description: MissionConstants.LanguageConsecutive.description2,
+                targetValue: MissionConstants.LanguageConsecutive.target2,
+                reward: MissionConstants.LanguageConsecutive.reward2,
+                type: .languageConsecutive
+            ),
+            MissionConfig(
+                id: MissionConstants.LanguageConsecutive.id3,
+                title: MissionConstants.LanguageConsecutive.title3,
+                description: MissionConstants.LanguageConsecutive.description3,
+                targetValue: MissionConstants.LanguageConsecutive.target3,
+                reward: MissionConstants.LanguageConsecutive.reward3,
+                type: .languageConsecutive
+            ),
+
+            // MARK: - 버그피하기 (연속 성공)
+            MissionConfig(
+                id: MissionConstants.BugDodgeConsecutive.id1,
+                title: MissionConstants.BugDodgeConsecutive.title1,
+                description: MissionConstants.BugDodgeConsecutive.description1,
+                targetValue: MissionConstants.BugDodgeConsecutive.target1,
+                reward: MissionConstants.BugDodgeConsecutive.reward1,
+                type: .bugDodgeConsecutive
+            ),
+            MissionConfig(
+                id: MissionConstants.BugDodgeConsecutive.id2,
+                title: MissionConstants.BugDodgeConsecutive.title2,
+                description: MissionConstants.BugDodgeConsecutive.description2,
+                targetValue: MissionConstants.BugDodgeConsecutive.target2,
+                reward: MissionConstants.BugDodgeConsecutive.reward2,
+                type: .bugDodgeConsecutive
+            ),
+            MissionConfig(
+                id: MissionConstants.BugDodgeConsecutive.id3,
+                title: MissionConstants.BugDodgeConsecutive.title3,
+                description: MissionConstants.BugDodgeConsecutive.description3,
+                targetValue: MissionConstants.BugDodgeConsecutive.target3,
+                reward: MissionConstants.BugDodgeConsecutive.reward3,
+                type: .bugDodgeConsecutive
+            ),
+
+            // MARK: - 데이터 쌓기 (연속 성공)
+            MissionConfig(
+                id: MissionConstants.StackConsecutive.id1,
+                title: MissionConstants.StackConsecutive.title1,
+                description: MissionConstants.StackConsecutive.description1,
+                targetValue: MissionConstants.StackConsecutive.target1,
+                reward: MissionConstants.StackConsecutive.reward1,
+                type: .stackConsecutive
+            ),
+            MissionConfig(
+                id: MissionConstants.StackConsecutive.id2,
+                title: MissionConstants.StackConsecutive.title2,
+                description: MissionConstants.StackConsecutive.description2,
+                targetValue: MissionConstants.StackConsecutive.target2,
+                reward: MissionConstants.StackConsecutive.reward2,
+                type: .stackConsecutive
+            ),
+            MissionConfig(
+                id: MissionConstants.StackConsecutive.id3,
+                title: MissionConstants.StackConsecutive.title3,
+                description: MissionConstants.StackConsecutive.description3,
+                targetValue: MissionConstants.StackConsecutive.target3,
+                reward: MissionConstants.StackConsecutive.reward3,
+                type: .stackConsecutive
+            ),
+
+            // MARK: - 커리어
+            MissionConfig(
+                id: MissionConstants.Career.id,
+                title: MissionConstants.Career.title,
+                description: MissionConstants.Career.description,
+                targetValue: 1,
+                reward: MissionConstants.Career.reward,
+                type: .career
+            ),
+
+            // MARK: - 튜토리얼
+            MissionConfig(
+                id: MissionConstants.Tutorial.id,
+                title: MissionConstants.Tutorial.title,
+                description: MissionConstants.Tutorial.description,
+                targetValue: 1,
+                reward: MissionConstants.Tutorial.reward,
+                type: .tutorial
+            )
         ]
+
+        return configs.map { createMission(from: $0) }
     }
 
-    // MARK: - 탭 관련 미션 생성
-    private static func createTapMission(id: Int, title: String, targetCount: Int, reward: Cost) -> Mission {
+    // MARK: - Private Helper
+
+    /// MissionConfig로부터 Mission 인스턴스를 생성합니다.
+    private static func createMission(from config: MissionConfig) -> Mission {
         Mission(
-            id: id,
-            title: title,
-            description: "탭 \(targetCount)회 달성",
-            targetValue: targetCount,
-            updateCondition: { $0.totalTapCount },
-            completeCondition: { $0.totalTapCount >= targetCount },
-            reward: reward
-        )
-    }
-
-    // MARK: - 아이템 사용 관련 미션 생성
-    private static func createCoffeeMission(id: Int, title: String, targetCount: Int, reward: Cost) -> Mission {
-        Mission(
-            id: id,
-            title: title,
-            description: "커피 \(targetCount)회 달성",
-            targetValue: targetCount,
-            updateCondition: { $0.coffeeUseCount },
-            completeCondition: { $0.coffeeUseCount >= targetCount },
-            reward: reward
-        )
-    }
-
-    private static func createEnergyDrinkMission(id: Int, title: String, targetCount: Int, reward: Cost) -> Mission {
-        Mission(
-            id: id,
-            title: title,
-            description: "박하스 \(targetCount)회 달성",
-            targetValue: targetCount,
-            updateCondition: { $0.energyDrinkUseCount },
-            completeCondition: { $0.energyDrinkUseCount >= targetCount },
-            reward: reward
-        )
-    }
-
-    // MARK: - 플레이 시간 관련 미션 생성
-    private static func createTotalPlayTimeMission(id: Int, title: String, hours: Int, reward: Cost) -> Mission {
-        let seconds = hours * 3600
-        return Mission(
-            id: id,
-            title: title,
-            description: "총 플레이 \(hours)시간",
-            targetValue: seconds,
-            updateCondition: { Int($0.totalPlayTime) },
-            completeCondition: { $0.totalPlayTime >= TimeInterval(seconds) },
-            reward: reward
-        )
-    }
-
-    private static func createTapGamePlayTimeMission(id: Int, title: String, hours: Int, reward: Cost) -> Mission {
-        let seconds = hours * 3600
-        return Mission(
-            id: id,
-            title: title,
-            description: "코드짜기 누적 플레이 시간 \(hours)시간 달성",
-            targetValue: seconds,
-            updateCondition: { Int($0.tapGamePlayTime) },
-            completeCondition: { $0.tapGamePlayTime >= TimeInterval(seconds) },
-            reward: reward
-        )
-    }
-
-    // MARK: - 튜토리얼 관련 미션 생성
-    private static func createTutorialMission(id: Int, title: String, reward: Cost) -> Mission {
-        Mission(
-            id: id,
-            title: title,
-            description: "유저가 튜토리얼을 완료하면 수여",
-            targetValue: 1,
-            updateCondition: { $0.tutorialCompleted ? 1 : 0 },
-            completeCondition: { $0.tutorialCompleted },
-            reward: reward
-        )
-    }
-
-    // MARK: - 언어 맞추기 게임 관련 미션 생성
-    private static func createLanguageGameMission(id: Int, title: String, targetCount: Int, reward: Cost) -> Mission {
-        Mission(
-            id: id,
-            title: title,
-            description: "정답 \(targetCount)회 달성",
-            targetValue: targetCount,
-            updateCondition: { $0.languageCorrectCount },
-            completeCondition: { $0.languageCorrectCount >= targetCount },
-            reward: reward
-        )
-    }
-
-    // MARK: - 버그 피하기 게임 관련 미션 생성
-    private static func createDodgeGamePlayCountMission(id: Int, title: String, targetCount: Int, reward: Cost) -> Mission {
-        Mission(
-            id: id,
-            title: title,
-            description: "버그 피하기 \(targetCount)회 달성",
-            targetValue: targetCount,
-            updateCondition: { $0.dodgeGamePlayCount },
-            completeCondition: { $0.dodgeGamePlayCount >= targetCount },
-            reward: reward
-        )
-    }
-
-    private static func createDodgeGameBestScoreMission(id: Int, title: String, targetScore: Int, reward: Cost) -> Mission {
-        Mission(
-            id: id,
-            title: title,
-            description: "버그 피하기 \(targetScore)점 달성",
-            targetValue: targetScore,
-            updateCondition: { $0.dodgeGameBestScore },
-            completeCondition: { $0.dodgeGameBestScore >= targetScore },
-            reward: reward
-        )
-    }
-
-    // MARK: - 물건 쌓기 게임 관련 미션 생성
-    private static func createStackingFailureMission(id: Int, title: String, targetCount: Int, reward: Cost) -> Mission {
-        Mission(
-            id: id,
-            title: title,
-            description: "물건 \(targetCount)회 투하 실패",
-            targetValue: targetCount,
-            updateCondition: { $0.stackConsecutiveFailures },
-            completeCondition: { $0.stackConsecutiveFailures >= targetCount },
-            reward: reward
-        )
-    }
-
-    private static func createStackingHeightMission(id: Int, title: String, targetHeight: Int, reward: Cost) -> Mission {
-        Mission(
-            id: id,
-            title: title,
-            description: "물건 \(targetHeight)층 쌓기 달성",
-            targetValue: targetHeight,
-            updateCondition: { $0.stackMaxHeight },
-            completeCondition: { $0.stackMaxHeight >= targetHeight },
-            reward: reward
-        )
-    }
-
-    private static func createStackingBombDodgeMission(id: Int, title: String, targetCount: Int, reward: Cost) -> Mission {
-        Mission(
-            id: id,
-            title: title,
-            description: "폭탄 \(targetCount)회 회피 달성",
-            targetValue: targetCount,
-            updateCondition: { $0.stackingBombDodgeCount },
-            completeCondition: { $0.stackingBombDodgeCount >= targetCount },
-            reward: reward
-        )
-    }
-
-    private static func createStackingBombCountMission(id: Int, title: String, targetCount: Int, reward: Cost) -> Mission {
-        Mission(
-            id: id,
-            title: title,
-            description: "폭탄 \(targetCount)회 투하 달성",
-            targetValue: targetCount,
-            updateCondition: { $0.stackingBombCount },
-            completeCondition: { $0.stackingBombCount >= targetCount },
-            reward: reward
+            id: config.id,
+            title: config.title,
+            description: config.description,
+            targetValue: config.targetValue,
+            updateCondition: config.type.updateCondition,
+            completeCondition: config.type.completeCondition,
+            reward: config.reward
         )
     }
 }
