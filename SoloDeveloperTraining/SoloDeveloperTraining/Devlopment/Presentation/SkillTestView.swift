@@ -105,7 +105,7 @@ private extension SkillTestView {
         skills: Set(
             GameType.allCases.flatMap { game in
                 SkillTier.allCases.map { tier in
-                    Skill(key: .init(game: game, tier: tier), level: 999)
+                    Skill(key: .init(game: game, tier: tier), level: tier.levelRange.minValue)
                 }
             }
         )
