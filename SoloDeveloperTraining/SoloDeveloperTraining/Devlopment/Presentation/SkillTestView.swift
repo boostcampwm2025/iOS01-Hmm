@@ -41,7 +41,7 @@ private extension SkillTestView {
                         "\(skillState.skill.key.tier.displayTitle) " +
                         "Lv.\(skillState.skill.level)"
                     )
-                    if skillState.locked {
+                    if !skillState.canUnlock {
                         Image(systemName: "lock.fill")
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -52,7 +52,7 @@ private extension SkillTestView {
                     .font(.caption)
                     .foregroundStyle(.secondary)
 
-                if skillState.locked {
+                if !skillState.canUnlock {
                     Text(unlockConditionText(skillState.skill))
                         .font(.caption2)
                         .foregroundStyle(.red)
@@ -75,13 +75,13 @@ private extension SkillTestView {
                 .padding(6)
                 .background(
                     RoundedRectangle(cornerRadius: 6)
-                        .stroke(skillState.locked ? .gray : .black)
+                        .stroke(!skillState.canUnlock ? .gray : .black)
                 )
             }
-            .disabled(skillState.locked)
+            .disabled(!skillState.canUnlock)
         }
         .padding(.vertical, 6)
-        .opacity(skillState.locked ? 0.45 : 1.0)
+        .opacity(!skillState.canUnlock ? 0.45 : 1.0)
     }
 
     func unlockConditionText(_ skill: Skill) -> String {
