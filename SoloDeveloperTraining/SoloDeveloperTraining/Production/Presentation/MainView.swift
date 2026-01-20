@@ -42,7 +42,7 @@ struct MainView: View {
                         diamond: user.wallet.diamond
                     )
                 }
-                .frame(height: geometry.size.height * 0.45)
+                .frame(height: geometry.size.height * 0.5)
                 .background(
                     Image(housing.imageName)
                         .resizable()
