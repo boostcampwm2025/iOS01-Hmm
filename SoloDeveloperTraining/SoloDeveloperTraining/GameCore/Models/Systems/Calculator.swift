@@ -10,7 +10,7 @@ import Foundation
 final class Calculator {
     /// 게임 액션당 획득 골드 계산
     func calculateGoldPerAction(game: GameType, user: User, feverMultiplier: Double, buffMultiplier: Double) -> Int {
-        let actionPerGainGold = user.skills.filter { $0.game == game }.map { $0.multiplier }.reduce(0, +)
+        let actionPerGainGold = user.skills.filter { $0.game == game }.map { $0.gainGold }.reduce(0, +)
         let result = Double(actionPerGainGold) * feverMultiplier * buffMultiplier
         return Int(result)
     }

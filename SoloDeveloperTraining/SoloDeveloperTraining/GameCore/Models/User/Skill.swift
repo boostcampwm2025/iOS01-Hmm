@@ -15,8 +15,8 @@ final class Skill {
     /// 스킬 레벨
     var level: Int
 
-    /// 가중치
-    var multiplier: Double {
+    /// 획득 재화량
+    var gainGold: Double {
         switch game {
         case .tap:
             switch tier {
@@ -61,11 +61,11 @@ final class Skill {
     var upgradeCost: Cost {
         switch tier {
         case .beginner:
-            return .init(gold: (10 * level))
+            return .init(gold: (10 * level), diamond: level / 1000 * 10)
         case .intermediate:
-            return .init(gold: (20 * level))
+            return .init(gold: (20 * level), diamond: level / 1000 * 10)
         case .advanced:
-            return .init(gold: (30 * level))
+            return .init(gold: (30 * level), diamond: level / 1000 * 10)
         }
     }
 
