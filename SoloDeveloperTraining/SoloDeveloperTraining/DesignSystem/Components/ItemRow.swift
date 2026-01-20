@@ -29,7 +29,7 @@ struct ItemRow: View {
     let title: String
     let description: String
     let imageName: String
-    let price: Int
+    let cost: Cost
     let isDisabled: Bool
     let action: () -> Void
 
@@ -51,7 +51,7 @@ struct ItemRow: View {
             Spacer()
 
             PriceButton(
-                gold: price,
+                cost: cost,
                 isDisabled: isDisabled,
                 axis: .horizontal,
                 width: Constant.priceButtonWidth,
@@ -69,7 +69,7 @@ struct ItemRow: View {
             title: "강화 / 아이템 이름 이름 이름",
             description: "항목 설명 설명 설명",
             imageName: "background_street",
-            price: 1_000_000,
+            cost: .init(gold: 1_000_000),
             isDisabled: false
         ) {
             print("Tapped")
@@ -78,7 +78,7 @@ struct ItemRow: View {
             title: "강화 / 아이템 이름 이름 이름",
             description: "항목 설명 설명 설명",
             imageName: "background_street",
-            price: 1_000_000,
+            cost: .init(gold: 1_000_000),
             isDisabled: true
         ) {
             print("Tapped")

@@ -33,20 +33,20 @@ private enum Constant {
 struct PriceButton: View {
 
     @State private var isPressed: Bool = false
-    let gold: Int
+    let cost: Cost
     let isDisabled: Bool
     let axis: Axis
     let width: CGFloat?
     let action: () -> Void
 
     init(
-        gold: Int,
+        cost: Cost,
         isDisabled: Bool,
         axis: Axis,
         width: CGFloat? = nil,
         action: @escaping () -> Void
     ) {
-        self.gold = gold
+        self.cost = cost
         self.isDisabled = isDisabled
         self.axis = axis
         self.width = width
@@ -100,14 +100,24 @@ struct PriceButton: View {
 
     @ViewBuilder
     var contentViews: some View {
-        Image("icon_coin_bag")
-            .frame(
-                width: Constant.Icon.coinSize.width,
-                height: Constant.Icon.coinSize.height
+        if cost.gold > 0 {
+            CurrencyLabel(
+                axis: .horizontal,
+                icon: .gold,
+                textStyle: .caption,
+                value: cost.gold
             )
-        Text(gold.formatted())
             .foregroundStyle(.white)
-            .textStyle(.caption)
+        }
+        if cost.diamond > 0 {
+            CurrencyLabel(
+                axis: .horizontal,
+                icon: .diamond,
+                textStyle: .caption,
+                value: cost.diamond
+            )
+            .foregroundStyle(.white)
+        }
     }
 
     var disabledOverlay: some View {
@@ -128,22 +138,22 @@ struct PriceButton: View {
 #Preview {
     VStack(alignment: .center, spacing: 20) {
         PriceButton(
-            gold: 1_000_000,
+            cost: .init(gold: 1_000_000),
             isDisabled: false,
             axis: .horizontal
         ) {}
         PriceButton(
-            gold: 100_000,
+            cost: .init(gold: 100_000, diamond: 50),
             isDisabled: false,
             axis: .vertical
         ) {}
         PriceButton(
-            gold: 1_000_000_000,
+            cost: .init(gold: 1_000_000_000),
             isDisabled: true,
             axis: .horizontal
         ) {}
         PriceButton(
-            gold: 1_000,
+            cost: .init(diamond: 1_000),
             isDisabled: true,
             axis: .vertical
         ) {}
