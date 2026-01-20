@@ -53,6 +53,7 @@ struct DodgeGameTestView: View {
                         useEnergyDrink()
                     },
                     feverState: game.feverSystem,
+                    buffSystem: game.buffSystem,
                     coffeeCount: $coffeeCount,
                     energyDrinkCount: $energyDrinkCount
                 )

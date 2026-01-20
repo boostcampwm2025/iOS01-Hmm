@@ -65,7 +65,7 @@ private extension GameToolBar {
         Button {
             closeButtonDidTapHandler()
         } label: {
-            Image(.close)
+            Image(.iconClose)
                 .resizable()
                 .frame(
                     width: Constant.Size.closeButton.width,
@@ -109,7 +109,7 @@ private extension GameToolBar {
             coffeeButtonDidTapHandler()
         } label: {
             HStack(spacing: Constant.Spacing.itemIconText) {
-                Image(.coffee)
+                Image(.iconCoffee)
                     .resizable()
                     .frame(
                         width: Constant.Size.coffeeIcon.width,
@@ -131,7 +131,7 @@ private extension GameToolBar {
             energyDrinkButtonDidTapHandler()
         } label: {
             HStack(spacing: Constant.Spacing.itemIconText) {
-                Image(.energyDrink)
+                Image(.iconEnergyDrink)
                     .resizable()
                     .frame(
                         width: Constant.Size.energyDrinkIcon.width,

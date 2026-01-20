@@ -106,7 +106,7 @@ private extension WorkItemButton {
                 .padding(.horizontal, Constant.Padding.imageHorizontal)
                 .padding(.bottom, Constant.Padding.imageBottom)
 
-            Image(.lock)
+            Image(.iconLock)
                 .resizable()
                 .frame(
                     width: Constant.lockIconSize.width,
