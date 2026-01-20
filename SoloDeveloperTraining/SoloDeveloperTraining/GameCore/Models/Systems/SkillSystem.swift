@@ -32,17 +32,34 @@ final class SkillSystem {
             buckets[bucketIndex] = skill
         }
         return buckets
-            .compactMap{ $0 }
-            .map{
-                skill in SkillState(
-                    skill: skill,
-                    canUnlock: canUnlock(skill: skill)
-                )
+            .compactMap { $0 }
+            .map { skill in SkillState(
+                skill: skill,
+                canUnlock: canUnlock(skill: skill))
             }
+    }
+
+    /// 스킬 항목을 구매하여 레벨 업그레이드
+    func buy(skill: Skill) throws {
+        guard canUnlock(skill: skill) else {
+            throw PurchasingError.locked
+        }
+        guard skill.upgradeCost.gold <= user.wallet.gold else {
+            throw PurchasingError.insufficientGold
+        }
+        guard skill.upgradeCost.diamond <= user.wallet.diamond else { throw PurchasingError.insufficientDiamond }
+
+        try skill.upgrade()
+        pay(cost: skill.upgradeCost)
     }
 }
 
 private extension SkillSystem {
+    func pay(cost: Cost) {
+        user.wallet.spendGold(cost.gold)
+        user.wallet.spendDiamond(cost.diamond)
+    }
+
     func canUnlock(skill: Skill) -> Bool {
         switch skill.key.tier {
         case .beginner:
@@ -54,7 +71,7 @@ private extension SkillSystem {
             }
             return beginnerSkill.level >= 1000
         case .advanced:
-            guard let intermediateSkill = getPreviousTierSkill(key: .init(game: skill.key.game, tier: .beginner)) else {
+            guard let intermediateSkill = getPreviousTierSkill(key: .init(game: skill.key.game, tier: .intermediate)) else {
                 return false
             }
             return intermediateSkill.level >= 1000

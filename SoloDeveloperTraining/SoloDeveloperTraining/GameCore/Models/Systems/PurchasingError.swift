@@ -9,6 +9,8 @@ import Foundation
 
 /// 구매 기능 관련 에러
 enum PurchasingError: Error {
+    /// 잠김
+    case locked
     /// 골드 부족
     case insufficientGold
     /// 다이아몬드 부족

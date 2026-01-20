@@ -73,8 +73,10 @@ final class Skill: Hashable {
     }
 
     /// 해당 스킬의 레벨을 1 상승 시킵니다.
-    func upgrade() {
-        guard level < key.tier.levelRange.maxValue else { return }
+    func upgrade() throws {
+        guard level < key.tier.levelRange.maxValue else {
+            throw SkillError.levelExceeded
+        }
         level += 1
     }
 
@@ -124,8 +126,9 @@ struct LevelRange {
     func contains(_ level: Int) -> Bool {
         minValue <= level && level <= maxValue
     }
+}
 
-    func clamped(_ level: Int) -> Int {
-        max(minValue, min(level, maxValue))
-    }
+enum SkillError: Error {
+    /// 레벨 한도 초과
+    case levelExceeded
 }
