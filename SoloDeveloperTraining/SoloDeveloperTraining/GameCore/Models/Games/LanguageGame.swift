@@ -23,10 +23,10 @@ enum LanguageType: String, CaseIterable {
 
     var imageName: String {
         switch self {
-        case .swift: return "icon_swift"
-        case .kotlin: return "icon_kotlin"
-        case .dart: return "icon_dart"
-        case .python: return "icon_python"
+        case .swift: return "language_swift"
+        case .kotlin: return "language_kotlin"
+        case .dart: return "language_dart"
+        case .python: return "language_python"
         case .empty: return ""
         }
     }

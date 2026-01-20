@@ -15,10 +15,10 @@ enum TabItem: String, CaseIterable {
 
     var imageName: String {
         switch self {
-        case .work: return "tab_work"
-        case .enhance: return "tab_enhance"
-        case .shop: return "tab_shop"
-        case .mission: return "tab_mission"
+        case .work: return "icon_work"
+        case .enhance: return "icon_enhance"
+        case .shop: return "icon_shop"
+        case .mission: return "icon_mission"
         }
     }
 }

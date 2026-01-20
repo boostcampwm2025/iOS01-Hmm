@@ -61,7 +61,7 @@ struct TapGameView: View {
             .padding(.bottom, Constant.Padding.toolBarBottom)
 
             ZStack {
-                Image("background_tapGame")
+                Image("tap_background")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)

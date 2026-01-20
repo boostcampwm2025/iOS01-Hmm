@@ -47,15 +47,15 @@ enum Career: String, CaseIterable {
     var imageName: String {
         switch self {
         case .unemployed: return "profile_unemployed"
-        case .laptopOwner: return "profile_laptopOwner"
-        case .aspiringDeveloper: return "profile_aspiringDeveloper"
-        case .juniorDeveloper: return "profile_juniorDeveloper"
-        case .normalDeveloper: return "profile_normalDeveloper"
-        case .nightOwlDeveloper: return "profile_nightOwlDeveloper"
-        case .skilledDeveloper: return "profile_skilledDeveloper"
-        case .famousDeveloper: return "profile_famousDeveloper"
-        case .allRounderDeveloper: return "profile_allRounderDeveloper"
-        case .worldClassDeveloper: return "profile_worldClassDeveloper"
+        case .laptopOwner: return "profile_laptop_owner"
+        case .aspiringDeveloper: return "profile_aspiring_developer"
+        case .juniorDeveloper: return "profile_junior_developer"
+        case .normalDeveloper: return "profile_normal_developer"
+        case .nightOwlDeveloper: return "profile_night_owl_developer"
+        case .skilledDeveloper: return "profile_skilled_developer"
+        case .famousDeveloper: return "profile_famous_developer"
+        case .allRounderDeveloper: return "profile_all_rounder_developer"
+        case .worldClassDeveloper: return "profile_world_class_developer"
         }
     }
 
