@@ -38,8 +38,8 @@ struct EnhanceView: View {
     }
 }
 
-extension EnhanceView {
-    fileprivate func showEnhancePopup(for skill: Skill) {
+private extension EnhanceView {
+    func showEnhancePopup(for skill: Skill) {
         let cost = skill.upgradeCost
         var costText = ""
 

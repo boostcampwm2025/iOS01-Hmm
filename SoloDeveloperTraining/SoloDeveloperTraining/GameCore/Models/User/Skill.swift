@@ -59,8 +59,45 @@ final class Skill: Identifiable {
 
     /// 이미지 리소스
     var imageName: String {
-        // TODO: 리소스 추가 후 수정 필요
-        "background_street"
+        // TODO: 이미지 리소스 추가 후 리턴 변경
+        switch game {
+        case .tap:
+            switch tier {
+            case .beginner:
+                return "background_street"
+            case .intermediate:
+                return "background_street"
+            case .advanced:
+                return "background_street"
+            }
+        case .language:
+            switch tier {
+            case .beginner:
+                return "background_street"
+            case .intermediate:
+                return "background_street"
+            case .advanced:
+                return "background_street"
+            }
+        case .dodge:
+            switch tier {
+            case .beginner:
+                return "background_street"
+            case .intermediate:
+                return "background_street"
+            case .advanced:
+                return "background_street"
+            }
+        case .stack:
+            switch tier {
+            case .beginner:
+                return "background_street"
+            case .intermediate:
+                return "background_street"
+            case .advanced:
+                return "background_street"
+            }
+        }
     }
 
     /// 스킬 타이틀
