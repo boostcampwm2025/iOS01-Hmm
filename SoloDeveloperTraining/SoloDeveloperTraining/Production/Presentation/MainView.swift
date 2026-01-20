@@ -13,6 +13,7 @@ enum AppTheme {
 
 struct MainView: View {
     @State private var selectedTab: TabItem = .work
+    @State private var popupContent: (String, AnyView)?
 
     @State var user = User(
         nickname: "소피아",
@@ -57,8 +58,7 @@ struct MainView: View {
                     case .work:
                         WorkSelectedView(user: user)
                     case .enhance:
-                        Color.white
-                            .overlay(Text("강화 화면").foregroundColor(.gray))
+                        EnhanceView(user: user, popupContent: $popupContent)
                     case .shop:
                         Color.white
                             .overlay(Text("상점 화면").foregroundColor(.gray))
@@ -71,6 +71,17 @@ struct MainView: View {
             }
             .ignoresSafeArea(edges: [.top, .bottom])
             .background(AppTheme.backgroundColor)
+            .overlay {
+                if let popupContent {
+                    ZStack {
+                        Color.black.opacity(0.3)
+                            .ignoresSafeArea()
+
+                        Popup(title: popupContent.0, contentView: popupContent.1)
+                            .padding(.horizontal, 25)
+                    }
+                }
+            }
         }
     }
 }
