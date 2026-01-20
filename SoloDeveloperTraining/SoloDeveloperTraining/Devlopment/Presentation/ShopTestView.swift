@@ -1,5 +1,5 @@
 //
-//  ShopView.swift
+//  ShopTestView.swift
 //  SoloDeveloperTraining
 //
 //  Created by SeoJunYoung on 1/7/26.
@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-struct ShopView: View {
+struct ShopTestView: View {
     let user: User
-    let shopSystem: ShopSystem
+//    let shopSystem: ShopSystem
     let calculator: Calculator
 
     init(user: User, calculator: Calculator) {
         self.user = user
-        self.shopSystem = .init(user: user)
+//        self.shopSystem = .init(user: user)
         self.calculator = calculator
     }
     var body: some View {
@@ -24,9 +24,9 @@ struct ShopView: View {
             Text("초당 획득 골드: \(calculator.calculateGoldPerSecond(user: user))")
             Text("부동산: \(user.inventory.housing.displayTitle)")
 
-            List(shopSystem.itemList() + shopSystem.housingList()) { item in
-                itemRowView(item: item)
-            }
+//            List(shopSystem.itemList() + shopSystem.housingList()) { item in
+//                itemRowView(item: item)
+//            }
         }
     }
 
@@ -38,11 +38,11 @@ struct ShopView: View {
             }
             Spacer()
             Button {
-                do {
-                    try shopSystem.buy(item: item)
-                } catch {
-
-                }
+//                do {
+//                    try shopSystem.buy(item: item)
+//                } catch {
+//
+//                }
 
             } label: {
                 VStack(alignment: .trailing) {
@@ -67,5 +67,5 @@ struct ShopView: View {
             .init(game: .tap, tier: .advanced, level: 1000)
         ]
     )
-    ShopView(user: user, calculator: .init())
+    ShopTestView(user: user, calculator: .init())
 }

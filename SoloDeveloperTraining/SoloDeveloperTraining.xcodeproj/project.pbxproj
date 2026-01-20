@@ -36,7 +36,7 @@
 				Devlopment/Presentation/ContentView.swift,
 				Devlopment/Presentation/DodgeGameTestView.swift,
 				Devlopment/Presentation/LanguageGameTestView.swift,
-				Devlopment/Presentation/ShopView.swift,
+				Devlopment/Presentation/ShopTestView.swift,
 				Devlopment/Presentation/StackGameScene.swift,
 				Devlopment/Presentation/StackGameTestView.swift,
 				Devlopment/Presentation/TabGameView.swift,
