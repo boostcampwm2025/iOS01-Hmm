@@ -1,5 +1,5 @@
 //
-//  LaguageGameView.swift
+//  LanguageGameView.swift
 //  SoloDeveloperTraining
 //
 //  Created by SeoJunYoung on 1/15/26.
@@ -8,6 +8,11 @@
 import SwiftUI
 
 private enum Constant {
+    enum Padding {
+        static let horizontal: CGFloat = 16
+        static let toolBarBottom: CGFloat = 14
+    }
+
     enum Spacing {
         static let itemHorizontal: CGFloat = 25
         static let buttonHorizontal: CGFloat = 17
@@ -24,7 +29,7 @@ private enum Constant {
     }
 }
 
-struct LaguageGameView: View {
+struct LanguageGameView: View {
     // MARK: Properties
     let user: User
     let game: LanguageGame
@@ -74,13 +79,12 @@ struct LaguageGameView: View {
                 languageButtonsSection
                 Spacer()
             }
-            .padding()
         }
     }
 }
 
 // MARK: - View Components
-private extension LaguageGameView {
+private extension LanguageGameView {
     /// 상단 툴바
     var toolbarSection: some View {
         GameToolBar(
@@ -92,6 +96,8 @@ private extension LaguageGameView {
             coffeeCount: .constant(game.user.inventory.count(.coffee) ?? 0),
             energyDrinkCount: .constant(game.user.inventory.count(.energyDrink) ?? 0)
         )
+        .padding(.horizontal, Constant.Padding.horizontal)
+        .padding(.bottom, Constant.Padding.toolBarBottom)
     }
 
     /// 중앙 언어 아이템 영역
@@ -131,7 +137,7 @@ private extension LaguageGameView {
 }
 
 // MARK: - Actions
-private extension LaguageGameView {
+private extension LanguageGameView {
     /// 닫기 버튼 클릭 처리
     func handleCloseButton() {
         game.stopGame()
@@ -155,7 +161,7 @@ private extension LaguageGameView {
 }
 
 // MARK: - Helper Methods
-private extension LaguageGameView {
+private extension LanguageGameView {
     /// 획득한 골드를 표시하는 효과 라벨 추가
     /// - Parameter gainedGold: 획득한 골드 (음수일 경우 손실)
     func showEffectLabel(gainedGold: Int) {
@@ -184,7 +190,7 @@ private extension LaguageGameView {
         )
 
         var body: some View {
-            LaguageGameView(user: user, isGameStarted: $isGameStarted)
+            LanguageGameView(user: user, isGameStarted: $isGameStarted)
         }
     }
 

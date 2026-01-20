@@ -53,63 +53,10 @@ struct DodgeGameView: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
-                GameToolBar(
-                    closeButtonDidTapHandler: closeGame,
-                    coffeeButtonDidTapHandler: {
-                        useConsumable(item: .coffee)
-                    },
-                    energyDrinkButtonDidTapHandler: {
-                        useConsumable(item: .energyDrink)
-                    },
-                    feverState: game.feverSystem,
-                    buffSystem: game.buffSystem,
-                    coffeeCount: .constant(game.user.inventory.count(.coffee) ?? 0),
-                    energyDrinkCount: .constant(game.user.inventory.count(.energyDrink) ?? 0)
-                )
-                .padding(.horizontal, Constant.Padding.horizontal)
-                .padding(.bottom, Constant.Padding.toolBarBottom)
-
-                // 게임 영역
-                ZStack(alignment: .bottom) {
-                    // 바닥
-                    Image(.dodgeGround)
-                        .resizable()
-                        .frame(height: Constant.Size.ground)
-
-                    // 플레이어
-                    RunningCharacter(isFacingLeft: isFacingLeft)
-                        .frame(
-                            width: Constant.Size.character.width,
-                            height: Constant.Size.character.height
-                        )
-                        .position(
-                            x: gameAreaWidth / 2 + game.motionSystem.characterX,
-                            y: gameAreaHeight * (1 - Constant.Position.characterYRatio)
-                        )
-                        .onChange(of: game.motionSystem.characterX) { oldPositionX, newPositionX in
-                            updateCharacterDirection(oldPositionX: oldPositionX, newPositionX: newPositionX)
-                        }
-
-                    // 낙하물
-                    ForEach(game.gameCore.fallingItems) { item in
-                        DropItem(type: item.type)
-                            .position(
-                                x: gameAreaWidth / 2 + item.position.x,
-                                y: gameAreaHeight / 2 + item.position.y
-                            )
-                    }
-
-                    // 골드 변화 이펙트
-                    ForEach(goldEffects) { effect in
-                        EffectLabel(
-                            value: effect.value,
-                            onComplete: {
-                                goldEffects.removeAll { $0.id == effect.id }
-                            }
-                        )
-                        .position(effect.position)
-                    }
-                }
+                // 상단 툴바 (닫기, 아이템 버튼, 피버 게이지)
+                toolbarSection
+                // 게임 영역 (바닥, 플레이어, 낙하물, 골드 이펙트)
+                gameAreaSection
             }
             .onAppear {
                 setupGame(with: geometry.size)
@@ -121,7 +68,102 @@ struct DodgeGameView: View {
     }
 }
 
+// MARK: - View Components
 private extension DodgeGameView {
+    /// 상단 툴바
+    var toolbarSection: some View {
+        GameToolBar(
+            closeButtonDidTapHandler: handleCloseButton,
+            coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
+            energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
+            feverState: game.feverSystem,
+            buffSystem: game.buffSystem,
+            coffeeCount: .constant(game.user.inventory.count(.coffee) ?? 0),
+            energyDrinkCount: .constant(game.user.inventory.count(.energyDrink) ?? 0)
+        )
+        .padding(.horizontal, Constant.Padding.horizontal)
+        .padding(.bottom, Constant.Padding.toolBarBottom)
+    }
+
+    /// 게임 영역
+    var gameAreaSection: some View {
+        ZStack(alignment: .bottom) {
+            // 바닥
+            groundView
+            // 플레이어
+            playerView
+            // 낙하물
+            fallingItemsView
+            // 골드 변화 이펙트
+            goldEffectsView
+        }
+    }
+
+    /// 바닥
+    var groundView: some View {
+        Image(.dodgeGround)
+            .resizable()
+            .frame(height: Constant.Size.ground)
+    }
+
+    /// 플레이어
+    var playerView: some View {
+        RunningCharacter(isFacingLeft: isFacingLeft)
+            .frame(
+                width: Constant.Size.character.width,
+                height: Constant.Size.character.height
+            )
+            .position(
+                x: gameAreaWidth / 2 + game.motionSystem.characterX,
+                y: gameAreaHeight * (1 - Constant.Position.characterYRatio)
+            )
+            .onChange(of: game.motionSystem.characterX) { oldPositionX, newPositionX in
+                updateCharacterDirection(oldPositionX: oldPositionX, newPositionX: newPositionX)
+            }
+    }
+
+    /// 낙하물
+    var fallingItemsView: some View {
+        ForEach(game.gameCore.fallingItems) { item in
+            DropItem(type: item.type)
+                .position(
+                    x: gameAreaWidth / 2 + item.position.x,
+                    y: gameAreaHeight / 2 + item.position.y
+                )
+        }
+    }
+
+    /// 골드 변화 이펙트
+    var goldEffectsView: some View {
+        ForEach(goldEffects) { effect in
+            EffectLabel(
+                value: effect.value,
+                onComplete: { removeEffectLabel(id: effect.id) }
+            )
+            .position(effect.position)
+        }
+    }
+}
+
+// MARK: - Actions
+private extension DodgeGameView {
+    /// 닫기 버튼 클릭 처리
+    func handleCloseButton() {
+        game.stopGame()
+        isGameStarted = false
+    }
+
+    /// 소비 아이템 사용 처리
+    func useConsumableItem(_ type: ConsumableType) {
+        if game.user.inventory.drink(type) {
+            game.buffSystem.useConsumableItem(type: type)
+        }
+    }
+}
+
+// MARK: - Helper Methods
+private extension DodgeGameView {
+    /// 게임 초기 설정
     func setupGame(with size: CGSize) {
         gameAreaWidth = size.width
         gameAreaHeight = size.height
@@ -132,6 +174,7 @@ private extension DodgeGameView {
         game.startGame()
     }
 
+    /// 골드 변화 이펙트 표시
     func showGoldChangeEffect(_ goldDelta: Int) {
         let effect = EffectLabelData(
             id: UUID(),
@@ -145,23 +188,17 @@ private extension DodgeGameView {
         goldEffects.append(effect)
     }
 
-    func useConsumable(item: ConsumableType) {
-        let success = game.user.inventory.drink(item)
-        if success {
-            game.buffSystem.useConsumableItem(type: item)
-        }
+    /// 효과 라벨 제거 (애니메이션 완료 시 콜백으로 호출)
+    /// - Parameter id: 제거할 효과 라벨의 ID
+    func removeEffectLabel(id: UUID) {
+        goldEffects.removeAll { $0.id == id }
     }
 
-    // 캐릭터의 진행 방향을 업데이트 합니다.
+    /// 캐릭터의 진행 방향을 업데이트 합니다.
     func updateCharacterDirection(oldPositionX: CGFloat, newPositionX: CGFloat) {
         if abs(newPositionX - oldPositionX) > Constant.Threshold.directionChange {
             isFacingLeft = newPositionX < oldPositionX
         }
-    }
-
-    func closeGame() {
-        game.stopGame()
-        isGameStarted = false
     }
 }
 

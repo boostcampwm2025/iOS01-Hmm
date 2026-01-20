@@ -8,7 +8,11 @@
 import SwiftUI
 
 private enum Constant {
-    static let horizontalPadding: CGFloat = 16
+    enum Padding {
+        static let horizontal: CGFloat = 16
+        static let selectionViewBottom: CGFloat = 30
+    }
+
     static let contentSpacing: CGFloat = 17
     static let descriptionSpacing: CGFloat = 10
 }
@@ -34,12 +38,12 @@ struct WorkSelectedView: View {
 private extension WorkSelectedView {
 
     var selectionView: some View {
-        VStack(alignment: .leading, spacing: Constant.contentSpacing) {
+        VStack(spacing: Constant.contentSpacing) {
             workSegmentControl
             descriptionStack
             startButton
         }
-        .padding(.horizontal, Constant.horizontalPadding)
+        .padding(.horizontal, Constant.Padding.horizontal)
     }
 
     var workSegmentControl: some View {
@@ -64,12 +68,11 @@ private extension WorkSelectedView {
     }
 
     var startButton: some View {
-        Button {
+        LargeButton(title: "시작하기") {
             isGameStarted = true
-        } label: {
-            Text("시작하기")
-                .frame(maxWidth: .infinity)
         }
+        .frame(maxWidth: .infinity, alignment: .bottom)
+        .padding(.bottom, Constant.Padding.selectionViewBottom)
         .disabled(selectedIndex == nil)
     }
 }
@@ -109,7 +112,7 @@ private extension WorkSelectedView {
         case 0:
             TapGameView(user: user, isGameStarted: $isGameStarted)
         case 1:
-            LaguageGameView(user: user, isGameStarted: $isGameStarted)
+            LanguageGameView(user: user, isGameStarted: $isGameStarted)
         case 2:
             DodgeGameView(user: user, isGameStarted: $isGameStarted)
         case 3:

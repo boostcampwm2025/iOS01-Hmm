@@ -7,6 +7,31 @@
 
 import SwiftUI
 
+private enum Constant {
+    enum Spacing {
+        static let hStack: CGFloat = 4
+        static let vStack: CGFloat = 4
+    }
+
+    enum Padding {
+        static let horizontal: CGFloat = 16
+        static let vertical: CGFloat = 14
+        static let buttonVertical: CGFloat = 4.5
+    }
+
+    enum Size {
+        static let imageWidth: CGFloat = 24
+        static let imageHeight: CGFloat = 24
+    }
+
+    enum Offset {
+        static let pressedX: CGFloat = 2
+        static let pressedY: CGFloat = 3
+        static let shadowX: CGFloat = 2
+        static let shadowY: CGFloat = 3
+    }
+}
+
 enum TabItem: String, CaseIterable {
     case work = "업무"
     case enhance = "강화"
@@ -27,7 +52,7 @@ struct TabBar: View {
     @Binding var selectedTab: TabItem
 
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(alignment: .center, spacing: Constant.Spacing.hStack) {
             ForEach(TabItem.allCases, id: \.self) { tab in
                 TabBarButton(
                     tab: tab,
@@ -37,9 +62,9 @@ struct TabBar: View {
                 }
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
-        .background(Color(.clear))
+        .padding(.horizontal, Constant.Padding.horizontal)
+        .padding(.vertical, Constant.Padding.vertical)
+        .background(Color(AppTheme.backgroundColor))
     }
 }
 
@@ -52,23 +77,30 @@ private struct TabBarButton: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 4) {
-                Image(tab.imageName)
-                    .resizable()
-                    .frame(width: 24, height: 24)
+            ZStack(alignment: .bottomTrailing) {
+                VStack(spacing: Constant.Spacing.vStack) {
+                    Image(tab.imageName)
+                        .resizable()
+                        .frame(width: Constant.Size.imageWidth, height: Constant.Size.imageHeight)
 
-                Text(tab.rawValue)
-                    .textStyle(.caption)
-            }
-            .padding(.vertical, 4.5)
-            .foregroundStyle(isSelected ? .white : AppColors.orange500)
-            .frame(maxWidth: .infinity)
-            .background(
+                    Text(tab.rawValue)
+                        .textStyle(.caption)
+                }
+                .padding(.vertical, Constant.Padding.buttonVertical)
+                .foregroundStyle(isSelected ? .white : AppColors.orange500)
+                .frame(maxWidth: .infinity)
+                .background(
+                    Rectangle()
+                        .fill(isSelected ? AppColors.orange300 : AppColors.beige300)
+                )
+                .offset(x: isPressed ? Constant.Offset.pressedX : 0, y: isPressed ? Constant.Offset.pressedY : 0)
+                .layoutPriority(1)
+
                 Rectangle()
-                    .fill(isSelected ? AppColors.orange300 : AppColors.beige300)
-                    .shadow(color: .black, radius: 0, x: 2, y: 3)
-            )
-            .offset(x: isPressed ? 2 : 0, y: isPressed ? 2 : 0)
+                    .fill(Color.black)
+                    .offset(x: Constant.Offset.shadowX, y: Constant.Offset.shadowY)
+                    .zIndex(-1)
+            }
             .animation(.none, value: isSelected)
         }
             .buttonStyle(.pressable(isPressed: $isPressed))
