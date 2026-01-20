@@ -23,10 +23,22 @@ struct SoloDeveloperTrainingApp: App {
         ),
         record: .init(),
         skills: [
-            .init(key: SkillKey(game: .tap, tier: .beginner), level: 100),
-            .init(key: SkillKey(game: .language, tier: .beginner), level: 100),
-            .init(key: SkillKey(game: .dodge, tier: .beginner), level: 100),
-            .init(key: SkillKey(game: .stack, tier: .beginner), level: 100),
+            // 코드짜기
+            .init(key: SkillKey(game: .tap, tier: .beginner), level: 1),
+            .init(key: SkillKey(game: .tap, tier: .intermediate), level: 0),
+            .init(key: SkillKey(game: .tap, tier: .advanced), level: 0),
+            // 언어 맞추기
+            .init(key: SkillKey(game: .language, tier: .beginner), level: 1),
+            .init(key: SkillKey(game: .language, tier: .intermediate), level: 0),
+            .init(key: SkillKey(game: .language, tier: .advanced), level: 0),
+            // 버그 피하기
+            .init(key: SkillKey(game: .dodge, tier: .beginner), level: 1),
+            .init(key: SkillKey(game: .dodge, tier: .intermediate), level: 0),
+            .init(key: SkillKey(game: .dodge, tier: .advanced), level: 0),
+            // 물건 쌓기
+            .init(key: SkillKey(game: .stack, tier: .beginner), level: 1),
+            .init(key: SkillKey(game: .stack, tier: .intermediate), level: 0),
+            .init(key: SkillKey(game: .stack, tier: .advanced), level: 0)
         ]
     )
 
