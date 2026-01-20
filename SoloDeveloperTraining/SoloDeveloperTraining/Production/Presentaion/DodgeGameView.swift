@@ -184,7 +184,7 @@ private extension DodgeGameView {
         inventory: inventory,
         record: record,
         skills: [
-            .init(game: .dodge, tier: .beginner, level: 1000)
+            .init(key: SkillKey(game: .dodge, tier: .beginner), level: 1000)
         ]
     )
 

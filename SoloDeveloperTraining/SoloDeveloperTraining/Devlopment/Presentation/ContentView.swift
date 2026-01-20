@@ -31,13 +31,28 @@ struct ContentView: View {
             ),
             record: .init(),
             skills: [
-                .init(game: .tap, tier: .beginner, level: 1000),
-                .init(game: .tap, tier: .intermediate, level: 1000),
-                .init(game: .tap, tier: .advanced, level: 1000),
-                .init(game: .dodge, tier: .beginner, level: 500),
-                .init(game: .dodge, tier: .intermediate, level: 500),
-                .init(game: .dodge, tier: .advanced, level: 500),
-                .init(game: .stack, tier: .beginner, level: 1)
+                .init(key: .init(game: .tap, tier: .beginner), level: 1000),
+                .init(
+                    key: .init(game: .tap, tier: .intermediate),
+                    level: 1000
+                ),
+                .init(
+                    key: .init(game: .tap, tier: .advanced),
+                    level: 1000
+                ),
+                .init(
+                    key: .init(game: .dodge, tier: .advanced),
+                    level: 500
+                ),
+                .init(
+                    key: .init(game: .dodge, tier: .intermediate),
+                    level: 500
+                ),
+                .init(
+                    key: .init(game: .dodge, tier: .advanced),
+                    level: 500
+                ),
+                .init(key: .init(game: .stack, tier: .beginner), level: 1)
             ]
         )
         let calculator: Calculator = Calculator()

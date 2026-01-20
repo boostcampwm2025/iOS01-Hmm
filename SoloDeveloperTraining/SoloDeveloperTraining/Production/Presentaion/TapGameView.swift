@@ -137,8 +137,8 @@ private extension TapGameView {
         ),
         record: Record(),
         skills: [
-            Skill(game: .tap, tier: .beginner, level: 10),
-            Skill(game: .tap, tier: .intermediate, level: 5)
+            Skill(key: SkillKey(game: .tap, tier: .beginner), level: 10),
+            Skill(key: SkillKey(game: .tap, tier: .intermediate), level: 5)
         ]
     )
 
