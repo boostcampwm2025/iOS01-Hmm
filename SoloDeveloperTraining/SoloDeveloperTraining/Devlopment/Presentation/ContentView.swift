@@ -89,16 +89,22 @@ struct ContentView: View {
                     Text("미션")
                 }
             DodgeGameTestView(user: user, calculator: calculator)
-                .tag(4)
+                .tag(5)
                 .tabItem {
                     Image(systemName: "exclamationmark.triangle")
                     Text("버그피하기")
                 }
             StackGameTestView(user: user, calculator: calculator)
-                .tag(5)
+                .tag(6)
                 .tabItem {
                     Image(systemName: "square.stack.3d.up")
                     Text("스택 게임")
+                }
+            SkillTestView(user: user, calculator: calculator)
+                .tag(7)
+                .tabItem {
+                    Image(systemName: "plus")
+                    Text("스킬 강화")
                 }
         }
     }
