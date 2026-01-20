@@ -28,13 +28,17 @@ struct ShopTestView: View {
                 LazyVStack(spacing: 0) {
                     ForEach(shopSystem.itemList(itemTypes: [.consumable, .equipment, .housing])) { item in
                         ItemRow(
-                            title: item.displayTitle + "\((item.isEquipped ?? true) ? "-착용중" : "")",
+                            title: item.displayTitle + "\(item.isEquipped ? "-착용중" : "")",
                             description: item.description,
                             imageName: item.imageName,
                             cost: item.cost,
-                            isDisabled: !(item.isPurchasable ?? false)
+                            isDisabled: !item.isPurchasable
                         ) {
-                            print("Tapped")
+                            do {
+                                try shopSystem.buy(item: item)
+                            } catch {
+                                print(error)
+                            }
                         }
                     }
                 }

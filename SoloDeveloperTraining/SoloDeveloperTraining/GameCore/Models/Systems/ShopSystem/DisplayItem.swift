@@ -28,6 +28,6 @@ struct DisplayItem: Identifiable, Item {
     // MARK: - DisplayItem
     let id = UUID()
     let item: Item
-    let isEquipped: Bool?
-    let isPurchasable: Bool?
+    let isEquipped: Bool
+    let isPurchasable: Bool
 }
