@@ -25,6 +25,7 @@ struct MainView: View {
     @Environment(\.scenePhase) var scenePhase
     @State private var selectedTab: TabItem = .work
     @State private var popupContent: (String, AnyView)?
+    @State private var isCareerPopupPresented: Bool = false
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
@@ -47,6 +48,9 @@ struct MainView: View {
                         gold: user.wallet.gold,
                         diamond: user.wallet.diamond
                     )
+                    .onTapGesture {
+                        isCareerPopupPresented = true
+                    }
                 }
                 .frame(height: geometry.size.height * 0.5)
                 .background(
@@ -93,6 +97,27 @@ struct MainView: View {
                             .padding(.horizontal, Constant.Padding.horizontalPadding)
                     }
                 }
+            }
+        }
+        .overlay {
+            if isCareerPopupPresented {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        isCareerPopupPresented = false
+                    }
+
+                Popup(title: "커리어") {
+                    VStack(spacing: 20) {
+                        Text("여~~기~~")
+                            .textStyle(.body)
+
+                        MediumButton(title: "닫기", isFilled: true) {
+                            isCareerPopupPresented = false
+                        }
+                    }
+                }
+                .padding(.horizontal, 25)
             }
         }
     }
