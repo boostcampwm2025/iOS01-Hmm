@@ -24,6 +24,14 @@ final class ShopSystem {
         return itemTypes.map { makeDisplayItems(for: $0) }.flatMap { $0 }
     }
 
+    /// 부동산 실제 비용 계산
+    /// - Parameter item: 부동산 아이템
+    /// - Returns: 실제 지불/환불 금액 (양수: 지불, 음수: 환불)
+    func calculateHousingNetCost(for item: DisplayItem) -> Int {
+        let refundAmount = user.inventory.housing.cost.gold / 2
+        return item.cost.gold - refundAmount
+    }
+
     /// 아이템 구매
     /// - Parameter item: 구매할 아이템
     /// - Returns: 구매 성공 여부 (장비의 경우 강화 성공/실패, 다른 아이템은 항상 true)
@@ -34,9 +42,7 @@ final class ShopSystem {
     func buy(item: DisplayItem) throws -> Bool {
         // 부동산의 경우 실제 지불 금액으로 구매 가능 여부 확인
         if item.category == .housing {
-            let currentHousing = user.inventory.housing
-            let refundAmount = currentHousing.cost.gold / 2
-            let netGoldCost = item.cost.gold - refundAmount
+            let netGoldCost = calculateHousingNetCost(for: item)
 
             // 실제 지불 금액이 양수일 때만 구매 가능 여부 확인 (음수면 환불이므로 항상 가능)
             if netGoldCost > 0 {
@@ -176,14 +182,8 @@ private extension ShopSystem {
             throw PurchasingError.purchaseFailed
         }
 
-        // 현재 보유 중인 부동산 정보
-        let currentHousing = user.inventory.housing
-
-        // 기존 부동산 환불 금액 계산 (구입가의 50%)
-        let refundAmount = currentHousing.cost.gold / 2
-
-        // 실제 지불 금액 = 새 부동산 가격 - 환불 금액
-        let netGoldCost = displayItem.cost.gold - refundAmount
+        // 실제 지불 금액 계산
+        let netGoldCost = calculateHousingNetCost(for: displayItem)
 
         // 골드 지불 또는 환불
         if netGoldCost > 0 {
