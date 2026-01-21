@@ -108,8 +108,31 @@ extension ShopView {
 
     /// 아이템 구매 확인 팝업 표시
     fileprivate func purchase(item: DisplayItem) {
-        // 팝업 타이틀 생성
-        let title = item.category == .housing ? "부동산 구매" : "아이템 구매"
+        // 팝업 타이틀 및 메시지 생성
+        let title: String
+        let message: String
+        let buttonTitle: String
+        
+        switch item.category {
+        case .equipment:
+            title = "장비 강화"
+            // 강화 확률 계산
+            if let equipment = item.item as? Equipment {
+                let successRate = Int(equipment.tier.upgradeSuccessRate * 100)
+                message = "강화하시겠습니까?\n(성공 확률: \(successRate)%)"
+            } else {
+                message = "강화하시겠습니까?"
+            }
+            buttonTitle = "강화"
+        case .housing:
+            title = "부동산 구매"
+            message = "구매하시겠습니까?"
+            buttonTitle = "구매"
+        case .consumable:
+            title = "아이템 구매"
+            message = "구매하시겠습니까?"
+            buttonTitle = "구매"
+        }
 
         // 가격 텍스트 생성
         var priceComponents: [String] = []
@@ -126,7 +149,7 @@ extension ShopView {
             title,
             AnyView(
                 VStack(spacing: 16) {
-                    Text("\(priceText)를 사용하여\n구매하시겠습니까?")
+                    Text("\(priceText)를 사용하여\n\(message)")
                         .textStyle(.body)
                         .foregroundColor(.black)
                         .multilineTextAlignment(.center)
@@ -137,8 +160,8 @@ extension ShopView {
                             popupContent = nil
                         }
 
-                        // 구매 버튼
-                        MediumButton(title: "구매", isFilled: true) {
+                        // 구매/강화 버튼
+                        MediumButton(title: buttonTitle, isFilled: true) {
                             popupContent = nil
                             executePurchase(item: item)
                         }
