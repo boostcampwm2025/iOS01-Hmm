@@ -9,6 +9,8 @@ import SwiftUI
 
 private enum Constant {
     static let vertical: CGFloat = 15
+    static let gridVeticalSpacing: CGFloat = 14
+    static let minWidth: CGFloat = 115
 }
 
 struct MissionView: View {
@@ -39,8 +41,8 @@ struct MissionView: View {
             )
             ScrollView {
                 LazyVGrid(
-                    columns: [GridItem(.adaptive(minimum: 115))],
-                    spacing: 14
+                    columns: [GridItem(.adaptive(minimum: Constant.minWidth))],
+                    spacing: Constant.gridVeticalSpacing
                 ) {
                     ForEach(missionSystem.missions, id: \.id) { mission in
                         MissionCard(

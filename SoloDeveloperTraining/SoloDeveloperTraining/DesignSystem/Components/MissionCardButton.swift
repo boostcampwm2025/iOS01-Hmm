@@ -8,7 +8,7 @@
 import SwiftUI
 
 private enum Constant {
-    static let buttonHeight: CGFloat = 14
+    static let buttonHeight: CGFloat = 16
     static let buttonWidth: CGFloat = .infinity
 
     enum Title {
