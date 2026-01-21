@@ -52,7 +52,7 @@ private extension EnhanceView {
         do {
             try skillSystem.upgrade(skill: skill)
         } catch let error as UserReadableError {
-            popupContent = PopupConfiguration(title: "강화", horizontalPadding: Constant.popupHorizontalPadding) {
+            popupContent = PopupConfiguration(title: "강화") {
                 VStack(spacing: Constant.popupContentSpacing) {
                     Text(error.message)
                         .textStyle(.body)
@@ -67,7 +67,7 @@ private extension EnhanceView {
         } catch {
             // UserReadableError를 채택하지 않은 예상치 못한 에러
             // 실제로는 발생하지 않지만 Swift 컴파일러 요구사항
-            popupContent = PopupConfiguration(title: "강화", horizontalPadding: Constant.popupHorizontalPadding) {
+            popupContent = PopupConfiguration(title: "강화") {
                 VStack(spacing: Constant.popupContentSpacing) {
                     Text(error.localizedDescription)
                         .textStyle(.body)

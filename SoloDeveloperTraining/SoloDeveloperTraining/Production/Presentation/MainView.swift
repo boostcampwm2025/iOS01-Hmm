@@ -108,7 +108,7 @@ struct MainView: View {
 
                         Popup(title: popupContent.title, contentView: popupContent.content)
                             .frame(maxHeight: popupContent.maxHeight)
-                            .padding(.horizontal, popupContent.horizontalPadding)
+                            .padding(.horizontal, Constant.Padding.horizontalPadding)
                     }
                 }
             }
@@ -118,7 +118,6 @@ struct MainView: View {
     private func showCareerPopup() {
         popupContent = PopupConfiguration(
             title: Constant.CareerPopup.title,
-            horizontalPadding: Constant.Padding.horizontalPadding,
             maxHeight: Constant.CareerPopup.maxHeight
         ) {
             VStack(alignment: .center, spacing: 0) {
