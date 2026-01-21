@@ -19,13 +19,11 @@ private enum Constant {
 
     enum Padding {
         static let content: CGFloat = 10
-        static let rewardTop: CGFloat = 4
-        static let imageTop: CGFloat = 4
-        static let conditionTop: CGFloat = 4
     }
 
     enum Spacing {
         static let rewardIconText: CGFloat = 2
+        static let vertical: CGFloat = 4
     }
 
     enum Typography {
@@ -85,9 +83,9 @@ private struct MissionCardContentView: View {
     var onButtonTap: (() -> Void)?
 
     var body: some View {
-        VStack(alignment: .center, spacing: 0) {
+        VStack(alignment: .center, spacing: Constant.Spacing.vertical) {
             // 타이틀과 보상 (왼쪽 정렬)
-            VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: Constant.Spacing.vertical) {
                 Text(title)
                     .textStyle(.subheadline)
                     .foregroundStyle(.black)
@@ -112,10 +110,8 @@ private struct MissionCardContentView: View {
                         .foregroundStyle(.black)
                     }
                 }
-                .padding(.top, Constant.Padding.rewardTop)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-
             // 이미지 (가운데 정렬)
             Image(imageName)
                 .resizable()
@@ -123,22 +119,19 @@ private struct MissionCardContentView: View {
                 .frame(height: Constant.Size.imageHeight)
                 .frame(maxWidth: .infinity)
                 .clipped()
-                .padding(.top, Constant.Padding.imageTop)
-
             // 보상 조건 (가운데 정렬)
             Text(condition)
                 .textStyle(.label)
                 .foregroundStyle(.black)
                 .frame(maxWidth: .infinity)
-                .padding(.top, Constant.Padding.conditionTop)
+                .frame(height: 30)
                 .lineLimit(Constant.Typography.conditionLineLimit)
-
-            Spacer()
+                .multilineTextAlignment(.center)
 
             // MissionCardButton (가운데 정렬)
-                MissionCardButton(buttonState: buttonState) {
-                    onButtonTap?()
-                }
+            MissionCardButton(buttonState: buttonState) {
+                onButtonTap?()
+            }
         }
     }
 }
