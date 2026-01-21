@@ -19,6 +19,16 @@ private enum Constant {
     enum Color {
         static let overlay = SwiftUI.Color.black.opacity(0.3)
     }
+
+    enum CareerPopup {
+        static let title: String = "커리어"
+        static let maxHeight: CGFloat = 650
+        static let contentHorizontalPadding: CGFloat = 16
+        static let progressBarTopPadding: CGFloat = 18
+        static let progressBarBottomPadding: CGFloat = 18
+        static let careerRowSpacing: CGFloat = 10
+        static let scrollViewBottomPadding: CGFloat = 45
+    }
 }
 
 struct MainView: View {
@@ -107,20 +117,20 @@ struct MainView: View {
 
     private func showCareerPopup() {
         popupContent = PopupConfiguration(
-            title: "커리어",
-            horizontalPadding: 25,
-            maxHeight: 650
+            title: Constant.CareerPopup.title,
+            horizontalPadding: Constant.Padding.horizontalPadding,
+            maxHeight: Constant.CareerPopup.maxHeight
         ) {
             VStack(alignment: .center, spacing: 0) {
                 CareerProgressBar(
                     career: user.career,
                     currentGold: user.wallet.gold
                 )
-                .padding(.bottom, 18)
-                .padding(.top, 18)
+                .padding(.bottom, Constant.CareerPopup.progressBarBottomPadding)
+                .padding(.top, Constant.CareerPopup.progressBarTopPadding)
 
                 ScrollView {
-                    VStack(spacing: 10) {
+                    VStack(spacing: Constant.CareerPopup.careerRowSpacing) {
                         ForEach(Career.allCases, id: \.self) { career in
                             CareerRow(
                                 career: career,
@@ -130,13 +140,13 @@ struct MainView: View {
                     }
                 }
                 .scrollIndicators(.hidden)
-                .padding(.bottom, 45)
+                .padding(.bottom, Constant.CareerPopup.scrollViewBottomPadding)
 
                 MediumButton(title: "닫기", isFilled: true) {
                     popupContent = nil
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, Constant.CareerPopup.contentHorizontalPadding)
         }
     }
 }
