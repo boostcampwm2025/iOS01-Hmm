@@ -71,7 +71,7 @@ private extension ShopView {
                         description: item.description,
                         imageName: item.imageName,
                         cost: item.cost,
-                        state: itemState(for: item)
+                        state: ItemState(item: item)
                     ) {
                         purchase(item: item)
                     }
@@ -89,7 +89,7 @@ private extension ShopView {
                     if let housing = item.item as? Housing {
                         HousingCard(
                             housing: housing,
-                            state: itemState(for: item),
+                            state: ItemState(item: item),
                             isSelected: selectedHousingTier == housing.tier,
                             onTap: {
                                 selectedHousingTier = housing.tier
@@ -107,14 +107,6 @@ private extension ShopView {
             .padding(.bottom, Constant.Padding.housingBottom)
         }
         .scrollIndicators(.hidden)
-    }
-
-    /// 아이템 상태 결정
-    func itemState(for item: DisplayItem) -> ItemState {
-        if item.isEquipped && item.category == .housing {
-            return .locked
-        }
-        return item.isPurchasable ? .available : .insufficient
     }
 
     /// 아이템 구매 확인 팝업 표시

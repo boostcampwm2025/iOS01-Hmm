@@ -70,14 +70,8 @@ private extension SkillSystem {
         let canUnlock = canUnlock(skill: skill)
         let cost = skill.upgradeCost
         let canAfford = cost.gold <= user.wallet.gold && cost.diamond <= user.wallet.diamond
-
-        if !canUnlock {
-            return .locked
-        } else if !canAfford {
-            return .insufficient
-        } else {
-            return .available
-        }
+        
+        return ItemState(canUnlock: canUnlock, canAfford: canAfford)
     }
 
     func canUnlock(skill: Skill) -> Bool {
