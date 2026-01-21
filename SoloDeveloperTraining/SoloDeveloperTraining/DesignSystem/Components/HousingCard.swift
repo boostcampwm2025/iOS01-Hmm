@@ -26,6 +26,7 @@ private enum Constant {
 struct HousingCard: View {
     let housing: Housing
     let isEquipped: Bool
+    let isPurchasable: Bool
     let isSelected: Bool
     let onTap: () -> Void
     let onButtonTap: () -> Void
@@ -34,7 +35,7 @@ struct HousingCard: View {
         HousingCardContent(
             housing: housing,
             buttonTitle: isEquipped ? "장착중" : "이사하기",
-            isButtonEnabled: !isEquipped,
+            isButtonEnabled: !isEquipped && isPurchasable,
             onButtonTap: onButtonTap
         )
         .contentShape(RoundedRectangle(cornerRadius: Constant.cornerRadius))
@@ -78,7 +79,7 @@ private struct HousingCardContent: View {
                 // 이미지 영역
                 Image(housing.imageName)
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
+                    .aspectRatio(contentMode: .fit)
                     .frame(width: Constant.cardWidth)
                     .frame(maxHeight: .infinity)
                     .clipped()
@@ -111,6 +112,7 @@ private struct HousingCardContent: View {
     HousingCard(
         housing: .init(tier: .villa),
         isEquipped: isEquipped,
+        isPurchasable: true,
         isSelected: isSelected,
         onTap: {
             isSelected.toggle()
