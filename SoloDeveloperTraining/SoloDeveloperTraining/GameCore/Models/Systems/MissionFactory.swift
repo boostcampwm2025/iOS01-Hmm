@@ -31,7 +31,7 @@ struct MissionFactory {
         case career
 
         /// Record로부터 현재 값을 가져오는 조건
-        var updateCondition: (Record) -> Int {
+        var currentValue: (Record) -> Int {
             switch self {
             case .tap:
                 return { $0.totalTapCount }
@@ -384,7 +384,7 @@ struct MissionFactory {
             title: config.title,
             description: config.description,
             targetValue: config.targetValue,
-            updateCondition: config.type.updateCondition,
+            updateCondition: config.type.currentValue,
             completeCondition: config.type.completeCondition,
             reward: config.reward
         )
