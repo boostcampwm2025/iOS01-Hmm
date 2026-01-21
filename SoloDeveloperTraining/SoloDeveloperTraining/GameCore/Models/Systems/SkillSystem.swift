@@ -9,7 +9,6 @@ import Foundation
 
 struct SkillState {
     let skill: Skill
-    let canUnlock: Bool
     let itemState: ItemState
 }
 
@@ -39,7 +38,6 @@ final class SkillSystem {
             .compactMap { $0 }
             .map { skill in SkillState(
                 skill: skill,
-                canUnlock: canUnlock(skill: skill),
                 itemState: getItemState(for: skill))
             }
     }
