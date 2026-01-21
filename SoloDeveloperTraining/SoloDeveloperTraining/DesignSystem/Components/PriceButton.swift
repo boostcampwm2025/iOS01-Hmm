@@ -26,34 +26,35 @@ private enum Constant {
     }
 
     enum Overlay {
-        static let disabledOpacity: Double = 0.9
+        static let disabledOpacity: Double = 0.4
     }
 }
 
 struct PriceButton: View {
 
     @State private var isPressed: Bool = false
-    let currencyType: CurrencyType
-    let price: Int
-    let isDisabled: Bool
+    let cost: Cost
+    let state: ItemState
     let axis: Axis
     let width: CGFloat?
     let action: () -> Void
 
     init(
-        price: Int,
-        isDisabled: Bool,
+        cost: Cost,
+        state: ItemState,
         axis: Axis,
         width: CGFloat? = nil,
-        currencyType: CurrencyType = .gold,
         action: @escaping () -> Void
     ) {
-        self.price = price
-        self.isDisabled = isDisabled
+        self.cost = cost
+        self.state = state
         self.axis = axis
         self.width = width
         self.action = action
-        self.currencyType = currencyType
+    }
+
+    private var isDisabled: Bool {
+        state != .available
     }
 
     var body: some View {
@@ -63,6 +64,7 @@ struct PriceButton: View {
                     disabledOverlay
                 }
             }
+            .animation(.none, value: isDisabled)
             .background(
                 RoundedRectangle(cornerRadius: Constant.Layout.cornerRadius)
                     .foregroundStyle(isDisabled ? .gray400 : .black)
@@ -71,6 +73,7 @@ struct PriceButton: View {
                         y: Constant.Shadow.offsetY
                     )
             )
+            .animation(.none, value: isDisabled)
             .contentShape(Rectangle())
             .onTapGesture {
                 if !isDisabled {
@@ -88,6 +91,7 @@ struct PriceButton: View {
                         isPressed = false
                     }
             )
+            .animation(.easeInOut(duration: 0.1), value: isPressed)
     }
 
     @ViewBuilder
@@ -105,25 +109,38 @@ struct PriceButton: View {
         }
         .frame(width: width ?? .none, height: Constant.Layout.buttonHeight)
         .padding(.horizontal, Constant.Layout.horizontalPadding)
-        .background(.orange500)
+        .background(state == .locked ? .gray300 : .orange500)
         .clipShape(RoundedRectangle(cornerRadius: Constant.Layout.cornerRadius))
         .offset(
             x: isPressed ? Constant.Shadow.offsetX : 0,
             y: isPressed ? Constant.Shadow.offsetY : 0
         )
-        .animation(.none, value: isPressed)
+        .animation(.none, value: cost)
+        .animation(.none, value: state)
     }
 
     @ViewBuilder
     var contentViews: some View {
-        Image(currencyType.iconName)
-            .frame(
-                width: Constant.Icon.coinSize.width,
-                height: Constant.Icon.coinSize.height
-            )
-        Text(price.formatted())
-            .foregroundStyle(.white)
-            .textStyle(.caption)
+        HStack {
+            if cost.gold > 0 {
+                CurrencyLabel(
+                    axis: .horizontal,
+                    icon: .gold,
+                    textStyle: .caption,
+                    value: cost.gold
+                )
+                .foregroundStyle(.white)
+            }
+            if cost.diamond > 0 {
+                CurrencyLabel(
+                    axis: .horizontal,
+                    icon: .diamond,
+                    textStyle: .caption,
+                    value: cost.diamond
+                )
+                .foregroundStyle(.white)
+            }
+        }
     }
 
     var disabledOverlay: some View {
@@ -131,12 +148,14 @@ struct PriceButton: View {
             RoundedRectangle(cornerRadius: Constant.Layout.cornerRadius)
                 .foregroundStyle(Color.gray200.opacity(Constant.Overlay.disabledOpacity))
 
-            Image(.iconLock)
-                .resizable()
-                .frame(
-                    width: Constant.Icon.lockSize.width,
-                    height: Constant.Icon.lockSize.height
-                )
+            if state == .locked {
+                Image(.iconLock)
+                    .resizable()
+                    .frame(
+                        width: Constant.Icon.lockSize.width,
+                        height: Constant.Icon.lockSize.height
+                    )
+            }
         }
     }
 }
@@ -144,38 +163,24 @@ struct PriceButton: View {
 #Preview {
     VStack(alignment: .center, spacing: 20) {
         PriceButton(
-            price: 1_000_000,
-            isDisabled: false,
+            cost: .init(gold: 1_000_000),
+            state: .available,
             axis: .horizontal
         ) {}
         PriceButton(
-            price: 100_000,
-            isDisabled: false,
+            cost: .init(gold: 100_000, diamond: 50),
+            state: .available,
             axis: .vertical
         ) {}
         PriceButton(
-            price: 1_000_000_000,
-            isDisabled: true,
+            cost: .init(gold: 1_000_000_000),
+            state: .locked,
             axis: .horizontal
         ) {}
         PriceButton(
-            price: 1_000,
-            isDisabled: true,
+            cost: .init(diamond: 1_000),
+            state: .insufficient,
             axis: .vertical
         ) {}
-    }
-}
-
-enum CurrencyType {
-    case gold
-    case diamond
-
-    var iconName: String {
-        switch self {
-        case .gold:
-            return "icon_coin_bag"
-        case .diamond:
-            return "icon_diamond_green"
-        }
     }
 }

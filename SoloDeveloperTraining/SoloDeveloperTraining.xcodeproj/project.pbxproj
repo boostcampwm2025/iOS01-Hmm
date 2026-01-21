@@ -21,6 +21,7 @@
 				"Production/Error/SkillError+UserReadableError.swift",
 				Production/Error/UserReadableError.swift,
 				Production/Presentation/DodgeGameView.swift,
+				Production/Presentation/EnhanceView.swift,
 				Production/Presentation/LanguageGameView.swift,
 				Production/Presentation/MainView.swift,
 				Production/Presentation/StackGameScene.swift,

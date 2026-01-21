@@ -13,8 +13,6 @@ private enum Constant {
 
     enum Padding {
         static let titleTop: CGFloat = 20
-        static let contentTop: CGFloat = 10
-        static let contentHorizontal: CGFloat = 20
         static let contentBottom: CGFloat = 20
     }
 }
@@ -50,8 +48,6 @@ struct Popup<ContentView: View>: View {
                 .padding(.top, Constant.Padding.titleTop)
 
             contentView
-                .padding(.top, Constant.Padding.contentTop)
-                .padding(.horizontal, Constant.Padding.contentHorizontal)
                 .padding(.bottom, Constant.Padding.contentBottom)
         }
         .background(Color.white)
