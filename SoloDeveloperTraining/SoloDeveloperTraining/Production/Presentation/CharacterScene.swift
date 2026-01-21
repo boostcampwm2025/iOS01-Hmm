@@ -83,3 +83,15 @@ final class CharacterScene: SKScene {
         sprite.run(.repeatForever(blink), withKey: AnimationKey.blink)
     }
 }
+
+// MARK: - Environment Key
+private struct CharacterSceneKey: EnvironmentKey {
+    static let defaultValue: CharacterScene? = nil
+}
+
+extension EnvironmentValues {
+    var characterScene: CharacterScene? {
+        get { self[CharacterSceneKey.self] }
+        set { self[CharacterSceneKey.self] = newValue }
+    }
+}

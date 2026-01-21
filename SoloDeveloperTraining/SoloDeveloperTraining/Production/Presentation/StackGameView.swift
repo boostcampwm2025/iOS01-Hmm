@@ -24,6 +24,8 @@ struct StackGameView: View {
 
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
+    /// 캐릭터 씬 (재화 획득 시 애니메이션용)
+    @Environment(\.characterScene) private var characterScene
 
     @State private var effectLabels: [EffectLabelData] = []
 
@@ -114,6 +116,11 @@ private extension StackGameView {
                 ),
                 value: gold
             )
+
+            // 재화를 획득하면 캐릭터 웃게 만들기
+            if gold > 0 {
+                characterScene?.playSmile()
+            }
         }
     }
 

@@ -20,6 +20,8 @@ struct TapGameView: View {
     let tapGame: TapGame
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
+    /// 캐릭터 씬 (재화 획득 시 애니메이션용)
+    @Environment(\.characterScene) private var characterScene
 
     // MARK: - State
     /// 터치한 위치에 표시될 EffectLabel들의 위치와 값
@@ -109,6 +111,11 @@ private extension TapGameView {
     func handleTap(at location: CGPoint) async {
         let gainGold = await tapGame.didPerformAction()
         showEffectLabel(at: location, value: gainGold)
+
+        // 재화를 획득하면 캐릭터 웃게 만들기
+        if gainGold > 0 {
+            characterScene?.playSmile()
+        }
     }
 
     /// 소비 아이템 사용 처리

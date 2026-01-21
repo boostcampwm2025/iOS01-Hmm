@@ -63,6 +63,7 @@ struct MainView: View {
                     switch selectedTab {
                     case .work:
                         WorkSelectedView(user: user)
+                            .environment(\.characterScene, scene)
                     case .enhance:
                         Color.white
                             .overlay(Text("강화 화면").foregroundColor(.gray))

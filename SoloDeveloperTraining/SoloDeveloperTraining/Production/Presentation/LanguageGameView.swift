@@ -44,6 +44,8 @@ struct LanguageGameView: View {
     // MARK: State Properties
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
+    /// 캐릭터 씬 (재화 획득 시 애니메이션용)
+    @Environment(\.characterScene) private var characterScene
 
     /// 획득한 골드를 표시하기 위한 효과 라벨 배열
     @State private var effectValues: [(id: UUID, value: Int)] = []
@@ -149,6 +151,11 @@ private extension LanguageGameView {
         Task {
             let gainedGold = await game.didPerformAction(type)
             showEffectLabel(gainedGold: gainedGold)
+
+            // 재화를 획득하면 캐릭터 웃게 만들기
+            if gainedGold > 0 {
+                characterScene?.playSmile()
+            }
         }
     }
 

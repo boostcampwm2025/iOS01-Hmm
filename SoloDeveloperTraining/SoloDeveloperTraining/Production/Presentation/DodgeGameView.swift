@@ -40,6 +40,8 @@ struct DodgeGameView: View {
     @State private var goldEffects: [EffectLabelData] = []
 
     @Binding var isGameStarted: Bool
+    /// 캐릭터 씬 (재화 획득 시 애니메이션용)
+    @Environment(\.characterScene) private var characterScene
 
     init(user: User, isGameStarted: Binding<Bool>) {
         self._isGameStarted = isGameStarted
@@ -186,6 +188,11 @@ private extension DodgeGameView {
         )
 
         goldEffects.append(effect)
+
+        // 재화를 획득하면 캐릭터 웃게 만들기
+        if goldDelta > 0 {
+            characterScene?.playSmile()
+        }
     }
 
     /// 효과 라벨 제거 (애니메이션 완료 시 콜백으로 호출)
