@@ -28,7 +28,7 @@ struct EnhanceView: View {
     var body: some View {
         ScrollView {
             LazyVStack(spacing: Constant.itemCardSpacing) {
-                ForEach(skillSystem.skillList(), id: \.skill.key) { skillState in
+                ForEach(skillSystem.skillList(), id: \.skill) { skillState in
                     ItemRow(
                         title: skillState.skill.title,
                         description: "획득 골드 +\(Int(skillState.skill.gainGold).formatted())",
