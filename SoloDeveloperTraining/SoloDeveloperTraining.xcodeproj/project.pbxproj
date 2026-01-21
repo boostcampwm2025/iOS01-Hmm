@@ -23,6 +23,7 @@
 				Production/Presentation/DodgeGameView.swift,
 				Production/Presentation/LanguageGameView.swift,
 				Production/Presentation/MainView.swift,
+				Production/Presentation/MissionView.swift,
 				Production/Presentation/StackGameScene.swift,
 				Production/Presentation/StackGameView.swift,
 				Production/Presentation/TapGameView.swift,
