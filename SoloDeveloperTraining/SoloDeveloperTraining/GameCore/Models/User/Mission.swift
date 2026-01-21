@@ -23,13 +23,13 @@ enum MissionLevel {
     /// 은
     case silver
     /// 동
-    case copper
+    case bronze
     /// 특수
     case special
 
     var imageName: String {
         switch self {
-        case .copper: return "mission_trophy_copper"
+        case .bronze: return "mission_trophy_bronze"
         case .silver: return "mission_trophy_silver"
         case .gold: return "mission_trophy_gold"
         case .special: return "mission_trophy_special"

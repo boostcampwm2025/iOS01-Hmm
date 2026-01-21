@@ -160,7 +160,7 @@ private struct MissionCardContentView: View {
         MissionCard(
             title: "명탐정의 돋보기",
             reward: .init(gold: 15),
-            imageName: "mission_trophy_copper",
+            imageName: "mission_trophy_bronze",
             condition: "탭 10,000회 달성",
             buttonState: .inProgress(currentValue: 7356, totalValue: 10000)
         )

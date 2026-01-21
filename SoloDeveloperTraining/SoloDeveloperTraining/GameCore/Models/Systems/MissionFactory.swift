@@ -115,7 +115,7 @@ struct MissionFactory {
                 description: MissionConstants.CodeTap.description1,
                 targetValue: MissionConstants.CodeTap.target1,
                 reward: MissionConstants.CodeTap.reward1,
-                type: .tap(.copper)
+                type: .tap(.bronze)
             ),
             MissionConfig(
                 id: MissionConstants.CodeTap.id2,
@@ -141,7 +141,7 @@ struct MissionFactory {
                 description: MissionConstants.LanguageMatch.description1,
                 targetValue: MissionConstants.LanguageMatch.target1,
                 reward: MissionConstants.LanguageMatch.reward1,
-                type: .languageMatch(.copper)
+                type: .languageMatch(.bronze)
             ),
             MissionConfig(
                 id: MissionConstants.LanguageMatch.id2,
@@ -167,7 +167,7 @@ struct MissionFactory {
                 description: MissionConstants.BugDodge.description1,
                 targetValue: MissionConstants.BugDodge.target1,
                 reward: MissionConstants.BugDodge.reward1,
-                type: .bugDodge(.copper)
+                type: .bugDodge(.bronze)
             ),
             MissionConfig(
                 id: MissionConstants.BugDodge.id2,
@@ -193,7 +193,7 @@ struct MissionFactory {
                 description: MissionConstants.StackItem.description1,
                 targetValue: MissionConstants.StackItem.target1,
                 reward: MissionConstants.StackItem.reward1,
-                type: .stackItem(.copper)
+                type: .stackItem(.bronze)
             ),
             MissionConfig(
                 id: MissionConstants.StackItem.id2,
@@ -219,7 +219,7 @@ struct MissionFactory {
                 description: MissionConstants.PlayTime.description1,
                 targetValue: MissionConstants.PlayTime.targetHours1 * 3600,
                 reward: MissionConstants.PlayTime.reward1,
-                type: .playTime(.copper)
+                type: .playTime(.bronze)
             ),
             MissionConfig(
                 id: MissionConstants.PlayTime.id2,
@@ -245,7 +245,7 @@ struct MissionFactory {
                 description: MissionConstants.Coffee.description1,
                 targetValue: MissionConstants.Coffee.target1,
                 reward: MissionConstants.Coffee.reward1,
-                type: .coffee(.copper)
+                type: .coffee(.bronze)
             ),
             MissionConfig(
                 id: MissionConstants.Coffee.id2,
@@ -271,7 +271,7 @@ struct MissionFactory {
                 description: MissionConstants.EnergyDrink.description1,
                 targetValue: MissionConstants.EnergyDrink.target1,
                 reward: MissionConstants.EnergyDrink.reward1,
-                type: .energyDrink(.copper)
+                type: .energyDrink(.bronze)
             ),
             MissionConfig(
                 id: MissionConstants.EnergyDrink.id2,
@@ -297,7 +297,7 @@ struct MissionFactory {
                 description: MissionConstants.LanguageConsecutive.description1,
                 targetValue: MissionConstants.LanguageConsecutive.target1,
                 reward: MissionConstants.LanguageConsecutive.reward1,
-                type: .languageConsecutive(.copper)
+                type: .languageConsecutive(.bronze)
             ),
             MissionConfig(
                 id: MissionConstants.LanguageConsecutive.id2,
@@ -323,7 +323,7 @@ struct MissionFactory {
                 description: MissionConstants.BugDodgeConsecutive.description1,
                 targetValue: MissionConstants.BugDodgeConsecutive.target1,
                 reward: MissionConstants.BugDodgeConsecutive.reward1,
-                type: .bugDodgeConsecutive(.copper)
+                type: .bugDodgeConsecutive(.bronze)
             ),
             MissionConfig(
                 id: MissionConstants.BugDodgeConsecutive.id2,
@@ -349,7 +349,7 @@ struct MissionFactory {
                 description: MissionConstants.StackConsecutive.description1,
                 targetValue: MissionConstants.StackConsecutive.target1,
                 reward: MissionConstants.StackConsecutive.reward1,
-                type: .stackConsecutive(.copper)
+                type: .stackConsecutive(.bronze)
             ),
             MissionConfig(
                 id: MissionConstants.StackConsecutive.id2,
