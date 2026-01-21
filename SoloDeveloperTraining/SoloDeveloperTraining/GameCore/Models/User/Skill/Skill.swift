@@ -13,7 +13,7 @@ struct SkillKey: Hashable {
     let tier: SkillTier
 }
 
-final class Skill: Hashable, Identifiable {
+final class Skill: Hashable {
     /// 고유 스킬 정보 (게임 종류, 스킬 티어)
     let key: SkillKey
 
