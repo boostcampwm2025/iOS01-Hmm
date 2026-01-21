@@ -79,7 +79,7 @@ private struct HousingCardContent: View {
                 // 이미지 영역
                 Image(housing.imageName)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .aspectRatio(contentMode: .fill)
                     .frame(width: Constant.cardWidth)
                     .frame(maxHeight: .infinity)
                     .clipped()

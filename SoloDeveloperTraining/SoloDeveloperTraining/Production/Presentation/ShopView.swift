@@ -11,6 +11,15 @@ private enum Constant {
     static let horizontalPadding: CGFloat = 16
     static let itemCardSpacing: CGFloat = 12
 
+    enum Popup {
+        static let contentSpacing: CGFloat = 11
+        static let topPadding: CGFloat = 11
+    }
+
+    enum Housing {
+        static let topPadding: CGFloat = 15
+        static let bottomPadding: CGFloat = 23
+    }
 }
 
 struct ShopView: View {
@@ -27,79 +36,81 @@ struct ShopView: View {
         self._popupContent = popupContent
     }
 
-    private var categoryTitles: [String] {
-        ["아이템", "부동산"]
-    }
-
-    private var displayItems: [DisplayItem] {
-        if selectedCategoryIndex == 0 {
-            // 아이템 탭: 소비품 + 장비
-            return shopSystem.itemList(itemTypes: [.consumable, .equipment])
-        } else {
-            // 부동산 탭
-            return shopSystem.itemList(itemTypes: [.housing])
-        }
-    }
-
     var body: some View {
         VStack {
             // 카테고리 세그먼트 컨트롤
             DefaultSegmentControl(
                 selection: $selectedCategoryIndex,
-                segments: categoryTitles
+                segments: ["아이템", "부동산"]
             )
             .padding(.horizontal, Constant.horizontalPadding)
 
-            // 아이템/부동산 목록
             if selectedCategoryIndex == 0 {
-                // 아이템 탭: ItemRow 사용
-                ScrollView {
-                    LazyVStack(spacing: Constant.itemCardSpacing) {
-                        ForEach(displayItems) { item in
-                            ItemRow(
-                                title: item.displayTitle,
-                                description: item.description,
-                                imageName: item.imageName,
-                                cost: item.cost,
-                                state: itemState(for: item)
-                            ) {
-                                purchase(item: item)
-                            }
-                        }
-                    }
-                    .padding(.bottom)
-                }
-                .scrollIndicators(.hidden)
+                itemView
             } else {
-                ScrollView(.horizontal) {
-                    LazyHStack(spacing: Constant.itemCardSpacing) {
-                        ForEach(displayItems) { item in
-                            if let housing = item.item as? Housing {
-                                HousingCard(
-                                    housing: housing,
-                                    isEquipped: item.isEquipped,
-                                    isPurchasable: item.isPurchasable,
-                                    isSelected: selectedHousingTier == housing.tier,
-                                    onTap: {
-                                        selectedHousingTier = housing.tier
-                                    },
-                                    onButtonTap: {
-                                        selectedHousingTier = housing.tier
-                                        purchase(item: item)
-                                    }
-                                )
-                            }
-                        }
-                    }
-                    .padding()
-                }
-                .scrollIndicators(.hidden)
+                housingView
             }
         }
     }
 }
 
 private extension ShopView {
+    var displayItems: [DisplayItem] {
+        if selectedCategoryIndex == 0 {
+            return shopSystem.itemList(itemTypes: [.consumable, .equipment])
+        } else {
+            return shopSystem.itemList(itemTypes: [.housing])
+        }
+    }
+
+    var itemView: some View {
+        ScrollView {
+            LazyVStack(spacing: Constant.itemCardSpacing) {
+                ForEach(displayItems) { item in
+                    ItemRow(
+                        title: item.displayTitle,
+                        description: item.description,
+                        imageName: item.imageName,
+                        cost: item.cost,
+                        state: itemState(for: item)
+                    ) {
+                        purchase(item: item)
+                    }
+                }
+            }
+            .padding(.bottom)
+        }
+        .scrollIndicators(.hidden)
+    }
+
+    var housingView: some View {
+        ScrollView(.horizontal) {
+            LazyHStack(spacing: Constant.itemCardSpacing) {
+                ForEach(displayItems) { item in
+                    if let housing = item.item as? Housing {
+                        HousingCard(
+                            housing: housing,
+                            isEquipped: item.isEquipped,
+                            isPurchasable: item.isPurchasable,
+                            isSelected: selectedHousingTier == housing.tier,
+                            onTap: {
+                                selectedHousingTier = housing.tier
+                            },
+                            onButtonTap: {
+                                selectedHousingTier = housing.tier
+                                purchase(item: item)
+                            }
+                        )
+                    }
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top, Constant.Housing.topPadding)
+            .padding(.bottom, Constant.Housing.bottomPadding)
+        }
+        .scrollIndicators(.hidden)
+    }
+
     /// 아이템 상태 결정
     func itemState(for item: DisplayItem) -> ItemState {
         if item.isEquipped && item.category == .housing {
@@ -186,15 +197,15 @@ private extension ShopView {
         popupContent = (
             title,
             AnyView(
-                VStack(spacing: 16) {
+                VStack(spacing: Constant.Popup.contentSpacing) {
                     Text(fullMessage)
                         .textStyle(.body)
                         .foregroundColor(.black)
                         .multilineTextAlignment(.center)
 
-                    HStack(spacing: 12) {
+                    HStack {
                         // 취소 버튼
-                        MediumButton(title: "취소", isFilled: false) {
+                        MediumButton(title: "취소", isFilled: true, isCancelButton: true) {
                             popupContent = nil
                         }
 
@@ -205,6 +216,7 @@ private extension ShopView {
                         }
                     }
                 }
+                    .padding(.top, Constant.Popup.topPadding)
             )
         )
     }
@@ -219,11 +231,11 @@ private extension ShopView {
                 showEnhanceResult(isSuccess: isSuccess)
             }
         } catch {
-            // 구매 실패 시 에러 처리 (필요시 추가)
+            showPurchaseFailure()
         }
     }
 
-    /// 강화 결과 팝업 표시
+    /// 강화 결과 팝업
     func showEnhanceResult(isSuccess: Bool) {
         let title = isSuccess ? "강화 성공" : "강화 실패"
         let message = isSuccess ? "강화에 성공했습니다!" : "강화에 실패했습니다.\n비용은 소모되었습니다."
@@ -231,7 +243,7 @@ private extension ShopView {
         popupContent = (
             title,
             AnyView(
-                VStack {
+                VStack(spacing: Constant.Popup.contentSpacing) {
                     Text(message)
                         .textStyle(.body)
                         .foregroundColor(.black)
@@ -241,6 +253,30 @@ private extension ShopView {
                         popupContent = nil
                     }
                 }
+                    .padding(.top, Constant.Popup.topPadding)
+            )
+        )
+    }
+    
+    /// 구매 실패 팝업
+    func showPurchaseFailure() {
+        let title = "구매 실패"
+        let message = "구매에 실패했습니다."
+
+        popupContent = (
+            title,
+            AnyView(
+                VStack(spacing: Constant.Popup.contentSpacing) {
+                    Text(message)
+                        .textStyle(.body)
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.center)
+
+                    MediumButton(title: "확인", isFilled: true) {
+                        popupContent = nil
+                    }
+                }
+                    .padding(.top, Constant.Popup.topPadding)
             )
         )
     }
