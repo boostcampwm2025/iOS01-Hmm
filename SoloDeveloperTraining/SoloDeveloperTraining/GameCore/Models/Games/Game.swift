@@ -21,6 +21,8 @@ protocol Game {
     var feverSystem: FeverSystem { get set }
     /// 버프 시스템
     var buffSystem: BuffSystem { get set }
+    /// 캐릭터 애니메이션 시스템
+    var animationSystem: CharacterAnimationSystem? { get set }
 
     /// 게임 시작
     func startGame()

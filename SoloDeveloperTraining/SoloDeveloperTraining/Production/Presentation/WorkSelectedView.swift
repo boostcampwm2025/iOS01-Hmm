@@ -20,6 +20,7 @@ private enum Constant {
 struct WorkSelectedView: View {
 
     let user: User
+    let animationSystem: CharacterAnimationSystem?
     @State var selectedIndex: Int?
     @State var isGameStarted: Bool = false
 
@@ -110,13 +111,13 @@ private extension WorkSelectedView {
     func gameView(for index: Int) -> some View {
         switch index {
         case 0:
-            TapGameView(user: user, isGameStarted: $isGameStarted)
+            TapGameView(user: user, isGameStarted: $isGameStarted, animationSystem: animationSystem)
         case 1:
-            LanguageGameView(user: user, isGameStarted: $isGameStarted)
+            LanguageGameView(user: user, isGameStarted: $isGameStarted, animationSystem: animationSystem)
         case 2:
-            DodgeGameView(user: user, isGameStarted: $isGameStarted)
+            DodgeGameView(user: user, isGameStarted: $isGameStarted, animationSystem: animationSystem)
         case 3:
-            StackGameView(user: user, isGameStarted: $isGameStarted)
+            StackGameView(user: user, isGameStarted: $isGameStarted, animationSystem: animationSystem)
         default:
             EmptyView()
         }
@@ -131,5 +132,5 @@ private extension WorkSelectedView {
         record: .init()
     )
 
-    WorkSelectedView(user: user)
+    WorkSelectedView(user: user, animationSystem: nil)
 }

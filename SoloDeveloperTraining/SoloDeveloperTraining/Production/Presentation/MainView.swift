@@ -20,6 +20,7 @@ struct MainView: View {
     private let user: User
     let careerProgress: Double = 0.3
     private let scene: CharacterScene
+    private let animationSystem: CharacterAnimationSystem
 
     init(user: User) {
         self.autoGainSystem = AutoGainSystem(user: user)
@@ -27,6 +28,15 @@ struct MainView: View {
         self.scene = CharacterScene(size: CGSize(width: 100, height: 100))
         self.scene.scaleMode = .aspectFit
         self.scene.playIdle()
+
+        // 애니메이션 시스템 생성 및 클로저 연결
+        self.animationSystem = CharacterAnimationSystem()
+        self.animationSystem.onSmile = { [weak scene] in
+            scene?.playSmile()
+        }
+        self.animationSystem.onIdle = { [weak scene] in
+            scene?.playIdle()
+        }
     }
 
     var body: some View {
@@ -62,8 +72,7 @@ struct MainView: View {
                 Group {
                     switch selectedTab {
                     case .work:
-                        WorkSelectedView(user: user)
-                            .environment(\.characterScene, scene)
+                        WorkSelectedView(user: user, animationSystem: animationSystem)
                     case .enhance:
                         Color.white
                             .overlay(Text("강화 화면").foregroundColor(.gray))

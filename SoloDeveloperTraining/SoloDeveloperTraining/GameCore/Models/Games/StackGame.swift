@@ -32,6 +32,7 @@ final class StackGame: Game {
         decreasePercentPerTick: Constant.Fever.decreasePercentPerTick
     )
     var buffSystem: BuffSystem = .init()
+    var animationSystem: CharacterAnimationSystem?
     var screenSize: CGSize = .init(width: 0, height: 0)
 
     private(set) var score: Int = 0
@@ -40,9 +41,10 @@ final class StackGame: Game {
     private(set) var currentBlock: StackBlock?
     private(set) var previousBlock: StackBlock?
 
-    init(user: User, calculator: Calculator) {
+    init(user: User, calculator: Calculator, animationSystem: CharacterAnimationSystem? = nil) {
         self.user = user
         self.calculator = calculator
+        self.animationSystem = animationSystem
     }
 
     func startGame() {
@@ -142,6 +144,10 @@ final class StackGame: Game {
         let goldEarned = calculateGold()
         user.wallet.addGold(goldEarned)
         feverSystem.gainFever(Constant.Fever.success)
+
+        // 재화 획득 시 캐릭터 웃게 만들기
+        animationSystem?.playSmile()
+
         return goldEarned
         #if DEV_BUILD
             print("💰 골드 획득: \(goldEarned), 총액: \(user.wallet.gold)")
