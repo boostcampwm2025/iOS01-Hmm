@@ -8,6 +8,12 @@
 import SwiftUI
 import SpriteKit
 
+private enum Constant {
+    static let characterSceneSize = CGSize(width: 100, height: 100)
+    static let spriteViewSize = CGSize(width: 200, height: 200)
+    static let topAreaHeightRatio: CGFloat = 0.5
+}
+
 enum AppTheme {
     static let backgroundColor: Color = AppColors.beige200
 }
@@ -25,7 +31,7 @@ struct MainView: View {
     init(user: User) {
         self.autoGainSystem = AutoGainSystem(user: user)
         self.user = user
-        self.scene = CharacterScene(size: CGSize(width: 100, height: 100))
+        self.scene = CharacterScene(size: Constant.characterSceneSize)
         self.scene.scaleMode = .aspectFit
         self.scene.playIdle()
 
@@ -54,12 +60,12 @@ struct MainView: View {
                         )
                         Spacer()
                         SpriteView(scene: scene, options: [.allowsTransparency])
-                            .frame(width: 200, height: 200)
+                            .frame(width: Constant.spriteViewSize.width, height: Constant.spriteViewSize.height)
                             .background(Color.clear)
                         Spacer()
                     }
                 }
-                .frame(height: geometry.size.height * 0.5)
+                .frame(height: geometry.size.height * Constant.topAreaHeightRatio)
                 .background(
                     Image(user.inventory.housing.imageName)
                         .resizable()
