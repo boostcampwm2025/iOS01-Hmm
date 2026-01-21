@@ -17,15 +17,15 @@ private enum Constant {
     }
 
     enum BackgroundColor {
-        static let claimable = Color.white
-        static let claimed = AppColors.accentGreen
+        static let claimable = AppColors.accentGreen
+        static let claimed = AppColors.gray100
         static let progressTotal = Color.white
-        static let progressCurrent = AppColors.orange100
+        static let progressCurrent = AppColors.orange200
     }
 
     enum ForegroundColor {
-        static let claimable = Color.black
-        static let claimed = Color.white
+        static let claimable = Color.white
+        static let claimed = Color.black
         static let progress = Color.black
     }
 }
@@ -80,7 +80,7 @@ extension MissionCardButton {
             case .claimed:
                 return Constant.Title.claimed
             case .inProgress(let currentValue, let totalValue):
-                return "\(currentValue.formatted())/\(totalValue.formatted())"
+                return "\((Double(currentValue) / Double(totalValue) * 100).formatted())%"
             }
         }
 
@@ -121,8 +121,12 @@ extension MissionCardButton {
     ZStack {
         Rectangle()
             .fill(AppColors.gray200)
-
         VStack {
+            MissionCardButton(
+                buttonState: .inProgress(currentValue: 19, totalValue: 2000)
+            ) {
+                print("획득하기 버튼 클릭")
+            }
             MissionCardButton(buttonState: .claimable) {
                 print("획득하기 버튼 클릭")
             }
