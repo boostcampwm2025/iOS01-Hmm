@@ -71,6 +71,9 @@ struct MissionCard: View {
         .padding(.all, Constant.Padding.content)
         .frame(height: Constant.Size.cardHeight)
         .background { Rectangle().fill(Constant.cardColor) }
+        .onTapGesture {
+            onButtonTap?()
+        }
     }
 }
 
@@ -138,7 +141,7 @@ private struct MissionCardContentView: View {
             // MissionCardButton (가운데 정렬)
                 MissionCardButton(buttonState: buttonState) {
                     onButtonTap?()
-            }
+                }
         }
     }
 }
