@@ -50,13 +50,22 @@ struct MissionView: View {
                             buttonState: mission.buttonState,
                             onButtonTap: {
                                 if mission.buttonState == .claimable {
-                                    mission.claim()
+                                    missionSystem
+                                        .claimMissionReward(
+                                            mission: mission,
+                                            wallet: user.wallet
+                                        )
                                 }
                             }
                         )
                     }
                 }
-            }.scrollIndicators(.never)
-        }.padding(.horizontal)
+            }
+            .scrollIndicators(.never)
+        }
+        .padding(.horizontal)
+        .onAppear {
+            missionSystem.updateCompletedMissions(record: user.record)
+        }
     }
 }
