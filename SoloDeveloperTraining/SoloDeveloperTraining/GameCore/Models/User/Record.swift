@@ -10,6 +10,12 @@ import Observation
 
 @Observable
 final class Record {
+    /// 미션 시스템을 소유해서 기록을 반영합니다.
+    let missionSystem: MissionSystem
+
+    init(missionSystem: MissionSystem = MissionSystem(missions: MissionFactory.createAllMissions())) {
+        self.missionSystem = missionSystem
+    }
 
     // MARK: - Financial Records
     /// 누적 획득 재산
@@ -192,5 +198,7 @@ extension Record {
         case .juniorDeveloperAchieve:
             hasAchievedJuniorDeveloper = true
         }
+        /// 미션 상태 업데이트
+        missionSystem.updateCompletedMissions(record: self)
     }
 }

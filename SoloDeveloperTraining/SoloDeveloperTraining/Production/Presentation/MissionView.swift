@@ -15,13 +15,11 @@ private enum Constant {
 
 struct MissionView: View {
     private let user: User
-
-    @State private var missionSystem: MissionSystem
+    private let missionSystem: MissionSystem
 
     init(user: User) {
-        let missions = MissionFactory.createAllMissions()
-        _missionSystem = State(initialValue: MissionSystem(missions: missions))
         self.user = user
+        self.missionSystem = user.record.missionSystem
     }
 
     var allCount: Int {
@@ -58,6 +56,7 @@ struct MissionView: View {
                                             mission: mission,
                                             wallet: user.wallet
                                         )
+                                    // 이미 획득한 미션이나, 진행 중인 미션의 경우 안내 토스트?
                                 }
                             }
                         )
@@ -67,8 +66,6 @@ struct MissionView: View {
             .scrollIndicators(.never)
         }
         .padding(.horizontal)
-        .onAppear {
-            missionSystem.updateCompletedMissions(record: user.record)
-        }
+
     }
 }
