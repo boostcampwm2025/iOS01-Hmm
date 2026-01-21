@@ -212,7 +212,7 @@ private extension DodgeGameView {
             .init(type: .coffee, count: 5),
             .init(type: .energyDrink, count: 5)
         ],
-        housing: .street
+        housing: .init(tier: .street)
     )
     let record = Record()
     let user = User(
@@ -221,7 +221,7 @@ private extension DodgeGameView {
         inventory: inventory,
         record: record,
         skills: [
-            .init(game: .dodge, tier: .beginner, level: 1000)
+            .init(key: SkillKey(game: .dodge, tier: .beginner), level: 1000)
         ]
     )
 

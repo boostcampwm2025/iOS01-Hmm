@@ -109,7 +109,7 @@ private struct HousingCardContent: View {
     @Previewable @State var isEquipped = false
 
     HousingCard(
-        housing: .villa,
+        housing: .init(tier: .villa),
         isEquipped: isEquipped,
         isSelected: isSelected,
         onTap: {

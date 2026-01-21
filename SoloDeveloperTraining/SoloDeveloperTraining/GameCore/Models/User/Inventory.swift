@@ -29,7 +29,7 @@ final class Inventory {
             .init(type: .coffee, count: 5),
             .init(type: .energyDrink, count: 5)
         ],
-        housing: Housing = .street
+        housing: Housing = .init(tier: .street)
     ) {
         self.equipmentItems = equipmentItems
         self.consumableItems = consumableItems
