@@ -20,9 +20,29 @@ final class CharacterScene: SKScene {
 
     // MARK: - Properties
     private var characterSprite: SKSpriteNode?
-    private let idleTexture = SKTexture(imageNamed: "character_default")
-    private let blinkTexture = SKTexture(imageNamed: "character_close")
-    private let smileTexture = SKTexture(imageNamed: "character_smile")
+    private var user: User
+
+    init(size: CGSize, user: User) {
+        self.user = user
+        super.init(size: size)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - Computed Properties (텍스처)
+    private var idleTexture: SKTexture {
+        SKTexture(imageNamed: "\(user.career.characterImagePrefix)_default")
+    }
+
+    private var blinkTexture: SKTexture {
+        SKTexture(imageNamed: "\(user.career.characterImagePrefix)_close")
+    }
+
+    private var smileTexture: SKTexture {
+        SKTexture(imageNamed: "\(user.career.characterImagePrefix)_smile")
+    }
 
     private enum AnimationKey {
         static let blink = "blink"

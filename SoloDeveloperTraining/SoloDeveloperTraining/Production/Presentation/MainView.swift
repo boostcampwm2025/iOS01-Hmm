@@ -31,7 +31,8 @@ struct MainView: View {
     init(user: User) {
         self.autoGainSystem = AutoGainSystem(user: user)
         self.user = user
-        self.scene = CharacterScene(size: Constant.characterSceneSize)
+
+        self.scene = CharacterScene(size: Constant.characterSceneSize, user: user)
         self.scene.scaleMode = .aspectFit
         self.scene.playIdle()
 
