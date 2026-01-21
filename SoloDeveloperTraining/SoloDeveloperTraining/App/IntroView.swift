@@ -9,6 +9,9 @@ import SwiftUI
 
 struct IntroView: View {
     @State private var isBlinking = false
+    @Binding var hasSeenIntro: Bool
+    @Binding var showNicknameSetup: Bool
+    let user: User?
 
     var body: some View {
         ZStack {
@@ -31,6 +34,15 @@ struct IntroView: View {
                     .padding(.bottom, 100)
             }
         }
+        .onTapGesture {
+            if user == nil {
+                showNicknameSetup = true
+            } else {
+                withAnimation(.easeOut(duration: 0.5)) {
+                    hasSeenIntro = true
+                }
+            }
+        }
         .ignoresSafeArea()
         .onAppear {
             isBlinking = true
@@ -39,5 +51,9 @@ struct IntroView: View {
 }
 
 #Preview {
-    IntroView()
+    IntroView(
+        hasSeenIntro: .constant(false),
+        showNicknameSetup: .constant(false),
+        user: nil
+    )
 }

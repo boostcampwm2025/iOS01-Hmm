@@ -9,15 +9,77 @@ import SwiftUI
 
 @main
 struct SoloDeveloperTrainingApp: App {
-    let user = User(
-        nickname: "소피아",
+    @State private var hasSeenIntro = false
+    @State private var user: User?
+    @State private var showNicknameSetup = false
+
+    var body: some Scene {
+        WindowGroup {
+#if DEV_BUILD
+            // Dev 타깃용 루트뷰
+            ContentView()
+#else
+            // 운영 타깃용 뷰
+            ZStack {
+                // 배경으로 IntroView 유지 (런치스크린과 동일한 이미지)
+                IntroView(
+                    hasSeenIntro: $hasSeenIntro,
+                    showNicknameSetup: $showNicknameSetup,
+                    user: user
+                )
+                .opacity(hasSeenIntro ? 0 : 1)
+
+                // MainView가 위에서 페이드 인
+                if hasSeenIntro {
+                    if let user {
+                        MainView(user: user)
+                            .transition(.opacity)
+                    }
+                }
+            }
+            .animation(.easeOut(duration: 1), value: hasSeenIntro)
+            .overlay {
+                if showNicknameSetup {
+                    ZStack {
+                        Color.black.opacity(0.5)
+                            .ignoresSafeArea()
+
+                        NicknameSetupView(
+                            onStart: { nickname in
+                                user = createUser(nickname: nickname.isEmpty ? "개발자" : nickname)
+                                showNicknameSetup = false
+                                withAnimation(.easeOut(duration: 1)) {
+                                    hasSeenIntro = true
+                                }
+                            },
+                            onTutorial: { nickname in
+                                // TODO: 튜토리얼 구현
+                                user = createUser(nickname: nickname.isEmpty ? "개발자" : nickname)
+                                showNicknameSetup = false
+                                withAnimation(.easeOut(duration: 1)) {
+                                    hasSeenIntro = true
+                                }
+                            }
+                        )
+                        .padding(.horizontal, 25)
+                    }
+                }
+            }
+#endif
+        }
+    }
+}
+
+func createUser(nickname: String) -> User {
+    User(
+        nickname: nickname,
         wallet: .init(),
         inventory: Inventory(
             equipmentItems: [
                 .init(type: .chair, tier: .broken),
                 .init(type: .keyboard, tier: .broken),
                 .init(type: .monitor, tier: .broken),
-                .init(type: .mouse, tier: .broken)
+                .init(type: .mouse, tier: .broken),
             ],
             housing: .init(tier: .rooftop)
         ),
@@ -41,16 +103,4 @@ struct SoloDeveloperTrainingApp: App {
             .init(key: SkillKey(game: .stack, tier: .advanced))
         ]
     )
-
-    var body: some Scene {
-        WindowGroup {
-#if DEV_BUILD
-            // Dev 타깃용 루트뷰
-            ContentView()
-#else
-            // 운영 타깃용 뷰
-            MainView(user: user)
-#endif
-        }
-    }
 }
