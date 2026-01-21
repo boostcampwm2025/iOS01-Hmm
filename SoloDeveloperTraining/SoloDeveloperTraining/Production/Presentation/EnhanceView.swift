@@ -9,6 +9,7 @@ import SwiftUI
 
 private enum Constant {
     static let horizontalPadding: CGFloat = 16
+    static let popupHorizontalPadding: CGFloat = 25
     static let itemCardSpacing: CGFloat = 12
     static let popupContentSpacing: CGFloat = 20
 }
@@ -17,9 +18,9 @@ struct EnhanceView: View {
     private let user: User
     private let skillSystem: SkillSystem
 
-    @Binding var popupContent: (String, AnyView)?
+    @Binding var popupContent: PopupConfiguration?
 
-    init(user: User, popupContent: Binding<(String, AnyView)?>) {
+    init(user: User, popupContent: Binding<PopupConfiguration?>) {
         self.user = user
         self.skillSystem = SkillSystem(user: user)
         self._popupContent = popupContent
@@ -51,39 +52,33 @@ private extension EnhanceView {
         do {
             try skillSystem.upgrade(skill: skill)
         } catch let error as UserReadableError {
-            popupContent = (
-                "강화",
-                AnyView(
-                    VStack {
-                        Text(error.message)
-                            .textStyle(.body)
-                            .foregroundColor(.black)
-                            .multilineTextAlignment(.center)
+            popupContent = PopupConfiguration(title: "강화", horizontalPadding: Constant.popupHorizontalPadding) {
+                VStack(spacing: Constant.popupContentSpacing) {
+                    Text(error.message)
+                        .textStyle(.body)
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.center)
 
-                        MediumButton(title: "확인", isFilled: true) {
-                            popupContent = nil
-                        }
+                    MediumButton(title: "확인", isFilled: true) {
+                        popupContent = nil
                     }
-                )
-            )
+                }
+            }
         } catch {
             // UserReadableError를 채택하지 않은 예상치 못한 에러
             // 실제로는 발생하지 않지만 Swift 컴파일러 요구사항
-            popupContent = (
-                "강화",
-                AnyView(
-                    VStack {
-                        Text(error.localizedDescription)
-                            .textStyle(.body)
-                            .foregroundColor(.black)
-                            .multilineTextAlignment(.center)
+            popupContent = PopupConfiguration(title: "강화", horizontalPadding: Constant.popupHorizontalPadding) {
+                VStack(spacing: Constant.popupContentSpacing) {
+                    Text(error.localizedDescription)
+                        .textStyle(.body)
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.center)
 
-                        MediumButton(title: "확인", isFilled: true) {
-                            popupContent = nil
-                        }
+                    MediumButton(title: "확인", isFilled: true) {
+                        popupContent = nil
                     }
-                )
-            )
+                }
+            }
         }
     }
 }

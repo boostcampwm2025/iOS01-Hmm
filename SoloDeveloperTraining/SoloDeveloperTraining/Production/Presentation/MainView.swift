@@ -24,8 +24,7 @@ private enum Constant {
 struct MainView: View {
     @Environment(\.scenePhase) var scenePhase
     @State private var selectedTab: TabItem = .work
-    @State private var popupContent: (String, AnyView)?
-    @State private var isCareerPopupPresented: Bool = false
+    @State private var popupContent: PopupConfiguration?
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
@@ -49,7 +48,7 @@ struct MainView: View {
                         diamond: user.wallet.diamond
                     )
                     .onTapGesture {
-                        isCareerPopupPresented = true
+                        showCareerPopup()
                     }
                 }
                 .frame(height: geometry.size.height * 0.5)
@@ -93,33 +92,51 @@ struct MainView: View {
                     ZStack {
                         Constant.Color.overlay
                             .ignoresSafeArea()
+                            .onTapGesture {
+                                self.popupContent = nil
+                            }
 
-                        Popup(title: popupContent.0, contentView: popupContent.1)
-                            .padding(.horizontal, Constant.Padding.horizontalPadding)
+                        Popup(title: popupContent.title, contentView: popupContent.content)
+                            .frame(maxHeight: popupContent.maxHeight)
+                            .padding(.horizontal, popupContent.horizontalPadding)
                     }
                 }
             }
         }
-        .overlay {
-            if isCareerPopupPresented {
-                Color.black.opacity(0.4)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        isCareerPopupPresented = false
-                    }
+    }
 
-                Popup(title: "커리어") {
-                    VStack(spacing: 20) {
-                        Text("여~~기~~")
-                            .textStyle(.body)
+    private func showCareerPopup() {
+        popupContent = PopupConfiguration(
+            title: "커리어",
+            horizontalPadding: 25,
+            maxHeight: 650
+        ) {
+            VStack(alignment: .center, spacing: 0) {
+                CareerProgressBar(
+                    career: user.career,
+                    currentGold: user.wallet.gold
+                )
+                .padding(.bottom, 18)
+                .padding(.top, 18)
 
-                        MediumButton(title: "닫기", isFilled: true) {
-                            isCareerPopupPresented = false
+                ScrollView {
+                    VStack(spacing: 10) {
+                        ForEach(Career.allCases, id: \.self) { career in
+                            CareerRow(
+                                career: career,
+                                userCareer: user.career
+                            )
                         }
                     }
                 }
-                .padding(.horizontal, 25)
+                .scrollIndicators(.hidden)
+                .padding(.bottom, 45)
+
+                MediumButton(title: "닫기", isFilled: true) {
+                    popupContent = nil
+                }
             }
+            .padding(.horizontal, 16)
         }
     }
 }
