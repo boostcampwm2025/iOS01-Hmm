@@ -10,68 +10,85 @@ import Foundation
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
 
-/// 미션 목록을 생성하는 팩토리
-struct MissionFactory {
+// MARK: - Mission Type
+/// 미션 타입별 업데이트 조건과 완료 조건 정의
+enum MissionType {
+    case tap(MissionLevel)
+    case languageMatch(MissionLevel)
+    case bugDodge(MissionLevel)
+    case stackItem(MissionLevel)
+    case playTime(MissionLevel)
+    case coffee(MissionLevel)
+    case energyDrink(MissionLevel)
+    case languageConsecutive(MissionLevel)
+    case bugDodgeConsecutive(MissionLevel)
+    case stackConsecutive(MissionLevel)
+    case tutorial(MissionLevel)
+    case career(MissionLevel)
 
-    // MARK: - Mission Type
-
-    /// 미션 타입별 업데이트 조건과 완료 조건 정의
-    enum MissionType {
-        case tap
-        case languageMatch
-        case bugDodge
-        case stackItem
-        case playTime
-        case coffee
-        case energyDrink
-        case languageConsecutive
-        case bugDodgeConsecutive
-        case stackConsecutive
-        case tutorial
-        case career
-
-        /// Record로부터 현재 값을 가져오는 조건
-        var currentValue: (Record) -> Int {
-            switch self {
-            case .tap:
-                return { $0.totalTapCount }
-            case .languageMatch:
-                return { $0.languageCorrectCount }
-            case .bugDodge:
-                return { $0.goldHitCount }
-            case .stackItem:
-                return { $0.stackingSuccessCount }
-            case .playTime:
-                return { Int($0.totalPlayTime) }
-            case .coffee:
-                return { $0.coffeeUseCount }
-            case .energyDrink:
-                return { $0.energyDrinkUseCount }
-            case .languageConsecutive:
-                return { $0.languageConsecutiveCorrect }
-            case .bugDodgeConsecutive:
-                return { $0.dodgeConsecutiveSuccess }
-            case .stackConsecutive:
-                return { $0.stackConsecutiveSuccess }
-            case .tutorial:
-                return { $0.tutorialCompleted ? 1 : 0 }
-            case .career:
-                return { $0.hasAchievedJuniorDeveloper ? 1 : 0 }
-            }
-        }
-
-        /// 완료 조건 (nil이면 기본 체크: currentValue >= targetValue)
-        var completeCondition: ((Record) -> Bool)? {
-            switch self {
-            case .tutorial:
-                return { $0.tutorialCompleted }
-            case .career:
-                return { $0.hasAchievedJuniorDeveloper }
-            default:
-                return nil
-            }
+    /// Record로부터 현재 값을 가져오는 조건
+    var currentValue: (Record) -> Int {
+        switch self {
+        case .tap:
+            return { $0.totalTapCount }
+        case .languageMatch:
+            return { $0.languageCorrectCount }
+        case .bugDodge:
+            return { $0.goldHitCount }
+        case .stackItem:
+            return { $0.stackingSuccessCount }
+        case .playTime:
+            return { Int($0.totalPlayTime) }
+        case .coffee:
+            return { $0.coffeeUseCount }
+        case .energyDrink:
+            return { $0.energyDrinkUseCount }
+        case .languageConsecutive:
+            return { $0.languageConsecutiveCorrect }
+        case .bugDodgeConsecutive:
+            return { $0.dodgeConsecutiveSuccess }
+        case .stackConsecutive:
+            return { $0.stackConsecutiveSuccess }
+        case .tutorial:
+            return { $0.tutorialCompleted ? 1 : 0 }
+        case .career:
+            return { $0.hasAchievedJuniorDeveloper ? 1 : 0 }
         }
     }
+
+    /// 완료 조건 (nil이면 기본 체크: currentValue >= targetValue)
+    var completeCondition: ((Record) -> Bool)? {
+        switch self {
+        case .tutorial:
+            return { $0.tutorialCompleted }
+        case .career:
+            return { $0.hasAchievedJuniorDeveloper }
+        default:
+            return nil
+        }
+    }
+
+    var level: MissionLevel {
+        switch self {
+        case .tap(let level),
+                .languageMatch(let level),
+                .bugDodge(let level),
+                .stackItem(let level),
+                .playTime(let level),
+                .coffee(let level),
+                .energyDrink(let level),
+                .languageConsecutive(let level),
+                .bugDodgeConsecutive(let level),
+                .stackConsecutive(let level),
+                .tutorial(let level),
+                .career(let level):
+            return level
+        }
+    }
+}
+
+/// 미션 목록을 생성하는 팩토리
+struct MissionFactory {
 
     // MARK: - Mission Configuration
 
@@ -98,7 +115,7 @@ struct MissionFactory {
                 description: MissionConstants.CodeTap.description1,
                 targetValue: MissionConstants.CodeTap.target1,
                 reward: MissionConstants.CodeTap.reward1,
-                type: .tap
+                type: .tap(.copper)
             ),
             MissionConfig(
                 id: MissionConstants.CodeTap.id2,
@@ -106,7 +123,7 @@ struct MissionFactory {
                 description: MissionConstants.CodeTap.description2,
                 targetValue: MissionConstants.CodeTap.target2,
                 reward: MissionConstants.CodeTap.reward2,
-                type: .tap
+                type: .tap(.silver)
             ),
             MissionConfig(
                 id: MissionConstants.CodeTap.id3,
@@ -114,7 +131,7 @@ struct MissionFactory {
                 description: MissionConstants.CodeTap.description3,
                 targetValue: MissionConstants.CodeTap.target3,
                 reward: MissionConstants.CodeTap.reward3,
-                type: .tap
+                type: .tap(.gold)
             ),
 
             // MARK: - 언어맞추기 (맞춘 횟수)
@@ -124,7 +141,7 @@ struct MissionFactory {
                 description: MissionConstants.LanguageMatch.description1,
                 targetValue: MissionConstants.LanguageMatch.target1,
                 reward: MissionConstants.LanguageMatch.reward1,
-                type: .languageMatch
+                type: .languageMatch(.copper)
             ),
             MissionConfig(
                 id: MissionConstants.LanguageMatch.id2,
@@ -132,7 +149,7 @@ struct MissionFactory {
                 description: MissionConstants.LanguageMatch.description2,
                 targetValue: MissionConstants.LanguageMatch.target2,
                 reward: MissionConstants.LanguageMatch.reward2,
-                type: .languageMatch
+                type: .languageMatch(.silver)
             ),
             MissionConfig(
                 id: MissionConstants.LanguageMatch.id3,
@@ -140,7 +157,7 @@ struct MissionFactory {
                 description: MissionConstants.LanguageMatch.description3,
                 targetValue: MissionConstants.LanguageMatch.target3,
                 reward: MissionConstants.LanguageMatch.reward3,
-                type: .languageMatch
+                type: .languageMatch(.gold)
             ),
 
             // MARK: - 버그피하기 (골드 획득)
@@ -150,7 +167,7 @@ struct MissionFactory {
                 description: MissionConstants.BugDodge.description1,
                 targetValue: MissionConstants.BugDodge.target1,
                 reward: MissionConstants.BugDodge.reward1,
-                type: .bugDodge
+                type: .bugDodge(.copper)
             ),
             MissionConfig(
                 id: MissionConstants.BugDodge.id2,
@@ -158,7 +175,7 @@ struct MissionFactory {
                 description: MissionConstants.BugDodge.description2,
                 targetValue: MissionConstants.BugDodge.target2,
                 reward: MissionConstants.BugDodge.reward2,
-                type: .bugDodge
+                type: .bugDodge(.silver)
             ),
             MissionConfig(
                 id: MissionConstants.BugDodge.id3,
@@ -166,7 +183,7 @@ struct MissionFactory {
                 description: MissionConstants.BugDodge.description3,
                 targetValue: MissionConstants.BugDodge.target3,
                 reward: MissionConstants.BugDodge.reward3,
-                type: .bugDodge
+                type: .bugDodge(.gold)
             ),
 
             // MARK: - 물건쌓기
@@ -176,7 +193,7 @@ struct MissionFactory {
                 description: MissionConstants.StackItem.description1,
                 targetValue: MissionConstants.StackItem.target1,
                 reward: MissionConstants.StackItem.reward1,
-                type: .stackItem
+                type: .stackItem(.copper)
             ),
             MissionConfig(
                 id: MissionConstants.StackItem.id2,
@@ -184,7 +201,7 @@ struct MissionFactory {
                 description: MissionConstants.StackItem.description2,
                 targetValue: MissionConstants.StackItem.target2,
                 reward: MissionConstants.StackItem.reward2,
-                type: .stackItem
+                type: .stackItem(.silver)
             ),
             MissionConfig(
                 id: MissionConstants.StackItem.id3,
@@ -192,7 +209,7 @@ struct MissionFactory {
                 description: MissionConstants.StackItem.description3,
                 targetValue: MissionConstants.StackItem.target3,
                 reward: MissionConstants.StackItem.reward3,
-                type: .stackItem
+                type: .stackItem(.gold)
             ),
 
             // MARK: - 플레이타임
@@ -202,7 +219,7 @@ struct MissionFactory {
                 description: MissionConstants.PlayTime.description1,
                 targetValue: MissionConstants.PlayTime.targetHours1 * 3600,
                 reward: MissionConstants.PlayTime.reward1,
-                type: .playTime
+                type: .playTime(.copper)
             ),
             MissionConfig(
                 id: MissionConstants.PlayTime.id2,
@@ -210,7 +227,7 @@ struct MissionFactory {
                 description: MissionConstants.PlayTime.description2,
                 targetValue: MissionConstants.PlayTime.targetHours2 * 3600,
                 reward: MissionConstants.PlayTime.reward2,
-                type: .playTime
+                type: .playTime(.silver)
             ),
             MissionConfig(
                 id: MissionConstants.PlayTime.id3,
@@ -218,7 +235,7 @@ struct MissionFactory {
                 description: MissionConstants.PlayTime.description3,
                 targetValue: MissionConstants.PlayTime.targetHours3 * 3600,
                 reward: MissionConstants.PlayTime.reward3,
-                type: .playTime
+                type: .playTime(.gold)
             ),
 
             // MARK: - 커피
@@ -228,7 +245,7 @@ struct MissionFactory {
                 description: MissionConstants.Coffee.description1,
                 targetValue: MissionConstants.Coffee.target1,
                 reward: MissionConstants.Coffee.reward1,
-                type: .coffee
+                type: .coffee(.copper)
             ),
             MissionConfig(
                 id: MissionConstants.Coffee.id2,
@@ -236,7 +253,7 @@ struct MissionFactory {
                 description: MissionConstants.Coffee.description2,
                 targetValue: MissionConstants.Coffee.target2,
                 reward: MissionConstants.Coffee.reward2,
-                type: .coffee
+                type: .coffee(.silver)
             ),
             MissionConfig(
                 id: MissionConstants.Coffee.id3,
@@ -244,7 +261,7 @@ struct MissionFactory {
                 description: MissionConstants.Coffee.description3,
                 targetValue: MissionConstants.Coffee.target3,
                 reward: MissionConstants.Coffee.reward3,
-                type: .coffee
+                type: .coffee(.gold)
             ),
 
             // MARK: - 박하스
@@ -254,7 +271,7 @@ struct MissionFactory {
                 description: MissionConstants.EnergyDrink.description1,
                 targetValue: MissionConstants.EnergyDrink.target1,
                 reward: MissionConstants.EnergyDrink.reward1,
-                type: .energyDrink
+                type: .energyDrink(.copper)
             ),
             MissionConfig(
                 id: MissionConstants.EnergyDrink.id2,
@@ -262,7 +279,7 @@ struct MissionFactory {
                 description: MissionConstants.EnergyDrink.description2,
                 targetValue: MissionConstants.EnergyDrink.target2,
                 reward: MissionConstants.EnergyDrink.reward2,
-                type: .energyDrink
+                type: .energyDrink(.silver)
             ),
             MissionConfig(
                 id: MissionConstants.EnergyDrink.id3,
@@ -270,7 +287,7 @@ struct MissionFactory {
                 description: MissionConstants.EnergyDrink.description3,
                 targetValue: MissionConstants.EnergyDrink.target3,
                 reward: MissionConstants.EnergyDrink.reward3,
-                type: .energyDrink
+                type: .energyDrink(.gold)
             ),
 
             // MARK: - 언어맞추기 (연속 성공)
@@ -280,7 +297,7 @@ struct MissionFactory {
                 description: MissionConstants.LanguageConsecutive.description1,
                 targetValue: MissionConstants.LanguageConsecutive.target1,
                 reward: MissionConstants.LanguageConsecutive.reward1,
-                type: .languageConsecutive
+                type: .languageConsecutive(.copper)
             ),
             MissionConfig(
                 id: MissionConstants.LanguageConsecutive.id2,
@@ -288,7 +305,7 @@ struct MissionFactory {
                 description: MissionConstants.LanguageConsecutive.description2,
                 targetValue: MissionConstants.LanguageConsecutive.target2,
                 reward: MissionConstants.LanguageConsecutive.reward2,
-                type: .languageConsecutive
+                type: .languageConsecutive(.silver)
             ),
             MissionConfig(
                 id: MissionConstants.LanguageConsecutive.id3,
@@ -296,7 +313,7 @@ struct MissionFactory {
                 description: MissionConstants.LanguageConsecutive.description3,
                 targetValue: MissionConstants.LanguageConsecutive.target3,
                 reward: MissionConstants.LanguageConsecutive.reward3,
-                type: .languageConsecutive
+                type: .languageConsecutive(.gold)
             ),
 
             // MARK: - 버그피하기 (연속 성공)
@@ -306,7 +323,7 @@ struct MissionFactory {
                 description: MissionConstants.BugDodgeConsecutive.description1,
                 targetValue: MissionConstants.BugDodgeConsecutive.target1,
                 reward: MissionConstants.BugDodgeConsecutive.reward1,
-                type: .bugDodgeConsecutive
+                type: .bugDodgeConsecutive(.copper)
             ),
             MissionConfig(
                 id: MissionConstants.BugDodgeConsecutive.id2,
@@ -314,7 +331,7 @@ struct MissionFactory {
                 description: MissionConstants.BugDodgeConsecutive.description2,
                 targetValue: MissionConstants.BugDodgeConsecutive.target2,
                 reward: MissionConstants.BugDodgeConsecutive.reward2,
-                type: .bugDodgeConsecutive
+                type: .bugDodgeConsecutive(.silver)
             ),
             MissionConfig(
                 id: MissionConstants.BugDodgeConsecutive.id3,
@@ -322,7 +339,7 @@ struct MissionFactory {
                 description: MissionConstants.BugDodgeConsecutive.description3,
                 targetValue: MissionConstants.BugDodgeConsecutive.target3,
                 reward: MissionConstants.BugDodgeConsecutive.reward3,
-                type: .bugDodgeConsecutive
+                type: .bugDodgeConsecutive(.gold)
             ),
 
             // MARK: - 데이터 쌓기 (연속 성공)
@@ -332,7 +349,7 @@ struct MissionFactory {
                 description: MissionConstants.StackConsecutive.description1,
                 targetValue: MissionConstants.StackConsecutive.target1,
                 reward: MissionConstants.StackConsecutive.reward1,
-                type: .stackConsecutive
+                type: .stackConsecutive(.copper)
             ),
             MissionConfig(
                 id: MissionConstants.StackConsecutive.id2,
@@ -340,7 +357,7 @@ struct MissionFactory {
                 description: MissionConstants.StackConsecutive.description2,
                 targetValue: MissionConstants.StackConsecutive.target2,
                 reward: MissionConstants.StackConsecutive.reward2,
-                type: .stackConsecutive
+                type: .stackConsecutive(.silver)
             ),
             MissionConfig(
                 id: MissionConstants.StackConsecutive.id3,
@@ -348,7 +365,7 @@ struct MissionFactory {
                 description: MissionConstants.StackConsecutive.description3,
                 targetValue: MissionConstants.StackConsecutive.target3,
                 reward: MissionConstants.StackConsecutive.reward3,
-                type: .stackConsecutive
+                type: .stackConsecutive(.gold)
             ),
 
             // MARK: - 커리어
@@ -358,7 +375,7 @@ struct MissionFactory {
                 description: MissionConstants.Career.description,
                 targetValue: 1,
                 reward: MissionConstants.Career.reward,
-                type: .career
+                type: .career(.special)
             ),
 
             // MARK: - 튜토리얼
@@ -368,7 +385,7 @@ struct MissionFactory {
                 description: MissionConstants.Tutorial.description,
                 targetValue: 1,
                 reward: MissionConstants.Tutorial.reward,
-                type: .tutorial
+                type: .tutorial(.special)
             )
         ]
 
@@ -381,6 +398,7 @@ struct MissionFactory {
     private static func createMission(from config: MissionConfig) -> Mission {
         Mission(
             id: config.id,
+            type: config.type,
             title: config.title,
             description: config.description,
             targetValue: config.targetValue,

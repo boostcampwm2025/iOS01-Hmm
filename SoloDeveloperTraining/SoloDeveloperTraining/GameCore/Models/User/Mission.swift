@@ -17,10 +17,32 @@ enum MissionState {
     case inProgress
 }
 
+enum MissionLevel {
+    /// 금
+    case gold
+    /// 은
+    case silver
+    /// 동
+    case copper
+    /// 특수
+    case special
+
+    var imageName: String {
+        switch self {
+        case .copper: return "mission_trophy_copper"
+        case .silver: return "mission_trophy_silver"
+        case .gold: return "mission_trophy_gold"
+        case .special: return "mission_trophy_special"
+        }
+    }
+}
+
 @Observable
 final class Mission {
     /// 미션 아이디
     var id: Int
+    /// 미션 타입
+    var type: MissionType
     /// 업적 제목
     var title: String
     /// 업적 설명
@@ -44,6 +66,7 @@ final class Mission {
 
     init(
         id: Int,
+        type: MissionType,
         title: String,
         description: String,
         targetValue: Int,
@@ -54,6 +77,7 @@ final class Mission {
         reward: Cost
     ) {
         self.id = id
+        self.type = type
         self.title = title
         self.description = description
         self.targetValue = targetValue

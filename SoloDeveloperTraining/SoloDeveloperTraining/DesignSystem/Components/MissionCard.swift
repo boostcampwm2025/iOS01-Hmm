@@ -37,7 +37,7 @@ private enum Constant {
 
 struct MissionCard: View {
     let title: String
-    let reward: Int
+    let reward: Cost
     let imageName: String
     let condition: String
     let buttonState: MissionCardButton.ButtonState?
@@ -47,7 +47,7 @@ struct MissionCard: View {
 
     init(
         title: String,
-        reward: Int,
+        reward: Cost,
         imageName: String,
         condition: String,
         buttonState: MissionCardButton.ButtonState? = nil,
@@ -84,7 +84,7 @@ struct MissionCard: View {
 
 private struct MissionCardContentView: View {
     let title: String
-    let reward: Int
+    let reward: Cost
     let imageName: String
     let condition: String
     let buttonState: MissionCardButton.ButtonState?
@@ -102,13 +102,24 @@ private struct MissionCardContentView: View {
                     .lineLimit(Constant.Typography.titleLineLimit)
                     .minimumScaleFactor(Constant.Typography.minimumScaleFactor)
                 HStack(spacing: Constant.Spacing.rewardIconText) {
-                    Image(.iconDiamondGreen)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: Constant.Size.icon, height: Constant.Size.icon)
-                    Text(reward.formatted)
-                        .textStyle(.caption)
+                    if reward.gold > 0 {
+                        CurrencyLabel(
+                            axis: .horizontal,
+                            icon: .gold,
+                            textStyle: .caption,
+                            value: reward.gold
+                        )
                         .foregroundStyle(.black)
+                    }
+                    if reward.diamond > 0 {
+                        CurrencyLabel(
+                            axis: .horizontal,
+                            icon: .diamond,
+                            textStyle: .caption,
+                            value: reward.diamond
+                        )
+                        .foregroundStyle(.black)
+                    }
                 }
                 .padding(.top, Constant.Padding.rewardTop)
             }
@@ -148,7 +159,7 @@ private struct MissionCardContentView: View {
     HStack(spacing: 12) {
         MissionCard(
             title: "탭따구리",
-            reward: 15,
+            reward: .init(gold: 15),
             imageName: "mission_trophy_gold",
             condition: "탭 10,000회 달성",
             buttonState: .claimable,
@@ -159,7 +170,7 @@ private struct MissionCardContentView: View {
 
         MissionCard(
             title: "정상이라는 착각",
-            reward: 15,
+            reward: .init(diamond: 15),
             imageName: "mission_trophy_silver",
             condition: "버그 피하기 1000회달성",
             buttonState: .claimed
@@ -167,7 +178,7 @@ private struct MissionCardContentView: View {
 
         MissionCard(
             title: "명탐정의 돋보기",
-            reward: 15,
+            reward: .init(gold: 15),
             imageName: "mission_trophy_copper",
             condition: "탭 10,000회 달성",
             buttonState: .inProgress(currentValue: 7356, totalValue: 10000)
