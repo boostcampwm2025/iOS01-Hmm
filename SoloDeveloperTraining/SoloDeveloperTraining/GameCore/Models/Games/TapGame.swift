@@ -62,6 +62,8 @@ final class TapGame: Game {
             buffMultiplier: buffSystem.multiplier
         )
         user.wallet.addGold(gainGold)
+        /// 탭 횟수 기록
+        user.record.record(.tap())
         return gainGold
     }
 }
