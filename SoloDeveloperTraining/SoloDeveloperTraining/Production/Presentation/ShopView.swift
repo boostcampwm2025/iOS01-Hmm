@@ -106,78 +106,54 @@ extension ShopView {
         return item.isPurchasable ? .available : .insufficient
     }
 
-    /// 아이템 구매 처리
+    /// 아이템 구매 확인 팝업 표시
     fileprivate func purchase(item: DisplayItem) {
-        do {
-            try shopSystem.buy(item: item)
+        // 팝업 타이틀 생성
+        let title = item.category == .housing ? "부동산 구매" : "아이템 구매"
 
-            // 구매 성공 팝업
-            let successMessage = purchaseSuccessMessage(for: item)
-            popupContent = (
-                "구매 완료",
-                AnyView(
-                    VStack {
-                        Text(successMessage)
-                            .textStyle(.body)
-                            .foregroundColor(.black)
-                            .multilineTextAlignment(.center)
-
-                        MediumButton(title: "확인", isFilled: true) {
-                            popupContent = nil
-                        }
-                    }
-                )
-            )
-        } catch let error as UserReadableError {
-            // 구매 실패 팝업
-            popupContent = (
-                "구매 실패",
-                AnyView(
-                    VStack {
-                        Text(error.message)
-                            .textStyle(.body)
-                            .foregroundColor(.black)
-                            .multilineTextAlignment(.center)
-
-                        MediumButton(title: "확인", isFilled: true) {
-                            popupContent = nil
-                        }
-                    }
-                )
-            )
-        } catch {
-            // 예상치 못한 에러
-            popupContent = (
-                "구매 실패",
-                AnyView(
-                    VStack {
-                        Text(error.localizedDescription)
-                            .textStyle(.body)
-                            .foregroundColor(.black)
-                            .multilineTextAlignment(.center)
-
-                        MediumButton(title: "확인", isFilled: true) {
-                            popupContent = nil
-                        }
-                    }
-                )
-            )
+        // 가격 텍스트 생성
+        var priceComponents: [String] = []
+        if item.cost.gold > 0 {
+            priceComponents.append("\(item.cost.gold.formatted) 골드")
         }
+        if item.cost.diamond > 0 {
+            priceComponents.append("\(item.cost.diamond.formatted) 다이아")
+        }
+        let priceText = "[\(priceComponents.joined(separator: ", "))]"
+
+        // 구매 확인 팝업
+        popupContent = (
+            title,
+            AnyView(
+                VStack(spacing: 16) {
+                    Text("\(priceText)를 사용하여\n구매하시겠습니까?")
+                        .textStyle(.body)
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.center)
+
+                    HStack(spacing: 12) {
+                        // 취소 버튼
+                        MediumButton(title: "취소", isFilled: false) {
+                            popupContent = nil
+                        }
+
+                        // 구매 버튼
+                        MediumButton(title: "구매", isFilled: true) {
+                            popupContent = nil
+                            executePurchase(item: item)
+                        }
+                    }
+                }
+            )
+        )
     }
 
-    /// 구매 성공 메시지 생성
-    fileprivate func purchaseSuccessMessage(for item: DisplayItem) -> String {
-        switch item.category {
-        case .consumable:
-            return "\(item.displayTitle)을(를) 구매했습니다!"
-        case .equipment:
-            if let equipment = item.item as? Equipment, equipment.canUpgrade {
-                return "강화에 성공했습니다!"
-            } else {
-                return "이미 최대 등급입니다."
-            }
-        case .housing:
-            return "\(item.displayTitle)을(를) 구매했습니다!"
+    /// 실제 구매 실행
+    fileprivate func executePurchase(item: DisplayItem) {
+        do {
+            try shopSystem.buy(item: item)
+        } catch {
+            // 구매 실패 시 에러 처리 (필요시 추가)
         }
     }
 }
