@@ -24,11 +24,11 @@ struct CareerProgressBar: View {
     let currentGold: Int
 
     var progress: CGFloat {
-        Double(currentGold) / Double(career.nextCareer?.requiredWealth ?? 1)
+        min(1.0, Double(currentGold) / Double(career.nextCareer?.requiredWealth ?? 1))
     }
 
     var body: some View {
-        VStack(spacing: Constants.Spacing.vertical ) {
+        VStack(spacing: Constants.Spacing.vertical) {
             ZStack {
                 // 배경
                 Rectangle()
@@ -64,7 +64,7 @@ struct CareerProgressBar: View {
                     )
                 }
             }
-        }.padding()
+        }
     }
 }
 
