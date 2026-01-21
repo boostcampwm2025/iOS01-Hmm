@@ -31,7 +31,6 @@ private enum Constant {
     enum Typography {
         static let titleLineLimit: Int = 1
         static let conditionLineLimit: Int = 2
-        static let minimumScaleFactor: CGFloat = 0.7
     }
 }
 
@@ -93,7 +92,6 @@ private struct MissionCardContentView: View {
                     .textStyle(.subheadline)
                     .foregroundStyle(.black)
                     .lineLimit(Constant.Typography.titleLineLimit)
-                    .minimumScaleFactor(Constant.Typography.minimumScaleFactor)
                 HStack(spacing: Constant.Spacing.rewardIconText) {
                     if reward.gold > 0 {
                         CurrencyLabel(
@@ -134,7 +132,6 @@ private struct MissionCardContentView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.top, Constant.Padding.conditionTop)
                 .lineLimit(Constant.Typography.conditionLineLimit)
-                .minimumScaleFactor(Constant.Typography.minimumScaleFactor)
 
             Spacer()
 
