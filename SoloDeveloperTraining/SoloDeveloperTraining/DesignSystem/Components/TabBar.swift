@@ -17,11 +17,15 @@ private enum Constant {
         static let horizontal: CGFloat = 16
         static let vertical: CGFloat = 14
         static let buttonVertical: CGFloat = 4.5
+        static let badgeTrailing: CGFloat = 6
+        static let badgeBottom: CGFloat = 40
+        static let imageHeight: CGFloat = 24
     }
 
     enum Size {
         static let imageWidth: CGFloat = 24
         static let imageHeight: CGFloat = 24
+        static let badge: CGFloat = 14
     }
 
     enum Offset {
@@ -49,14 +53,21 @@ enum TabItem: String, CaseIterable {
 }
 
 struct TabBar: View {
+    private var hasCompletedMisson: Bool
     @Binding var selectedTab: TabItem
+
+    init(selectedTab: Binding<TabItem>, hasCompletedMisson: Bool) {
+        self._selectedTab = selectedTab
+        self.hasCompletedMisson = hasCompletedMisson
+    }
 
     var body: some View {
         HStack(alignment: .center, spacing: Constant.Spacing.hStack) {
             ForEach(TabItem.allCases, id: \.self) { tab in
                 TabBarButton(
                     tab: tab,
-                    isSelected: selectedTab == tab
+                    isSelected: selectedTab == tab,
+                    hasBadge: tab == .mission && hasCompletedMisson
                 ) {
                     selectedTab = tab
                 }
@@ -71,6 +82,7 @@ struct TabBar: View {
 private struct TabBarButton: View {
     let tab: TabItem
     let isSelected: Bool
+    let hasBadge: Bool
     let action: () -> Void
 
     @State private var isPressed: Bool = false
@@ -100,6 +112,14 @@ private struct TabBarButton: View {
                     .fill(Color.black)
                     .offset(x: Constant.Offset.shadowX, y: Constant.Offset.shadowY)
                     .zIndex(-1)
+                /// 미션 탭 배지
+                if hasBadge {
+                    Image(.iconNewBadge)
+                        .resizable()
+                        .frame(width: Constant.Size.badge, height: Constant.Size.badge)
+                        .padding(.trailing, Constant.Padding.badgeTrailing)
+                        .padding(.bottom, Constant.Padding.badgeBottom)
+                }
             }
             .animation(.none, value: isSelected)
         }
@@ -109,5 +129,5 @@ private struct TabBarButton: View {
 
 #Preview {
     @Previewable @State var selectedTab: TabItem = .work
-    TabBar(selectedTab: $selectedTab)
+    TabBar(selectedTab: $selectedTab, hasCompletedMisson: true)
 }

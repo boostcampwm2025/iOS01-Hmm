@@ -45,7 +45,10 @@ struct MainView: View {
                 )
 
                 // 탭바
-                TabBar(selectedTab: $selectedTab)
+                TabBar(
+                    selectedTab: $selectedTab,
+                    hasCompletedMisson: user.record
+                        .missionSystem.hasCompletedMission)
 
                 Group {
                     switch selectedTab {
