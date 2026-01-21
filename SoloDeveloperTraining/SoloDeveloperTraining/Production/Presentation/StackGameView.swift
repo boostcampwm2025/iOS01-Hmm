@@ -98,6 +98,7 @@ private extension StackGameView {
     func useConsumableItem(_ type: ConsumableType) {
         if stackGame.user.inventory.drink(type) {
             stackGame.buffSystem.useConsumableItem(type: type)
+            stackGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
         }
     }
 }
