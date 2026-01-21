@@ -84,6 +84,7 @@ struct ShopView: View {
                                         selectedHousingTier = housing.tier
                                     },
                                     onButtonTap: {
+                                        selectedHousingTier = housing.tier
                                         purchase(item: item)
                                     }
                                 )
@@ -92,6 +93,7 @@ struct ShopView: View {
                     }
                     .padding()
                 }
+                .scrollIndicators(.hidden)
             }
         }
     }
@@ -112,7 +114,7 @@ extension ShopView {
         let title: String
         let message: String
         let buttonTitle: String
-        
+
         switch item.category {
         case .equipment:
             title = "장비 강화"
@@ -136,20 +138,57 @@ extension ShopView {
 
         // 가격 텍스트 생성
         var priceComponents: [String] = []
-        if item.cost.gold > 0 {
-            priceComponents.append("\(item.cost.gold.formatted) 골드")
+
+        // 부동산의 경우 실제 지불/환불 금액 계산
+        if item.category == .housing, let newHousing = item.item as? Housing {
+            let currentHousing = user.inventory.housing
+            let refundAmount = currentHousing.cost.gold / 2
+            let netCost = item.cost.gold - refundAmount
+
+            if netCost < 0 {
+                // 다운그레이드: 환불
+                priceComponents.append("\(abs(netCost).formatted) 골드")
+            } else {
+                // 업그레이드: 실제 지불 금액
+                priceComponents.append("\(netCost.formatted) 골드")
+            }
+        } else {
+            // 장비, 소비품
+            if item.cost.gold > 0 {
+                priceComponents.append("\(item.cost.gold.formatted) 골드")
+            }
+            if item.cost.diamond > 0 {
+                priceComponents.append("\(item.cost.diamond.formatted) 다이아")
+            }
         }
-        if item.cost.diamond > 0 {
-            priceComponents.append("\(item.cost.diamond.formatted) 다이아")
-        }
+
         let priceText = "[\(priceComponents.joined(separator: ", "))]"
+
+        // 메시지 생성 (부동산 환불일 때 다른 표현 사용)
+        let fullMessage: String
+        if item.category == .housing,
+            let newHousing = item.item as? Housing {
+            let currentHousing = user.inventory.housing
+            let refundAmount = currentHousing.cost.gold / 2
+            let netCost = item.cost.gold - refundAmount
+
+            if netCost < 0 {
+                // 다운그레이드: 환불
+                fullMessage = "\(priceText)를 환불받고\n\(message)"
+            } else {
+                // 업그레이드 또는 일반
+                fullMessage = "\(priceText)를 사용하여\n\(message)"
+            }
+        } else {
+            fullMessage = "\(priceText)를 사용하여\n\(message)"
+        }
 
         // 구매 확인 팝업
         popupContent = (
             title,
             AnyView(
                 VStack(spacing: 16) {
-                    Text("\(priceText)를 사용하여\n\(message)")
+                    Text(fullMessage)
                         .textStyle(.body)
                         .foregroundColor(.black)
                         .multilineTextAlignment(.center)
@@ -175,7 +214,7 @@ extension ShopView {
     fileprivate func executePurchase(item: DisplayItem) {
         do {
             let isSuccess = try shopSystem.buy(item: item)
-            
+
             // 장비 강화의 경우 결과 팝업 표시
             if item.category == .equipment {
                 showEnhanceResult(isSuccess: isSuccess)
@@ -184,12 +223,12 @@ extension ShopView {
             // 구매 실패 시 에러 처리 (필요시 추가)
         }
     }
-    
+
     /// 강화 결과 팝업 표시
     fileprivate func showEnhanceResult(isSuccess: Bool) {
         let title = isSuccess ? "강화 성공" : "강화 실패"
         let message = isSuccess ? "강화에 성공했습니다!" : "강화에 실패했습니다.\n비용은 소모되었습니다."
-        
+
         popupContent = (
             title,
             AnyView(
@@ -198,7 +237,7 @@ extension ShopView {
                         .textStyle(.body)
                         .foregroundColor(.black)
                         .multilineTextAlignment(.center)
-                    
+
                     MediumButton(title: "확인", isFilled: true) {
                         popupContent = nil
                     }

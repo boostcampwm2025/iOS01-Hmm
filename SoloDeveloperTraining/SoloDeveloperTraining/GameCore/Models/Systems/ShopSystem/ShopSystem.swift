@@ -32,12 +32,37 @@ final class ShopSystem {
     ///   - ShopSystemError.insufficientDiamond: 다이아몬드 부족
     ///   - ShopSystemError.purchaseFailed: 구매 처리 실패
     func buy(item: DisplayItem) throws -> Bool {
-        // 구매 가능 여부 확인 (골드 및 다이아몬드)
-        guard user.wallet.canAfford(item.cost) else {
-            if item.cost.gold > 0 {
-                throw PurchasingError.insufficientGold
-            } else {
-                throw PurchasingError.insufficientDiamond
+        // 부동산의 경우 실제 지불 금액으로 구매 가능 여부 확인
+        if item.category == .housing {
+            guard let newHousing = item.item as? Housing else {
+                throw PurchasingError.purchaseFailed
+            }
+            
+            let currentHousing = user.inventory.housing
+            let refundAmount = currentHousing.cost.gold / 2
+            let netGoldCost = item.cost.gold - refundAmount
+            
+            // 실제 지불 금액이 양수일 때만 구매 가능 여부 확인 (음수면 환불이므로 항상 가능)
+            if netGoldCost > 0 {
+                guard user.wallet.gold >= netGoldCost else {
+                    throw PurchasingError.insufficientGold
+                }
+            }
+            
+            // 다이아몬드 비용 확인
+            if item.cost.diamond > 0 {
+                guard user.wallet.diamond >= item.cost.diamond else {
+                    throw PurchasingError.insufficientDiamond
+                }
+            }
+        } else {
+            // 장비 및 소비품: 일반 구매 가능 여부 확인
+            guard user.wallet.canAfford(item.cost) else {
+                if item.cost.gold > 0 {
+                    throw PurchasingError.insufficientGold
+                } else {
+                    throw PurchasingError.insufficientDiamond
+                }
             }
         }
 
