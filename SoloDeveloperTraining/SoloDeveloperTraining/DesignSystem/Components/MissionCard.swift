@@ -40,9 +40,7 @@ struct MissionCard: View {
     let reward: Cost
     let imageName: String
     let condition: String
-    let buttonState: MissionCardButton.ButtonState?
-    let currentValue: Int?
-    let totalValue: Int?
+    let buttonState: MissionCardButton.ButtonState
     var onButtonTap: (() -> Void)?
 
     init(
@@ -50,9 +48,7 @@ struct MissionCard: View {
         reward: Cost,
         imageName: String,
         condition: String,
-        buttonState: MissionCardButton.ButtonState? = nil,
-        currentValue: Int? = nil,
-        totalValue: Int? = nil,
+        buttonState: MissionCardButton.ButtonState,
         onButtonTap: (() -> Void)? = nil
     ) {
         self.title = title
@@ -60,8 +56,6 @@ struct MissionCard: View {
         self.imageName = imageName
         self.condition = condition
         self.buttonState = buttonState
-        self.currentValue = currentValue
-        self.totalValue = totalValue
         self.onButtonTap = onButtonTap
     }
 
@@ -72,8 +66,6 @@ struct MissionCard: View {
             imageName: imageName,
             condition: condition,
             buttonState: buttonState,
-            currentValue: currentValue,
-            totalValue: totalValue,
             onButtonTap: onButtonTap
         )
         .padding(.all, Constant.Padding.content)
@@ -87,9 +79,7 @@ private struct MissionCardContentView: View {
     let reward: Cost
     let imageName: String
     let condition: String
-    let buttonState: MissionCardButton.ButtonState?
-    let currentValue: Int?
-    let totalValue: Int?
+    let buttonState: MissionCardButton.ButtonState
     var onButtonTap: (() -> Void)?
 
     var body: some View {
@@ -146,10 +136,8 @@ private struct MissionCardContentView: View {
             Spacer()
 
             // MissionCardButton (가운데 정렬)
-            if let buttonState = buttonState {
                 MissionCardButton(buttonState: buttonState) {
                     onButtonTap?()
-                }
             }
         }
     }

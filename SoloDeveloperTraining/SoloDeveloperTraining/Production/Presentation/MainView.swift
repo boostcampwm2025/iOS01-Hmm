@@ -58,8 +58,7 @@ struct MainView: View {
                         Color.white
                             .overlay(Text("상점 화면").foregroundColor(.gray))
                     case .mission:
-                        Color.white
-                            .overlay(Text("미션 화면").foregroundColor(.gray))
+                        MissionView(user: user)
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

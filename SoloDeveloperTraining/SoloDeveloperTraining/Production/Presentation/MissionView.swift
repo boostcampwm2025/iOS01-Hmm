@@ -46,7 +46,13 @@ struct MissionView: View {
                             title: mission.title,
                             reward: mission.reward,
                             imageName: mission.type.level.imageName,
-                            condition: mission.description
+                            condition: mission.description,
+                            buttonState: mission.buttonState,
+                            onButtonTap: {
+                                if mission.buttonState == .claimable {
+                                    mission.claim()
+                                }
+                            }
                         )
                     }
                 }

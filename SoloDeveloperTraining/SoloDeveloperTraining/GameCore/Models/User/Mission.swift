@@ -64,6 +64,23 @@ final class Mission {
     /// 보상
     var reward: Cost
 
+    /// 버튼 상태로 매핑
+    var buttonState: MissionCardButton.ButtonState {
+        switch state {
+        case .claimed:
+            return .claimed
+
+        case .claimable:
+            return .claimable
+
+        case .inProgress:
+            return .inProgress(
+                currentValue: currentValue,
+                totalValue: targetValue
+            )
+        }
+    }
+
     init(
         id: Int,
         type: MissionType,
