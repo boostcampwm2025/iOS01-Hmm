@@ -89,8 +89,7 @@ private extension ShopView {
                     if let housing = item.item as? Housing {
                         HousingCard(
                             housing: housing,
-                            isEquipped: item.isEquipped,
-                            isPurchasable: item.isPurchasable,
+                            state: itemState(for: item),
                             isSelected: selectedHousingTier == housing.tier,
                             onTap: {
                                 selectedHousingTier = housing.tier

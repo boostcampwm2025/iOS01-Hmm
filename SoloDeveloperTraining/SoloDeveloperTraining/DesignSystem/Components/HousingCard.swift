@@ -25,8 +25,7 @@ private enum Constant {
 
 struct HousingCard: View {
     let housing: Housing
-    let isEquipped: Bool
-    let isPurchasable: Bool
+    let state: ItemState
     let isSelected: Bool
     let onTap: () -> Void
     let onButtonTap: () -> Void
@@ -34,8 +33,8 @@ struct HousingCard: View {
     var body: some View {
         HousingCardContent(
             housing: housing,
-            buttonTitle: isEquipped ? "장착중" : "이사하기",
-            isButtonEnabled: !isEquipped && isPurchasable,
+            buttonTitle: state == .locked ? "장착중" : "이사하기",
+            isButtonEnabled: state == .available,
             onButtonTap: onButtonTap
         )
         .contentShape(RoundedRectangle(cornerRadius: Constant.cornerRadius))
@@ -107,18 +106,17 @@ private struct HousingCardContent: View {
 
 #Preview {
     @Previewable @State var isSelected = false
-    @Previewable @State var isEquipped = false
+    @Previewable @State var state: ItemState = .available
 
     HousingCard(
         housing: .init(tier: .villa),
-        isEquipped: isEquipped,
-        isPurchasable: true,
+        state: state,
         isSelected: isSelected,
         onTap: {
             isSelected.toggle()
         },
         onButtonTap: {
-            isEquipped = true
+            state = .locked
         }
     )
     .frame(height: 500)
