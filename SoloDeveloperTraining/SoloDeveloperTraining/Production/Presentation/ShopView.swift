@@ -10,13 +10,10 @@ import SwiftUI
 private enum Constant {
     enum Spacing {
         static let itemCard: CGFloat = 12
-        static let popupContent: CGFloat = 11
-        static let popupButton: CGFloat = 15
     }
 
     enum Padding {
         static let horizontal: CGFloat = 16
-        static let popupTop: CGFloat = 11
         static let housingTop: CGFloat = 15
         static let housingBottom: CGFloat = 23
     }
@@ -111,52 +108,17 @@ private extension ShopView {
 
     /// 아이템 구매 확인 팝업 표시
     func purchase(item: DisplayItem) {
-        let (title, message, buttonTitle) = purchaseInfo(for: item)
-        let fullMessage = createPurchaseMessage(item: item, baseMessage: message)
+        let (title, message, buttonTitle) = ShopPurchaseHelper.purchaseInfo(for: item)
+        let fullMessage = ShopPurchaseHelper.createPurchaseMessage(item: item, baseMessage: message, shopSystem: shopSystem)
 
-        showConfirmPopup(
+        ShopPurchaseHelper.showConfirm(
+            popupContent: $popupContent,
             title: title,
             message: fullMessage,
             confirmTitle: buttonTitle
         ) {
             executePurchase(item: item)
         }
-    }
-
-    /// 구매 정보 생성
-    func purchaseInfo(for item: DisplayItem) -> (title: String, message: String, buttonTitle: String) {
-        switch item.category {
-        case .equipment:
-            let successRate = (item.item as? Equipment).map { Int($0.tier.upgradeSuccessRate * 100) }
-            let message = successRate.map { "강화하시겠습니까?\n(성공 확률: \($0)%)" } ?? "강화하시겠습니까?"
-            return ("장비 강화", message, "강화")
-        case .housing:
-            return ("부동산 구매", "구매하시겠습니까?", "구매")
-        case .consumable:
-            return ("아이템 구매", "구매하시겠습니까?", "구매")
-        }
-    }
-
-    /// 구매 메시지 생성
-    func createPurchaseMessage(item: DisplayItem, baseMessage: String) -> String {
-        let priceText = createPriceText(for: item)
-        let prefix = item.category == .housing && shopSystem.calculateHousingNetCost(for: item) < 0 ? "를 환불받고" : "를 사용하여"
-        return "\(priceText)\(prefix)\n\(baseMessage)"
-    }
-
-    /// 가격 텍스트 생성
-    func createPriceText(for item: DisplayItem) -> String {
-        var components: [String] = []
-
-        if item.category == .housing {
-            let netCost = shopSystem.calculateHousingNetCost(for: item)
-            components.append("\(abs(netCost).formatted) 골드")
-        } else {
-            if item.cost.gold > 0 { components.append("\(item.cost.gold.formatted) 골드") }
-            if item.cost.diamond > 0 { components.append("\(item.cost.diamond.formatted) 다이아") }
-        }
-
-        return "[\(components.joined(separator: ", "))]"
     }
 
     /// 실제 구매 실행
@@ -166,59 +128,13 @@ private extension ShopView {
             if item.category == .equipment {
                 let title = isSuccess ? "강화 성공" : "강화 실패"
                 let message = isSuccess ? "강화에 성공했습니다!" : "강화에 실패했습니다.\n비용은 소모되었습니다."
-                showAlertPopup(title: title, message: message)
+                ShopPurchaseHelper.showAlert(popupContent: $popupContent, title: title, message: message)
             }
         } catch let error as PurchasingError {
-            showAlertPopup(title: "구매 실패", message: error.message)
+            ShopPurchaseHelper.showAlert(popupContent: $popupContent, title: "구매 실패", message: error.message)
         } catch {
-            showAlertPopup(title: "구매 실패", message: "구매에 실패했습니다.")
+            ShopPurchaseHelper.showAlert(popupContent: $popupContent, title: "구매 실패", message: "구매에 실패했습니다.")
         }
-    }
-
-    /// 확인 팝업 표시 (취소/확인 버튼)
-    func showConfirmPopup(title: String, message: String, confirmTitle: String, onConfirm: @escaping () -> Void) {
-        popupContent = (
-            title,
-            AnyView(
-                VStack(spacing: Constant.Spacing.popupContent) {
-                    Text(message)
-                        .textStyle(.body)
-                        .foregroundColor(.black)
-                        .multilineTextAlignment(.center)
-
-                    HStack(spacing: Constant.Spacing.popupButton) {
-                        MediumButton(title: "취소", isFilled: true, isCancelButton: true) {
-                            popupContent = nil
-                        }
-                        MediumButton(title: confirmTitle, isFilled: true) {
-                            popupContent = nil
-                            onConfirm()
-                        }
-                    }
-                }
-                .padding(.top, Constant.Padding.popupTop)
-            )
-        )
-    }
-
-    /// 알림 팝업 표시 (확인 버튼만)
-    func showAlertPopup(title: String, message: String) {
-        popupContent = (
-            title,
-            AnyView(
-                VStack(spacing: Constant.Spacing.popupContent) {
-                    Text(message)
-                        .textStyle(.body)
-                        .foregroundColor(.black)
-                        .multilineTextAlignment(.center)
-
-                    MediumButton(title: "확인", isFilled: true) {
-                        popupContent = nil
-                    }
-                }
-                .padding(.top, Constant.Padding.popupTop)
-            )
-        )
     }
 }
 
