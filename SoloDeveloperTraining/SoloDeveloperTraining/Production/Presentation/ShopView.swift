@@ -174,10 +174,37 @@ extension ShopView {
     /// 실제 구매 실행
     fileprivate func executePurchase(item: DisplayItem) {
         do {
-            try shopSystem.buy(item: item)
+            let isSuccess = try shopSystem.buy(item: item)
+            
+            // 장비 강화의 경우 결과 팝업 표시
+            if item.category == .equipment {
+                showEnhanceResult(isSuccess: isSuccess)
+            }
         } catch {
             // 구매 실패 시 에러 처리 (필요시 추가)
         }
+    }
+    
+    /// 강화 결과 팝업 표시
+    fileprivate func showEnhanceResult(isSuccess: Bool) {
+        let title = isSuccess ? "강화 성공" : "강화 실패"
+        let message = isSuccess ? "강화에 성공했습니다!" : "강화에 실패했습니다.\n비용은 소모되었습니다."
+        
+        popupContent = (
+            title,
+            AnyView(
+                VStack {
+                    Text(message)
+                        .textStyle(.body)
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.center)
+                    
+                    MediumButton(title: "확인", isFilled: true) {
+                        popupContent = nil
+                    }
+                }
+            )
+        )
     }
 }
 

@@ -26,11 +26,12 @@ final class ShopSystem {
 
     /// 아이템 구매
     /// - Parameter item: 구매할 아이템
+    /// - Returns: 구매 성공 여부 (장비의 경우 강화 성공/실패, 다른 아이템은 항상 true)
     /// - Throws:
     ///   - ShopSystemError.insufficientGold: 골드 부족
     ///   - ShopSystemError.insufficientDiamond: 다이아몬드 부족
     ///   - ShopSystemError.purchaseFailed: 구매 처리 실패
-    func buy(item: DisplayItem) throws {
+    func buy(item: DisplayItem) throws -> Bool {
         // 구매 가능 여부 확인 (골드 및 다이아몬드)
         guard user.wallet.canAfford(item.cost) else {
             if item.cost.gold > 0 {
@@ -43,11 +44,11 @@ final class ShopSystem {
         // 아이템 카테고리에 따른 구매 로직 실행
         switch item.category {
         case .consumable:
-            try buyConsumable(displayItem: item)
+            return try buyConsumable(displayItem: item)
         case .equipment:
-            try buyEquipment(displayItem: item)
+            return try buyEquipment(displayItem: item)
         case .housing:
-            try buyHousing(displayItem: item)
+            return try buyHousing(displayItem: item)
         }
     }
 }
@@ -96,8 +97,9 @@ private extension ShopSystem {
 
     /// 소비 아이템 구매 (개수 증가)
     /// - Parameter displayItem: 구매할 소비 아이템
+    /// - Returns: 항상 true (구매 성공)
     /// - Throws: ShopSystemError.purchaseFailed - 아이템 타입 변환 실패
-    func buyConsumable(displayItem: DisplayItem) throws {
+    func buyConsumable(displayItem: DisplayItem) throws -> Bool {
         // DisplayItem을 Consumable로 변환
         guard let consumable = displayItem.item as? Consumable else {
             throw PurchasingError.purchaseFailed
@@ -114,13 +116,16 @@ private extension ShopSystem {
 
         // 인벤토리에 소비 아이템 개수 증가
         user.inventory.gain(consumable: consumable.type)
+        
+        return true
     }
 
     /// 장비 아이템 구매 (강화 시도)
     /// - Parameter displayItem: 구매할 장비 아이템
+    /// - Returns: 강화 성공 여부 (true: 성공, false: 실패)
     /// - Throws: ShopSystemError.purchaseFailed - 아이템 타입 변환 실패
     /// - Note: 비용 지불 후 강화를 시도하며, 성공 여부는 티어의 강화 확률에 따라 결정됨
-    func buyEquipment(displayItem: DisplayItem) throws {
+    func buyEquipment(displayItem: DisplayItem) throws -> Bool {
         // DisplayItem을 Equipment로 변환
         guard let equipment = displayItem.item as? Equipment else {
             throw PurchasingError.purchaseFailed
@@ -136,14 +141,15 @@ private extension ShopSystem {
         }
 
         // 장비 강화 시도 (성공 확률은 티어마다 다름)
-        equipment.upgraded()
+        return equipment.upgraded()
     }
 
     /// 부동산 아이템 구매 (교체 및 환불)
     /// - Parameter displayItem: 구매할 부동산 아이템
+    /// - Returns: 항상 true (구매 성공)
     /// - Throws: ShopSystemError.purchaseFailed - 아이템 타입 변환 실패
     /// - Note: 기존 부동산 구입 금액의 50%를 환불받고, 실제 비용만 지불함
-    func buyHousing(displayItem: DisplayItem) throws {
+    func buyHousing(displayItem: DisplayItem) throws -> Bool {
         // DisplayItem을 Housing으로 변환
         guard let newHousing = displayItem.item as? Housing else {
             throw PurchasingError.purchaseFailed
@@ -173,5 +179,7 @@ private extension ShopSystem {
 
         // 인벤토리의 부동산을 새 부동산으로 교체
         user.inventory.housing = newHousing
+        
+        return true
     }
 }
