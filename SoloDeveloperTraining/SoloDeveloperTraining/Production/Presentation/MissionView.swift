@@ -13,9 +13,8 @@ private enum Constant {
 
 struct MissionView: View {
     private let user: User
-    private let missionSystem = MissionSystem(
-        missions: MissionFactory.createAllMissions()
-    )
+
+    @State private var missionSystem = MissionSystem(missions: MissionFactory.createAllMissions())
 
     init(user: User) {
         self.user = user
