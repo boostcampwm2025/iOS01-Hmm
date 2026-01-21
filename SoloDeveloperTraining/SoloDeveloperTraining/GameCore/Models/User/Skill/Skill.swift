@@ -101,9 +101,9 @@ final class Skill: Hashable, Identifiable {
         }
     }
 
-    init(key: SkillKey, level: Int) {
+    init(key: SkillKey, level: Int? = nil) {
         self.key = key
-        self.level = key.tier.levelRange.clamped(level)
+        self.level = key.tier.levelRange.clamped(level ?? key.tier.levelRange.minValue)
     }
 
     /// 해당 스킬의 레벨을 1 상승 시킵니다.

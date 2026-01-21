@@ -24,21 +24,21 @@ struct SoloDeveloperTrainingApp: App {
         record: .init(),
         skills: [
             // 코드짜기
-            .init(key: SkillKey(game: .tap, tier: .beginner), level: SkillTier.beginner.levelRange.minValue),
-            .init(key: SkillKey(game: .tap, tier: .intermediate), level: SkillTier.intermediate.levelRange.minValue),
-            .init(key: SkillKey(game: .tap, tier: .advanced), level: SkillTier.advanced.levelRange.minValue),
+            .init(key: SkillKey(game: .tap, tier: .beginner)),
+            .init(key: SkillKey(game: .tap, tier: .intermediate)),
+            .init(key: SkillKey(game: .tap, tier: .advanced)),
             // 언어 맞추기
-            .init(key: SkillKey(game: .language, tier: .beginner), level: SkillTier.beginner.levelRange.minValue),
-            .init(key: SkillKey(game: .language, tier: .intermediate), level: SkillTier.intermediate.levelRange.minValue),
-            .init(key: SkillKey(game: .language, tier: .advanced), level: SkillTier.advanced.levelRange.minValue),
+            .init(key: SkillKey(game: .language, tier: .beginner)),
+            .init(key: SkillKey(game: .language, tier: .intermediate)),
+            .init(key: SkillKey(game: .language, tier: .advanced)),
             // 버그 피하기
-            .init(key: SkillKey(game: .dodge, tier: .beginner), level: SkillTier.beginner.levelRange.minValue),
-            .init(key: SkillKey(game: .dodge, tier: .intermediate), level: SkillTier.intermediate.levelRange.minValue),
-            .init(key: SkillKey(game: .dodge, tier: .advanced), level: SkillTier.advanced.levelRange.minValue),
+            .init(key: SkillKey(game: .dodge, tier: .beginner)),
+            .init(key: SkillKey(game: .dodge, tier: .intermediate)),
+            .init(key: SkillKey(game: .dodge, tier: .advanced)),
             // 물건 쌓기
-            .init(key: SkillKey(game: .stack, tier: .beginner), level: SkillTier.beginner.levelRange.minValue),
-            .init(key: SkillKey(game: .stack, tier: .intermediate), level: SkillTier.intermediate.levelRange.minValue),
-            .init(key: SkillKey(game: .stack, tier: .advanced), level: SkillTier.advanced.levelRange.minValue)
+            .init(key: SkillKey(game: .stack, tier: .beginner)),
+            .init(key: SkillKey(game: .stack, tier: .intermediate)),
+            .init(key: SkillKey(game: .stack, tier: .advanced))
         ]
     )
 
