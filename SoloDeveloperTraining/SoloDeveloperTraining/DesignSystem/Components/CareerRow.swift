@@ -46,17 +46,17 @@ struct CareerRow: View {
         CareerRow(
             title: "백수1",
             description: "아무것도 시작하지 않았지만, 시간은 가장 많다.",
-            imageName: "background_street"
+            imageName: "housing_street"
         )
         CareerRow(
             title: "백수2",
             description: "아무것도 시작하지 않았지만, 시간은 가장 많다.",
-            imageName: "background_street"
+            imageName: "housing_street"
         )
         CareerRow(
             title: "백수3",
             description: "아무것도 시작하지 않았지만, 시간은 가장 많다.",
-            imageName: "background_street"
+            imageName: "housing_street"
         )
     }
     .padding(.horizontal)
