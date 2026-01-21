@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SpriteKit
 
 enum AppTheme {
     static let backgroundColor: Color = AppColors.beige200
@@ -18,10 +19,14 @@ struct MainView: View {
     private var autoGainSystem: AutoGainSystem
     private let user: User
     let careerProgress: Double = 0.3
+    private let scene: CharacterScene
 
     init(user: User) {
         self.autoGainSystem = AutoGainSystem(user: user)
         self.user = user
+        self.scene = CharacterScene(size: CGSize(width: 100, height: 100))
+        self.scene.scaleMode = .aspectFit
+        self.scene.playIdle()
     }
 
     var body: some View {
@@ -29,13 +34,20 @@ struct MainView: View {
             VStack(spacing: 0) {
                 ZStack(alignment: .top) {
                     Color.clear
-                    StatusBar(
-                        career: user.career,
-                        nickname: user.nickname,
-                        careerProgress: careerProgress,
-                        gold: user.wallet.gold,
-                        diamond: user.wallet.diamond
-                    )
+                    VStack(spacing: 0) {
+                        StatusBar(
+                            career: user.career,
+                            nickname: user.nickname,
+                            careerProgress: careerProgress,
+                            gold: user.wallet.gold,
+                            diamond: user.wallet.diamond
+                        )
+                        Spacer()
+                        SpriteView(scene: scene, options: [.allowsTransparency])
+                            .frame(width: 200, height: 200)
+                            .background(Color.clear)
+                        Spacer()
+                    }
                 }
                 .frame(height: geometry.size.height * 0.5)
                 .background(
