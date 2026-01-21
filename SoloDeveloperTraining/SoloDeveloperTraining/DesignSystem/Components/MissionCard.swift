@@ -8,8 +8,7 @@
 import SwiftUI
 
 private enum Constant {
-    static let defaultImageName: String = "mission_card"
-    static let cardColor = AppColors.orange100
+    static let cardColor = AppColors.beige100
 
     enum Size {
         static let icon: CGFloat = 16
@@ -19,12 +18,10 @@ private enum Constant {
     }
 
     enum Padding {
-        static let horizontal: CGFloat = 10
-        static let titleTop: CGFloat = 5
+        static let content: CGFloat = 10
         static let rewardTop: CGFloat = 4
         static let imageTop: CGFloat = 4
         static let conditionTop: CGFloat = 4
-        static let bottom: CGFloat = 6
     }
 
     enum Spacing {
@@ -51,7 +48,7 @@ struct MissionCard: View {
     init(
         title: String,
         reward: Int,
-        imageName: String = Constant.defaultImageName,
+        imageName: String,
         condition: String,
         buttonState: MissionCardButton.ButtonState? = nil,
         currentValue: Int? = nil,
@@ -79,9 +76,7 @@ struct MissionCard: View {
             totalValue: totalValue,
             onButtonTap: onButtonTap
         )
-        .padding(.horizontal, Constant.Padding.horizontal)
-        .padding(.top, Constant.Padding.titleTop)
-        .padding(.bottom, Constant.Padding.bottom)
+        .padding(.all, Constant.Padding.content)
         .frame(height: Constant.Size.cardHeight)
         .background { Rectangle().fill(Constant.cardColor) }
     }
@@ -112,7 +107,7 @@ private struct MissionCardContentView: View {
                         .scaledToFit()
                         .frame(width: Constant.Size.icon, height: Constant.Size.icon)
                     Text(reward.formatted)
-                        .textStyle(.label)
+                        .textStyle(.caption)
                         .foregroundStyle(.black)
                 }
                 .padding(.top, Constant.Padding.rewardTop)
@@ -154,6 +149,7 @@ private struct MissionCardContentView: View {
         MissionCard(
             title: "탭따구리",
             reward: 15,
+            imageName: "mission_trophy_gold",
             condition: "탭 10,000회 달성",
             buttonState: .claimable,
             onButtonTap: {
@@ -164,6 +160,7 @@ private struct MissionCardContentView: View {
         MissionCard(
             title: "정상이라는 착각",
             reward: 15,
+            imageName: "mission_trophy_silver",
             condition: "버그 피하기 1000회달성",
             buttonState: .claimed
         )
@@ -171,7 +168,7 @@ private struct MissionCardContentView: View {
         MissionCard(
             title: "명탐정의 돋보기",
             reward: 15,
-            imageName: "background_street",
+            imageName: "mission_trophy_copper",
             condition: "탭 10,000회 달성",
             buttonState: .inProgress(currentValue: 7356, totalValue: 10000)
         )
