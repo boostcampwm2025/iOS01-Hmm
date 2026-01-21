@@ -99,9 +99,9 @@ struct ShopView: View {
     }
 }
 
-extension ShopView {
+private extension ShopView {
     /// 아이템 상태 결정
-    fileprivate func itemState(for item: DisplayItem) -> ItemState {
+    func itemState(for item: DisplayItem) -> ItemState {
         if item.isEquipped && item.category == .housing {
             return .locked
         }
@@ -109,7 +109,7 @@ extension ShopView {
     }
 
     /// 아이템 구매 확인 팝업 표시
-    fileprivate func purchase(item: DisplayItem) {
+    func purchase(item: DisplayItem) {
         // 팝업 타이틀 및 메시지 생성
         let title: String
         let message: String
@@ -140,7 +140,7 @@ extension ShopView {
         var priceComponents: [String] = []
 
         // 부동산의 경우 실제 지불/환불 금액 계산
-        if item.category == .housing, let newHousing = item.item as? Housing {
+        if item.category == .housing {
             let currentHousing = user.inventory.housing
             let refundAmount = currentHousing.cost.gold / 2
             let netCost = item.cost.gold - refundAmount
@@ -166,8 +166,7 @@ extension ShopView {
 
         // 메시지 생성 (부동산 환불일 때 다른 표현 사용)
         let fullMessage: String
-        if item.category == .housing,
-            let newHousing = item.item as? Housing {
+        if item.category == .housing {
             let currentHousing = user.inventory.housing
             let refundAmount = currentHousing.cost.gold / 2
             let netCost = item.cost.gold - refundAmount
@@ -211,7 +210,7 @@ extension ShopView {
     }
 
     /// 실제 구매 실행
-    fileprivate func executePurchase(item: DisplayItem) {
+    func executePurchase(item: DisplayItem) {
         do {
             let isSuccess = try shopSystem.buy(item: item)
 
@@ -225,7 +224,7 @@ extension ShopView {
     }
 
     /// 강화 결과 팝업 표시
-    fileprivate func showEnhanceResult(isSuccess: Bool) {
+    func showEnhanceResult(isSuccess: Bool) {
         let title = isSuccess ? "강화 성공" : "강화 실패"
         let message = isSuccess ? "강화에 성공했습니다!" : "강화에 실패했습니다.\n비용은 소모되었습니다."
 

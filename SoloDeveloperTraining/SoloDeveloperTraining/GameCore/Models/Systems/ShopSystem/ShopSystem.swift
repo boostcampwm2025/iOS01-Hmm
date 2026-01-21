@@ -21,7 +21,7 @@ final class ShopSystem {
     /// - Parameter itemTypes: 표시할 아이템 카테고리 목록
     /// - Returns: 화면에 표시할 DisplayItem 배열
     func itemList(itemTypes: [ItemCategory]) -> [DisplayItem] {
-        return itemTypes.map { makeDisplayItems(for: $0)}.flatMap { $0 }
+        return itemTypes.map { makeDisplayItems(for: $0) }.flatMap { $0 }
     }
 
     /// 아이템 구매
@@ -34,21 +34,17 @@ final class ShopSystem {
     func buy(item: DisplayItem) throws -> Bool {
         // 부동산의 경우 실제 지불 금액으로 구매 가능 여부 확인
         if item.category == .housing {
-            guard let newHousing = item.item as? Housing else {
-                throw PurchasingError.purchaseFailed
-            }
-            
             let currentHousing = user.inventory.housing
             let refundAmount = currentHousing.cost.gold / 2
             let netGoldCost = item.cost.gold - refundAmount
-            
+
             // 실제 지불 금액이 양수일 때만 구매 가능 여부 확인 (음수면 환불이므로 항상 가능)
             if netGoldCost > 0 {
                 guard user.wallet.gold >= netGoldCost else {
                     throw PurchasingError.insufficientGold
                 }
             }
-            
+
             // 다이아몬드 비용 확인
             if item.cost.diamond > 0 {
                 guard user.wallet.diamond >= item.cost.diamond else {
@@ -141,7 +137,7 @@ private extension ShopSystem {
 
         // 인벤토리에 소비 아이템 개수 증가
         user.inventory.gain(consumable: consumable.type)
-        
+
         return true
     }
 
@@ -204,7 +200,7 @@ private extension ShopSystem {
 
         // 인벤토리의 부동산을 새 부동산으로 교체
         user.inventory.housing = newHousing
-        
+
         return true
     }
 }
