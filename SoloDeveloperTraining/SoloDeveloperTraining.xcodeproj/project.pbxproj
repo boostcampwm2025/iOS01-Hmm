@@ -35,10 +35,10 @@
 			membershipExceptions = (
 				App/Info.plist,
 				Devlopment/CheatSystem/CheatManager.swift,
-				Devlopment/Presentation/AchievementTestView.swift,
 				Devlopment/Presentation/ContentView.swift,
 				Devlopment/Presentation/DodgeGameTestView.swift,
 				Devlopment/Presentation/LanguageGameTestView.swift,
+				Devlopment/Presentation/MissionTestView.swift,
 				Devlopment/Presentation/SkillTestView.swift,
 				Devlopment/Presentation/ShopTestView.swift,
 				Devlopment/Presentation/StackGameScene.swift,

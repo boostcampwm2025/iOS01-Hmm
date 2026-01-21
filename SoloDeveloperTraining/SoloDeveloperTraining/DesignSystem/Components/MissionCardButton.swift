@@ -12,20 +12,20 @@ private enum Constant {
     static let buttonWidth: CGFloat = .infinity
 
     enum Title {
-        static let acquired = "획득하기"
-        static let completed = "달성 완료"
+        static let claimable = "획득하기"
+        static let claimed = "달성 완료"
     }
 
     enum BackgroundColor {
-        static let acquired = Color.white
-        static let completed = AppColors.accentGreen
+        static let claimable = Color.white
+        static let claimed = AppColors.accentGreen
         static let progressTotal = Color.white
         static let progressCurrent = AppColors.orange100
     }
 
     enum ForegroundColor {
-        static let acquired = Color.black
-        static let completed = Color.white
+        static let claimable = Color.black
+        static let claimed = Color.white
         static let progress = Color.black
     }
 }
@@ -41,7 +41,7 @@ struct MissionCardButton: View {
             onTap?()
         } label: {
             ZStack {
-                if case .progress(let currentValue, let totalValue) = buttonState {
+                if case .inProgress(let currentValue, let totalValue) = buttonState {
                     Rectangle().fill(buttonState.backgroundColor)
                     GeometryReader { geometry in
                         let progress = min(Double(currentValue) / Double(totalValue), 1.0)
@@ -69,48 +69,48 @@ struct MissionCardButton: View {
 // MARK: - ButtonState
 extension MissionCardButton {
     enum ButtonState: Equatable {
-        case acquired
-        case completed
-        case progress(currentValue: Int, totalValue: Int)
+        case claimable
+        case claimed
+        case inProgress(currentValue: Int, totalValue: Int)
 
         var title: String {
             switch self {
-            case .acquired:
-                return Constant.Title.acquired
-            case .completed:
-                return Constant.Title.completed
-            case .progress(let currentValue, let totalValue):
+            case .claimable:
+                return Constant.Title.claimable
+            case .claimed:
+                return Constant.Title.claimed
+            case .inProgress(let currentValue, let totalValue):
                 return "\(currentValue.formatted())/\(totalValue.formatted())"
             }
         }
 
         var backgroundColor: Color {
             switch self {
-            case .acquired:
-                return Constant.BackgroundColor.acquired
-            case .completed:
-                return Constant.BackgroundColor.completed
-            case .progress:
+            case .claimable:
+                return Constant.BackgroundColor.claimable
+            case .claimed:
+                return Constant.BackgroundColor.claimed
+            case .inProgress:
                 return Constant.BackgroundColor.progressTotal
             }
         }
 
         var foregroundColor: Color {
             switch self {
-            case .acquired:
-                return Constant.ForegroundColor.acquired
-            case .completed:
-                return Constant.ForegroundColor.completed
-            case .progress:
+            case .claimable:
+                return Constant.ForegroundColor.claimable
+            case .claimed:
+                return Constant.ForegroundColor.claimed
+            case .inProgress:
                 return Constant.ForegroundColor.progress
             }
         }
 
         var isEnabled: Bool {
             switch self {
-            case .acquired:
+            case .claimable:
                 return true
-            case .completed, .progress:
+            case .claimed, .inProgress:
                 return false
             }
         }
@@ -123,10 +123,10 @@ extension MissionCardButton {
             .fill(AppColors.gray200)
 
         VStack {
-            MissionCardButton(buttonState: .acquired) {
+            MissionCardButton(buttonState: .claimable) {
                 print("획득하기 버튼 클릭")
             }
-            MissionCardButton(buttonState: .completed)
+            MissionCardButton(buttonState: .claimed)
         }
         .padding(.horizontal, 16)
     }

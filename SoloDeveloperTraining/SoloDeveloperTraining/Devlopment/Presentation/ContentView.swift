@@ -82,7 +82,7 @@ struct ContentView: View {
                     Image(systemName: "cart")
                     Text("상점")
                 }
-            AchievementTestView()
+            MissionTestView()
                 .tag(4)
                 .tabItem {
                     Image(systemName: "note")

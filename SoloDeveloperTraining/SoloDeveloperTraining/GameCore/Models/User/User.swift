@@ -31,7 +31,6 @@ actor User {
         wallet: Wallet,
         inventory: Inventory,
         record: Record,
-        achievements: [Achievement] = [],
         skills: Set<Skill> = []
     ) {
         self.id = id

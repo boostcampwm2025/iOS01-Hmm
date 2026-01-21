@@ -1,5 +1,5 @@
 //
-//  Achievement.swift
+//  Mission.swift
 //  SoloDeveloperTraining
 //
 //  Created by SeoJunYoung on 1/6/26.
@@ -8,17 +8,17 @@
 import Foundation
 import Observation
 
-enum AchievementState {
-    /// 수령
+enum MissionState {
+    /// "달성 완료"
     case claimed
-    /// 미수령
-    case unclaimed
-    /// 진행중
+    /// "획득하기"
+    case claimable
+    /// "진행중"
     case inProgress
 }
 
 @Observable
-final class Achievement {
+final class Mission {
     /// 미션 아이디
     var id: Int
     /// 업적 제목
@@ -34,11 +34,11 @@ final class Achievement {
         min(Double(currentValue) / Double(targetValue), 1.0)
     }
     /// 현재 미션 상태
-    var state: AchievementState = .inProgress
+    var state: MissionState = .inProgress
     /// 업데이트 조건
     var updateCondition: (Record) -> Int
     /// 달성 조건
-    var completeCondition: (Record) -> Bool
+    var completeCondition: ((Record) -> Bool)?
     /// 보상
     var reward: Cost
 
@@ -48,9 +48,9 @@ final class Achievement {
         description: String,
         targetValue: Int,
         currentValue: Int = 0,
-        state: AchievementState = .inProgress,
+        state: MissionState = .inProgress,
         updateCondition: @escaping (Record) -> Int,
-        completeCondition: @escaping (Record) -> Bool,
+        completeCondition: ((Record) -> Bool)? = nil,
         reward: Cost
     ) {
         self.id = id
@@ -63,21 +63,25 @@ final class Achievement {
         self.completeCondition = completeCondition
         self.reward = reward
     }
-    /// 최신 기록으로 업데이트 합니다.
+
+    /// 최신 기록으로 업데이트하고, 완료 조건을 체크
     func update(record: Record) {
         guard state == .inProgress else { return }
-        currentValue = updateCondition(record)
-    }
 
-    /// 미션 완료상태로 전환합니다.
-    func complete() {
-        guard state == .inProgress else { return }
-        state = .unclaimed
+        // 현재 값 업데이트
+        currentValue = updateCondition(record)
+
+        // 완료 조건 체크
+        let isComplete = completeCondition?(record) ?? (currentValue >= targetValue)
+
+        if isComplete {
+            state = .claimable
+        }
     }
 
     /// 미션을 완료하고 보상을 리턴합니다.
     func claim() -> Cost {
-        guard state == .unclaimed else { return Cost() }
+        guard state == .claimable else { return Cost() }
         state = .claimed
 
         return reward
