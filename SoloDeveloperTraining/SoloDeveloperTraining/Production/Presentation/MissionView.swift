@@ -22,20 +22,12 @@ struct MissionView: View {
         self.missionSystem = user.record.missionSystem
     }
 
-    var allCount: Int {
-        missionSystem.missions.count
-    }
-
-    var claimedCount: Int {
-        missionSystem.missions.count { $0.state == .claimed }
-    }
-
     var body: some View {
         VStack(spacing: Constant.vertical) {
             ProgressBar(
-                maxValue: Double(allCount),
-                currentValue: Double(claimedCount),
-                text: "\(claimedCount) / \(allCount)"
+                maxValue: Double(missionSystem.allCount),
+                currentValue: Double(missionSystem.claimedCount),
+                text: "\(missionSystem.claimedCount) / \(missionSystem.allCount)"
             )
             ScrollView {
                 LazyVGrid(

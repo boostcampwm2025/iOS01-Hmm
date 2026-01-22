@@ -15,6 +15,15 @@ final class MissionSystem {
     /// 완료된 미션 유무 플래그
     private(set) var hasCompletedMission: Bool = false
 
+    /// 총 미션 수
+    var allCount: Int {
+        missions.count
+    }
+    /// 획득한 미션 수
+    var claimedCount: Int {
+        missions.count { $0.state == .claimed }
+    }
+
     init(missions: [Mission]) {
         self.missions = missions
     }
