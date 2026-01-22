@@ -62,6 +62,7 @@ struct QuizQuestionView: View {
                 options: state.currentQuestion?.options ?? [],
                 selectedIndex: state.selectedAnswerIndex,
                 isShowingExplanation: state.phase == .showingExplanation,
+                submitButtonTitle: state.phase == .showingExplanation ? state.nextButtonTitle : "제출하기",
                 onSelect: { index in
                     quizGame.selectAnswer(index)
                 },
@@ -85,7 +86,7 @@ struct QuizQuestionView: View {
     }
 }
 
-// MARK: - 퀴즈 해더 뷰
+// MARK: - 퀴즈 헤더 뷰
 private struct QuizHeaderView: View {
     let currentQuizNumber: Int
     let totalQuizCount: Int
@@ -170,6 +171,7 @@ private struct QuizOptionsView: View {
     let options: [String]
     let selectedIndex: Int?
     let isShowingExplanation: Bool
+    let submitButtonTitle: String
     let onSelect: (Int) -> Void
     let onSubmit: () -> Void
 
@@ -194,7 +196,7 @@ private struct QuizOptionsView: View {
             QuizButton(
                 style: .submit,
                 isEnabled: isShowingExplanation ? true : selectedIndex != nil,
-                title: isShowingExplanation ? "다음으로" : "제출하기"
+                title: submitButtonTitle
             ) {
                 onSubmit()
             }

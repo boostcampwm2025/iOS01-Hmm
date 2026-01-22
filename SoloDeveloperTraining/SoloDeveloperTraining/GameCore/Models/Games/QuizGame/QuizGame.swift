@@ -57,7 +57,7 @@ final class QuizGame {
         QuizGameState(
             totalDiamondsEarned: correctAnswersCount * Constant.diamondsPerCorrectAnswer,
             progressText: "\(currentQuestionIndex + 1)/\(Constant.questionsPerGame)",
-            nextButtonTitle: currentQuestionIndex >= currentGameQuestions.count - 1 ? "결과 보기" : "다음",
+            nextButtonTitle: currentQuestionIndex >= currentGameQuestions.count - 1 ? "보상받기" : "다음으로",
             isSubmitEnabled: selectedAnswerIndex != nil && phase == .questionInProgress,
             timerProgress: Double(remainingSeconds) / Double(Constant.secondsPerQuestion),
             phase: phase,
