@@ -12,6 +12,7 @@ struct SoloDeveloperTrainingApp: App {
     @State private var hasSeenIntro = false
     @State private var user: User?
     @State private var showNicknameSetup = false
+    @State private var showTutorial = false
 
     var body: some Scene {
         WindowGroup {
@@ -53,15 +54,20 @@ struct SoloDeveloperTrainingApp: App {
                                 }
                             },
                             onTutorial: { nickname in
-                                // TODO: 튜토리얼 구현
                                 user = createUser(nickname: nickname.isEmpty ? "개발자" : nickname)
                                 showNicknameSetup = false
-                                withAnimation(.easeOut(duration: 1)) {
-                                    hasSeenIntro = true
-                                }
+                                showTutorial = true
                             }
                         )
                         .padding(.horizontal, 25)
+                    }
+                }
+            }
+            .fullScreenCover(isPresented: $showTutorial) {
+                TutorialView(isPresented: $showTutorial) {
+                    showTutorial = false
+                    withAnimation(.easeOut(duration: 1)) {
+                        hasSeenIntro = true
                     }
                 }
             }
@@ -79,7 +85,7 @@ func createUser(nickname: String) -> User {
                 .init(type: .chair, tier: .broken),
                 .init(type: .keyboard, tier: .broken),
                 .init(type: .monitor, tier: .broken),
-                .init(type: .mouse, tier: .broken),
+                .init(type: .mouse, tier: .broken)
             ],
             housing: .init(tier: .rooftop)
         ),

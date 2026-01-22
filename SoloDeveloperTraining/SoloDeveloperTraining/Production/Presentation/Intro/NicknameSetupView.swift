@@ -15,7 +15,6 @@ struct NicknameSetupView: View {
     var body: some View {
         Popup(title: "닉네임 설정") {
             VStack(alignment: .leading, spacing: 10) {
-                // 스토리 텍스트
                 VStack(alignment: .leading, spacing: 4) {
                     Text("당신은 취직에 실패한 개발자.")
                         .textStyle(.body)
@@ -30,12 +29,10 @@ struct NicknameSetupView: View {
                         .foregroundColor(.black)
                 }
 
-                // 닉네임 프롬프트
                 Text("내 이름은!!")
                     .textStyle(.body)
                     .foregroundColor(.black)
 
-                // 닉네임 입력 필드
                 TextField("닉네임", text: $nickname)
                     .font(.pfFont(.body))
                     .padding(.horizontal, 17)
@@ -49,10 +46,9 @@ struct NicknameSetupView: View {
                     }
                     .padding(.bottom, 9)
 
-                // 버튼
                 HStack(spacing: 15) {
                     MediumButton(title: "바로 시작", isFilled: false) {
-                        onStart(nickname.isEmpty ? "개발자" : nickname)
+                        onStart(nickname)
                     }
 
                     MediumButton(title: "튜토리얼", isFilled: true, hasBadge: true) {

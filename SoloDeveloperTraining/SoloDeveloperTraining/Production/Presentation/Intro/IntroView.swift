@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct IntroView: View {
-    @State private var isBlinking = false
+    @State private var isBlinking = true
     @Binding var hasSeenIntro: Bool
     @Binding var showNicknameSetup: Bool
     let user: User?
@@ -27,7 +27,7 @@ struct IntroView: View {
                 Spacer()
 
                 Text("화면을 터치해 주세요")
-                    .textStyle(.largeTitle)
+                    .textStyle(.title2)
                     .foregroundColor(.white)
                     .opacity(isBlinking ? 0.3 : 1.0)
                     .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: isBlinking)
@@ -38,14 +38,14 @@ struct IntroView: View {
             if user == nil {
                 showNicknameSetup = true
             } else {
-                withAnimation(.easeOut(duration: 0.5)) {
+                withAnimation(.easeOut(duration: 1.0)) {
                     hasSeenIntro = true
                 }
             }
         }
         .ignoresSafeArea()
         .onAppear {
-            isBlinking = true
+            isBlinking = false
         }
     }
 }
