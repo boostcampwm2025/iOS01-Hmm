@@ -32,8 +32,8 @@ struct ProgressBar: View {
                 .scaleEffect(x: progress, y: 1, anchor: .leading)
 
             Text(text)
-                .textStyle(.caption2)
-                .foregroundColor(.white)
+                .textStyle(.caption)
+                .foregroundColor(.black)
         }
         .frame(height: Constants.height)
     }

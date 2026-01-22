@@ -13,7 +13,7 @@ enum MissionConstants {
     enum CodeTap {
         static let id1 = 1, id2 = 2, id3 = 3
         static let target1 = 1_000, target2 = 10_000, target3 = 100_000
-        static let title1 = "손풀기", title2 = "근육맨", title3 = "신의 손가락"
+        static let title1 = "초보의 손가락", title2 = "장인의 손가락", title3 = "신의 손가락"
         static let description1 = "탭 1,000회 달성"
         static let description2 = "탭 10,000회 달성"
         static let description3 = "탭 100,000회 달성"

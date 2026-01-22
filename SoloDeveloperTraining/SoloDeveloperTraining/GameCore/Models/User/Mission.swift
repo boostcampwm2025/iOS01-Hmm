@@ -8,19 +8,47 @@
 import Foundation
 import Observation
 
-enum MissionState {
-    /// "달성 완료"
+enum MissionCardState: Equatable {
     case claimed
-    /// "획득하기"
     case claimable
-    /// "진행중"
-    case inProgress
+    case inProgress(currentValue: Int, totalValue: Int)
+}
+
+enum MissionLevel {
+    /// 금
+    case gold
+    /// 은
+    case silver
+    /// 동
+    case bronze
+    /// 특수
+    case special
+
+    var imageName: String {
+        switch self {
+        case .bronze: return "mission_trophy_bronze"
+        case .silver: return "mission_trophy_silver"
+        case .gold: return "mission_trophy_gold"
+        case .special: return "mission_trophy_special"
+        }
+    }
 }
 
 @Observable
 final class Mission {
+    enum State {
+        /// "달성 완료"
+        case claimed
+        /// "획득하기"
+        case claimable
+        /// "진행중"
+        case inProgress
+    }
+
     /// 미션 아이디
     var id: Int
+    /// 미션 타입
+    var type: MissionType
     /// 업적 제목
     var title: String
     /// 업적 설명
@@ -34,7 +62,7 @@ final class Mission {
         min(Double(currentValue) / Double(targetValue), 1.0)
     }
     /// 현재 미션 상태
-    var state: MissionState = .inProgress
+    var state: State = .inProgress
     /// 업데이트 조건
     var updateCondition: (Record) -> Int
     /// 달성 조건
@@ -42,18 +70,35 @@ final class Mission {
     /// 보상
     var reward: Cost
 
+    /// 미션 카드 상태로 매핑
+    var missionCardState: MissionCardState {
+        switch state {
+        case .claimed:
+            return .claimed
+        case .claimable:
+            return .claimable
+        case .inProgress:
+            return .inProgress(
+                currentValue: currentValue,
+                totalValue: targetValue
+            )
+        }
+    }
+
     init(
         id: Int,
+        type: MissionType,
         title: String,
         description: String,
         targetValue: Int,
         currentValue: Int = 0,
-        state: MissionState = .inProgress,
+        state: State = .inProgress,
         updateCondition: @escaping (Record) -> Int,
         completeCondition: ((Record) -> Bool)? = nil,
         reward: Cost
     ) {
         self.id = id
+        self.type = type
         self.title = title
         self.description = description
         self.targetValue = targetValue

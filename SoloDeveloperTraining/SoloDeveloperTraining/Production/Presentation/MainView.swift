@@ -96,7 +96,10 @@ struct MainView: View {
                 )
 
                 // 탭바
-                TabBar(selectedTab: $selectedTab)
+                TabBar(
+                    selectedTab: $selectedTab,
+                    hasCompletedMisson: user.record
+                        .missionSystem.hasCompletedMission)
 
                 Group {
                     switch selectedTab {
@@ -107,8 +110,7 @@ struct MainView: View {
                     case .shop:
                         ShopView(user: user, popupContent: $popupContent)
                     case .mission:
-                        Color.white
-                            .overlay(Text("미션 화면").foregroundColor(.gray))
+                        MissionView(user: user)
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

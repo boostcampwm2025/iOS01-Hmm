@@ -118,10 +118,10 @@ final class DodgeGame: Game {
             // 0.8배 획득
             let gainGold = Int(Double(baseGold) * Constant.smallGoldMultiplier)
             user.wallet.addGold(gainGold)
-
+            // 골드 획득 수 기록
+            user.record.record(.dodgeGoldHit)
             // 재화 획득 시 캐릭터 웃게 만들기
             animationSystem?.playSmile()
-
             return gainGold
 
         case .largeGold:
@@ -134,10 +134,10 @@ final class DodgeGame: Game {
             // 1.2배 획득
             let gainGold = Int(Double(baseGold) * Constant.largeGoldMultiplier)
             user.wallet.addGold(gainGold)
-
+            // 골드 획득 수 기록
+            user.record.record(.dodgeGoldHit)
             // 재화 획득 시 캐릭터 웃게 만들기
             animationSystem?.playSmile()
-
             return gainGold
 
         case .bug:
@@ -150,6 +150,8 @@ final class DodgeGame: Game {
             // 절반 손실
             let loseGold = baseGold / 2
             user.wallet.spendGold(loseGold)
+            /// 골드 손실 수 기록
+            user.record.record(.dodgeFail)
             return -loseGold
         }
     }

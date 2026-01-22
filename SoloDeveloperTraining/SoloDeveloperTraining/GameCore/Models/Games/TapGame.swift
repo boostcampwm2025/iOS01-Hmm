@@ -66,10 +66,10 @@ final class TapGame: Game {
             buffMultiplier: buffSystem.multiplier
         )
         user.wallet.addGold(gainGold)
-
+        // 탭 횟수 기록
+        user.record.record(.tap())
         // 재화 획득 시 캐릭터 웃게 만들기
         animationSystem?.playSmile()
-
         return gainGold
     }
 }

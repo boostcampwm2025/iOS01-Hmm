@@ -162,6 +162,7 @@ private extension DodgeGameView {
     func useConsumableItem(_ type: ConsumableType) {
         if game.user.inventory.drink(type) {
             game.buffSystem.useConsumableItem(type: type)
+            game.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
         }
     }
 }

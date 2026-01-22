@@ -143,6 +143,8 @@ final class StackGame: Game {
     private func applyReward() -> Int {
         let goldEarned = calculateGold()
         user.wallet.addGold(goldEarned)
+        /// 성공 수 기록
+        user.record.record(.stackingSuccess)
         feverSystem.gainFever(Constant.Fever.success)
 
         // 재화 획득 시 캐릭터 웃게 만들기
@@ -158,6 +160,8 @@ final class StackGame: Game {
     private func applyPenalty() -> Int {
         let goldLost = calculateGold()
         user.wallet.spendGold(goldLost)
+        /// 실패 수 기록
+        user.record.record(.stackingFail)
         feverSystem.gainFever(Constant.Fever.failure)
         return -goldLost
         #if DEV_BUILD

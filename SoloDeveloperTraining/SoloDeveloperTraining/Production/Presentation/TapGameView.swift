@@ -120,6 +120,7 @@ private extension TapGameView {
     func useConsumableItem(_ type: ConsumableType) {
         if tapGame.inventory.drink(type) {
             tapGame.buffSystem.useConsumableItem(type: type)
+            tapGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
         }
     }
 }
