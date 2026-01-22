@@ -27,6 +27,8 @@ final class DodgeGame: Game {
     var feverSystem: FeverSystem = FeverSystem(decreaseInterval: 1.0, decreasePercentPerTick: 30)
     /// 버프 시스템
     var buffSystem: BuffSystem = BuffSystem()
+    /// 캐릭터 애니메이션 시스템
+    var animationSystem: CharacterAnimationSystem?
 
     // MARK: - Game Systems
     /// 모션 시스템 (기기 기울기 감지 및 캐릭터 이동)
@@ -42,10 +44,12 @@ final class DodgeGame: Game {
     init(
         user: User,
         gameAreaSize: CGSize,
-        onGoldChanged: @escaping (Int) -> Void
+        onGoldChanged: @escaping (Int) -> Void,
+        animationSystem: CharacterAnimationSystem? = nil
     ) {
         self.user = user
         self.onGoldChangedHandler = onGoldChanged
+        self.animationSystem = animationSystem
 
         // 게임 시스템 초기화 (크기 필수 전달)
         self.motionSystem = MotionSystem(screenLimit: gameAreaSize.width / 2)
@@ -114,6 +118,10 @@ final class DodgeGame: Game {
             // 0.8배 획득
             let gainGold = Int(Double(baseGold) * Constant.smallGoldMultiplier)
             user.wallet.addGold(gainGold)
+
+            // 재화 획득 시 캐릭터 웃게 만들기
+            animationSystem?.playSmile()
+
             return gainGold
 
         case .largeGold:
@@ -126,6 +134,10 @@ final class DodgeGame: Game {
             // 1.2배 획득
             let gainGold = Int(Double(baseGold) * Constant.largeGoldMultiplier)
             user.wallet.addGold(gainGold)
+
+            // 재화 획득 시 캐릭터 웃게 만들기
+            animationSystem?.playSmile()
+
             return gainGold
 
         case .bug:

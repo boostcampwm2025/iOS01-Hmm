@@ -41,12 +41,17 @@ struct DodgeGameView: View {
 
     @Binding var isGameStarted: Bool
 
-    init(user: User, isGameStarted: Binding<Bool>) {
+    init(
+        user: User,
+        isGameStarted: Binding<Bool>,
+        animationSystem: CharacterAnimationSystem? = nil
+    ) {
         self._isGameStarted = isGameStarted
         self.game = DodgeGame(
             user: user,
             gameAreaSize: CGSize.zero,
-            onGoldChanged: { _ in }
+            onGoldChanged: { _ in },
+            animationSystem: animationSystem
         )
     }
 

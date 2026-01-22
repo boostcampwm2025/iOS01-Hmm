@@ -48,7 +48,11 @@ struct LanguageGameView: View {
     /// 획득한 골드를 표시하기 위한 효과 라벨 배열
     @State private var effectValues: [(id: UUID, value: Int)] = []
 
-    init(user: User, isGameStarted: Binding<Bool>) {
+    init(
+        user: User,
+        isGameStarted: Binding<Bool>,
+        animationSystem: CharacterAnimationSystem? = nil
+    ) {
         self._isGameStarted = isGameStarted
         self.user = user
 
@@ -61,7 +65,8 @@ struct LanguageGameView: View {
                 decreasePercentPerTick: Constant.Game.feverDecreasePercentPerTick
             ),
             buffSystem: .init(),
-            itemCount: Constant.Game.itemCount
+            itemCount: Constant.Game.itemCount,
+            animationSystem: animationSystem
         )
         self.game.startGame()
     }
@@ -177,22 +182,16 @@ private extension LanguageGameView {
 }
 
 #Preview {
-    struct PreviewWrapper: View {
-        @State private var isGameStarted = true
-        let user = User(
-            nickname: "Test",
-            wallet: .init(),
-            inventory: .init(),
-            record: .init(),
-            skills: [
-                .init(key: SkillKey(game: .language, tier: .beginner), level: 1000)
-            ]
-        )
+    @Previewable @State var isGameStarted = true
+    let user = User(
+        nickname: "Test",
+        wallet: .init(),
+        inventory: .init(),
+        record: .init(),
+        skills: [
+            .init(key: SkillKey(game: .language, tier: .beginner), level: 1000)
+        ]
+    )
 
-        var body: some View {
-            LanguageGameView(user: user, isGameStarted: $isGameStarted)
-        }
-    }
-
-    return PreviewWrapper()
+    LanguageGameView(user: user, isGameStarted: $isGameStarted, animationSystem: nil)
 }
