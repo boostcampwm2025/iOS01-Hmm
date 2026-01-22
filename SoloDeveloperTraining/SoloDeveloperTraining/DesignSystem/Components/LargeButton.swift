@@ -42,7 +42,7 @@ struct LargeButton: View {
                 .textStyle(.body)
                 .foregroundColor(.white)
                 .frame(width: Constant.Size.buttonWidth, height: Constant.Size.buttonHeight)
-                .background(isEnabled ? .orange500 : .gray200)
+                .background(isEnabled ? .orange500 : .beige400)
                 .cornerRadius(Constant.radius)
                 .opacity(isPressed ? Constant.Opacity.pressed : Constant.Opacity.unPressed)
                 .overlay(alignment: .topTrailing) {

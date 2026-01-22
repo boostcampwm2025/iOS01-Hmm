@@ -84,7 +84,7 @@ struct ItemRow: View {
         ItemRow(
             title: "강화 / 아이템 이름 이름 이름",
             description: "항목 설명 설명 설명",
-            imageName: "background_street",
+            imageName: "housing_street",
             cost: .init(gold: 1_000_000),
             state: .available
         ) {
@@ -93,7 +93,7 @@ struct ItemRow: View {
         ItemRow(
             title: "강화 / 아이템 이름 이름 이름",
             description: "항목 설명 설명 설명",
-            imageName: "background_street",
+            imageName: "housing_street",
             cost: .init(gold: 1_000_000),
             state: .locked
         ) {
@@ -102,7 +102,7 @@ struct ItemRow: View {
         ItemRow(
             title: "강화 / 아이템 이름 이름 이름",
             description: "항목 설명 설명 설명",
-            imageName: "background_street",
+            imageName: "housing_street",
             cost: .init(gold: 1_000_000),
             state: .insufficient
         ) {

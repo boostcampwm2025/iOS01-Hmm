@@ -43,7 +43,7 @@ struct EnhanceView: View {
             }
         }
         .padding(.bottom)
-        .scrollIndicators(.hidden)
+        .scrollIndicators(.never)
     }
 }
 
