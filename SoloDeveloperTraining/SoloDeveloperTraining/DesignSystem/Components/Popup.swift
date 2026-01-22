@@ -17,6 +17,22 @@ private enum Constant {
     }
 }
 
+struct PopupConfiguration {
+    let title: String
+    let maxHeight: CGFloat?
+    let content: AnyView
+
+    init(
+        title: String,
+        maxHeight: CGFloat? = nil,
+        @ViewBuilder content: () -> some View
+    ) {
+        self.title = title
+        self.maxHeight = maxHeight
+        self.content = AnyView(content())
+    }
+}
+
 struct Popup<ContentView: View>: View {
     let title: String
     let contentView: ContentView

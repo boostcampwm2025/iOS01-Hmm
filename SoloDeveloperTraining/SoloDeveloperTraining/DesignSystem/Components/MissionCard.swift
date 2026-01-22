@@ -171,7 +171,7 @@ private struct MissionCardContentView: View {
         MissionCard(
             title: "명탐정의 돋보기",
             reward: 15,
-            imageName: "background_street",
+            imageName: "housing_street",
             condition: "탭 10,000회 달성",
             buttonState: .inProgress(currentValue: 7356, totalValue: 10000)
         )
