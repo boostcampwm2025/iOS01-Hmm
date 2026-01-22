@@ -8,16 +8,22 @@
 import UIKit
 
 enum HapticType {
-    /// Impact
+    // Impact
+    /// 가볍고 작게 1번
     case light
+    /// 중간 1번
     case medium
+    /// 둔탁하게 1번
     case heavy
-    /// Notification
+    // Notification
+    /// 빠르게 2번, 점점 세기 강해짐
     case success
+    /// 빠르게 4번
     case warning
+    /// 빠르게 2번, 점점 세기 약해짐
     case error
 
-    /// 모든 타입을 실제 피드백 발생으로 매핑
+    // 모든 타입을 실제 피드백 발생으로 매핑
     func trigger() {
         switch self {
         // MARK: - Impact
