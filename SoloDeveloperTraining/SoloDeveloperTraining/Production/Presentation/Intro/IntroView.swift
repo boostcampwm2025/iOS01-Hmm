@@ -20,6 +20,10 @@ private enum Constant {
         static let blinking: Double = 0.3
         static let normal: Double = 1.0
     }
+
+    enum Text {
+        static let touchPrompt = "화면을 터치해 주세요"
+    }
 }
 
 struct IntroView: View {
@@ -64,7 +68,7 @@ private extension IntroView {
         VStack {
             Spacer()
 
-            Text("화면을 터치해 주세요")
+            Text(Constant.Text.touchPrompt)
                 .textStyle(.title2)
                 .foregroundColor(.white)
                 .opacity(isBlinking ? Constant.Opacity.blinking : Constant.Opacity.normal)

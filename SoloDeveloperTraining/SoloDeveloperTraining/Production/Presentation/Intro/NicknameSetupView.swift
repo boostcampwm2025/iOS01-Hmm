@@ -31,16 +31,25 @@ private enum Constant {
         static let background: Double = 0.3
         static let stroke: Double = 0.3
     }
+
+    enum Text {
+        static let popupTitle = "닉네임 설정"
+        static let story = "당신은 취직에 실패한 개발자.\n... 이대로 물러설 수는 없다.\n나의 꿈은 1인 개발자로 성공하기 ~!\n\n내 이름은!!"
+        static let nicknamePlaceholder = "닉네임"
+        static let startButton = "바로 시작"
+        static let tutorialButton = "튜토리얼"
+    }
 }
 
 struct NicknameSetupView: View {
     @State private var nickname: String = ""
     @State private var errorMessage: String = ""
+    private let validator = Validator()
     let onStart: (String) -> Void
     let onTutorial: (String) -> Void
 
     var body: some View {
-        Popup(title: "닉네임 설정") {
+        Popup(title: Constant.Text.popupTitle) {
             VStack(alignment: .leading, spacing: Constant.Spacing.content) {
                 storyTexts
                 nicknameTextField
@@ -54,13 +63,13 @@ struct NicknameSetupView: View {
 
 private extension NicknameSetupView {
     var storyTexts: some View {
-        Text("당신은 취직에 실패한 개발자.\n... 이대로 물러설 수는 없다.\n나의 꿈은 1인 개발자로 성공하기 ~!\n\n내 이름은!!")
+        Text(Constant.Text.story)
             .textStyle(.body)
             .foregroundColor(.black)
     }
 
     var nicknameTextField: some View {
-        TextField("닉네임", text: $nickname)
+        TextField(Constant.Text.nicknamePlaceholder, text: $nickname)
             .font(.pfFont(.body))
             .padding(.horizontal, Constant.Padding.textFieldHorizontalPadding)
             .frame(height: Constant.Size.textFieldHeight)
@@ -92,19 +101,19 @@ private extension NicknameSetupView {
     var buttons: some View {
         HStack(spacing: Constant.Spacing.button) {
             MediumButton(
-                title: "바로 시작",
-                isFilled: !Validator.isValid(nickname),
-                isEnabled: Validator.isValid(nickname),
+                title: Constant.Text.startButton,
+                isFilled: !validator.isValid(nickname),
+                isEnabled: validator.isValid(nickname),
                 isCancelButton: true
             ) {
                 onStart(nickname)
             }
 
             MediumButton(
-                title: "튜토리얼",
+                title: Constant.Text.tutorialButton,
                 isFilled: true,
                 hasBadge: true,
-                isEnabled: Validator.isValid(nickname)
+                isEnabled: validator.isValid(nickname)
             ) {
                 onTutorial(nickname)
             }
@@ -113,7 +122,7 @@ private extension NicknameSetupView {
     }
 
     func updateValidationState(for value: String) {
-        switch Validator.validate(value) {
+        switch validator.validate(value) {
         case .empty, .valid:
             errorMessage = ""
         case .invalid(let message):
