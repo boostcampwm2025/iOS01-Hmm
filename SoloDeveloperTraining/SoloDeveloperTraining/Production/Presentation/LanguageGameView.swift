@@ -155,6 +155,8 @@ private extension LanguageGameView {
     /// 소비 아이템 사용 처리
     func useConsumableItem(_ type: ConsumableType) {
         if game.user.inventory.drink(type) {
+            // 햅틱 재생
+            HapticService.shared.trigger(.success)
             game.buffSystem.useConsumableItem(type: type)
         }
     }
