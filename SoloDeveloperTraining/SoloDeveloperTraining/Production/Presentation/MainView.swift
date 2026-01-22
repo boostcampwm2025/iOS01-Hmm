@@ -87,15 +87,20 @@ struct MainView: View {
                             .background(Color.clear)
                         Spacer()
                     }
+                    VStack {
+                        Spacer()
+                        HStack {
+                            FeedbackSettingView()
+                                .padding()
+                            Spacer()
+                        }
+                    }
                 }
                 .frame(height: geometry.size.height * Constant.topAreaHeightRatio)
                 .background(
                     Image(user.inventory.housing.imageName)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .overlay(alignment: .bottomLeading) {
-                            FeedbackSettingView()
-                        }
                 )
                 // 탭바
                 TabBar(
