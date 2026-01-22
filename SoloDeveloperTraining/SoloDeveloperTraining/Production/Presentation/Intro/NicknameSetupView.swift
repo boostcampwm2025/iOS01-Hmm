@@ -40,50 +40,48 @@ struct NicknameSetupView: View {
     var body: some View {
         Popup(title: "닉네임 설정") {
             VStack(alignment: .leading, spacing: Constant.Spacing.content) {
-                VStack(alignment: .leading, spacing: Constant.Spacing.textGroup) {
-                    Text("당신은 취직에 실패한 개발자.")
-                        .textStyle(.body)
-                        .foregroundColor(.black)
-
-                    Text("... 이대로 물러설 수는 없다.")
-                        .textStyle(.body)
-                        .foregroundColor(.black)
-
-                    Text("나의 꿈은 1인 개발자로 성공하기 ~!")
-                        .textStyle(.body)
-                        .foregroundColor(.black)
-                }
-
-                Text("내 이름은!!")
-                    .textStyle(.body)
-                    .foregroundColor(.black)
-
-                TextField("닉네임", text: $nickname)
-                    .font(.pfFont(.body))
-                    .padding(.horizontal, Constant.Layout.textFieldHorizontalPadding)
-                    .frame(height: Constant.Size.textFieldHeight)
-                    .background(AppColors.gray100.opacity(Constant.Opacity.background))
-                    .cornerRadius(Constant.Size.cornerRadius)
-                    .foregroundColor(.black)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: Constant.Size.cornerRadius)
-                            .stroke(Color.gray.opacity(Constant.Opacity.stroke), lineWidth: Constant.Size.strokeLineWidth)
-                    }
-                    .padding(.bottom, Constant.Layout.textFieldBottomPadding)
-
-                HStack(spacing: Constant.Spacing.button) {
-                    MediumButton(title: "바로 시작", isFilled: false) {
-                        onStart(nickname)
-                    }
-
-                    MediumButton(title: "튜토리얼", isFilled: true, hasBadge: true) {
-                        onTutorial(nickname)
-                    }
-                }
-                .frame(maxWidth: .infinity)
+                storyTexts
+                nicknameTextField
+                buttons
             }
             .padding(Constant.Layout.contentPadding)
         }
+    }
+}
+
+private extension NicknameSetupView {
+    var storyTexts: some View {
+        Text("당신은 취직에 실패한 개발자.\n... 이대로 물러설 수는 없다.\n나의 꿈은 1인 개발자로 성공하기 ~!\n\n내 이름은!!")
+            .textStyle(.body)
+            .foregroundColor(.black)
+    }
+
+    var nicknameTextField: some View {
+        TextField("닉네임", text: $nickname)
+            .font(.pfFont(.body))
+            .padding(.horizontal, Constant.Layout.textFieldHorizontalPadding)
+            .frame(height: Constant.Size.textFieldHeight)
+            .background(AppColors.gray100.opacity(Constant.Opacity.background))
+            .cornerRadius(Constant.Size.cornerRadius)
+            .foregroundColor(.black)
+            .overlay {
+                RoundedRectangle(cornerRadius: Constant.Size.cornerRadius)
+                    .stroke(Color.gray.opacity(Constant.Opacity.stroke), lineWidth: Constant.Size.strokeLineWidth)
+            }
+            .padding(.bottom, Constant.Layout.textFieldBottomPadding)
+    }
+
+    var buttons: some View {
+        HStack(spacing: Constant.Spacing.button) {
+            MediumButton(title: "바로 시작", isFilled: false) {
+                onStart(nickname)
+            }
+
+            MediumButton(title: "튜토리얼", isFilled: true, hasBadge: true) {
+                onTutorial(nickname)
+            }
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 

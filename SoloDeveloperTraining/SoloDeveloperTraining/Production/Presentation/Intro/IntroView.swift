@@ -15,6 +15,11 @@ private enum Constant {
     enum Layout {
         static let bottomPadding: CGFloat = 100
     }
+
+    enum Opacity {
+        static let blinking: Double = 0.3
+        static let normal: Double = 1.0
+    }
 }
 
 struct IntroView: View {
@@ -25,24 +30,8 @@ struct IntroView: View {
 
     var body: some View {
         ZStack {
-            GeometryReader { geometry in
-                Image(.appLaunchScreen)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: geometry.size.width, height: geometry.size.height)
-                    .clipped()
-            }
-
-            VStack {
-                Spacer()
-
-                Text("화면을 터치해 주세요")
-                    .textStyle(.title2)
-                    .foregroundColor(.white)
-                    .opacity(isBlinking ? 0.3 : 1.0)
-                    .animation(.easeInOut(duration: Constant.Animation.duration).repeatForever(autoreverses: true), value: isBlinking)
-                    .padding(.bottom, Constant.Layout.bottomPadding)
-            }
+            backgroundImage
+            touchPromptView
         }
         .onTapGesture {
             if user == nil {
@@ -56,6 +45,31 @@ struct IntroView: View {
         .ignoresSafeArea()
         .onAppear {
             isBlinking = false
+        }
+    }
+}
+
+private extension IntroView {
+    var backgroundImage: some View {
+        GeometryReader { geometry in
+            Image(.appLaunchScreen)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: geometry.size.width, height: geometry.size.height)
+                .clipped()
+        }
+    }
+
+    var touchPromptView: some View {
+        VStack {
+            Spacer()
+
+            Text("화면을 터치해 주세요")
+                .textStyle(.title2)
+                .foregroundColor(.white)
+                .opacity(isBlinking ? Constant.Opacity.blinking : Constant.Opacity.normal)
+                .animation(.easeInOut(duration: Constant.Animation.duration).repeatForever(autoreverses: true), value: isBlinking)
+                .padding(.bottom, Constant.Layout.bottomPadding)
         }
     }
 }

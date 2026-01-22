@@ -56,7 +56,7 @@ actor User {
                     .init(type: .chair, tier: .broken),
                     .init(type: .keyboard, tier: .broken),
                     .init(type: .monitor, tier: .broken),
-                    .init(type: .mouse, tier: .broken),
+                    .init(type: .mouse, tier: .broken)
                 ],
                 housing: .init(tier: .street)
             ),
@@ -73,9 +73,8 @@ actor User {
                 .init(key: SkillKey(game: .dodge, tier: .advanced)),
                 .init(key: SkillKey(game: .stack, tier: .beginner)),
                 .init(key: SkillKey(game: .stack, tier: .intermediate)),
-                .init(key: SkillKey(game: .stack, tier: .advanced)),
+                .init(key: SkillKey(game: .stack, tier: .advanced))
             ]
         )
     }
 }
-

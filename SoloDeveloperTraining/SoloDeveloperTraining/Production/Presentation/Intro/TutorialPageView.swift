@@ -38,37 +38,47 @@ struct TutorialPageView: View {
     var body: some View {
         VStack(spacing: Constant.Spacing.content) {
             Spacer()
-
-            // 이미지 영역
-            if let imageName = page.imageName {
-                Image(imageName)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: Constant.Size.imageMaxWidth, maxHeight: Constant.Size.imageMaxHeight)
-            } else {
-                // 임시 플레이스홀더
-                RoundedRectangle(cornerRadius: Constant.Size.cornerRadius)
-                    .fill(AppColors.gray200)
-                    .frame(width: Constant.Size.placeholderWidth, height: Constant.Size.placeholderHeight)
-                    .overlay {
-                        Text("이미지")
-                    }
-            }
-
-            VStack(spacing: Constant.Spacing.textGroup) {
-                Text(page.title)
-                    .textStyle(.largeTitle)
-                    .foregroundColor(.black)
-                    .multilineTextAlignment(.center)
-
-                Text(page.description)
-                    .textStyle(.body)
-                    .foregroundColor(AppColors.gray600)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, Constant.Layout.textHorizontalPadding)
-            }
-
+            imageView
+            textGroup
             Spacer()
+        }
+    }
+}
+
+private extension TutorialPageView {
+    @ViewBuilder
+    var imageView: some View {
+        if let imageName = page.imageName {
+            Image(imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(maxWidth: Constant.Size.imageMaxWidth, maxHeight: Constant.Size.imageMaxHeight)
+        } else {
+            placeholderView
+        }
+    }
+
+    var placeholderView: some View {
+        RoundedRectangle(cornerRadius: Constant.Size.cornerRadius)
+            .fill(AppColors.gray200)
+            .frame(width: Constant.Size.placeholderWidth, height: Constant.Size.placeholderHeight)
+            .overlay {
+                Text("이미지")
+            }
+    }
+
+    var textGroup: some View {
+        VStack(spacing: Constant.Spacing.textGroup) {
+            Text(page.title)
+                .textStyle(.largeTitle)
+                .foregroundColor(.black)
+                .multilineTextAlignment(.center)
+
+            Text(page.description)
+                .textStyle(.body)
+                .foregroundColor(AppColors.gray600)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, Constant.Layout.textHorizontalPadding)
         }
     }
 }

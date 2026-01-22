@@ -18,11 +18,11 @@ private enum Constant {
         static let indicatorCircle: CGFloat = 8
     }
 
-    enum Layout {
-        static let indicatorTopPadding: CGFloat = 60
-        static let indicatorBottomPadding: CGFloat = 40
-        static let buttonHorizontalPadding: CGFloat = 25
-        static let buttonBottomPadding: CGFloat = 50
+    enum Padding {
+        static let indicatorTop: CGFloat = 60
+        static let indicatorBottom: CGFloat = 40
+        static let buttonHorizontal: CGFloat = 25
+        static let buttonBottom: CGFloat = 50
     }
 }
 
@@ -61,55 +61,65 @@ struct TutorialView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: Constant.Spacing.content) {
-                HStack(spacing: Constant.Spacing.indicator) {
-                    ForEach(0..<tutorialPages.count, id: \.self) { index in
-                        Circle()
-                            .fill(index == currentPage ? AppColors.orange500 : AppColors.gray300)
-                            .frame(width: Constant.Size.indicatorCircle, height: Constant.Size.indicatorCircle)
-                            .animation(.easeInOut, value: currentPage)
-                    }
-                }
-                .padding(.top, Constant.Layout.indicatorTopPadding)
-                .padding(.bottom, Constant.Layout.indicatorBottomPadding)
-
-                // 튜토리얼 콘텐츠
-                TabView(selection: $currentPage) {
-                    ForEach(0..<tutorialPages.count, id: \.self) { index in
-                        TutorialPageView(page: tutorialPages[index])
-                            .tag(index)
-                    }
-                }
-                .tabViewStyle(.page(indexDisplayMode: .never))
-                .frame(maxHeight: .infinity)
-
-                // 버튼 영역
-                HStack(spacing: Constant.Spacing.button) {
-                    if currentPage > 0 {
-                        MediumButton(title: "이전", isFilled: true, isCancelButton: true) {
-                            withAnimation {
-                                currentPage -= 1
-                            }
-                        }
-                    }
-
-                    Spacer()
-
-                    if currentPage < tutorialPages.count - 1 {
-                        MediumButton(title: "다음", isFilled: true) {
-                            withAnimation {
-                                currentPage += 1
-                            }
-                        }
-                    } else {
-                        MediumButton(title: "시작하기", isFilled: true) {
-                            onComplete()
-                        }
-                    }
-                }
-                .padding(.horizontal, Constant.Layout.buttonHorizontalPadding)
-                .padding(.bottom, Constant.Layout.buttonBottomPadding)
+                indicator
+                tutorialContent
+                buttonGroup
             }
         }
+    }
+}
+
+private extension TutorialView {
+    var indicator: some View {
+        HStack(spacing: Constant.Spacing.indicator) {
+            ForEach(0..<tutorialPages.count, id: \.self) { index in
+                Circle()
+                    .fill(index == currentPage ? AppColors.orange500 : AppColors.gray300)
+                    .frame(width: Constant.Size.indicatorCircle, height: Constant.Size.indicatorCircle)
+                    .animation(.easeInOut, value: currentPage)
+            }
+        }
+        .padding(.top, Constant.Padding.indicatorTop)
+        .padding(.bottom, Constant.Padding.indicatorBottom)
+    }
+
+    var tutorialContent: some View {
+        TabView(selection: $currentPage) {
+            ForEach(0..<tutorialPages.count, id: \.self) { index in
+                TutorialPageView(page: tutorialPages[index])
+                    .tag(index)
+            }
+        }
+        .tabViewStyle(.page(indexDisplayMode: .never))
+        .frame(maxHeight: .infinity)
+    }
+
+    var buttonGroup: some View {
+        HStack(spacing: Constant.Spacing.button) {
+            if currentPage > 0 {
+                MediumButton(title: "이전", isFilled: true, isCancelButton: true) {
+                    withAnimation {
+                        currentPage -= 1
+                    }
+                }
+            }
+
+            Spacer()
+
+            if currentPage < tutorialPages.count - 1 {
+                MediumButton(title: "다음", isFilled: true) {
+                    withAnimation {
+                        currentPage += 1
+                    }
+                }
+            } else {
+                MediumButton(title: "시작하기", isFilled: true) {
+                    onComplete()
+                }
+            }
+        }
+        .padding(.horizontal, Constant.Padding.buttonHorizontal)
+        .padding(.bottom, Constant.Padding.buttonBottom)
     }
 }
 
