@@ -31,6 +31,7 @@ private enum Constant {
 
 struct QuizQuestionView: View {
     @State private var quizGame: QuizGame
+    @State private var showRewardPopup: Bool = false
 
     init(user: User) {
         _quizGame = State(initialValue: QuizGame(user: user))
@@ -73,7 +74,11 @@ struct QuizQuestionView: View {
                 },
                 onSubmit: {
                     if state.phase == .showingExplanation {
-                        quizGame.proceedToNextQuestion()
+                        if state.nextButtonTitle == "보상받기" {
+                            showRewardPopup = true
+                        } else {
+                            quizGame.proceedToNextQuestion()
+                        }
                     } else {
                         quizGame.submitSelectedAnswer()
                     }
@@ -86,6 +91,23 @@ struct QuizQuestionView: View {
         .onAppear {
             if quizGame.state.phase == .ready {
                 quizGame.startGame()
+            }
+        }
+        .overlay {
+            if showRewardPopup {
+                ZStack {
+                    Color.black.opacity(0.4)
+                        .ignoresSafeArea()
+
+                    RewardPopupView(
+                        totalDiamondsEarned: state.totalDiamondsEarned,
+                        onClose: {
+                            quizGame.proceedToNextQuestion()
+                            showRewardPopup = false
+                            // TODO: 화면 닫기 등 추가 로직
+                        }
+                    )
+                }
             }
         }
     }
@@ -213,6 +235,41 @@ private struct QuizOptionsView: View {
             }
             .padding(.bottom, Constant.Padding.submitBottom)
         }
+    }
+}
+
+// MARK: - 보상 팝업 뷰
+private struct RewardPopupView: View {
+    let totalDiamondsEarned: Int
+    let onClose: () -> Void
+
+    var body: some View {
+        Popup(title: "보상 획득") {
+            VStack(alignment: .center, spacing: 0) {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("퀴즈 풀이를 완료했습니다!\n진정한 개발자에 한걸음 더 가까워졌습니다.")
+                        .textStyle(.body)
+                        .padding(.top, 11)
+                        .padding(.bottom, 20)
+
+                    HStack(spacing: 4) {
+                        Text("획득한 다이아: ")
+                            .textStyle(.body)
+                        CurrencyLabel(
+                            axis: .horizontal,
+                            icon: .diamond,
+                            textStyle: .body,
+                            value: totalDiamondsEarned
+                        )
+                    }
+                    .padding(.bottom, 20)
+                }
+                MediumButton(title: "종료하기", isFilled: true) {
+                    onClose()
+                }
+            }
+        }
+        .padding(.horizontal, 40)
     }
 }
 
