@@ -54,7 +54,8 @@ struct QuizQuestionView: View {
             QuizExplanationView(
                 isSubmitted: state.phase == .showingExplanation,
                 explanation: state.currentQuestion?.explanation ?? "",
-                isCorrect: state.currentAnswerResult?.isCorrect ?? false
+                isCorrect: state.currentAnswerResult?.isCorrect ?? false,
+                correctAnswerIndex: state.currentQuestion?.correctAnswerIndex
             )
 
             /// 선지, 제출버튼 영역
@@ -147,6 +148,7 @@ private struct QuizExplanationView: View {
     let isSubmitted: Bool
     let explanation: String
     let isCorrect: Bool
+    let correctAnswerIndex: Int?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -166,7 +168,12 @@ private struct QuizExplanationView: View {
     }
 
     private var resultPrefix: String {
-        isCorrect ? "정답\n" : "오답\n"
+        if isCorrect {
+            return "정답\n"
+        } else {
+            let answerNumber = (correctAnswerIndex ?? 0) + 1  // 0-based → 1-based
+            return "오답 / 정답은 \(answerNumber)번이다.\n"
+        }
     }
 }
 
