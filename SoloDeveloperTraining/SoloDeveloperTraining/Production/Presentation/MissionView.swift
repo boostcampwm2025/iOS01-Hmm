@@ -17,6 +17,9 @@ struct MissionView: View {
     private let user: User
     private let missionSystem: MissionSystem
 
+    @State private var showToast: Bool = false
+    @State private var toastMessage: String = ""
+
     init(user: User) {
         self.user = user
         self.missionSystem = user.record.missionSystem
@@ -44,14 +47,9 @@ struct MissionView: View {
                                 missionCardState: mission
                                     .missionCardState),
                             onButtonTap: {
-                                if mission.missionCardState == .claimable {
-                                    missionSystem
-                                        .claimMissionReward(
-                                            mission: mission,
-                                            wallet: user.wallet
-                                        )
-                                    // 이미 획득한 미션이나, 진행 중인 미션의 경우 안내 토스트?
-                                }
+                                missionCardDidTapHandler(
+                                    mission: mission
+                                )
                             }
                         )
                     }
@@ -60,6 +58,7 @@ struct MissionView: View {
             .scrollIndicators(.never)
         }
         .padding(.horizontal)
+        .toast(isShowing: $showToast, message: toastMessage)
 
     }
 }
@@ -73,6 +72,23 @@ private extension MissionView {
                 .claimable
         case .inProgress(let currentValue, let totalValue):
                 .inProgress(currentValue: currentValue, totalValue: totalValue)
+        }
+    }
+
+    func missionCardDidTapHandler(mission: Mission) {
+        if mission.missionCardState == .claimable {
+            missionSystem
+                .claimMissionReward(
+                    mission: mission,
+                    wallet: user.wallet
+                )
+        } else {
+            if showToast {
+                showToast = false
+            }
+
+            toastMessage = mission.missionCardState == .claimed ? "이미 보유한 미션입니다." : "아직 달성하지 못한 미션입니다."
+            showToast = true
         }
     }
 }
