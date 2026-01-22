@@ -37,24 +37,25 @@ struct QuizDataLoader {
 
             var questions: [QuizQuestion] = []
 
-            for (_, line) in dataLines.enumerated() {
+            for line in dataLines {
                 // 탭으로 분리
                 let columns = line.components(separatedBy: "\t")
+                let trimColumns = columns.map { $0.trimmingCharacters(in: .whitespaces) }
 
                 // TSV 형식: 문제 번호\t문제명\t선지1\t선지2\t선지3\t선지4\t정답\t해설
-                guard columns.count >= 8,
-                      let id = Int(columns[0].trimmingCharacters(in: .whitespaces)),
-                      let correctAnswer = Int(columns[6].trimmingCharacters(in: .whitespaces))
+                guard columns.count == 8,
+                      let id = Int(trimColumns[0]),
+                      let correctAnswer = Int(trimColumns[6])
                 else {
                     continue
                 }
 
                 let question = QuizQuestion(
                     id: id,
-                    question: columns[1],
-                    options: [columns[2], columns[3], columns[4], columns[5]],
+                    question: trimColumns[1],
+                    options: [trimColumns[2], trimColumns[3], trimColumns[4], trimColumns[5]],
                     correctAnswerIndex: correctAnswer - 1, // 1-based -> 0-based
-                    explanation: columns[7]
+                    explanation: trimColumns[7]
                 )
                 questions.append(question)
             }
