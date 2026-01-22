@@ -22,7 +22,6 @@ struct SoloDeveloperTrainingApp: App {
 #else
             // 운영 타깃용 뷰
             ZStack {
-                // 배경으로 IntroView 유지 (런치스크린과 동일한 이미지)
                 IntroView(
                     hasSeenIntro: $hasSeenIntro,
                     showNicknameSetup: $showNicknameSetup,

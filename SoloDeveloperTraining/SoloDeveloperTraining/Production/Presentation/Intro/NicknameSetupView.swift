@@ -7,6 +7,31 @@
 
 import SwiftUI
 
+private enum Constant {
+    enum Spacing {
+        static let content: CGFloat = 10
+        static let textGroup: CGFloat = 4
+        static let button: CGFloat = 15
+    }
+
+    enum Size {
+        static let textFieldHeight: CGFloat = 40
+        static let cornerRadius: CGFloat = 10
+        static let strokeLineWidth: CGFloat = 1
+    }
+
+    enum Layout {
+        static let textFieldHorizontalPadding: CGFloat = 17
+        static let textFieldBottomPadding: CGFloat = 9
+        static let contentPadding: CGFloat = 20
+    }
+
+    enum Opacity {
+        static let background: Double = 0.3
+        static let stroke: Double = 0.3
+    }
+}
+
 struct NicknameSetupView: View {
     @State private var nickname: String = ""
     let onStart: (String) -> Void
@@ -14,8 +39,8 @@ struct NicknameSetupView: View {
 
     var body: some View {
         Popup(title: "닉네임 설정") {
-            VStack(alignment: .leading, spacing: 10) {
-                VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: Constant.Spacing.content) {
+                VStack(alignment: .leading, spacing: Constant.Spacing.textGroup) {
                     Text("당신은 취직에 실패한 개발자.")
                         .textStyle(.body)
                         .foregroundColor(.black)
@@ -35,18 +60,18 @@ struct NicknameSetupView: View {
 
                 TextField("닉네임", text: $nickname)
                     .font(.pfFont(.body))
-                    .padding(.horizontal, 17)
-                    .frame(height: 40)
-                    .background(AppColors.gray100.opacity(0.3))
-                    .cornerRadius(10)
+                    .padding(.horizontal, Constant.Layout.textFieldHorizontalPadding)
+                    .frame(height: Constant.Size.textFieldHeight)
+                    .background(AppColors.gray100.opacity(Constant.Opacity.background))
+                    .cornerRadius(Constant.Size.cornerRadius)
                     .foregroundColor(.black)
                     .overlay {
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                        RoundedRectangle(cornerRadius: Constant.Size.cornerRadius)
+                            .stroke(Color.gray.opacity(Constant.Opacity.stroke), lineWidth: Constant.Size.strokeLineWidth)
                     }
-                    .padding(.bottom, 9)
+                    .padding(.bottom, Constant.Layout.textFieldBottomPadding)
 
-                HStack(spacing: 15) {
+                HStack(spacing: Constant.Spacing.button) {
                     MediumButton(title: "바로 시작", isFilled: false) {
                         onStart(nickname)
                     }
@@ -57,7 +82,7 @@ struct NicknameSetupView: View {
                 }
                 .frame(maxWidth: .infinity)
             }
-            .padding(20)
+            .padding(Constant.Layout.contentPadding)
         }
     }
 }

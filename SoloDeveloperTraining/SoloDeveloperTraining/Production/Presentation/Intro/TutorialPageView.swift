@@ -7,6 +7,25 @@
 
 import SwiftUI
 
+private enum Constant {
+    enum Spacing {
+        static let content: CGFloat = 30
+        static let textGroup: CGFloat = 16
+    }
+
+    enum Size {
+        static let imageMaxWidth: CGFloat = 300
+        static let imageMaxHeight: CGFloat = 300
+        static let placeholderWidth: CGFloat = 300
+        static let placeholderHeight: CGFloat = 300
+        static let cornerRadius: CGFloat = 20
+    }
+
+    enum Layout {
+        static let textHorizontalPadding: CGFloat = 40
+    }
+}
+
 struct TutorialPage {
     let title: String
     let description: String
@@ -17,7 +36,7 @@ struct TutorialPageView: View {
     let page: TutorialPage
 
     var body: some View {
-        VStack(spacing: 30) {
+        VStack(spacing: Constant.Spacing.content) {
             Spacer()
 
             // 이미지 영역
@@ -25,19 +44,18 @@ struct TutorialPageView: View {
                 Image(imageName)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: 300, maxHeight: 300)
+                    .frame(maxWidth: Constant.Size.imageMaxWidth, maxHeight: Constant.Size.imageMaxHeight)
             } else {
                 // 임시 플레이스홀더
-                RoundedRectangle(cornerRadius: 20)
+                RoundedRectangle(cornerRadius: Constant.Size.cornerRadius)
                     .fill(AppColors.gray200)
-                    .frame(width: 300, height: 300)
+                    .frame(width: Constant.Size.placeholderWidth, height: Constant.Size.placeholderHeight)
                     .overlay {
                         Text("이미지")
-                            .foregroundColor(AppColors.gray400)
                     }
             }
 
-            VStack(spacing: 16) {
+            VStack(spacing: Constant.Spacing.textGroup) {
                 Text(page.title)
                     .textStyle(.largeTitle)
                     .foregroundColor(.black)
@@ -47,7 +65,7 @@ struct TutorialPageView: View {
                     .textStyle(.body)
                     .foregroundColor(AppColors.gray600)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal, 40)
+                    .padding(.horizontal, Constant.Layout.textHorizontalPadding)
             }
 
             Spacer()
