@@ -240,7 +240,8 @@ final class StackGameScene: SKScene {
         // 폭탄 블록 체크
         if currentBlock.type.isBomb {
             onBlockDropped(stackGame.placeBombSuccess())
-
+            // 실패 사운드 재생
+            SoundService.shared.trigger(.failure)
             DispatchQueue.main.asyncAfter(deadline: .now() + Constant.Time.bombRemovalDelay) { [weak self] in
                 block.removeFromParent()
                 self?.spawnBlock()
@@ -249,7 +250,8 @@ final class StackGameScene: SKScene {
             blockViews.append(block)
             // 코어에 블록 배치 성공 알림 (위치는 이미 업데이트됨)
             onBlockDropped(stackGame.placeBlockSuccess())
-
+            // 성공 사운드 재생
+            SoundService.shared.trigger(.success)
             // 카메라 이동
             if let camera = camera {
                 let newCameraY = camera.position.y + block.size.height
@@ -280,6 +282,8 @@ final class StackGameScene: SKScene {
             onBlockDropped(stackGame.placeBombFail())
         } else {
             onBlockDropped(stackGame.placeBlockFail())
+            // 실패 사운드 재생
+            SoundService.shared.trigger(.failure)
         }
 
         // 일정 시간 후 블록 제거 및 다음 블록 생성
