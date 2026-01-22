@@ -43,6 +43,8 @@
 				Devlopment/Presentation/DodgeGameTestView.swift,
 				Devlopment/Presentation/LanguageGameTestView.swift,
 				Devlopment/Presentation/MissionTestView.swift,
+				Devlopment/Presentation/QuizGameTestContentView.swift,
+				Devlopment/Presentation/QuizGameTestView.swift,
 				Devlopment/Presentation/ShopTestView.swift,
 				Devlopment/Presentation/SkillTestView.swift,
 				Devlopment/Presentation/StackGameScene.swift,
