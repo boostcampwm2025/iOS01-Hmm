@@ -24,7 +24,7 @@ struct CareerPopupView: View {
         VStack(alignment: .center, spacing: 0) {
             CareerProgressBar(
                 career: careerSystem.currentCareer,
-                currentGold: user.wallet.gold
+                currentGold: user.record.totalEarnedMoney
             )
             .padding(.bottom, Constant.progressBarBottomPadding)
             .padding(.top, Constant.progressBarTopPadding)
