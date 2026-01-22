@@ -21,7 +21,7 @@ private enum Constant {
         static let errorTextMinHeight: CGFloat = 15
     }
 
-    enum Layout {
+    enum Padding {
         static let textFieldHorizontalPadding: CGFloat = 17
         static let textFieldBottomPadding: CGFloat = 9
         static let contentPadding: CGFloat = 20
@@ -47,7 +47,7 @@ struct NicknameSetupView: View {
                 errorText
                 buttons
             }
-            .padding(Constant.Layout.contentPadding)
+            .padding(Constant.Padding.contentPadding)
         }
     }
 }
@@ -62,7 +62,7 @@ private extension NicknameSetupView {
     var nicknameTextField: some View {
         TextField("닉네임", text: $nickname)
             .font(.pfFont(.body))
-            .padding(.horizontal, Constant.Layout.textFieldHorizontalPadding)
+            .padding(.horizontal, Constant.Padding.textFieldHorizontalPadding)
             .frame(height: Constant.Size.textFieldHeight)
             .background(AppColors.gray100.opacity(Constant.Opacity.background))
             .cornerRadius(Constant.Size.cornerRadius)
@@ -76,7 +76,7 @@ private extension NicknameSetupView {
                         lineWidth: Constant.Size.strokeLineWidth
                     )
             }
-            .padding(.bottom, Constant.Layout.textFieldBottomPadding)
+            .padding(.bottom, Constant.Padding.textFieldBottomPadding)
             .onChange(of: nickname) { _, newValue in
                 updateValidationState(for: newValue)
             }
@@ -93,8 +93,8 @@ private extension NicknameSetupView {
         HStack(spacing: Constant.Spacing.button) {
             MediumButton(
                 title: "바로 시작",
-                isFilled: !Validator.Nickname.isValid(nickname),
-                isEnabled: Validator.Nickname.isValid(nickname),
+                isFilled: !Validator.isValid(nickname),
+                isEnabled: Validator.isValid(nickname),
                 isCancelButton: true
             ) {
                 onStart(nickname)
@@ -104,7 +104,7 @@ private extension NicknameSetupView {
                 title: "튜토리얼",
                 isFilled: true,
                 hasBadge: true,
-                isEnabled: Validator.Nickname.isValid(nickname)
+                isEnabled: Validator.isValid(nickname)
             ) {
                 onTutorial(nickname)
             }
@@ -113,7 +113,7 @@ private extension NicknameSetupView {
     }
 
     func updateValidationState(for value: String) {
-        switch Validator.Nickname.validate(value) {
+        switch Validator.validate(value) {
         case .empty, .valid:
             errorMessage = ""
         case .invalid(let message):
