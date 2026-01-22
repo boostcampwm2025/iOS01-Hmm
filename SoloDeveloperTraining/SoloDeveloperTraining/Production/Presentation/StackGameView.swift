@@ -27,8 +27,12 @@ struct StackGameView: View {
 
     @State private var effectLabels: [EffectLabelData] = []
 
-    init(user: User, isGameStarted: Binding<Bool>) {
-        self.stackGame = StackGame(user: user, calculator: .init())
+    init(
+        user: User,
+        isGameStarted: Binding<Bool>,
+        animationSystem: CharacterAnimationSystem? = nil
+    ) {
+        self.stackGame = StackGame(user: user, calculator: .init(), animationSystem: animationSystem)
         self._isGameStarted = isGameStarted
         self.scene = StackGameScene(
             stackGame: stackGame,
@@ -100,6 +104,7 @@ private extension StackGameView {
             // 햅틱 재생
             HapticService.shared.trigger(.success)
             stackGame.buffSystem.useConsumableItem(type: type)
+            stackGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
         }
     }
 }

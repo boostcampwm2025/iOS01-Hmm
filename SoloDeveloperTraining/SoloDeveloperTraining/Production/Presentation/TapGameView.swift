@@ -25,11 +25,16 @@ struct TapGameView: View {
     /// 터치한 위치에 표시될 EffectLabel들의 위치와 값
     @State private var effectLabels: [EffectLabelData] = []
 
-    init(user: User, isGameStarted: Binding<Bool>) {
+    init(
+        user: User,
+        isGameStarted: Binding<Bool>,
+        animationSystem: CharacterAnimationSystem?
+    ) {
         let tapGame = TapGame(
             user: user,
             calculator: Calculator(),
-            buffSystem: BuffSystem()
+            buffSystem: BuffSystem(),
+            animationSystem: animationSystem
         )
         tapGame.startGame()
         self.tapGame = tapGame
@@ -117,6 +122,7 @@ private extension TapGameView {
             // 햅틱 재생
             HapticService.shared.trigger(.success)
             tapGame.buffSystem.useConsumableItem(type: type)
+            tapGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
         }
     }
 }
@@ -161,5 +167,5 @@ private extension TapGameView {
         ]
     )
 
-    return TapGameView(user: user, isGameStarted: $isGameStarted)
+    TapGameView(user: user, isGameStarted: $isGameStarted, animationSystem: nil)
 }

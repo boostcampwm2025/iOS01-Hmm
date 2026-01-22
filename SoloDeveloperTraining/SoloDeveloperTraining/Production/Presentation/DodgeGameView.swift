@@ -41,12 +41,17 @@ struct DodgeGameView: View {
 
     @Binding var isGameStarted: Bool
 
-    init(user: User, isGameStarted: Binding<Bool>) {
+    init(
+        user: User,
+        isGameStarted: Binding<Bool>,
+        animationSystem: CharacterAnimationSystem? = nil
+    ) {
         self._isGameStarted = isGameStarted
         self.game = DodgeGame(
             user: user,
             gameAreaSize: CGSize.zero,
-            onGoldChanged: { _ in }
+            onGoldChanged: { _ in },
+            animationSystem: animationSystem
         )
     }
 
@@ -159,6 +164,7 @@ private extension DodgeGameView {
             // 햅틱 재생
             HapticService.shared.trigger(.success)
             game.buffSystem.useConsumableItem(type: type)
+            game.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
         }
     }
 }
