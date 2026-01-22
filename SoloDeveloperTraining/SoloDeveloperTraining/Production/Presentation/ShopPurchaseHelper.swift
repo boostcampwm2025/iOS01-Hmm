@@ -16,64 +16,65 @@ private enum Constant {
 
     enum Padding {
         static let popupTop: CGFloat = 11
+        static let popupHorizontal: CGFloat = 25
     }
 }
 
 enum ShopPurchaseHelper {
     /// 확인 팝업 표시 (취소/확인 버튼)
     static func showConfirm(
-        popupContent: Binding<(String, AnyView)?>,
+        popupContent: Binding<PopupConfiguration?>,
         title: String,
         message: String,
         confirmTitle: String,
         onConfirm: @escaping () -> Void
     ) {
-        popupContent.wrappedValue = (
-            title,
-            AnyView(
-                VStack(spacing: Constant.Spacing.popupContent) {
-                    Text(message)
-                        .textStyle(.body)
-                        .foregroundColor(.black)
-                        .multilineTextAlignment(.center)
+        popupContent.wrappedValue = PopupConfiguration(
+            title: title,
+            maxHeight: nil
+        ) {
+            VStack(spacing: Constant.Spacing.popupContent) {
+                Text(message)
+                    .textStyle(.body)
+                    .foregroundColor(.black)
+                    .multilineTextAlignment(.center)
 
-                    HStack(spacing: Constant.Spacing.popupButton) {
-                        MediumButton(title: "취소", isFilled: true, isCancelButton: true) {
-                            popupContent.wrappedValue = nil
-                        }
-                        MediumButton(title: confirmTitle, isFilled: true) {
-                            popupContent.wrappedValue = nil
-                            onConfirm()
-                        }
+                HStack(spacing: Constant.Spacing.popupButton) {
+                    MediumButton(title: "취소", isFilled: true, isCancelButton: true) {
+                        popupContent.wrappedValue = nil
+                    }
+                    MediumButton(title: confirmTitle, isFilled: true) {
+                        popupContent.wrappedValue = nil
+                        onConfirm()
                     }
                 }
-                .padding(.top, Constant.Padding.popupTop)
-            )
-        )
+            }
+            .padding(.top, Constant.Padding.popupTop)
+        }
     }
 
     /// 알림 팝업 표시 (확인 버튼만)
     static func showAlert(
-        popupContent: Binding<(String, AnyView)?>,
+        popupContent: Binding<PopupConfiguration?>,
         title: String,
         message: String
     ) {
-        popupContent.wrappedValue = (
-            title,
-            AnyView(
-                VStack(spacing: Constant.Spacing.popupContent) {
-                    Text(message)
-                        .textStyle(.body)
-                        .foregroundColor(.black)
-                        .multilineTextAlignment(.center)
+        popupContent.wrappedValue = PopupConfiguration(
+            title: title,
+            maxHeight: nil
+        ) {
+            VStack(spacing: Constant.Spacing.popupContent) {
+                Text(message)
+                    .textStyle(.body)
+                    .foregroundColor(.black)
+                    .multilineTextAlignment(.center)
 
-                    MediumButton(title: "확인", isFilled: true) {
-                        popupContent.wrappedValue = nil
-                    }
+                MediumButton(title: "확인", isFilled: true) {
+                    popupContent.wrappedValue = nil
                 }
-                .padding(.top, Constant.Padding.popupTop)
-            )
-        )
+            }
+            .padding(.top, Constant.Padding.popupTop)
+        }
     }
 
     /// 구매 정보 생성
