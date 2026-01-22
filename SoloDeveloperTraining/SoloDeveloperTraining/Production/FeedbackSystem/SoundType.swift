@@ -11,5 +11,3 @@ enum SoundType: String {
     case success
     case failure
 }
-
-enum SoundError {}
