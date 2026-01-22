@@ -47,7 +47,7 @@ actor User {
     }
 
     @MainActor
-    convenience init(nickname: String) {
+    init(nickname: String) {
         self.init(
             nickname: nickname,
             wallet: .init(),

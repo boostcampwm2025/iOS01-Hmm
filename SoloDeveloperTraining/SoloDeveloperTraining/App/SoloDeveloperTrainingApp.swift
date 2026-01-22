@@ -53,9 +53,9 @@ struct SoloDeveloperTrainingApp: App {
             }
             .fullScreenCover(isPresented: $showTutorial) {
                 TutorialView(isPresented: $showTutorial) {
-                    // TODO: 여기서 레코드에 튜리얼 완료 해 주기
-                        hasSeenIntro = true
-                        showTutorial = false
+                    user?.record.tutorialCompleted = true
+                    hasSeenIntro = true
+                    showTutorial = false
                 }
                 .onAppear {
                     Task {

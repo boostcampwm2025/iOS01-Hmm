@@ -18,6 +18,7 @@ private enum Constant {
         static let textFieldHeight: CGFloat = 40
         static let cornerRadius: CGFloat = 10
         static let strokeLineWidth: CGFloat = 1
+        static let errorTextMinHeight: CGFloat = 15
     }
 
     enum Layout {
@@ -34,6 +35,7 @@ private enum Constant {
 
 struct NicknameSetupView: View {
     @State private var nickname: String = ""
+    @State private var errorMessage: String = ""
     let onStart: (String) -> Void
     let onTutorial: (String) -> Void
 
@@ -42,6 +44,7 @@ struct NicknameSetupView: View {
             VStack(alignment: .leading, spacing: Constant.Spacing.content) {
                 storyTexts
                 nicknameTextField
+                errorText
                 buttons
             }
             .padding(Constant.Layout.contentPadding)
@@ -66,22 +69,56 @@ private extension NicknameSetupView {
             .foregroundColor(.black)
             .overlay {
                 RoundedRectangle(cornerRadius: Constant.Size.cornerRadius)
-                    .stroke(Color.gray.opacity(Constant.Opacity.stroke), lineWidth: Constant.Size.strokeLineWidth)
+                    .stroke(
+                        errorMessage.isEmpty
+                            ? Color.gray.opacity(Constant.Opacity.stroke)
+                            : Color.red.opacity(0.7),
+                        lineWidth: Constant.Size.strokeLineWidth
+                    )
             }
             .padding(.bottom, Constant.Layout.textFieldBottomPadding)
+            .onChange(of: nickname) { _, newValue in
+                updateValidationState(for: newValue)
+            }
+    }
+
+    var errorText: some View {
+        Text(errorMessage)
+            .font(.pfFont(.caption))
+            .foregroundColor(.red)
+            .frame(minHeight: Constant.Size.errorTextMinHeight, alignment: .leading)
     }
 
     var buttons: some View {
         HStack(spacing: Constant.Spacing.button) {
-            MediumButton(title: "바로 시작", isFilled: false) {
+            MediumButton(
+                title: "바로 시작",
+                isFilled: !Validator.Nickname.isValid(nickname),
+                isEnabled: Validator.Nickname.isValid(nickname),
+                isCancelButton: true
+            ) {
                 onStart(nickname)
             }
 
-            MediumButton(title: "튜토리얼", isFilled: true, hasBadge: true) {
+            MediumButton(
+                title: "튜토리얼",
+                isFilled: true,
+                hasBadge: true,
+                isEnabled: Validator.Nickname.isValid(nickname)
+            ) {
                 onTutorial(nickname)
             }
         }
         .frame(maxWidth: .infinity)
+    }
+
+    func updateValidationState(for value: String) {
+        switch Validator.Nickname.validate(value) {
+        case .empty, .valid:
+            errorMessage = ""
+        case .invalid(let message):
+            errorMessage = message
+        }
     }
 }
 
