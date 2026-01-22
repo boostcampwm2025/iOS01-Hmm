@@ -26,120 +26,180 @@ private enum Constant {
 }
 
 struct QuizQuestionView: View {
-    // 화면 상태
     @State private var selectedIndex: Int?
-    @State private var isSubmitted: Bool = false
+    @State private var isSubmitted = false
 
-    // 퀴즈 데이터 (예시)
-    let currentQuizNumber: Int = 1
-    let totalQuizNumber: Int = 3
-    let remainSeconds: Int = 60
+    // 예시 데이터
+    let currentQuizNumber = 1
+    let totalQuizNumber = 3
+    let remainSeconds = 60
     let questionTitle = "오늘은 중요한 기능을 배포하는 날이다. 다음 중 개발자가 가장 들으면 안되는 말은?"
-    let reward: Int = 20
-    let options: [String] = [
+    let reward = 20
+    let options = [
         "(컴펌 코드도 보아) 이 부분요?",
         "(함께 코드를 보며) 이 부분 빨리 수정 가능할까요?",
         "(컴펌 코드도 보아) 이 부분 빨리 수정 가능할까요?",
         "(컴펌 코드도 보아) 이 부분 빨리 수정 가능할까요?"
     ]
-    let correctAnswerIndex: Int = 1  // 정답 인덱스 (예시)
-    let explanation: String = "해설 어쩌구 저쩌구다."  // 해설 텍스트
+    let correctAnswerIndex = 1
+    let explanation = "해설 어쩌구 저쩌구다."
 
     var body: some View {
+        VStack(spacing: 0) {
 
-            VStack(spacing: 0) {
-                VStack(spacing: 0) {
-                    // 타이틀
-                    HStack(spacing: Constant.Spacing.title) {
-                        Image(.quizDogFace)
-                        Image(.quizDogFoot)
-                        Text("개발 퀴즈")
-                            .textStyle(.largeTitle)
-                        Spacer()
+            /// 문제 헤더 영역
+            QuizHeaderView(
+                current: currentQuizNumber,
+                total: totalQuizNumber,
+                remainSeconds: remainSeconds,
+                title: questionTitle,
+                reward: reward
+            )
+
+            /// 해설 영역
+            QuizExplanationView(
+                isSubmitted: isSubmitted,
+                explanation: explanation,
+                isCorrect: selectedIndex == correctAnswerIndex
+            )
+
+            /// 선지, 제출버튼 영역
+            QuizOptionsView(
+                options: options,
+                selectedIndex: selectedIndex,
+                isDisabled: isSubmitted,
+                isSubmitted: isSubmitted,
+                onSelect: { index in
+                    if !isSubmitted {
+                        selectedIndex = selectedIndex == index ? nil : index
                     }
-                    .padding(.bottom, Constant.Padding.titleBottom)
-
-                    // 문제 개수
-                    HStack {
-                        Spacer()
-                        Text("\(currentQuizNumber) / \(totalQuizNumber)")
-                            .textStyle(.headline)
-                    }
-                    .padding(.bottom, Constant.Padding.quizCountBottom)
-
-                    // progressBar
-                    ProgressBar(
-                        maxValue: Double(totalQuizNumber),
-                        currentValue: Double(currentQuizNumber),
-                        text: "\(remainSeconds)s"
-                    ).padding(.bottom, Constant.Padding.remainSecondsBottom)
-
-                    // 문제
-                    Text(questionTitle)
-                        .textStyle(.title)
-                        .padding(.bottom, Constant.Padding.questionTitleBottom)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    // 보상
-                    HStack {
-                        Spacer()
-                        CurrencyLabel(axis: .horizontal, icon: .diamond, textStyle: .title2, value: reward)
+                },
+                onSubmit: {
+                    if !isSubmitted {
+                        isSubmitted = true
+                    } else {
+                        // 다음 문제
                     }
                 }
+            )
+        }
+        .padding(.horizontal, Constant.Padding.horizontal)
+        .padding(.top, Constant.Padding.top)
+        .background(AppColors.beige100)
+    }
+}
 
-                // 해설
-                if isSubmitted {
-                    Text(explanation)
-                        .textStyle(.callout)
-                        .foregroundColor(
-                            isCorrect ? AppColors.accentGreen : AppColors.accentRed
-                        )
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                } else {
-                    Spacer()
-                }
+// MARK: - 퀴즈 해더 뷰
+private struct QuizHeaderView: View {
+    let current: Int
+    let total: Int
+    let remainSeconds: Int
+    let title: String
+    let reward: Int
 
-                VStack(spacing: 0) {
-                    // 선지 4개
-                    VStack(spacing: Constant.Spacing.quizButton) {
-                        ForEach(options.indices, id: \.self) { index in
-                            QuizButton(
-                                isSelected: selectedIndex == index,
-                                title: "\(index + 1). \(options[index])"
-                            ) {
-                                if !isSubmitted {
-                                    selectedIndex = selectedIndex == index ? nil : index
-                                }
-                            }
-                            .disabled(isSubmitted)
-                        }
-                    }
-                    .padding(.bottom, Constant.Padding.optionsBottom)
+    var body: some View {
+        VStack(spacing: 0) {
+            // 타이틀
+            HStack(spacing: Constant.Spacing.title) {
+                Image(.quizDogFace)
+                Image(.quizDogFoot)
+                Text("개발 퀴즈")
+                    .textStyle(.largeTitle)
+                Spacer()
+            }
+            .padding(.bottom, Constant.Padding.titleBottom)
 
-                    // submit 버튼
+            // 문제 개수
+            HStack {
+                Spacer()
+                Text("\(current) / \(total)")
+                    .textStyle(.headline)
+            }
+            .padding(.bottom, Constant.Padding.quizCountBottom)
+
+            // Progress
+            ProgressBar(
+                maxValue: Double(total),
+                currentValue: Double(current),
+                text: "\(remainSeconds)s"
+            )
+            .padding(.bottom, Constant.Padding.remainSecondsBottom)
+
+            // 문제
+            Text(title)
+                .textStyle(.title)
+                .padding(.bottom, Constant.Padding.questionTitleBottom)
+                .fixedSize(horizontal: false, vertical: true)
+
+            // 보상
+            HStack {
+                Spacer()
+                CurrencyLabel(axis: .horizontal, icon: .diamond, textStyle: .title2, value: reward)
+            }
+        }
+    }
+}
+
+// MARK: - 해설 뷰
+private struct QuizExplanationView: View {
+    let isSubmitted: Bool
+    let explanation: String
+    let isCorrect: Bool
+
+    var body: some View {
+        VStack(spacing: 0) {
+            if isSubmitted {
+                Text(explanation)
+                    .textStyle(.callout)
+                    .foregroundColor(
+                        isCorrect ? AppColors.accentGreen : AppColors.accentRed
+                    )
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+// MARK: - QuizButton 사용 뷰
+private struct QuizOptionsView: View {
+    let options: [String]
+    let selectedIndex: Int?
+    let isDisabled: Bool
+    let isSubmitted: Bool
+    let onSelect: (Int) -> Void
+    let onSubmit: () -> Void
+
+    var body: some View {
+        VStack(spacing: 0) {
+
+            // 선지
+            VStack(spacing: Constant.Spacing.quizButton) {
+                ForEach(options.indices, id: \.self) { index in
                     QuizButton(
-                        style: .submit,
-                        isEnabled: selectedIndex != nil && !isSubmitted,
-                        title: isSubmitted ? "다음으로" : "제출하기"
+                        isSelected: selectedIndex == index,
+                        title: "\(index + 1). \(options[index])"
                     ) {
-                        if !isSubmitted {
-                            isSubmitted = true
-                        } else {
-                            // 다음 문제로 이동
-                        }
+                        onSelect(index)
                     }
-                    .padding(.bottom, Constant.Padding.submitBottom)
+                    .disabled(isDisabled)
                 }
             }
-            .padding(.horizontal, Constant.Padding.horizontal)
-            .padding(.top, Constant.Padding.top)
-            .background(AppColors.beige100)
-        }
+            .padding(.bottom, Constant.Padding.optionsBottom)
 
-    // MARK: - Helper
-    private var isCorrect: Bool {
-        guard let selected = selectedIndex else { return false }
-        return selected == correctAnswerIndex
+            // 제출 버튼
+            QuizButton(
+                style: .submit,
+                isEnabled: selectedIndex != nil && !isSubmitted,
+                title: isSubmitted ? "다음으로" : "제출하기"
+            ) {
+                onSubmit()
+            }
+            .padding(.bottom, Constant.Padding.submitBottom)
+        }
     }
 }
 
