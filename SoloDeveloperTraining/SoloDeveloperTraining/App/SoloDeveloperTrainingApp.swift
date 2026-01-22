@@ -69,6 +69,7 @@ struct SoloDeveloperTrainingApp: App {
     }
 }
 
+#if !DEV_BUILD
 private extension SoloDeveloperTrainingApp {
     @ViewBuilder
     var nicknameSetupOverlay: some View {
@@ -96,3 +97,4 @@ private extension SoloDeveloperTrainingApp {
         }
     }
 }
+#endif
