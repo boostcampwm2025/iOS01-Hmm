@@ -10,4 +10,14 @@ import Foundation
 enum SoundType: String {
     case success
     case failure
+
+    var url: URL? {
+        switch self {
+        default:
+            Bundle.main.url(
+                forResource: self.rawValue,
+                withExtension: "wav"
+            )
+        }
+    }
 }

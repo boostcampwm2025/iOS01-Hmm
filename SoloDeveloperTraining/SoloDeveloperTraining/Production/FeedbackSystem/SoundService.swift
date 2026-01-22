@@ -49,11 +49,7 @@ final class SoundService {
 
     func trigger(_ sound: SoundType) {
         guard isEnabled else { return }
-        guard let url = Bundle.main.url(
-            forResource: sound.rawValue,
-            withExtension: "wav"
-        ) else { return }
-
+        guard let url = sound.url else { return }
         do {
             player = try AVAudioPlayer(contentsOf: url)
             player?.prepareToPlay()
