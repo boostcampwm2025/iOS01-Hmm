@@ -25,9 +25,9 @@ struct ShopView: View {
 
     @State private var selectedCategoryIndex: Int = 0
     @State private var selectedHousingTier: HousingTier?
-    @Binding var popupContent: (String, AnyView)?
+    @Binding var popupContent: PopupConfiguration?
 
-    init(user: User, popupContent: Binding<(String, AnyView)?>) {
+    init(user: User, popupContent: Binding<PopupConfiguration?>) {
         self.user = user
         self.shopSystem = ShopSystem(user: user)
         self._popupContent = popupContent

@@ -19,12 +19,22 @@ private enum Constant {
     enum Color {
         static let overlay = SwiftUI.Color.black.opacity(0.3)
     }
+
+    enum CareerPopup {
+        static let title: String = "커리어"
+        static let maxHeight: CGFloat = 650
+        static let contentHorizontalPadding: CGFloat = 16
+        static let progressBarTopPadding: CGFloat = 18
+        static let progressBarBottomPadding: CGFloat = 18
+        static let careerRowSpacing: CGFloat = 10
+        static let scrollViewBottomPadding: CGFloat = 45
+    }
 }
 
 struct MainView: View {
     @Environment(\.scenePhase) var scenePhase
     @State private var selectedTab: TabItem = .work
-    @State private var popupContent: (String, AnyView)?
+    @State private var popupContent: PopupConfiguration?
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
@@ -47,6 +57,9 @@ struct MainView: View {
                         gold: user.wallet.gold,
                         diamond: user.wallet.diamond
                     )
+                    .onTapGesture {
+                        showCareerPopup()
+                    }
                 }
                 .frame(height: geometry.size.height * 0.5)
                 .background(
@@ -88,12 +101,50 @@ struct MainView: View {
                     ZStack {
                         Constant.Color.overlay
                             .ignoresSafeArea()
+                            .onTapGesture {
+                                self.popupContent = nil
+                            }
 
-                        Popup(title: popupContent.0, contentView: popupContent.1)
+                        Popup(title: popupContent.title, contentView: popupContent.content)
+                            .frame(maxHeight: popupContent.maxHeight)
                             .padding(.horizontal, Constant.Padding.horizontalPadding)
                     }
                 }
             }
+        }
+    }
+
+    private func showCareerPopup() {
+        popupContent = PopupConfiguration(
+            title: Constant.CareerPopup.title,
+            maxHeight: Constant.CareerPopup.maxHeight
+        ) {
+            VStack(alignment: .center, spacing: 0) {
+                CareerProgressBar(
+                    career: user.career,
+                    currentGold: user.wallet.gold
+                )
+                .padding(.bottom, Constant.CareerPopup.progressBarBottomPadding)
+                .padding(.top, Constant.CareerPopup.progressBarTopPadding)
+
+                ScrollView {
+                    VStack(spacing: Constant.CareerPopup.careerRowSpacing) {
+                        ForEach(Career.allCases, id: \.self) { career in
+                            CareerRow(
+                                career: career,
+                                userCareer: user.career
+                            )
+                        }
+                    }
+                }
+                .scrollIndicators(.never)
+                .padding(.bottom, Constant.CareerPopup.scrollViewBottomPadding)
+
+                MediumButton(title: "닫기", isFilled: true) {
+                    popupContent = nil
+                }
+            }
+            .padding(.horizontal, Constant.CareerPopup.contentHorizontalPadding)
         }
     }
 }
