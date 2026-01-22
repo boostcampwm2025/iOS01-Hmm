@@ -59,6 +59,21 @@ enum Career: String, CaseIterable {
         }
     }
 
+    var characterImagePrefix: String {
+        switch self {
+        case .unemployed: return "character_unemployed"
+        case .laptopOwner: return "character_laptop_owner"
+        case .aspiringDeveloper: return "character_aspiring_developer"
+        case .juniorDeveloper: return "character_junior_developer"
+        case .normalDeveloper: return "character_normal_developer"
+        case .nightOwlDeveloper: return "character_night_owl_developer"
+        case .skilledDeveloper: return "character_skilled_developer"
+        case .famousDeveloper: return "character_famous_developer"
+        case .allRounderDeveloper: return "character_all_rounder_developer"
+        case .worldClassDeveloper: return "character_world_class_developer"
+        }
+    }
+
     /// 다음 단계로 업그레이드하기 위해 필요한 누적 재산
     var requiredWealth: Int {
         switch self {

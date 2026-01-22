@@ -20,6 +20,7 @@
 				"Production/Error/PurchasingError+UserReadableError.swift",
 				"Production/Error/SkillError+UserReadableError.swift",
 				Production/Error/UserReadableError.swift,
+				Production/Presentation/CharacterScene.swift,
 				Production/Presentation/DodgeGameView.swift,
 				Production/Presentation/EnhanceView.swift,
 				Production/Presentation/LanguageGameView.swift,

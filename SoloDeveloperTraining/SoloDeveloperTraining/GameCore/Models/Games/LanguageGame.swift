@@ -62,6 +62,7 @@ final class LanguageGame: Game {
     var calculator: Calculator
     var feverSystem: FeverSystem
     var buffSystem: BuffSystem
+    var animationSystem: CharacterAnimationSystem?
 
     let itemCount: Int
 
@@ -78,13 +79,15 @@ final class LanguageGame: Game {
         calculator: Calculator,
         feverSystem: FeverSystem,
         buffSystem: BuffSystem,
-        itemCount: Int
+        itemCount: Int,
+        animationSystem: CharacterAnimationSystem? = nil
     ) {
         self.user = user
         self.calculator = calculator
         self.feverSystem = feverSystem
         self.buffSystem = buffSystem
         self.itemCount = itemCount
+        self.animationSystem = animationSystem
         self.itemList = makeInitialItemList()
     }
 
@@ -116,6 +119,8 @@ final class LanguageGame: Game {
             user.record.record(.languageCorrect)
             /// 누적 재산 업데이트
             user.record.record(.earnMoney(gainGold))
+            // 재화 획득 시 캐릭터 웃게 만들기
+            animationSystem?.playSmile()
             return gainGold
         }
         await user.wallet.spendGold(gainGold / 2)

@@ -23,6 +23,8 @@ final class TapGame: Game {
     var feverSystem: FeverSystem
     /// 버프 시스템
     var buffSystem: BuffSystem
+    /// 캐릭터 애니메이션 시스템
+    var animationSystem: CharacterAnimationSystem?
     /// 인벤토리
     let inventory: Inventory
 
@@ -31,13 +33,15 @@ final class TapGame: Game {
         user: User,
         calculator: Calculator,
         feverSystem: FeverSystem = FeverSystem(decreaseInterval: 0.1, decreasePercentPerTick: 3),
-        buffSystem: BuffSystem
+        buffSystem: BuffSystem,
+        animationSystem: CharacterAnimationSystem? = nil
     ) {
         self.kind = .tap
         self.user = user
         self.calculator = calculator
         self.feverSystem = feverSystem
         self.buffSystem = buffSystem
+        self.animationSystem = animationSystem
         self.inventory = user.inventory
     }
 
@@ -66,6 +70,10 @@ final class TapGame: Game {
         user.record.record(.tap())
         /// 누적 재산 업데이트
         user.record.record(.earnMoney(gainGold))
+
+        // 재화 획득 시 캐릭터 웃게 만들기
+        animationSystem?.playSmile()
+
         return gainGold
     }
 }

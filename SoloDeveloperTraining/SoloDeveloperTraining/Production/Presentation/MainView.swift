@@ -6,12 +6,17 @@
 //
 
 import SwiftUI
+import SpriteKit
 
 enum AppTheme {
     static let backgroundColor: Color = AppColors.beige200
 }
 
 private enum Constant {
+    static let characterSceneSize = CGSize(width: 100, height: 100)
+    static let spriteViewSize = CGSize(width: 200, height: 200)
+    static let topAreaHeightRatio: CGFloat = 0.5
+
     enum Padding {
         static let horizontalPadding: CGFloat = 25
     }
@@ -34,10 +39,25 @@ struct MainView: View {
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
+    private let scene: CharacterScene
+    private let animationSystem: CharacterAnimationSystem
 
     init(user: User) {
         self.autoGainSystem = AutoGainSystem(user: user)
         self.user = user
+
+        self.scene = CharacterScene(size: Constant.characterSceneSize, user: user)
+        self.scene.scaleMode = .aspectFit
+        self.scene.playIdle()
+
+        // 애니메이션 시스템 생성 및 클로저 연결
+        self.animationSystem = CharacterAnimationSystem()
+        self.animationSystem.onSmile = { [weak scene] in
+            scene?.playSmile()
+        }
+        self.animationSystem.onIdle = { [weak scene] in
+            scene?.playIdle()
+        }
     }
 
     var body: some View {
@@ -45,18 +65,25 @@ struct MainView: View {
             VStack(spacing: 0) {
                 ZStack(alignment: .top) {
                     Color.clear
-                    StatusBar(
-                        career: careerSystem?.currentCareer ?? .unemployed,
-                        nickname: user.nickname,
-                        careerProgress: careerSystem?.careerProgress ?? 0.0,
-                        gold: user.wallet.gold,
-                        diamond: user.wallet.diamond
-                    )
-                    .onTapGesture {
-                        showCareerPopup()
+                    VStack(spacing: 0) {
+                        StatusBar(
+                            career: careerSystem?.currentCareer ?? .unemployed,
+                            nickname: user.nickname,
+                            careerProgress: careerSystem?.careerProgress ?? 0.0,
+                            gold: user.wallet.gold,
+                            diamond: user.wallet.diamond
+                        )
+                        .onTapGesture {
+                            showCareerPopup()
+                        }
+                        Spacer()
+                        SpriteView(scene: scene, options: [.allowsTransparency])
+                            .frame(width: Constant.spriteViewSize.width, height: Constant.spriteViewSize.height)
+                            .background(Color.clear)
+                        Spacer()
                     }
                 }
-                .frame(height: geometry.size.height * 0.5)
+                .frame(height: geometry.size.height * Constant.topAreaHeightRatio)
                 .background(
                     Image(user.inventory.housing.imageName)
                         .resizable()
@@ -69,7 +96,7 @@ struct MainView: View {
                 Group {
                     switch selectedTab {
                     case .work:
-                        WorkSelectedView(user: user)
+                        WorkSelectedView(user: user, animationSystem: animationSystem)
                     case .enhance:
                         EnhanceView(user: user, popupContent: $popupContent)
                     case .shop:
