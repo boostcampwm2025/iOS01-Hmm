@@ -9,94 +9,116 @@ import Foundation
 import Observation
 
 private enum Constant {
+    /// 게임당 출제되는 문제 수
     static let questionsPerGame = 3
+    /// 문제당 제한 시간 (초)
     static let secondsPerQuestion = 15
+    /// 정답당 지급되는 다이아 개수
     static let diamondsPerCorrectAnswer = 5
+    /// 퀴즈 데이터 파일명 (확장자 제외)
     static let questionLoadFileName = "QuizData"
-}
-
-enum QuizGameState: Equatable {
-    case loading
-    case ready
-    case questionInProgress
-    case showingExplanation
-    case completed
-    case error(String)
-}
-
-enum QuizAnswerResult {
-    case correct
-    case incorrect
-    case timeout
-
-    var isCorrect: Bool {
-        return self == .correct
-    }
 }
 
 @Observable
 final class QuizGame {
+    /// 게임을 플레이하는 사용자
     var user: User
-    /// 전체 문제 풀
+
+    /// 리소스 파일에서 로드한 전체 문제 풀
     private var allQuestions: [QuizQuestion] = []
-    /// 현재 게임 세션의 3문제
+
+    /// 현재 게임 세션에서 출제된 문제들 (게임당 3문제)
     private(set) var currentGameQuestions: [QuizQuestion] = []
-    /// 현재 문제 인덱스 (0-2)
+
+    /// 현재 풀고 있는 문제의 인덱스 (0부터 시작, 0~2)
     private(set) var currentQuestionIndex: Int = 0
+
     /// 현재 표시 중인 문제
+    /// - currentQuestionIndex가 유효한 범위일 때만 반환
     var currentQuestion: QuizQuestion? {
         guard currentQuestionIndex < currentGameQuestions.count else { return nil }
         return currentGameQuestions[currentQuestionIndex]
     }
-    /// 선택한 답 인덱스
+
+    /// 사용자가 선택한 답안의 인덱스 (0~3)
+    /// - nil이면 아직 답을 선택하지 않은 상태
     private(set) var selectedAnswerIndex: Int?
-    /// 현재 문제의 정답/오답 결과
+
+    /// 현재 문제의 정답/오답/타임아웃 결과
+    /// - 답안 제출 후에만 값이 설정됨
     private(set) var currentAnswerResult: QuizAnswerResult?
-    /// 타이머
+
+    /// 문제당 타이머
+    /// - 문제 시작 시 생성되고, 답안 제출 또는 타임아웃 시 중지됨
     private var questionTimer: Timer?
-    /// 남은 시간 (초)
+
+    /// 현재 문제의 남은 시간 (초)
+    /// - 매 초마다 1씩 감소
     private(set) var remainingSeconds: Int = Constant.secondsPerQuestion
-    /// 게임 상태
+
+    /// 게임의 현재 상태
     private(set) var gameState: QuizGameState = .loading
-    /// 맞춘 문제 개수
+
+    /// 현재 세션에서 맞춘 문제 개수
     private(set) var correctAnswersCount: Int = 0
-    /// 획득한 총 다이아
+
+    /// 현재 세션에서 획득한 총 다이아 개수
+    /// - 정답당 5개씩 지급
     var totalDiamondsEarned: Int {
         return correctAnswersCount * Constant.diamondsPerCorrectAnswer
     }
-    /// 진행도 텍스트 (예: "1/3")
+
+    /// 진행도 텍스트 (예: "1/3", "2/3")
+    /// - UI에 현재 문제 번호를 표시하기 위해 사용
     var progressText: String {
         return "\(currentQuestionIndex + 1)/\(Constant.questionsPerGame)"
     }
-    /// 다음/결과 보기 버튼 텍스트
+
+    /// 다음 버튼의 텍스트
+    /// - 마지막 문제일 경우: "결과 보기"
+    /// - 그 외: "다음"
     var nextButtonTitle: String {
         return currentQuestionIndex >= currentGameQuestions.count - 1 ? "결과 보기" : "다음"
     }
+
     /// 제출 버튼 활성화 여부
+    /// - 답을 선택했고, 문제 풀이 중일 때만 활성화
     var isSubmitEnabled: Bool {
         return selectedAnswerIndex != nil && gameState == .questionInProgress
     }
-    /// 타이머 프로그래스 (0.0 - 1.0)
+
+    /// 타이머 프로그래스 바 값 (0.0 ~ 1.0)
+    /// - 1.0: 시간이 충분히 남음
+    /// - 0.0: 시간 초과
     var timerProgress: Double {
         return Double(remainingSeconds) / Double(Constant.secondsPerQuestion)
     }
 
+    /// 퀴즈 게임 초기화
+    /// - Parameter user: 게임을 플레이할 사용자
+    /// - Note: 초기화 시 자동으로 문제 데이터를 로드함
     init(user: User) {
         self.user = user
         loadQuestions()
     }
 
+    /// 객체 소멸 시 타이머 정리
     deinit {
         stopTimer()
     }
 
+    /// 새로운 게임 세션 시작
+    /// - 전체 문제 풀에서 랜덤하게 3문제 선택
+    /// - 게임 상태 초기화 (점수, 인덱스 등)
+    /// - 첫 번째 문제 자동 시작
     func startGame() {
-        // 3문제 랜덤 선택
+        // 랜덤하게 3문제 선택
         currentGameQuestions = QuizDataLoader.selectRandomQuestions(
             from: allQuestions,
             count: Constant.questionsPerGame
         )
 
+        // 게임 상태 초기화
         currentQuestionIndex = 0
         correctAnswersCount = 0
         gameState = .ready
@@ -105,24 +127,58 @@ final class QuizGame {
         startQuestion()
     }
 
+    /// 게임 강제 종료
+    /// - 타이머를 중지하고 게임 상태를 완료로 변경
+    /// - 사용자가 중도 포기하는 경우 호출
     func stopGame() {
         stopTimer()
         gameState = .completed
     }
 
-    /// 답안 제출 처리
+    /// 답 선택
+    /// - Parameter index: 선택한 답안의 인덱스 (0~3)
+    /// - Note: 문제 풀이 중일 때만 선택 가능
+    func selectAnswer(_ index: Int) {
+        guard gameState == .questionInProgress else { return }
+        guard (0...3).contains(index) else { return }
+        selectedAnswerIndex = index
+    }
+
+    /// 선택한 답안 제출
+    /// - 문제 풀이 중이고, 답을 선택한 상태일 때만 제출 가능
+    /// - 제출 후 타이머 중지 및 결과 표시
     func submitSelectedAnswer() {
-        guard gameState == .questionInProgress else {
-            return
-        }
-        guard let answerIndex = selectedAnswerIndex else {
-            return
-        }
+        guard gameState == .questionInProgress else { return }
+        guard let answerIndex = selectedAnswerIndex else { return }
         submitAnswer(answerIndex)
     }
 
-    /// JSON 파일에서 문제 로드
-    private func loadQuestions() {
+    /// 다음 문제로 진행 또는 게임 종료
+    /// - 해설 표시 중일 때만 호출 가능
+    /// - 마지막 문제가 아니면: 다음 문제 시작
+    /// - 마지막 문제면: 게임 완료 및 보상 지급
+    func proceedToNextQuestion() {
+        guard gameState == .showingExplanation else { return }
+
+        currentQuestionIndex += 1
+
+        if currentQuestionIndex >= currentGameQuestions.count {
+            // 모든 문제 완료 - 보상 지급 및 게임 종료
+            completeGame()
+        } else {
+            // 다음 문제 시작
+            startQuestion()
+        }
+    }
+}
+
+private extension QuizGame {
+
+    /// 리소스 파일에서 문제 데이터 로드
+    /// - TSV 파일에서 모든 문제를 읽어와 allQuestions에 저장
+    /// - 로드 성공 시 게임 상태를 ready로 변경
+    /// - 실패 시 에러 메시지와 함께 error 상태로 변경
+    func loadQuestions() {
         do {
             allQuestions = try QuizDataLoader.loadQuestions(from: Constant.questionLoadFileName)
             gameState = .ready
@@ -131,8 +187,11 @@ final class QuizGame {
         }
     }
 
-    /// 문제 시작 (타이머 포함)
-    private func startQuestion() {
+    /// 새로운 문제 시작
+    /// - 선택한 답안, 결과, 타이머를 초기화
+    /// - 게임 상태를 questionInProgress로 변경
+    /// - 타이머 시작
+    func startQuestion() {
         guard currentQuestion != nil else {
             gameState = .error("문제를 찾을 수 없습니다")
             return
@@ -148,20 +207,16 @@ final class QuizGame {
         startTimer()
     }
 
-    /// 답 선택
-    func selectAnswer(_ index: Int) {
-        guard gameState == .questionInProgress else { return }
-        guard (0...3).contains(index) else { return }
-        selectedAnswerIndex = index
-    }
-
-    /// 답안 제출
-    private func submitAnswer(_ answerIndex: Int) {
+    /// 답안 제출 처리
+    /// - Parameter answerIndex: 제출할 답안의 인덱스
+    /// - 타이머 중지
+    /// - 정답 확인 후 결과 저장
+    /// - 정답일 경우 correctAnswersCount 증가
+    /// - 게임 상태를 showingExplanation으로 변경
+    func submitAnswer(_ answerIndex: Int) {
         stopTimer()
 
-        guard let question = currentQuestion else {
-            return
-        }
+        guard let question = currentQuestion else { return }
 
         // 정답 확인
         let isCorrect = answerIndex == question.correctAnswerIndex
@@ -174,35 +229,25 @@ final class QuizGame {
         gameState = .showingExplanation
     }
 
-    /// 다음 문제로 진행 또는 게임 종료
-    func proceedToNextQuestion() {
-        guard gameState == .showingExplanation else {
-            return
-        }
-
-        currentQuestionIndex += 1
-
-        if currentQuestionIndex >= currentGameQuestions.count {
-            // 게임 완료, 다이아 지급
-            completeGame()
-        } else {
-            // 다음 문제 시작
-            startQuestion()
-        }
-    }
-
-    /// 게임 완료 및 보상 지급
-    private func completeGame() {
+    /// 게임 완료 처리
+    /// - 타이머 중지
+    /// - 획득한 다이아를 사용자 지갑에 추가
+    /// - 게임 상태를 completed로 변경
+    func completeGame() {
         stopTimer()
-        // 다이아 보상 지급
+
+        // 다이아 보상 지급 (정답당 5개)
         let diamondsToAward = correctAnswersCount * Constant.diamondsPerCorrectAnswer
         user.wallet.addDiamond(diamondsToAward)
+
         gameState = .completed
     }
 
-    // MARK: - Timer Management
-
-    private func startTimer() {
+    /// 타이머 시작
+    /// - 기존 타이머가 있으면 먼저 정지
+    /// - 1초마다 timerTick() 호출하는 타이머 생성
+    /// - weak self를 사용하여 메모리 누수 방지
+    func startTimer() {
         stopTimer()
 
         questionTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
@@ -210,12 +255,18 @@ final class QuizGame {
         }
     }
 
-    private func stopTimer() {
+    /// 타이머 중지 및 정리
+    /// - 타이머 무효화
+    /// - 타이머 참조 해제
+    func stopTimer() {
         questionTimer?.invalidate()
         questionTimer = nil
     }
 
-    private func timerTick() {
+    /// 매 초마다 호출되는 타이머 틱
+    /// - 남은 시간 1초 감소
+    /// - 시간이 0이 되면 타임아웃 처리
+    func timerTick() {
         remainingSeconds -= 1
 
         if remainingSeconds <= 0 {
@@ -223,10 +274,13 @@ final class QuizGame {
         }
     }
 
-    private func handleTimeout() {
+    /// 시간 초과 처리
+    /// - 타이머 중지
+    /// - 결과를 timeout으로 설정
+    /// - 해설 화면으로 전환 (오답과 동일한 처리)
+    func handleTimeout() {
         stopTimer()
 
-        // 타임아웃으로 오답 처리
         currentAnswerResult = .timeout
         gameState = .showingExplanation
     }
