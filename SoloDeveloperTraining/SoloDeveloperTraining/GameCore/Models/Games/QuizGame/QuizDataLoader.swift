@@ -14,7 +14,7 @@ enum QuizDataLoaderError: Error {
     case invalidQuestions
 }
 
-/// CSV 파일에서 퀴즈 문제를 로드하는 유틸리티
+/// TSV 파일에서 퀴즈 문제를 로드하는 유틸리티
 struct QuizDataLoader {
 
     /// 지정된 TSV 파일에서 모든 퀴즈 문제를 로드합니다
