@@ -91,12 +91,6 @@ struct Toast: ViewModifier {
     }
 }
 
-extension View {
-    func toast(isShowing: Binding<Bool>, message: String, duration: Double = 1.5) -> some View {
-        self.modifier(Toast(isShowing: isShowing, message: message, duration: duration))
-    }
-}
-
 #Preview {
     struct ToastPreview: View {
         @State private var shortToast: Bool = false
