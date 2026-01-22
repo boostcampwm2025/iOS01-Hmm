@@ -51,7 +51,8 @@ struct QuizButton: View {
             Text(title)
                 .textStyle(textStyle)
                 .foregroundStyle(Constant.Color.foreground)
-                .frame(maxWidth: .infinity)
+                .padding(.leading, textLeadingPadding)
+                .frame(maxWidth: .infinity, alignment: textAlignment)
                 .frame(height: Constant.height)
                 .background(backgroundColor)
                 .cornerRadius(Constant.cornerRadius)
@@ -68,6 +69,26 @@ extension QuizButton {
     enum QuizButtonStyle {
         case option      // 선택지 버튼용
         case submit      // 제출 버튼용
+    }
+
+    /// 버튼 텍스트 왼쪽 여백
+    private var textLeadingPadding: CGFloat {
+        switch style {
+        case .option:
+            return 5
+        case .submit:
+            return 0
+        }
+    }
+
+    /// 버튼 정렬
+    private var textAlignment: Alignment {
+        switch style {
+        case .option:
+            return .leading
+        case .submit:
+            return .center
+        }
     }
 
     /// 버튼 배경색
