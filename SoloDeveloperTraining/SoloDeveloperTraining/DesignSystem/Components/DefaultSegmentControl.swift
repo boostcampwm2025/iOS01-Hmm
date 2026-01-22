@@ -39,6 +39,7 @@ struct DefaultSegmentControl: View {
             }
         }
         .padding(Constant.segmentPadding)
+        .frame(height: Constant.segmentHeight)
         .background(
             Rectangle()
                 .fill(Constant.Color.unselectedBackground)
@@ -63,7 +64,7 @@ private struct SegmentButton: View {
                 .textStyle(.subheadline)
                 .foregroundStyle(textColor)
                 .frame(maxWidth: .infinity)
-                .frame(height: Constant.segmentHeight)
+                .frame(maxHeight: Constant.segmentHeight)
                 .background(backgroundColor)
                 .animation(.none, value: isSelected)
         }

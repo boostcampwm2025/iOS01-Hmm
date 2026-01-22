@@ -91,7 +91,7 @@ struct PriceButton: View {
                         isPressed = false
                     }
             )
-            .animation(.easeInOut(duration: 0.1), value: isPressed)
+            .animation(.none, value: isPressed)
     }
 
     @ViewBuilder

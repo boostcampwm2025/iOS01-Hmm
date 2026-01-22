@@ -42,13 +42,13 @@ enum HousingTier: Int, CaseIterable {
 
     var imageName: String {
         switch self {
-        case .street: return "background_street"
-        case .semiBasement: return "background_semiBasement"
-        case .rooftop: return "background_rooftop"
-        case .villa: return "background_villa"
-        case .apartment: return "background_apartment"
-        case .house: return "background_house"
-        case .pentHouse: return "background_pentHouse"
+        case .street: return "housing_street"
+        case .semiBasement: return "housing_semiBasement"
+        case .rooftop: return "housing_rooftop"
+        case .villa: return "housing_villa"
+        case .apartment: return "housing_apartment"
+        case .house: return "housing_house"
+        case .pentHouse: return "housing_pentHouse"
         }
     }
 

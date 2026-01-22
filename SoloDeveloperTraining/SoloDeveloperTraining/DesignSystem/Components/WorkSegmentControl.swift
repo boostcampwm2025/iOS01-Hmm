@@ -85,23 +85,23 @@ struct WorkItem {
                 WorkItem(
                     title: "테스트",
                     description: "테스트",
-                    imageName: "background_street"
+                    imageName: "housing_street"
                 ),
                 WorkItem(
                     title: "테스트",
                     description: "테스트",
-                    imageName: "background_street"
+                    imageName: "housing_street"
                 ),
                 WorkItem(
                     title: "테스트",
                     description: "테스트",
-                    imageName: "background_street",
+                    imageName: "housing_street",
                     isDisabled: true
                 ),
                 WorkItem(
                     title: "테스트",
                     description: "테스트",
-                    imageName: "background_street",
+                    imageName: "housing_street",
                     isDisabled: false
                 )
             ],
