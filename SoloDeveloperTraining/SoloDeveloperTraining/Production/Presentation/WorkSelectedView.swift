@@ -86,22 +86,22 @@ private extension WorkSelectedView {
             .init(
                 title: "코드짜기",
                 description: "효과 설명",
-                imageName: "background_street"
+                imageName: "housing_street"
             ),
             .init(
                 title: "언어 맞추기",
                 description: "효과 설명",
-                imageName: "background_street"
+                imageName: "housing_street"
             ),
             .init(
                 title: "버그 피하기",
                 description: "효과 설명",
-                imageName: "background_street"
+                imageName: "housing_street"
             ),
             .init(
                 title: "물건 쌓기",
                 description: "효과 설명",
-                imageName: "background_street",
+                imageName: "housing_street",
                 isDisabled: false
             )
         ]

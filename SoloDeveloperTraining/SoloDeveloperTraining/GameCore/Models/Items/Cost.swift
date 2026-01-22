@@ -8,7 +8,7 @@
 import Foundation
 
 /// 아이템 비용 모델
-struct Cost {
+struct Cost: Equatable {
     /// 골드 비용
     let gold: Int
     /// 다이아몬드 비용

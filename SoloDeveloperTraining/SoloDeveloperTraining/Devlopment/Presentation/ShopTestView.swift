@@ -32,7 +32,7 @@ struct ShopTestView: View {
                             description: item.description,
                             imageName: item.imageName,
                             cost: item.cost,
-                            isDisabled: !item.isPurchasable
+                            state: item.isPurchasable ? .available : .insufficient
                         ) {
                             do {
                                 try shopSystem.buy(item: item)

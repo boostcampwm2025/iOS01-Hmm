@@ -35,6 +35,7 @@ struct MediumButton: View {
     var isFilled: Bool = false
     var hasBadge: Bool = false
     var isEnabled: Bool = true
+    var isCancelButton: Bool = false
     let action: () -> Void
 
     var body: some View {
@@ -61,7 +62,7 @@ struct MediumButton: View {
     }
 
     private var backgroundColor: Color {
-        if !isEnabled {
+        if !isEnabled || isCancelButton {
             return isFilled ? .gray200 : .white
         }
         return isFilled ? .orange500 : .white
@@ -99,6 +100,14 @@ struct MediumButton: View {
 
         MediumButton(title: "버튼 텍스트", isFilled: false, hasBadge: true) {
             print("버튼 클릭6")
+        }
+
+        MediumButton(title: "취소", isFilled: true, isCancelButton: true) {
+            print("취소 버튼 클릭")
+        }
+
+        MediumButton(title: "취소", isFilled: false, isCancelButton: true) {
+            print("취소 버튼 클릭")
         }
     }
 }

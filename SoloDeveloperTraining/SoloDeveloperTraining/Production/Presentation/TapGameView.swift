@@ -89,7 +89,7 @@ private extension TapGameView {
             }
         }
         .background(
-            Image("tap_background")
+            Image(.tapBackground)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
         )

@@ -16,8 +16,10 @@ struct SkillKey: Hashable {
 final class Skill: Hashable {
     /// 고유 스킬 정보 (게임 종류, 스킬 티어)
     let key: SkillKey
+
     /// 스킬 레벨
     private(set) var level: Int
+
     /// 획득 재화량
     var gainGold: Double {
         switch key.game {
@@ -60,6 +62,33 @@ final class Skill: Hashable {
         }
     }
 
+    /// 이미지 리소스
+    var imageName: String {
+        let gameName: String = {
+            switch key.game {
+            case .tap: return "tap"
+            case .language: return "language"
+            case .dodge: return "dodge"
+            case .stack: return "stack"
+            }
+        }()
+
+        let tierNumber: Int = {
+            switch key.tier {
+            case .beginner: return 1
+            case .intermediate: return 2
+            case .advanced: return 3
+            }
+        }()
+
+        return "enhance_\(gameName)_\(tierNumber)"
+    }
+
+    /// 스킬 타이틀
+    var title: String {
+        return "\(key.game.displayTitle) \(key.tier.displayTitle) Lv.\(level)"
+    }
+
     /// 업그레이드 비용
     var upgradeCost: Cost {
         switch key.tier {
@@ -72,9 +101,9 @@ final class Skill: Hashable {
         }
     }
 
-    init(key: SkillKey, level: Int) {
+    init(key: SkillKey, level: Int? = nil) {
         self.key = key
-        self.level = key.tier.levelRange.clamped(level)
+        self.level = key.tier.levelRange.clamped(level ?? key.tier.levelRange.minValue)
     }
 
     /// 해당 스킬의 레벨을 1 상승 시킵니다.
