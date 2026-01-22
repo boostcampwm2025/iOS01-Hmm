@@ -10,11 +10,10 @@ import SwiftUI
 private enum Constant {
     static let iconSize: CGFloat = 38
     static let horizontalSpacing: CGFloat = 12
-    
     static let leadingPadding: CGFloat = iconSize + horizontalSpacing + 30
     static let bottomPadding: CGFloat = 15
-    
-    enum imageName {
+
+    enum ImageName {
         static let soundActive: String = "speaker.circle.fill"
         static let soundInactive: String = "speaker.slash.circle.fill"
         static let hapticActive: String = "antenna.radiowaves.left.and.right.circle.fill"
@@ -26,9 +25,11 @@ struct FeedbackSettingView: View {
     var body: some View {
         HStack(spacing: Constant.horizontalSpacing) {
             // 사운드 버튼
-            Button {} label: {
+            Button {
+                SoundService.shared.trigger(.success)
+            } label: {
                 Image(
-                    systemName: true ? Constant.imageName.soundActive : Constant.imageName.soundInactive
+                    systemName: true ? Constant.ImageName.soundActive : Constant.ImageName.soundInactive
                 )
                 .resizable()
                 .frame(width: Constant.iconSize, height: Constant.iconSize)
@@ -39,7 +40,7 @@ struct FeedbackSettingView: View {
                 HapticService.shared.toggle()
             } label: {
                 Image(
-                    systemName: HapticService.shared.isEnabled ? Constant.imageName.hapticActive : Constant.imageName.hapticInactive
+                    systemName: HapticService.shared.isEnabled ? Constant.ImageName.hapticActive : Constant.ImageName.hapticInactive
                 )
                 .resizable()
                 .frame(width: Constant.iconSize, height: Constant.iconSize)
