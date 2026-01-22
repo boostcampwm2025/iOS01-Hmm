@@ -54,8 +54,12 @@ struct SoloDeveloperTrainingApp: App {
             .fullScreenCover(isPresented: $showTutorial) {
                 TutorialView(isPresented: $showTutorial) {
                     // TODO: 여기서 레코드에 튜리얼 완료 해 주기
-                    showTutorial = false
-                    withAnimation(.easeOut(duration: Constant.Animation.duration)) {
+                        hasSeenIntro = true
+                        showTutorial = false
+                }
+                .onAppear {
+                    Task {
+                        try? await Task.sleep(nanoseconds: UInt64(Constant.Animation.duration * 1_000_000_000))
                         hasSeenIntro = true
                     }
                 }
@@ -92,4 +96,3 @@ private extension SoloDeveloperTrainingApp {
         }
     }
 }
-
