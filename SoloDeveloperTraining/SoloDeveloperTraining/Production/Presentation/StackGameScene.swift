@@ -280,6 +280,7 @@ final class StackGameScene: SKScene {
         // 폭탄 블록 실패 = 보상, 일반 블록 실패 = 패널티
         if currentBlock.type.isBomb {
             onBlockDropped(stackGame.placeBombFail())
+            SoundService.shared.trigger(.success)
         } else {
             onBlockDropped(stackGame.placeBlockFail())
             // 실패 사운드 재생
