@@ -115,6 +115,13 @@ final class QuizGame {
         selectedAnswerIndex = index
     }
 
+    /// 선택한 답안 해제
+    /// - Note: 문제 풀이 중일 때만 선택 해제 가능
+    func deselectAnswer() {
+        guard phase == .questionInProgress else { return }
+        selectedAnswerIndex = nil
+    }
+
     /// 선택한 답안 제출
     /// - 문제 풀이 중이고, 답을 선택한 상태일 때만 제출 가능
     /// - 제출 후 타이머 중지 및 결과 표시

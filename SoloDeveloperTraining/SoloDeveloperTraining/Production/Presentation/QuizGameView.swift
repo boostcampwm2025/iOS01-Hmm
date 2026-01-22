@@ -64,7 +64,11 @@ struct QuizQuestionView: View {
                 isShowingExplanation: state.phase == .showingExplanation,
                 submitButtonTitle: state.phase == .showingExplanation ? state.nextButtonTitle : "제출하기",
                 onSelect: { index in
-                    quizGame.selectAnswer(index)
+                    if state.selectedAnswerIndex == index {
+                        quizGame.deselectAnswer()
+                    } else {
+                        quizGame.selectAnswer(index)
+                    }
                 },
                 onSubmit: {
                     if state.phase == .showingExplanation {
