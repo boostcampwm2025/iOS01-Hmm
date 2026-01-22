@@ -125,7 +125,6 @@ final class DodgeGame: Game {
 
             // 재화 획득 시 캐릭터 웃게 만들기
             animationSystem?.playSmile()
-
             return gainGold
 
         case .largeGold:
@@ -145,7 +144,6 @@ final class DodgeGame: Game {
 
             // 재화 획득 시 캐릭터 웃게 만들기
             animationSystem?.playSmile()
-
             return gainGold
 
         case .bug:
