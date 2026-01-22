@@ -76,7 +76,7 @@ private extension ShopView {
             }
             .padding(.bottom)
         }
-        .scrollIndicators(.hidden)
+        .scrollIndicators(.never)
     }
 
     var housingView: some View {
@@ -103,7 +103,7 @@ private extension ShopView {
             .padding(.top, Constant.Padding.housingTop)
             .padding(.bottom, Constant.Padding.housingBottom)
         }
-        .scrollIndicators(.hidden)
+        .scrollIndicators(.never)
     }
 
     /// 아이템 구매 확인 팝업 표시
