@@ -12,7 +12,7 @@ private enum Constant {
     /// 게임당 출제되는 문제 수
     static let questionsPerGame = 3
     /// 문제당 제한 시간 (초)
-    static let secondsPerQuestion = 15
+    static let secondsPerQuestion = 60
     /// 정답당 지급되는 다이아 개수
     static let diamondsPerCorrectAnswer = 5
     /// 퀴즈 데이터 파일명 (확장자 제외)
