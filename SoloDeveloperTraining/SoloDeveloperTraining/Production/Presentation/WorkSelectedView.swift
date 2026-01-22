@@ -20,6 +20,7 @@ private enum Constant {
 struct WorkSelectedView: View {
 
     let user: User
+    let animationSystem: CharacterAnimationSystem?
     @State var selectedIndex: Int?
     @State var isGameStarted: Bool = false
 
@@ -85,22 +86,22 @@ private extension WorkSelectedView {
             .init(
                 title: "코드짜기",
                 description: "효과 설명",
-                imageName: "background_street"
+                imageName: "housing_street"
             ),
             .init(
                 title: "언어 맞추기",
                 description: "효과 설명",
-                imageName: "background_street"
+                imageName: "housing_street"
             ),
             .init(
                 title: "버그 피하기",
                 description: "효과 설명",
-                imageName: "background_street"
+                imageName: "housing_street"
             ),
             .init(
                 title: "물건 쌓기",
                 description: "효과 설명",
-                imageName: "background_street",
+                imageName: "housing_street",
                 isDisabled: false
             )
         ]
@@ -110,13 +111,13 @@ private extension WorkSelectedView {
     func gameView(for index: Int) -> some View {
         switch index {
         case 0:
-            TapGameView(user: user, isGameStarted: $isGameStarted)
+            TapGameView(user: user, isGameStarted: $isGameStarted, animationSystem: animationSystem)
         case 1:
-            LanguageGameView(user: user, isGameStarted: $isGameStarted)
+            LanguageGameView(user: user, isGameStarted: $isGameStarted, animationSystem: animationSystem)
         case 2:
-            DodgeGameView(user: user, isGameStarted: $isGameStarted)
+            DodgeGameView(user: user, isGameStarted: $isGameStarted, animationSystem: animationSystem)
         case 3:
-            StackGameView(user: user, isGameStarted: $isGameStarted)
+            StackGameView(user: user, isGameStarted: $isGameStarted, animationSystem: animationSystem)
         default:
             EmptyView()
         }
@@ -131,5 +132,5 @@ private extension WorkSelectedView {
         record: .init()
     )
 
-    WorkSelectedView(user: user)
+    WorkSelectedView(user: user, animationSystem: nil)
 }

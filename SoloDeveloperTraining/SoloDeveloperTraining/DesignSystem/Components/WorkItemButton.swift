@@ -171,19 +171,19 @@ extension WorkItemButton {
             WorkItemButton(
                 title: "타이틀",
                 description: "기본 상태",
-                imageName: "background_house",
+                imageName: "housing_street",
                 buttonState: $buttonState1
             )
             WorkItemButton(
                 title: "타이틀",
                 description: "선택 상태",
-                imageName: "background_house",
+                imageName: "housing_street",
                 buttonState: $buttonState2
             )
             WorkItemButton(
                 title: "타이틀",
                 description: "비활성 상태",
-                imageName: "background_house",
+                imageName: "housing_street",
                 buttonState: $buttonState3
             )
         }
