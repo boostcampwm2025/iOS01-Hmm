@@ -26,10 +26,10 @@ struct FeedbackSettingView: View {
         HStack(spacing: Constant.horizontalSpacing) {
             // 사운드 버튼
             Button {
-                SoundService.shared.trigger(.success)
+                SoundService.shared.toggle()
             } label: {
                 Image(
-                    systemName: true ? Constant.ImageName.soundActive : Constant.ImageName.soundInactive
+                    systemName: SoundService.shared.isEnabled ? Constant.ImageName.soundActive : Constant.ImageName.soundInactive
                 )
                 .resizable()
                 .frame(width: Constant.iconSize, height: Constant.iconSize)

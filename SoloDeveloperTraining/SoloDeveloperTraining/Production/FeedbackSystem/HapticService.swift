@@ -33,7 +33,7 @@ final class HapticService {
 
     func toggle() {
         isEnabled.toggle()
-        // 설정이 변경되었음을 알리기 위해 햅틱 트리거
+        // 활성화 되었음을 알리기 위해 햅틱 트리거
         if isEnabled {
             HapticType.medium.trigger()
         }
