@@ -23,11 +23,6 @@ private enum Constant {
     enum CareerPopup {
         static let title: String = "커리어"
         static let maxHeight: CGFloat = 650
-        static let contentHorizontalPadding: CGFloat = 16
-        static let progressBarTopPadding: CGFloat = 18
-        static let progressBarBottomPadding: CGFloat = 18
-        static let careerRowSpacing: CGFloat = 10
-        static let scrollViewBottomPadding: CGFloat = 45
     }
 }
 
@@ -35,10 +30,10 @@ struct MainView: View {
     @Environment(\.scenePhase) var scenePhase
     @State private var selectedTab: TabItem = .work
     @State private var popupContent: PopupConfiguration?
+    @State private var careerSystem: CareerSystem?
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
-    let careerProgress: Double = 0.3
 
     init(user: User) {
         self.autoGainSystem = AutoGainSystem(user: user)
@@ -51,9 +46,9 @@ struct MainView: View {
                 ZStack(alignment: .top) {
                     Color.clear
                     StatusBar(
-                        career: user.career,
+                        career: careerSystem?.currentCareer ?? .unemployed,
                         nickname: user.nickname,
-                        careerProgress: careerProgress,
+                        careerProgress: careerSystem?.careerProgress ?? 0.0,
                         gold: user.wallet.gold,
                         diamond: user.wallet.diamond
                     )
@@ -88,13 +83,23 @@ struct MainView: View {
             }
             .ignoresSafeArea(edges: [.top, .bottom])
             .background(AppTheme.backgroundColor)
-            .onAppear(perform: autoGainSystem.startSystem)
+            .onAppear {
+                autoGainSystem.startSystem()
+                Task {
+                    if careerSystem == nil {
+                        careerSystem = await CareerSystem(user: user)
+                    }
+                }
+            }
             .onChange(of: scenePhase) { _, newValue in
                 if newValue == .active {
                     autoGainSystem.startSystem()
                 } else if newValue == .inactive || newValue == .background {
                     autoGainSystem.stopSystem()
                 }
+            }
+            .task(id: user.record.totalEarnedMoney) {
+                await careerSystem?.updateCareer()
             }
             .overlay {
                 if let popupContent {
@@ -115,36 +120,19 @@ struct MainView: View {
     }
 
     private func showCareerPopup() {
+        guard let careerSystem else { return }
+
         popupContent = PopupConfiguration(
             title: Constant.CareerPopup.title,
             maxHeight: Constant.CareerPopup.maxHeight
         ) {
-            VStack(alignment: .center, spacing: 0) {
-                CareerProgressBar(
-                    career: user.career,
-                    currentGold: user.wallet.gold
-                )
-                .padding(.bottom, Constant.CareerPopup.progressBarBottomPadding)
-                .padding(.top, Constant.CareerPopup.progressBarTopPadding)
-
-                ScrollView {
-                    VStack(spacing: Constant.CareerPopup.careerRowSpacing) {
-                        ForEach(Career.allCases, id: \.self) { career in
-                            CareerRow(
-                                career: career,
-                                userCareer: user.career
-                            )
-                        }
-                    }
-                }
-                .scrollIndicators(.never)
-                .padding(.bottom, Constant.CareerPopup.scrollViewBottomPadding)
-
-                MediumButton(title: "닫기", isFilled: true) {
+            CareerPopupView(
+                careerSystem: careerSystem,
+                user: user,
+                onClose: {
                     popupContent = nil
                 }
-            }
-            .padding(.horizontal, Constant.CareerPopup.contentHorizontalPadding)
+            )
         }
     }
 }
