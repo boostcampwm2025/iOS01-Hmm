@@ -145,6 +145,8 @@ final class StackGame: Game {
         user.wallet.addGold(goldEarned)
         /// 성공 수 기록
         user.record.record(.stackingSuccess)
+        /// 누적 재산 업데이트
+        user.record.record(.earnMoney(goldEarned))
         feverSystem.gainFever(Constant.Fever.success)
 
         // 재화 획득 시 캐릭터 웃게 만들기

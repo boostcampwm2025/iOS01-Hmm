@@ -115,8 +115,10 @@ final class LanguageGame: Game {
         )
         if isSuccess {
             await user.wallet.addGold(gainGold)
-            // 정답 횟수 기록
+            /// 정답 횟수 기록
             user.record.record(.languageCorrect)
+            /// 누적 재산 업데이트
+            user.record.record(.earnMoney(gainGold))
             // 재화 획득 시 캐릭터 웃게 만들기
             animationSystem?.playSmile()
             return gainGold

@@ -13,7 +13,7 @@ actor User {
     /// 유저 닉네임
     let nickname: String
     /// 커리어
-    let career: Career
+    var career: Career
     /// 지갑 [재산, 다이아]
     let wallet: Wallet
     /// 인벤토리 [장비, 소비, 부동산] 아이템
@@ -40,5 +40,9 @@ actor User {
         self.inventory = inventory
         self.record = record
         self.skills = skills
+    }
+
+    func updateCareer(to newCareer: Career) {
+        career = newCareer
     }
 }

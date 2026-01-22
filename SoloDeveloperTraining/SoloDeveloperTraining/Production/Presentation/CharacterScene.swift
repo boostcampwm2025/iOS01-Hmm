@@ -84,6 +84,19 @@ final class CharacterScene: SKScene {
         startBlinking()
     }
 
+    /// 커리어 변경 시 캐릭터 이미지 업데이트
+    func updateCareerAppearance(to newCareer: Career) {
+        guard let sprite = characterSprite else { return }
+
+        // 새로운 텍스처로 업데이트
+        let newIdleTexture = SKTexture(imageNamed: "\(newCareer.characterImagePrefix)_default")
+        sprite.texture = newIdleTexture
+
+        // 애니메이션 재시작
+        sprite.removeAllActions()
+        startBlinking()
+    }
+
     // MARK: - Private Methods
     private func startBlinking() {
         guard let sprite = characterSprite else { return }

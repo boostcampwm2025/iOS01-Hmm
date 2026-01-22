@@ -21,11 +21,8 @@ private enum Constants {
 
 struct CareerProgressBar: View {
     let career: Career
-    let currentGold: Int
-
-    var progress: CGFloat {
-        min(1.0, Double(currentGold) / Double(career.nextCareer?.requiredWealth ?? 1))
-    }
+    let totalEarnedMoney: Int
+    let progress: Double
 
     var body: some View {
         VStack(spacing: Constants.Spacing.vertical) {
@@ -47,7 +44,7 @@ struct CareerProgressBar: View {
                         axis: .horizontal,
                         icon: .gold,
                         textStyle: .caption,
-                        value: currentGold
+                        value: totalEarnedMoney
                     )
                 }
                 Spacer()
@@ -69,7 +66,14 @@ struct CareerProgressBar: View {
 }
 
 #Preview {
-    CareerProgressBar(career: .unemployed, currentGold: 0)
-    CareerProgressBar(career: .laptopOwner, currentGold: 1200)
-    CareerProgressBar(career: .aspiringDeveloper, currentGold: 1800)
+    CareerProgressBar(
+        career: .unemployed,
+        totalEarnedMoney: 0,
+        progress: 0.0
+    )
+    CareerProgressBar(
+        career: .laptopOwner,
+        totalEarnedMoney: 1200,
+        progress: 0.4
+    )
 }
