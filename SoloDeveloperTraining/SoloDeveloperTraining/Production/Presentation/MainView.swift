@@ -138,7 +138,7 @@ struct MainView: View {
                         }
                     }
                 }
-                .scrollIndicators(.hidden)
+                .scrollIndicators(.never)
                 .padding(.bottom, Constant.CareerPopup.scrollViewBottomPadding)
 
                 MediumButton(title: "닫기", isFilled: true) {
