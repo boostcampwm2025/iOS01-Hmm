@@ -13,6 +13,7 @@ final class CareerSystem {
     private let user: User
     var currentCareer: Career
     var careerProgress: Double = 0.0
+    var onCareerChanged: ((Career) -> Void)?
 
     init(user: User) async {
         self.user = user
@@ -41,6 +42,7 @@ final class CareerSystem {
         if currentCareer != newCareer {
             currentCareer = newCareer
             await user.updateCareer(to: newCareer)
+            onCareerChanged?(newCareer)
         }
         await updateProgress()
     }
