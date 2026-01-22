@@ -8,6 +8,9 @@
 import SwiftUI
 
 private enum Constant {
+    static let totalQuizCount: Int = 3
+    static let rewardCount: Int = 5
+
     enum Padding {
         static let horizontal: CGFloat = 16
         static let top: CGFloat = 15
@@ -15,6 +18,7 @@ private enum Constant {
         static let quizCountBottom: CGFloat = 6
         static let remainSecondsBottom: CGFloat = 30
         static let questionTitleBottom: CGFloat = 8
+        static let rewardBottom: CGFloat = 8
         static let optionsBottom: CGFloat = 30
         static let submitBottom: CGFloat = 15
     }
@@ -26,59 +30,46 @@ private enum Constant {
 }
 
 struct QuizQuestionView: View {
-    @State private var selectedIndex: Int?
-    @State private var isSubmitted = false
+    @State private var quizGame: QuizGame
 
-    // 예시 데이터
-    let currentQuizNumber = 1
-    let totalQuizNumber = 3
-    let remainSeconds = 60
-    let questionTitle = "오늘은 중요한 기능을 배포하는 날이다. 다음 중 개발자가 가장 들으면 안되는 말은?"
-    let reward = 20
-    let options = [
-        "(컴펌 코드도 보아) 이 부분요?",
-        "(함께 코드를 보며) 이 부분 빨리 수정 가능할까요?",
-        "(컴펌 코드도 보아) 이 부분 빨리 수정 가능할까요?",
-        "(컴펌 코드도 보아) 이 부분 빨리 수정 가능할까요?"
-    ]
-    let correctAnswerIndex = 1
-    let explanation = "해설 어쩌구 저쩌구다."
+    init(user: User) {
+        _quizGame = State(initialValue: QuizGame(user: user))
+    }
 
     var body: some View {
+        let state = quizGame.state
+
         VStack(spacing: 0) {
 
             /// 문제 헤더 영역
             QuizHeaderView(
-                current: currentQuizNumber,
-                total: totalQuizNumber,
-                remainSeconds: remainSeconds,
-                title: questionTitle,
-                reward: reward
+                currentQuizNumber: state.currentQuestion != nil ? quizGame.currentQuestionIndex + 1 : 0,
+                totalQuizCount: Constant.totalQuizCount,
+                remainingSeconds: state.remainingSeconds,
+                quizTitle: state.currentQuestion?.question ?? "",
+                rewardCount: Constant.rewardCount
             )
 
             /// 해설 영역
             QuizExplanationView(
-                isSubmitted: isSubmitted,
-                explanation: explanation,
-                isCorrect: selectedIndex == correctAnswerIndex
+                isSubmitted: state.phase == .showingExplanation,
+                explanation: state.currentQuestion?.explanation ?? "",
+                isCorrect: state.currentAnswerResult?.isCorrect ?? false
             )
 
             /// 선지, 제출버튼 영역
             QuizOptionsView(
-                options: options,
-                selectedIndex: selectedIndex,
-                isDisabled: isSubmitted,
-                isSubmitted: isSubmitted,
+                options: state.currentQuestion?.options ?? [],
+                selectedIndex: state.selectedAnswerIndex,
+                isShowingExplanation: state.phase == .showingExplanation,
                 onSelect: { index in
-                    if !isSubmitted {
-                        selectedIndex = selectedIndex == index ? nil : index
-                    }
+                    quizGame.selectAnswer(index)
                 },
                 onSubmit: {
-                    if !isSubmitted {
-                        isSubmitted = true
+                    if state.phase == .showingExplanation {
+                        quizGame.proceedToNextQuestion()
                     } else {
-                        // 다음 문제
+                        quizGame.submitSelectedAnswer()
                     }
                 }
             )
@@ -86,19 +77,24 @@ struct QuizQuestionView: View {
         .padding(.horizontal, Constant.Padding.horizontal)
         .padding(.top, Constant.Padding.top)
         .background(AppColors.beige100)
+        .onAppear {
+            if quizGame.state.phase == .ready {
+                quizGame.startGame()
+            }
+        }
     }
 }
 
 // MARK: - 퀴즈 해더 뷰
 private struct QuizHeaderView: View {
-    let current: Int
-    let total: Int
-    let remainSeconds: Int
-    let title: String
-    let reward: Int
+    let currentQuizNumber: Int
+    let totalQuizCount: Int
+    let remainingSeconds: Int
+    let quizTitle: String
+    let rewardCount: Int
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             // 타이틀
             HStack(spacing: Constant.Spacing.title) {
                 Image(.quizDogFace)
@@ -112,21 +108,21 @@ private struct QuizHeaderView: View {
             // 문제 개수
             HStack {
                 Spacer()
-                Text("\(current) / \(total)")
+                Text("\(currentQuizNumber) / \(totalQuizCount)")
                     .textStyle(.headline)
             }
             .padding(.bottom, Constant.Padding.quizCountBottom)
 
             // Progress
             ProgressBar(
-                maxValue: Double(total),
-                currentValue: Double(current),
-                text: "\(remainSeconds)s"
+                maxValue: Double(totalQuizCount),
+                currentValue: Double(currentQuizNumber),
+                text: "\(remainingSeconds)s"
             )
             .padding(.bottom, Constant.Padding.remainSecondsBottom)
 
             // 문제
-            Text(title)
+            Text(quizTitle)
                 .textStyle(.title)
                 .padding(.bottom, Constant.Padding.questionTitleBottom)
                 .fixedSize(horizontal: false, vertical: true)
@@ -134,8 +130,9 @@ private struct QuizHeaderView: View {
             // 보상
             HStack {
                 Spacer()
-                CurrencyLabel(axis: .horizontal, icon: .diamond, textStyle: .title2, value: reward)
+                CurrencyLabel(axis: .horizontal, icon: .diamond, textStyle: .title2, value: rewardCount)
             }
+            .padding(.bottom, Constant.Padding.rewardBottom)
         }
     }
 }
@@ -149,7 +146,7 @@ private struct QuizExplanationView: View {
     var body: some View {
         VStack(spacing: 0) {
             if isSubmitted {
-                Text(explanation)
+                Text(resultPrefix+explanation)
                     .textStyle(.callout)
                     .foregroundColor(
                         isCorrect ? AppColors.accentGreen : AppColors.accentRed
@@ -162,14 +159,17 @@ private struct QuizExplanationView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
+
+    private var resultPrefix: String {
+        isCorrect ? "정답\n" : "오답\n"
+    }
 }
 
-// MARK: - QuizButton 사용 뷰
+// MARK: - 선지, 제출버튼 뷰
 private struct QuizOptionsView: View {
     let options: [String]
     let selectedIndex: Int?
-    let isDisabled: Bool
-    let isSubmitted: Bool
+    let isShowingExplanation: Bool
     let onSelect: (Int) -> Void
     let onSubmit: () -> Void
 
@@ -185,7 +185,7 @@ private struct QuizOptionsView: View {
                     ) {
                         onSelect(index)
                     }
-                    .disabled(isDisabled)
+                    .disabled(isShowingExplanation)
                 }
             }
             .padding(.bottom, Constant.Padding.optionsBottom)
@@ -193,8 +193,8 @@ private struct QuizOptionsView: View {
             // 제출 버튼
             QuizButton(
                 style: .submit,
-                isEnabled: selectedIndex != nil && !isSubmitted,
-                title: isSubmitted ? "다음으로" : "제출하기"
+                isEnabled: isShowingExplanation ? true : selectedIndex != nil,
+                title: isShowingExplanation ? "다음으로" : "제출하기"
             ) {
                 onSubmit()
             }
@@ -204,5 +204,10 @@ private struct QuizOptionsView: View {
 }
 
 #Preview {
-    QuizQuestionView()
+    QuizQuestionView(user: User(
+        nickname: "Preview User",
+        wallet: Wallet(),
+        inventory: Inventory(),
+        record: Record()
+    ))
 }
