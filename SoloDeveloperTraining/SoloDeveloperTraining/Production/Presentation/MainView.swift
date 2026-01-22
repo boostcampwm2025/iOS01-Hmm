@@ -128,6 +128,11 @@ struct MainView: View {
             .task(id: user.record.totalEarnedMoney) {
                 await careerSystem?.updateCareer()
             }
+            .onChange(of: careerSystem?.currentCareer) { oldCareer, newCareer in
+                if let newCareer, oldCareer != newCareer {
+                    scene.updateCareerAppearance(to: newCareer)
+                }
+            }
             .overlay {
                 if let popupContent {
                     ZStack {
