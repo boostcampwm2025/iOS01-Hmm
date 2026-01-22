@@ -48,9 +48,11 @@ struct MissionView: View {
                             reward: mission.reward,
                             imageName: mission.type.level.imageName,
                             condition: mission.description,
-                            buttonState: mission.buttonState,
+                            buttonState: toButtonState(
+                                missionCardState: mission
+                                    .missionCardState),
                             onButtonTap: {
-                                if mission.buttonState == .claimable {
+                                if mission.missionCardState == .claimable {
                                     missionSystem
                                         .claimMissionReward(
                                             mission: mission,
@@ -67,5 +69,18 @@ struct MissionView: View {
         }
         .padding(.horizontal)
 
+    }
+}
+
+private extension MissionView {
+    func toButtonState(missionCardState: MissionCardState) -> MissionCardButton.ButtonState {
+        switch missionCardState {
+        case .claimed:
+                .claimed
+        case .claimable:
+                .claimable
+        case .inProgress(let currentValue, let totalValue):
+                .inProgress(currentValue: currentValue, totalValue: totalValue)
+        }
     }
 }

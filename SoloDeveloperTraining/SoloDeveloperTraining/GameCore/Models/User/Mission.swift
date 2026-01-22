@@ -8,13 +8,10 @@
 import Foundation
 import Observation
 
-enum MissionState {
-    /// "달성 완료"
+enum MissionCardState: Equatable {
     case claimed
-    /// "획득하기"
     case claimable
-    /// "진행중"
-    case inProgress
+    case inProgress(currentValue: Int, totalValue: Int)
 }
 
 enum MissionLevel {
@@ -39,6 +36,15 @@ enum MissionLevel {
 
 @Observable
 final class Mission {
+    enum State {
+        /// "달성 완료"
+        case claimed
+        /// "획득하기"
+        case claimable
+        /// "진행중"
+        case inProgress
+    }
+
     /// 미션 아이디
     var id: Int
     /// 미션 타입
@@ -56,7 +62,7 @@ final class Mission {
         min(Double(currentValue) / Double(targetValue), 1.0)
     }
     /// 현재 미션 상태
-    var state: MissionState = .inProgress
+    var state: State = .inProgress
     /// 업데이트 조건
     var updateCondition: (Record) -> Int
     /// 달성 조건
@@ -64,15 +70,13 @@ final class Mission {
     /// 보상
     var reward: Cost
 
-    /// 버튼 상태로 매핑
-    var buttonState: MissionCardButton.ButtonState {
+    /// 미션 카드 상태로 매핑
+    var missionCardState: MissionCardState {
         switch state {
         case .claimed:
             return .claimed
-
         case .claimable:
             return .claimable
-
         case .inProgress:
             return .inProgress(
                 currentValue: currentValue,
@@ -88,7 +92,7 @@ final class Mission {
         description: String,
         targetValue: Int,
         currentValue: Int = 0,
-        state: MissionState = .inProgress,
+        state: State = .inProgress,
         updateCondition: @escaping (Record) -> Int,
         completeCondition: ((Record) -> Bool)? = nil,
         reward: Cost
