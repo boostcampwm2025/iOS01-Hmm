@@ -27,6 +27,7 @@
 				Production/Presentation/CharacterScene.swift,
 				Production/Presentation/DodgeGameView.swift,
 				Production/Presentation/EnhanceView.swift,
+				Production/Presentation/FeedbackSettingView.swift,
 				Production/Presentation/LanguageGameView.swift,
 				Production/Presentation/MainView.swift,
 				Production/Presentation/MissionView.swift,
