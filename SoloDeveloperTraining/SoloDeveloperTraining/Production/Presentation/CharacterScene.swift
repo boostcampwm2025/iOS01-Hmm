@@ -5,7 +5,6 @@
 //  Created by SeoJunYoung on 1/20/26.
 //
 
-import Foundation
 import SpriteKit
 import SwiftUI
 
