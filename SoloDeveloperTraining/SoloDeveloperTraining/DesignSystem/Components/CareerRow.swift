@@ -15,7 +15,7 @@ private enum Constant {
 
     enum Spacing {
         static let horizontal: CGFloat = 8
-        static let vertical: CGFloat = 4
+        static let vertical: CGFloat = 6
     }
 }
 
