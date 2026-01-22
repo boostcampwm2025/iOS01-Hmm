@@ -23,86 +23,57 @@ private enum Constant {
 final class QuizGame {
     /// 게임을 플레이하는 사용자
     var user: User
-
     /// 리소스 파일에서 로드한 전체 문제 풀
     private var allQuestions: [QuizQuestion] = []
-
     /// 현재 게임 세션에서 출제된 문제들 (게임당 3문제)
     private(set) var currentGameQuestions: [QuizQuestion] = []
-
     /// 현재 풀고 있는 문제의 인덱스 (0부터 시작, 0~2)
     private(set) var currentQuestionIndex: Int = 0
-
     /// 현재 표시 중인 문제
     /// - currentQuestionIndex가 유효한 범위일 때만 반환
     var currentQuestion: QuizQuestion? {
         guard currentQuestionIndex < currentGameQuestions.count else { return nil }
         return currentGameQuestions[currentQuestionIndex]
     }
-
     /// 사용자가 선택한 답안의 인덱스 (0~3)
     /// - nil이면 아직 답을 선택하지 않은 상태
     private(set) var selectedAnswerIndex: Int?
-
     /// 현재 문제의 정답/오답/타임아웃 결과
     /// - 답안 제출 후에만 값이 설정됨
     private(set) var currentAnswerResult: QuizAnswerResult?
-
     /// 문제당 타이머
     /// - 문제 시작 시 생성되고, 답안 제출 또는 타임아웃 시 중지됨
     private var questionTimer: Timer?
-
     /// 현재 문제의 남은 시간 (초)
     /// - 매 초마다 1씩 감소
     private(set) var remainingSeconds: Int = Constant.secondsPerQuestion
-
-    /// 게임의 현재 상태
-    private(set) var gameState: QuizGameState = .loading
-
+    /// 게임의 현재 진행 단계
+    private(set) var phase: QuizGamePhase = .loading
     /// 현재 세션에서 맞춘 문제 개수
     private(set) var correctAnswersCount: Int = 0
 
-    /// 현재 세션에서 획득한 총 다이아 개수
-    /// - 정답당 5개씩 지급
-    var totalDiamondsEarned: Int {
-        return correctAnswersCount * Constant.diamondsPerCorrectAnswer
+    /// 모든 상태 정보
+    var state: QuizGameState {
+        QuizGameState(
+            totalDiamondsEarned: correctAnswersCount * Constant.diamondsPerCorrectAnswer,
+            progressText: "\(currentQuestionIndex + 1)/\(Constant.questionsPerGame)",
+            nextButtonTitle: currentQuestionIndex >= currentGameQuestions.count - 1 ? "결과 보기" : "다음",
+            isSubmitEnabled: selectedAnswerIndex != nil && phase == .questionInProgress,
+            timerProgress: Double(remainingSeconds) / Double(Constant.secondsPerQuestion),
+            phase: phase,
+            currentQuestion: currentQuestion,
+            selectedAnswerIndex: selectedAnswerIndex,
+            currentAnswerResult: currentAnswerResult,
+            remainingSeconds: remainingSeconds,
+            correctAnswersCount: correctAnswersCount
+        )
     }
 
-    /// 진행도 텍스트 (예: "1/3", "2/3")
-    /// - UI에 현재 문제 번호를 표시하기 위해 사용
-    var progressText: String {
-        return "\(currentQuestionIndex + 1)/\(Constant.questionsPerGame)"
-    }
-
-    /// 다음 버튼의 텍스트
-    /// - 마지막 문제일 경우: "결과 보기"
-    /// - 그 외: "다음"
-    var nextButtonTitle: String {
-        return currentQuestionIndex >= currentGameQuestions.count - 1 ? "결과 보기" : "다음"
-    }
-
-    /// 제출 버튼 활성화 여부
-    /// - 답을 선택했고, 문제 풀이 중일 때만 활성화
-    var isSubmitEnabled: Bool {
-        return selectedAnswerIndex != nil && gameState == .questionInProgress
-    }
-
-    /// 타이머 프로그래스 바 값 (0.0 ~ 1.0)
-    /// - 1.0: 시간이 충분히 남음
-    /// - 0.0: 시간 초과
-    var timerProgress: Double {
-        return Double(remainingSeconds) / Double(Constant.secondsPerQuestion)
-    }
-
-    /// 퀴즈 게임 초기화
-    /// - Parameter user: 게임을 플레이할 사용자
-    /// - Note: 초기화 시 자동으로 문제 데이터를 로드함
     init(user: User) {
         self.user = user
         loadQuestions()
     }
 
-    /// 객체 소멸 시 타이머 정리
     deinit {
         stopTimer()
     }
@@ -121,7 +92,7 @@ final class QuizGame {
         // 게임 상태 초기화
         currentQuestionIndex = 0
         correctAnswersCount = 0
-        gameState = .ready
+        phase = .ready
 
         // 첫 문제 시작
         startQuestion()
@@ -132,14 +103,14 @@ final class QuizGame {
     /// - 사용자가 중도 포기하는 경우 호출
     func stopGame() {
         stopTimer()
-        gameState = .completed
+        phase = .completed
     }
 
     /// 답 선택
     /// - Parameter index: 선택한 답안의 인덱스 (0~3)
     /// - Note: 문제 풀이 중일 때만 선택 가능
     func selectAnswer(_ index: Int) {
-        guard gameState == .questionInProgress else { return }
+        guard phase == .questionInProgress else { return }
         guard (0...3).contains(index) else { return }
         selectedAnswerIndex = index
     }
@@ -148,7 +119,7 @@ final class QuizGame {
     /// - 문제 풀이 중이고, 답을 선택한 상태일 때만 제출 가능
     /// - 제출 후 타이머 중지 및 결과 표시
     func submitSelectedAnswer() {
-        guard gameState == .questionInProgress else { return }
+        guard phase == .questionInProgress else { return }
         guard let answerIndex = selectedAnswerIndex else { return }
         submitAnswer(answerIndex)
     }
@@ -158,7 +129,7 @@ final class QuizGame {
     /// - 마지막 문제가 아니면: 다음 문제 시작
     /// - 마지막 문제면: 게임 완료 및 보상 지급
     func proceedToNextQuestion() {
-        guard gameState == .showingExplanation else { return }
+        guard phase == .showingExplanation else { return }
 
         currentQuestionIndex += 1
 
@@ -181,9 +152,9 @@ private extension QuizGame {
     func loadQuestions() {
         do {
             allQuestions = try QuizDataLoader.loadQuestions(from: Constant.questionLoadFileName)
-            gameState = .ready
+            phase = .ready
         } catch {
-            gameState = .error("문제를 불러오는데 실패했습니다: \(error.localizedDescription)")
+            phase = .error("문제를 불러오는데 실패했습니다: \(error.localizedDescription)")
         }
     }
 
@@ -193,7 +164,7 @@ private extension QuizGame {
     /// - 타이머 시작
     func startQuestion() {
         guard currentQuestion != nil else {
-            gameState = .error("문제를 찾을 수 없습니다")
+            phase = .error("문제를 찾을 수 없습니다")
             return
         }
 
@@ -201,7 +172,7 @@ private extension QuizGame {
         selectedAnswerIndex = nil
         currentAnswerResult = nil
         remainingSeconds = Constant.secondsPerQuestion
-        gameState = .questionInProgress
+        phase = .questionInProgress
 
         // 타이머 시작
         startTimer()
@@ -226,7 +197,7 @@ private extension QuizGame {
             correctAnswersCount += 1
         }
 
-        gameState = .showingExplanation
+        phase = .showingExplanation
     }
 
     /// 게임 완료 처리
@@ -240,7 +211,7 @@ private extension QuizGame {
         let diamondsToAward = correctAnswersCount * Constant.diamondsPerCorrectAnswer
         user.wallet.addDiamond(diamondsToAward)
 
-        gameState = .completed
+        phase = .completed
     }
 
     /// 타이머 시작
@@ -282,6 +253,6 @@ private extension QuizGame {
         stopTimer()
 
         currentAnswerResult = .timeout
-        gameState = .showingExplanation
+        phase = .showingExplanation
     }
 }

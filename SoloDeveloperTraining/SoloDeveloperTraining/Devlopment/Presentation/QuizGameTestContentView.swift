@@ -38,6 +38,8 @@ struct QuizGameTestContentView: View {
     }
 
     var body: some View {
+        let state = game.state
+
         ZStack {
             Color.white.ignoresSafeArea()
 
@@ -49,9 +51,9 @@ struct QuizGameTestContentView: View {
                 timerProgressBar
 
                 // 문제 및 선택지
-                if game.gameState == .questionInProgress || game.gameState == .showingExplanation {
+                if state.phase == .questionInProgress || state.phase == .showingExplanation {
                     questionSection
-                } else if game.gameState == .completed {
+                } else if state.phase == .completed {
                     EmptyView()
                 }
 
@@ -70,10 +72,10 @@ struct QuizGameTestContentView: View {
                 isGameStarted = false
             }
         } message: {
-            Text("정답: \(game.correctAnswersCount)/3개\n획득 다이아: \(game.totalDiamondsEarned)개")
+            Text("정답: \(state.correctAnswersCount)/3개\n획득 다이아: \(state.totalDiamondsEarned)개")
         }
-        .onChange(of: game.gameState) { _, newState in
-            if newState == .completed {
+        .onChange(of: state.phase) { _, newPhase in
+            if newPhase == .completed {
                 showCompletionAlert = true
             }
         }
@@ -83,7 +85,9 @@ struct QuizGameTestContentView: View {
 // MARK: - View Components
 private extension QuizGameTestContentView {
     var headerSection: some View {
-        VStack(spacing: 8) {
+        let state = game.state
+
+        return VStack(spacing: 8) {
             HStack {
                 Button {
                     game.stopGame()
@@ -97,7 +101,7 @@ private extension QuizGameTestContentView {
 
                 Spacer()
 
-                Text(game.progressText)
+                Text(state.progressText)
                     .textStyle(.title3)
                     .foregroundStyle(.black)
 
@@ -121,7 +125,9 @@ private extension QuizGameTestContentView {
     }
 
     var timerProgressBar: some View {
-        GeometryReader { geometry in
+        let state = game.state
+
+        return GeometryReader { geometry in
             ZStack(alignment: .leading) {
                 // 배경
                 Rectangle()
@@ -132,10 +138,10 @@ private extension QuizGameTestContentView {
                 Rectangle()
                     .fill(timerColor)
                     .frame(
-                        width: geometry.size.width * game.timerProgress,
+                        width: geometry.size.width * state.timerProgress,
                         height: Constant.Timer.height
                     )
-                    .animation(.linear(duration: 1.0), value: game.timerProgress)
+                    .animation(.linear(duration: 1.0), value: state.timerProgress)
             }
             .cornerRadius(Constant.Timer.cornerRadius)
         }
@@ -144,7 +150,7 @@ private extension QuizGameTestContentView {
     }
 
     var timerColor: Color {
-        let progress = game.timerProgress
+        let progress = game.state.timerProgress
         if progress > 0.5 {
             return .blue
         } else if progress > 0.2 {
@@ -155,9 +161,11 @@ private extension QuizGameTestContentView {
     }
 
     var questionSection: some View {
-        VStack(alignment: .leading, spacing: Constant.Padding.optionsSpacing) {
+        let state = game.state
+
+        return VStack(alignment: .leading, spacing: Constant.Padding.optionsSpacing) {
             // 문제 텍스트
-            if let question = game.currentQuestion {
+            if let question = state.currentQuestion {
                 Text(question.question)
                     .textStyle(.headline)
                     .foregroundStyle(.black)
@@ -170,9 +178,9 @@ private extension QuizGameTestContentView {
                 }
 
                 // 제출 버튼 또는 해설
-                if game.gameState == .questionInProgress {
+                if state.phase == .questionInProgress {
                     submitButton
-                } else if game.gameState == .showingExplanation {
+                } else if state.phase == .showingExplanation {
                     explanationSection
                 }
             }
@@ -181,26 +189,31 @@ private extension QuizGameTestContentView {
     }
 
     func optionButton(index: Int, text: String) -> some View {
-        QuizButton(
-            isSelected: game.selectedAnswerIndex == index,
+        let state = game.state
+
+        return QuizButton(
+            isSelected: state.selectedAnswerIndex == index,
             title: "\(index + 1). \(text)"
         ) {
-            if game.gameState == .questionInProgress {
+            if state.phase == .questionInProgress {
                 game.selectAnswer(index)
             }
         }
         .overlay {
             // 제출 후 정답/오답 표시
-            if game.gameState == .showingExplanation {
+            if state.phase == .showingExplanation {
                 correctnessOverlay(for: index)
             }
         }
-        .disabled(game.gameState != .questionInProgress)
+        .disabled(state.phase != .questionInProgress)
     }
 
     @ViewBuilder
     func correctnessOverlay(for index: Int) -> some View {
-        if let question = game.currentQuestion {
+        let state = game.state
+
+        return Group {
+            if let question = state.currentQuestion {
             if index == question.correctAnswerIndex {
                 // 정답에 체크 표시
                 HStack {
@@ -210,7 +223,7 @@ private extension QuizGameTestContentView {
                         .font(.system(size: 24))
                         .padding()
                 }
-            } else if index == game.selectedAnswerIndex && game.currentAnswerResult != .correct {
+            } else if index == state.selectedAnswerIndex && state.currentAnswerResult != .correct {
                 // 선택한 오답에 X 표시
                 HStack {
                     Spacer()
@@ -220,13 +233,16 @@ private extension QuizGameTestContentView {
                         .padding()
                 }
             }
+            }
         }
     }
 
     var submitButton: some View {
-        LargeButton(
+        let state = game.state
+
+        return LargeButton(
             title: "제출",
-            isEnabled: game.isSubmitEnabled
+            isEnabled: state.isSubmitEnabled
         ) {
             game.submitSelectedAnswer()
         }
@@ -235,7 +251,9 @@ private extension QuizGameTestContentView {
     }
 
     var explanationSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        let state = game.state
+
+        return VStack(alignment: .leading, spacing: 16) {
             // 정답/오답 표시
             HStack {
                 Image(systemName: resultIcon)
@@ -247,7 +265,7 @@ private extension QuizGameTestContentView {
             }
 
             // 해설
-            if let question = game.currentQuestion {
+            if let question = state.currentQuestion {
                 Text("해설")
                     .textStyle(.headline)
                     .foregroundStyle(.black)
@@ -259,9 +277,8 @@ private extension QuizGameTestContentView {
 
             // 다음 버튼
             LargeButton(
-                title: game.nextButtonTitle
+                title: state.nextButtonTitle
             ) {
-                print("🔘 Next button tapped, current index: \(game.currentQuestionIndex)")
                 game.proceedToNextQuestion()
             }
             .frame(maxWidth: .infinity)
@@ -270,12 +287,8 @@ private extension QuizGameTestContentView {
         .padding(.top, Constant.Padding.submitTop)
     }
 
-    var currentQuestionIndex: Int {
-        game.currentQuestionIndex
-    }
-
     var resultIcon: String {
-        switch game.currentAnswerResult {
+        switch game.state.currentAnswerResult {
         case .correct: return "checkmark.circle.fill"
         case .incorrect, .timeout: return "xmark.circle.fill"
         case .none: return ""
@@ -283,7 +296,7 @@ private extension QuizGameTestContentView {
     }
 
     var resultColor: Color {
-        switch game.currentAnswerResult {
+        switch game.state.currentAnswerResult {
         case .correct: return .green
         case .incorrect, .timeout: return .red
         case .none: return .black
@@ -291,7 +304,7 @@ private extension QuizGameTestContentView {
     }
 
     var resultText: String {
-        switch game.currentAnswerResult {
+        switch game.state.currentAnswerResult {
         case .correct: return "정답입니다!"
         case .incorrect: return "오답입니다."
         case .timeout: return "시간 초과!"

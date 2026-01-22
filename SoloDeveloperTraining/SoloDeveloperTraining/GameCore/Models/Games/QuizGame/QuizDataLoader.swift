@@ -37,7 +37,7 @@ struct QuizDataLoader {
 
             var questions: [QuizQuestion] = []
 
-            for (index, line) in dataLines.enumerated() {
+            for (_, line) in dataLines.enumerated() {
                 // 탭으로 분리
                 let columns = line.components(separatedBy: "\t")
 
