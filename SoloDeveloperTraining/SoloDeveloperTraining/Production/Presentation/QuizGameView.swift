@@ -116,9 +116,9 @@ private struct QuizHeaderView: View {
 
             // Progress
             ProgressBar(
-                maxValue: Double(totalQuizCount),
-                currentValue: Double(currentQuizNumber),
-                text: "\(remainingSeconds)s"
+                maxValue: 60.0,
+                currentValue: Double(remainingSeconds),
+                text: remainingSeconds > 0 ? "\(remainingSeconds)s" : "제한 시간 종료"
             )
             .padding(.bottom, Constant.Padding.remainSecondsBottom)
 
