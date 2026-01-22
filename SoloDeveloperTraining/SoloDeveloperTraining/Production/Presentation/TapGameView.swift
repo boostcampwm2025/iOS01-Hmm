@@ -119,6 +119,8 @@ private extension TapGameView {
     /// 소비 아이템 사용 처리
     func useConsumableItem(_ type: ConsumableType) {
         if tapGame.inventory.drink(type) {
+            // 햅틱 재생
+            HapticService.shared.trigger(.success)
             tapGame.buffSystem.useConsumableItem(type: type)
             tapGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
         }

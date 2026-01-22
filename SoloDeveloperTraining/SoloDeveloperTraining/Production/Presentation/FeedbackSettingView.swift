@@ -1,0 +1,61 @@
+//
+//  FeedbackSettingView.swift
+//  SoloDeveloperTraining
+//
+//  Created by sunjae on 1/22/26.
+//
+
+import SwiftUI
+
+private enum Constant {
+    static let iconSize: CGFloat = 38
+    static let horizontalSpacing: CGFloat = 12
+
+    enum Opacity {
+        static let imageEnabled: Double = 1
+        static let imageDisabled: Double = 0.7
+    }
+
+    enum ImageName {
+        static let soundActive: String = "speaker.circle.fill"
+        static let soundInactive: String = "speaker.circle"
+        static let hapticActive: String = "iphone.gen1.radiowaves.left.and.right.circle.fill"
+        static let hapticInactive: String = "iphone.gen1.radiowaves.left.and.right.circle"
+    }
+}
+
+struct FeedbackSettingView: View {
+    var body: some View {
+        HStack(spacing: Constant.horizontalSpacing) {
+            // 사운드 버튼
+            Button {
+                SoundService.shared.toggle()
+            } label: {
+                Image(
+                    systemName: SoundService.shared.isEnabled ? Constant.ImageName.soundActive : Constant.ImageName.soundInactive
+                )
+                .resizable()
+                .frame(width: Constant.iconSize, height: Constant.iconSize)
+                .foregroundColor(.white)
+                .opacity(
+                    SoundService.shared.isEnabled ? Constant.Opacity.imageEnabled : Constant.Opacity.imageDisabled
+                )
+            }
+            // 햅틱 버튼
+            Button {
+                HapticService.shared.toggle()
+                
+            } label: {
+                Image(
+                    systemName: HapticService.shared.isEnabled ? Constant.ImageName.hapticActive : Constant.ImageName.hapticInactive
+                )
+                .resizable()
+                .frame(width: Constant.iconSize, height: Constant.iconSize)
+                .foregroundColor(.white)
+                .opacity(
+                    HapticService.shared.isEnabled ? Constant.Opacity.imageEnabled : Constant.Opacity.imageDisabled
+                )
+            }
+        }
+    }
+}

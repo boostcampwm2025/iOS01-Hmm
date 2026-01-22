@@ -82,6 +82,14 @@ struct MainView: View {
                             .background(Color.clear)
                         Spacer()
                     }
+                    VStack {
+                        Spacer()
+                        HStack {
+                            FeedbackSettingView()
+                                .padding()
+                            Spacer()
+                        }
+                    }
                 }
                 .frame(height: geometry.size.height * Constant.topAreaHeightRatio)
                 .background(
@@ -89,7 +97,6 @@ struct MainView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                 )
-
                 // 탭바
                 TabBar(
                     selectedTab: $selectedTab,
