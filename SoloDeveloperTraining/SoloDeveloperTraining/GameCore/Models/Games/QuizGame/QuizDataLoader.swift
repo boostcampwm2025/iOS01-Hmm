@@ -21,7 +21,7 @@ struct QuizDataLoader {
     /// - Parameter fileName: Resources 폴더의 TSV 파일명 (확장자 제외)
     /// - Returns: 검증된 퀴즈 문제 배열
     /// - Throws: 파일을 찾을 수 없거나 데이터가 유효하지 않은 경우 QuizDataLoaderError
-    static func loadQuestions(from fileName: String = "QuizData") throws -> [QuizQuestion] {
+    static func loadQuestions(from fileName: String) throws -> [QuizQuestion] {
         guard let url = Bundle.main.url(forResource: fileName, withExtension: "tsv") else {
             throw QuizDataLoaderError.fileNotFound
         }
