@@ -13,6 +13,11 @@ private enum Constant {
     static let leadingPadding: CGFloat = iconSize + horizontalSpacing + 30
     static let bottomPadding: CGFloat = 15
 
+    enum Opacity {
+        static let imageEnabled: Double = 1
+        static let imageDisabled: Double = 0.7
+    }
+
     enum ImageName {
         static let soundActive: String = "speaker.circle.fill"
         static let soundInactive: String = "speaker.slash.circle.fill"
@@ -34,6 +39,9 @@ struct FeedbackSettingView: View {
                 .resizable()
                 .frame(width: Constant.iconSize, height: Constant.iconSize)
                 .foregroundColor(.white)
+                .opacity(
+                    SoundService.shared.isEnabled ? Constant.Opacity.imageEnabled : Constant.Opacity.imageDisabled
+                )
             }
             // 햅틱 버튼
             Button {
@@ -45,6 +53,9 @@ struct FeedbackSettingView: View {
                 .resizable()
                 .frame(width: Constant.iconSize, height: Constant.iconSize)
                 .foregroundColor(.white)
+                .opacity(
+                    HapticService.shared.isEnabled ? Constant.Opacity.imageEnabled : Constant.Opacity.imageDisabled
+                )
             }
         }
         .padding(.leading, Constant.leadingPadding)
