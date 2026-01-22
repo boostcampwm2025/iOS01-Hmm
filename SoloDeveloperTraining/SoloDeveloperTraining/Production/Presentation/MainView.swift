@@ -66,8 +66,10 @@ struct MainView: View {
                     Image(user.inventory.housing.imageName)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
+                        .overlay(alignment: .bottomLeading) {
+                            FeedbackSettingView()
+                        }
                 )
-
                 // 탭바
                 TabBar(selectedTab: $selectedTab)
 
