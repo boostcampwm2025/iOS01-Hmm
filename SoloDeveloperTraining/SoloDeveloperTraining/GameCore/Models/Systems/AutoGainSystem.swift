@@ -41,5 +41,7 @@ final class AutoGainSystem {
     private func gainGold() {
         let goldPerSecond = calculator.calculateGoldPerSecond(user: user)
         user.wallet.addGold(goldPerSecond)
+        /// 누적 재산 업데이트
+        user.record.record(.earnMoney(goldPerSecond))
     }
 }
