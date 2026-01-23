@@ -34,7 +34,8 @@ private enum Constant {
     }
 }
 
-struct QuizQuestionView: View {
+struct QuizGameView: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var quizGame: QuizGame
     @State private var showRewardPopup: Bool = false
 
@@ -55,7 +56,7 @@ struct QuizQuestionView: View {
                 quizTitle: state.currentQuestion?.question ?? "",
                 rewardCount: Constant.rewardCount,
                 onClose: {
-                    // TODO: 화면 닫기 로직
+                    dismiss()
                 }
             )
 
@@ -112,7 +113,7 @@ struct QuizQuestionView: View {
                         onClose: {
                             quizGame.proceedToNextQuestion()
                             showRewardPopup = false
-                            // TODO: 화면 닫기 등 추가 로직
+                            dismiss()
                         }
                     )
                 }
@@ -293,7 +294,7 @@ private struct RewardPopupView: View {
 }
 
 #Preview {
-    QuizQuestionView(user: User(
+    QuizGameView(user: User(
         nickname: "Preview User",
         wallet: Wallet(),
         inventory: Inventory(),

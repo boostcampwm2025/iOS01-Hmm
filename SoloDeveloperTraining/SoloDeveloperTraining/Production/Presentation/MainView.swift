@@ -41,6 +41,7 @@ struct MainView: View {
     @State private var selectedTab: TabItem = .work
     @State private var popupContent: PopupConfiguration?
     @State private var careerSystem: CareerSystem?
+    @State private var showQuizView: Bool = false
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
@@ -85,7 +86,6 @@ struct MainView: View {
                         SpriteView(scene: scene, options: [.allowsTransparency])
                             .frame(width: Constant.spriteViewSize.width, height: Constant.spriteViewSize.height)
                             .background(Color.clear)
-                        Spacer()
                     }
                     VStack {
                         Spacer()
@@ -100,7 +100,7 @@ struct MainView: View {
                         HStack {
                             Spacer()
                             SmallButton(title: "퀴즈", hasBadge: true) {
-                                // TODO: 퀴즈 화면 띄우기
+                                showQuizView = true
                             }
                         }
                         .padding(.top, Constant.QuizButton.top)
@@ -172,6 +172,9 @@ struct MainView: View {
                             .padding(.horizontal, Constant.Padding.horizontalPadding)
                     }
                 }
+            }
+            .fullScreenCover(isPresented: $showQuizView) {
+                QuizGameView(user: user)
             }
         }
     }
