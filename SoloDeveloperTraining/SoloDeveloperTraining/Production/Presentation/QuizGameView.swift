@@ -27,6 +27,11 @@ private enum Constant {
         static let title: CGFloat = 2
         static let quizButton: CGFloat = 16
     }
+
+    enum Size {
+        static let closeButtonWidth: CGFloat = 40
+        static let closeButtonHeight: CGFloat = 40
+    }
 }
 
 struct QuizQuestionView: View {
@@ -48,7 +53,10 @@ struct QuizQuestionView: View {
                 totalQuizCount: Constant.totalQuizCount,
                 remainingSeconds: state.remainingSeconds,
                 quizTitle: state.currentQuestion?.question ?? "",
-                rewardCount: Constant.rewardCount
+                rewardCount: Constant.rewardCount,
+                onClose: {
+                    // TODO: 화면 닫기 로직
+                }
             )
 
             /// 해설 영역
@@ -120,6 +128,7 @@ private struct QuizHeaderView: View {
     let remainingSeconds: Int
     let quizTitle: String
     let rewardCount: Int
+    let onClose: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -130,6 +139,16 @@ private struct QuizHeaderView: View {
                 Text("개발 퀴즈")
                     .textStyle(.largeTitle)
                 Spacer()
+                Button {
+                    onClose()
+                } label: {
+                    Image(.iconClose)
+                        .resizable()
+                        .frame(
+                            width: Constant.Size.closeButtonWidth,
+                            height: Constant.Size.closeButtonHeight
+                        )
+                }
             }
             .padding(.bottom, Constant.Padding.titleBottom)
 
