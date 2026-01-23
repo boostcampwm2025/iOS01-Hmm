@@ -119,6 +119,7 @@ private extension ShopSystem {
                     isPurchasable: user.wallet.canAfford(housing.cost)
                 )
             }
+            .sorted { $0.isEquipped && !$1.isEquipped }
         }
     }
 

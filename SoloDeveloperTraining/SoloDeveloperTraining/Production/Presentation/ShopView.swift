@@ -80,34 +80,38 @@ private extension ShopView {
     }
 
     var housingView: some View {
-        ScrollView(.horizontal) {
-            LazyHStack(spacing: Constant.Spacing.itemCard) {
-                ForEach(displayItems) { item in
-                    if let housing = item.item as? Housing {
-                        HousingCard(
-                            housing: housing,
-                            state: ItemState(item: item),
-                            isSelected: selectedHousingTier == housing.tier,
-                            onTap: {
-                                selectedHousingTier = housing.tier
-                            },
-                            onButtonTap: {
-                                selectedHousingTier = housing.tier
-                                purchase(item: item)
-                            }
-                        )
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal) {
+                LazyHStack(spacing: Constant.Spacing.itemCard) {
+                    ForEach(displayItems) { item in
+                        if let housing = item.item as? Housing {
+                            HousingCard(
+                                housing: housing,
+                                state: ItemState(item: item),
+                                isSelected: selectedHousingTier == housing.tier,
+                                onTap: {
+                                    selectedHousingTier = housing.tier
+                                },
+                                onButtonTap: {
+                                    selectedHousingTier = housing.tier
+                                    purchase(item: item, scrollProxy: proxy)
+                                }
+                            )
+                            .id(item.id)
+                        }
                     }
                 }
+                .padding(.horizontal, Constant.Padding.horizontal)
+                .padding(.top, Constant.Padding.housingTop)
+                .padding(.bottom, Constant.Padding.housingBottom)
+                .id("housingScrollStart")
             }
-            .padding(.horizontal, Constant.Padding.horizontal)
-            .padding(.top, Constant.Padding.housingTop)
-            .padding(.bottom, Constant.Padding.housingBottom)
+            .scrollIndicators(.never)
         }
-        .scrollIndicators(.never)
     }
 
     /// 아이템 구매 확인 팝업 표시
-    func purchase(item: DisplayItem) {
+    func purchase(item: DisplayItem, scrollProxy: ScrollViewProxy? = nil) {
         let (title, message, buttonTitle) = ShopPurchaseHelper.purchaseInfo(for: item)
         let fullMessage = ShopPurchaseHelper.createPurchaseMessage(item: item, baseMessage: message, shopSystem: shopSystem)
 
@@ -117,14 +121,22 @@ private extension ShopView {
             message: fullMessage,
             confirmTitle: buttonTitle
         ) {
-            executePurchase(item: item)
+            executePurchase(item: item, scrollProxy: scrollProxy)
         }
     }
 
     /// 실제 구매 실행
-    func executePurchase(item: DisplayItem) {
+    func executePurchase(item: DisplayItem, scrollProxy: ScrollViewProxy? = nil) {
         do {
             let isSuccess = try shopSystem.buy(item: item)
+            if isSuccess {
+                // 성공 시 가로 스크롤을 맨 처음으로 이동
+                if let proxy = scrollProxy, selectedCategoryIndex == 1 {
+                    withAnimation {
+                        proxy.scrollTo("housingScrollStart", anchor: .leading)
+                    }
+                }
+            }
             if item.category == .equipment {
                 let title = isSuccess ? "강화 성공" : "강화 실패"
                 let message = isSuccess ? "강화에 성공했습니다!" : "강화에 실패했습니다.\n비용은 소모되었습니다."
