@@ -43,6 +43,10 @@ final class CareerSystem {
             currentCareer = newCareer
             await user.updateCareer(to: newCareer)
             onCareerChanged?(newCareer)
+
+            if newCareer == .juniorDeveloper {
+                user.record.record(.juniorDeveloperAchieve)
+            }
         }
         await updateProgress()
     }
