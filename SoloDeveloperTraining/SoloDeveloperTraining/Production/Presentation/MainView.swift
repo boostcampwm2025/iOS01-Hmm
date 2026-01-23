@@ -87,6 +87,8 @@ struct MainView: View {
                             .frame(width: Constant.spriteViewSize.width, height: Constant.spriteViewSize.height)
                             .background(Color.clear)
                     }
+
+                    // 사운드, 햅틱 버튼
                     VStack {
                         Spacer()
                         HStack {
@@ -94,8 +96,9 @@ struct MainView: View {
                                 .padding()
                             Spacer()
                         }
+                    }
 
-                    // 퀴즈 버튼 추가
+                    // 퀴즈 버튼
                     VStack {
                         HStack {
                             Spacer()

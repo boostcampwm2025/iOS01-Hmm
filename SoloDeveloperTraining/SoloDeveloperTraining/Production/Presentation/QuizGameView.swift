@@ -29,8 +29,8 @@ private enum Constant {
     }
 
     enum Size {
-        static let closeButtonWidth: CGFloat = 40
-        static let closeButtonHeight: CGFloat = 40
+        static let closeButtonWidth: CGFloat = 20
+        static let closeButtonHeight: CGFloat = 20
     }
 }
 
@@ -143,8 +143,9 @@ private struct QuizHeaderView: View {
                 Button {
                     onClose()
                 } label: {
-                    Image(.iconClose)
+                    Image(systemName: "xmark.square.fill")
                         .resizable()
+                        .foregroundStyle(AppColors.gray300)
                         .frame(
                             width: Constant.Size.closeButtonWidth,
                             height: Constant.Size.closeButtonHeight
@@ -171,14 +172,14 @@ private struct QuizHeaderView: View {
 
             // 문제
             Text(quizTitle)
-                .textStyle(.title)
+                .textStyle(.title2)
                 .padding(.bottom, Constant.Padding.questionTitleBottom)
                 .fixedSize(horizontal: false, vertical: true)
 
             // 보상
             HStack {
                 Spacer()
-                CurrencyLabel(axis: .horizontal, icon: .diamond, textStyle: .title2, value: rewardCount)
+                CurrencyLabel(axis: .horizontal, icon: .diamond, textStyle: .body, value: rewardCount)
             }
             .padding(.bottom, Constant.Padding.rewardBottom)
         }
