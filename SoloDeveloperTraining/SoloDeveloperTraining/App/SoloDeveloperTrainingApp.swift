@@ -7,40 +7,26 @@
 
 import SwiftUI
 
+private enum Constant {
+    enum Animation {
+        static let duration: Double = 1.0
+    }
+
+    enum Padding {
+        static let nicknamePopupHorizontal: CGFloat = 25
+    }
+
+    enum Opacity {
+        static let overlay: Double = 0.5
+    }
+}
+
 @main
 struct SoloDeveloperTrainingApp: App {
-    let user = User(
-        nickname: "소피아",
-        wallet: .init(),
-        inventory: Inventory(
-            equipmentItems: [
-                .init(type: .chair, tier: .broken),
-                .init(type: .keyboard, tier: .broken),
-                .init(type: .monitor, tier: .broken),
-                .init(type: .mouse, tier: .broken)
-            ],
-            housing: .init(tier: .rooftop)
-        ),
-        record: .init(),
-        skills: [
-            // 코드짜기
-            .init(key: SkillKey(game: .tap, tier: .beginner)),
-            .init(key: SkillKey(game: .tap, tier: .intermediate)),
-            .init(key: SkillKey(game: .tap, tier: .advanced)),
-            // 언어 맞추기
-            .init(key: SkillKey(game: .language, tier: .beginner)),
-            .init(key: SkillKey(game: .language, tier: .intermediate)),
-            .init(key: SkillKey(game: .language, tier: .advanced)),
-            // 버그 피하기
-            .init(key: SkillKey(game: .dodge, tier: .beginner)),
-            .init(key: SkillKey(game: .dodge, tier: .intermediate)),
-            .init(key: SkillKey(game: .dodge, tier: .advanced)),
-            // 물건 쌓기
-            .init(key: SkillKey(game: .stack, tier: .beginner)),
-            .init(key: SkillKey(game: .stack, tier: .intermediate)),
-            .init(key: SkillKey(game: .stack, tier: .advanced))
-        ]
-    )
+    @State private var hasSeenIntro = false
+    @State private var showNicknameSetup = false
+    @State private var showTutorial = false
+    @State private var user: User?
 
     var body: some Scene {
         WindowGroup {
@@ -49,8 +35,66 @@ struct SoloDeveloperTrainingApp: App {
             ContentView()
 #else
             // 운영 타깃용 뷰
-            MainView(user: user)
+            Group {
+                if hasSeenIntro, let user {
+                    MainView(user: user)
+                        .transition(.opacity)
+                } else {
+                    IntroView(
+                        hasSeenIntro: $hasSeenIntro,
+                        showNicknameSetup: $showNicknameSetup,
+                        user: user
+                    )
+                }
+            }
+            .animation(.easeOut(duration: Constant.Animation.duration), value: hasSeenIntro)
+            .overlay {
+                nicknameSetupOverlay
+            }
+            .fullScreenCover(isPresented: $showTutorial) {
+                TutorialView(isPresented: $showTutorial) {
+                    user?.record.tutorialCompleted = true
+                    hasSeenIntro = true
+                    showTutorial = false
+                }
+                .onAppear {
+                    Task {
+                        try? await Task.sleep(nanoseconds: UInt64(Constant.Animation.duration * 1_000_000_000))
+                        hasSeenIntro = true
+                    }
+                }
+            }
 #endif
         }
     }
 }
+
+#if !DEV_BUILD
+private extension SoloDeveloperTrainingApp {
+    @ViewBuilder
+    var nicknameSetupOverlay: some View {
+        if showNicknameSetup {
+            ZStack {
+                Color.black.opacity(Constant.Opacity.overlay)
+                    .ignoresSafeArea()
+
+                NicknameSetupView(
+                    onStart: { nickname in
+                        user = User(nickname: nickname)
+                        showNicknameSetup = false
+                        withAnimation(.easeOut(duration: Constant.Animation.duration)) {
+                            hasSeenIntro = true
+                        }
+                    },
+                    onTutorial: { nickname in
+                        user = User(nickname: nickname)
+                        showNicknameSetup = false
+                        showTutorial = true
+                    }
+                )
+                .padding(.horizontal, Constant.Padding.nicknamePopupHorizontal)
+            }
+        }
+    }
+}
+#endif

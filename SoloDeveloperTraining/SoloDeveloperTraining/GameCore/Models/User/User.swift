@@ -45,4 +45,36 @@ actor User {
     func updateCareer(to newCareer: Career) {
         career = newCareer
     }
+
+    @MainActor
+    init(nickname: String) {
+        self.init(
+            nickname: nickname,
+            wallet: .init(),
+            inventory: .init(
+                equipmentItems: [
+                    .init(type: .chair, tier: .broken),
+                    .init(type: .keyboard, tier: .broken),
+                    .init(type: .monitor, tier: .broken),
+                    .init(type: .mouse, tier: .broken)
+                ],
+                housing: .init(tier: .street)
+            ),
+            record: .init(),
+            skills: [
+                .init(key: SkillKey(game: .tap, tier: .beginner)),
+                .init(key: SkillKey(game: .tap, tier: .intermediate)),
+                .init(key: SkillKey(game: .tap, tier: .advanced)),
+                .init(key: SkillKey(game: .language, tier: .beginner)),
+                .init(key: SkillKey(game: .language, tier: .intermediate)),
+                .init(key: SkillKey(game: .language, tier: .advanced)),
+                .init(key: SkillKey(game: .dodge, tier: .beginner)),
+                .init(key: SkillKey(game: .dodge, tier: .intermediate)),
+                .init(key: SkillKey(game: .dodge, tier: .advanced)),
+                .init(key: SkillKey(game: .stack, tier: .beginner)),
+                .init(key: SkillKey(game: .stack, tier: .intermediate)),
+                .init(key: SkillKey(game: .stack, tier: .advanced))
+            ]
+        )
+    }
 }
