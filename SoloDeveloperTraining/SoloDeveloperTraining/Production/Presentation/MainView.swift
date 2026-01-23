@@ -29,6 +29,11 @@ private enum Constant {
         static let title: String = "커리어"
         static let maxHeight: CGFloat = 650
     }
+
+    enum QuizButton {
+        static let top: CGFloat = 128
+        static let trailing: CGFloat = 16
+    }
 }
 
 struct MainView: View {
@@ -89,6 +94,19 @@ struct MainView: View {
                                 .padding()
                             Spacer()
                         }
+
+                    // 퀴즈 버튼 추가
+                    VStack {
+                        HStack {
+                            Spacer()
+                            SmallButton(title: "퀴즈", hasBadge: true) {
+                                // TODO: 퀴즈 화면 띄우기
+                            }
+                        }
+                        .padding(.top, Constant.QuizButton.top)
+                        .padding(.trailing, Constant.QuizButton.trailing)
+
+                        Spacer()
                     }
                 }
                 .frame(height: geometry.size.height * Constant.topAreaHeightRatio)
