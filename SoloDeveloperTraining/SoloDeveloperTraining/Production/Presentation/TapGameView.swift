@@ -32,7 +32,6 @@ struct TapGameView: View {
     ) {
         let tapGame = TapGame(
             user: user,
-            calculator: Calculator(),
             buffSystem: BuffSystem(),
             animationSystem: animationSystem
         )

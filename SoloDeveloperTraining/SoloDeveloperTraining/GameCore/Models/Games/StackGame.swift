@@ -26,7 +26,6 @@ final class StackGame: Game {
 
     var kind: GameType = .stack
     var user: User
-    var calculator: Calculator
     var feverSystem: FeverSystem = .init(
         decreaseInterval: Constant.Fever.decreaseInterval,
         decreasePercentPerTick: Constant.Fever.decreasePercentPerTick
@@ -41,9 +40,8 @@ final class StackGame: Game {
     private(set) var currentBlock: StackBlock?
     private(set) var previousBlock: StackBlock?
 
-    init(user: User, calculator: Calculator, animationSystem: CharacterAnimationSystem? = nil) {
+    init(user: User, animationSystem: CharacterAnimationSystem? = nil) {
         self.user = user
-        self.calculator = calculator
         self.animationSystem = animationSystem
     }
 
@@ -173,7 +171,7 @@ final class StackGame: Game {
 
     /// 현재 상태에 따른 골드 획득량을 계산합니다
     private func calculateGold() -> Int {
-        return calculator.calculateGoldPerAction(
+        return Calculator.calculateGoldPerAction(
             game: .stack,
             user: user,
             feverMultiplier: feverSystem.feverMultiplier,

@@ -59,7 +59,6 @@ final class LanguageGame: Game {
     typealias ActionInput = LanguageType
     var kind: GameType = .language
     var user: User
-    var calculator: Calculator
     var feverSystem: FeverSystem
     var buffSystem: BuffSystem
     var animationSystem: CharacterAnimationSystem?
@@ -76,14 +75,12 @@ final class LanguageGame: Game {
 
     init(
         user: User,
-        calculator: Calculator,
         feverSystem: FeverSystem,
         buffSystem: BuffSystem,
         itemCount: Int,
         animationSystem: CharacterAnimationSystem? = nil
     ) {
         self.user = user
-        self.calculator = calculator
         self.feverSystem = feverSystem
         self.buffSystem = buffSystem
         self.itemCount = itemCount
@@ -107,7 +104,7 @@ final class LanguageGame: Game {
             .gainFever(
                 isSuccess ? Constant.Fever.successFever : Constant.Fever.failureFever
             )
-        let gainGold = calculator.calculateGoldPerAction(
+        let gainGold = Calculator.calculateGoldPerAction(
             game: kind,
             user: user,
             feverMultiplier: feverSystem.feverMultiplier,

@@ -10,7 +10,6 @@ import SwiftUI
 /// Dodge 게임 테스트 뷰
 struct DodgeGameTestView: View {
     let user: User
-    let calculator: Calculator
 
     @State private var game: DodgeGame
     @State private var currentGold: Int = 0
@@ -25,9 +24,8 @@ struct DodgeGameTestView: View {
     @State private var gameAreaHeight: CGFloat = 400
     @State private var goldAnimationTask: DispatchWorkItem?
 
-    init(user: User, calculator: Calculator) {
+    init(user: User) {
         self.user = user
-        self.calculator = calculator
 
         // 초기 크기 (onAppear에서 실제 크기로 업데이트됨)
         let initialSize = CGSize(width: 300, height: 400)
@@ -230,7 +228,7 @@ struct DodgeGameTestView: View {
     }
 
     private func updateGoldPerAction() async {
-        let perAction = game.calculator.calculateGoldPerAction(
+        let perAction = Calculator.calculateGoldPerAction(
             game: .dodge,
             user: game.user,
             feverMultiplier: game.feverSystem.feverMultiplier,
@@ -318,6 +316,5 @@ struct DodgeGameTestView: View {
             .init(key: SkillKey(game: .dodge, tier: .beginner), level: 1000)
         ]
     )
-    let calculator = Calculator()
-    DodgeGameTestView(user: user, calculator: calculator)
+    DodgeGameTestView(user: user)
 }
