@@ -1,5 +1,5 @@
 //
-//  EnhanceView.swift
+//  SkillView.swift
 //  SoloDeveloperTraining
 //
 //  Created by 최범수 on 2026-01-20.
@@ -14,7 +14,7 @@ private enum Constant {
     static let popupContentSpacing: CGFloat = 20
 }
 
-struct EnhanceView: View {
+struct SkillView: View {
     private let user: User
     private let skillSystem: SkillSystem
 
@@ -47,12 +47,12 @@ struct EnhanceView: View {
     }
 }
 
-private extension EnhanceView {
+private extension SkillView {
     func upgrade(skill: Skill) {
         do {
             try skillSystem.upgrade(skill: skill)
         } catch let error as UserReadableError {
-            popupContent = PopupConfiguration(title: "강화") {
+            popupContent = PopupConfiguration(title: "스킬") {
                 VStack(spacing: Constant.popupContentSpacing) {
                     Text(error.message)
                         .textStyle(.body)
@@ -67,7 +67,7 @@ private extension EnhanceView {
         } catch {
             // UserReadableError를 채택하지 않은 예상치 못한 에러
             // 실제로는 발생하지 않지만 Swift 컴파일러 요구사항
-            popupContent = PopupConfiguration(title: "강화") {
+            popupContent = PopupConfiguration(title: "스킬") {
                 VStack(spacing: Constant.popupContentSpacing) {
                     Text(error.localizedDescription)
                         .textStyle(.body)
@@ -109,5 +109,5 @@ private extension EnhanceView {
         ]
     )
 
-    EnhanceView(user: user, popupContent: .constant(nil))
+    SkillView(user: user, popupContent: .constant(nil))
 }
