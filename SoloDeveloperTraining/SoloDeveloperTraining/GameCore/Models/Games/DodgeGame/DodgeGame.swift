@@ -70,7 +70,7 @@ final class DodgeGame: Game {
         gameCore.onBugReachedGround = { [weak self] in
             guard let self = self else { return }
             Task {
-                let goldDelta = await self.didDodgeBug()
+                let goldDelta = self.didDodgeBug()
                 await MainActor.run {
                     self.onGoldChangedHandler(goldDelta)
                 }
@@ -116,7 +116,7 @@ final class DodgeGame: Game {
 
     /// 버그 회피 성공 처리
     /// - Returns: 획득한 골드
-    func didDodgeBug() async -> Int {
+    func didDodgeBug() -> Int {
         // 피버 증가
         feverSystem.gainFever(Constant.bugDodgeGainFever)
 
