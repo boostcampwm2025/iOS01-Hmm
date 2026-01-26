@@ -24,9 +24,12 @@ final class AutoGainSystem {
         // 기존 타이머가 있으면 정리
         stopSystem()
 
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+        let timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             self?.gainGold()
         }
+        // 스크롤 중에도 타이머가 작동하도록 common 모드에 추가
+        RunLoop.current.add(timer, forMode: .common)
+        self.timer = timer
     }
 
     /// 자동 획득 시스템 중지
