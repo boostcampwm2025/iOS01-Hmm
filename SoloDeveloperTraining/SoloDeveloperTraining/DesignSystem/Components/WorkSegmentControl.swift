@@ -13,7 +13,7 @@ private enum Constant {
 
 struct WorkSegmentControl: View {
     let items: [WorkItem]
-    @Binding var selectedIndex: Int?
+    @Binding var selectedIndex: Int
 
     var body: some View {
         HStack(spacing: Constant.itemSpacing) {
@@ -35,12 +35,7 @@ struct WorkSegmentControl: View {
 private extension WorkSegmentControl {
     func handleTap(at index: Int) {
         guard !items[index].isDisabled else { return }
-
-        if selectedIndex == index {
-            selectedIndex = nil
-        } else {
-            selectedIndex = index
-        }
+        selectedIndex = index
     }
 
     func buttonState(for index: Int) -> WorkItemButton.ButtonState {
@@ -74,10 +69,10 @@ struct WorkItem {
 }
 
 #Preview {
-    @Previewable @State var selectedIndex: Int? = 0
+    @Previewable @State var selectedIndex: Int = 0
 
     VStack(spacing: 20) {
-        Text("Selected Index: \(selectedIndex.map(String.init) ?? "None")")
+        Text("Selected Index: \(selectedIndex)")
             .textStyle(.headline)
 
         WorkSegmentControl(

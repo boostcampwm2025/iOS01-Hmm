@@ -38,14 +38,14 @@ private enum Constant {
 
 enum TabItem: String, CaseIterable {
     case work = "업무"
-    case enhance = "강화"
+    case skill = "스킬"
     case shop = "상점"
     case mission = "미션"
 
     var imageName: String {
         switch self {
         case .work: return "icon_work"
-        case .enhance: return "icon_enhance"
+        case .skill: return "icon_skill"
         case .shop: return "icon_shop"
         case .mission: return "icon_mission"
         }

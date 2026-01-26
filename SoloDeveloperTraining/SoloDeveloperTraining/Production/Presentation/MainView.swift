@@ -128,8 +128,8 @@ struct MainView: View {
                     switch selectedTab {
                     case .work:
                         WorkSelectedView(user: user, animationSystem: animationSystem)
-                    case .enhance:
-                        EnhanceView(user: user, popupContent: $popupContent)
+                    case .skill:
+                        SkillView(user: user, popupContent: $popupContent)
                     case .shop:
                         ShopView(user: user, popupContent: $popupContent)
                     case .mission:
