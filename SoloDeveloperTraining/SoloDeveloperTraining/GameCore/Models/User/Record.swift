@@ -48,9 +48,9 @@ final class Record {
     var dodgeConsecutiveSuccess: Int = 0
 
     // MARK: - Stacking Game Records
-    /// 물건 쌓기 성공 횟수
+    /// 데이터 쌓기 성공 횟수
     var stackingSuccessCount: Int = 0
-    /// 물건 쌓기 연속 성공 횟수
+    /// 데이터 쌓기 연속 성공 횟수
     var stackConsecutiveSuccess: Int = 0
 
     // MARK: - Consumable Usage Records

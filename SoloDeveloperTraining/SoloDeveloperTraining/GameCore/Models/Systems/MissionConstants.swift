@@ -14,9 +14,9 @@ enum MissionConstants {
         static let id1 = 1, id2 = 2, id3 = 3
         static let target1 = 1_000, target2 = 10_000, target3 = 100_000
         static let title1 = "초보의 손가락", title2 = "장인의 손가락", title3 = "신의 손가락"
-        static let description1 = "탭 1,000회 달성"
-        static let description2 = "탭 10,000회 달성"
-        static let description3 = "탭 100,000회 달성"
+        static let description1 = "코드짜기\n탭 1,000회 달성"
+        static let description2 = "코드짜기\n탭 10,000회 달성"
+        static let description3 = "코드짜기\n탭 100,000회 달성"
         static let reward1 = Cost(gold: 1_000)
         static let reward2 = Cost(diamond: 10)
         static let reward3 = Cost(gold: 10_000, diamond: 20)
@@ -27,9 +27,9 @@ enum MissionConstants {
         static let id1 = 4, id2 = 5, id3 = 6
         static let target1 = 500, target2 = 5_000, target3 = 50_000
         static let title1 = "초보 탐색가", title2 = "패턴 분석가", title3 = "미래 예측가"
-        static let description1 = "정답 500회 달성"
-        static let description2 = "정답 5,000회 달성"
-        static let description3 = "정답 50,000회 달성"
+        static let description1 = "언어맞추기\n정답 500회 달성"
+        static let description2 = "언어맞추기\n정답 5,000회 달성"
+        static let description3 = "언어맞추기\n정답 50,000회 달성"
         static let reward1 = Cost(diamond: 5)
         static let reward2 = Cost(gold: 5_000)
         static let reward3 = Cost(gold: 50_000, diamond: 30)
@@ -40,22 +40,22 @@ enum MissionConstants {
         static let id1 = 7, id2 = 8, id3 = 9
         static let target1 = 300, target2 = 3_000, target3 = 30_000
         static let title1 = "황금 수집가", title2 = "골드 마스터", title3 = "골드 청소기"
-        static let description1 = "골드 300회 획득"
-        static let description2 = "골드 3,000회 획득"
-        static let description3 = "골드 30,000회 획득"
+        static let description1 = "버그피하기\n골드 300회 획득"
+        static let description2 = "버그피하기\n골드 3,000회 획득"
+        static let description3 = "버그피하기\n골드 30,000회 획득"
         static let reward1 = Cost(gold: 2_000)
         static let reward2 = Cost(diamond: 15)
         static let reward3 = Cost(gold: 20_000, diamond: 25)
     }
 
-    // MARK: - 물건쌓기
+    // MARK: - 데이터쌓기
     enum StackItem {
         static let id1 = 10, id2 = 11, id3 = 12
         static let target1 = 100, target2 = 1_000, target3 = 10_000
         static let title1 = "데이터 수집가", title2 = "데이터 전문가", title3 = "데이터 마스터"
-        static let description1 = "물건 100회 쌓기"
-        static let description2 = "물건 1,000회 쌓기"
-        static let description3 = "물건 10,000회 쌓기"
+        static let description1 = "데이터 쌓기\n데이터 100회 쌓기"
+        static let description2 = "데이터 쌓기\n데이터 1,000회 쌓기"
+        static let description3 = "데이터 쌓기\n데이터 10,000회 쌓기"
         static let reward1 = Cost(diamond: 8)
         static let reward2 = Cost(gold: 8_000)
         static let reward3 = Cost(gold: 80_000, diamond: 40)
@@ -105,9 +105,9 @@ enum MissionConstants {
         static let id1 = 22, id2 = 23, id3 = 24
         static let target1 = 10, target2 = 100, target3 = 1_000
         static let title1 = "다중 언어 초급", title2 = "다중 언어 중급", title3 = "다중 언어 고급"
-        static let description1 = "연속 정답 10회"
-        static let description2 = "연속 정답 100회"
-        static let description3 = "연속 정답 1,000회"
+        static let description1 = "언어맞추기\n연속 정답 10회"
+        static let description2 = "언어맞추기\n연속 정답 100회"
+        static let description3 = "언어맞추기\n연속 정답 1,000회"
         static let reward1 = Cost(gold: 3_000)
         static let reward2 = Cost(diamond: 20)
         static let reward3 = Cost(gold: 30_000, diamond: 40)
@@ -118,9 +118,9 @@ enum MissionConstants {
         static let id1 = 25, id2 = 26, id3 = 27
         static let target1 = 10, target2 = 100, target3 = 1_000
         static let title1 = "기초적 안정성", title2 = "검증된 안정성", title3 = "완벽한 안정성"
-        static let description1 = "연속 성공 10회"
-        static let description2 = "연속 성공 100회"
-        static let description3 = "연속 성공 1,000회"
+        static let description1 = "버그피하기\n연속 성공 10회"
+        static let description2 = "버그피하기\n연속 성공 100회"
+        static let description3 = "버그피하기\n연속 성공 1,000회"
         static let reward1 = Cost(diamond: 12)
         static let reward2 = Cost(gold: 12_000)
         static let reward3 = Cost(gold: 120_000, diamond: 60)
@@ -131,9 +131,9 @@ enum MissionConstants {
         static let id1 = 28, id2 = 29, id3 = 30
         static let target1 = 10, target2 = 100, target3 = 1_000
         static let title1 = "KB 업로더", title2 = "MB 업로더", title3 = "GB 업로더"
-        static let description1 = "연속 성공 10회"
-        static let description2 = "연속 성공 100회"
-        static let description3 = "연속 성공 1,000회"
+        static let description1 = "데이터 쌓기\n연속 성공 10회"
+        static let description2 = "데이터 쌓기\n연속 성공 100회"
+        static let description3 = "데이터 쌓기\n연속 성공 1,000회"
         static let reward1 = Cost(gold: 4_000)
         static let reward2 = Cost(diamond: 18)
         static let reward3 = Cost(gold: 40_000, diamond: 45)

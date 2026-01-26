@@ -102,7 +102,7 @@ private extension SkillView {
             .init(key: SkillKey(game: .dodge, tier: .beginner), level: 1),
             .init(key: SkillKey(game: .dodge, tier: .intermediate), level: 1),
             .init(key: SkillKey(game: .dodge, tier: .advanced), level: 1),
-            // 물건 쌓기
+            // 데이터 쌓기
             .init(key: SkillKey(game: .stack, tier: .beginner), level: 1),
             .init(key: SkillKey(game: .stack, tier: .intermediate), level: 1),
             .init(key: SkillKey(game: .stack, tier: .advanced), level: 1)
