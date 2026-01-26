@@ -10,8 +10,10 @@ import Foundation
 private enum Constant {
     static let defaultGainFever: Double = 33
     static let bugGainFever: Double = -50
-    static let smallGoldMultiplier: Double = 0.8
-    static let largeGoldMultiplier: Double = 1.2
+    static let bugDodgeGainFever: Double = 10
+    static let smallGoldMultiplier: Double = 1.5
+    static let largeGoldMultiplier: Double = 2
+    static let bugDodgeMultiplier: Double = 0.5
 }
 
 final class DodgeGame: Game {
@@ -64,6 +66,17 @@ final class DodgeGame: Game {
             }
         }
 
+        // 버그가 땅에 닿았을 때 콜백 설정
+        gameCore.onBugReachedGround = { [weak self] in
+            guard let self = self else { return }
+            Task {
+                let goldDelta = await self.didDodgeBug()
+                await MainActor.run {
+                    self.onGoldChangedHandler(goldDelta)
+                }
+            }
+        }
+
         // 플레이어 위치 동기화 타이머 시작 (120fps)
         positionSyncTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 120.0, repeats: true) { [weak self] _ in
             guard let self = self else { return }
@@ -99,6 +112,28 @@ final class DodgeGame: Game {
     /// 골드 변화 콜백 핸들러 설정
     func setGoldChangedHandler(_ handler: @escaping (Int) -> Void) {
         self.onGoldChangedHandler = handler
+    }
+
+    /// 버그 회피 성공 처리
+    /// - Returns: 획득한 골드
+    func didDodgeBug() async -> Int {
+        // 피버 증가
+        feverSystem.gainFever(Constant.bugDodgeGainFever)
+
+        // 기본 골드 계산
+        let baseGold = getBaseGold()
+
+        // 1.0배 획득
+        let gainGold = Int(Double(baseGold) * Constant.bugDodgeMultiplier)
+        user.wallet.addGold(gainGold)
+        /// 버그 회피 수 기록
+        user.record.record(.dodgeGoldHit)
+        /// 누적 재산 업데이트
+        user.record.record(.earnMoney(gainGold))
+
+        // 재화 획득 시 캐릭터 웃게 만들기
+        animationSystem?.playSmile()
+        return gainGold
     }
 
     /// 아이템 충돌 처리
