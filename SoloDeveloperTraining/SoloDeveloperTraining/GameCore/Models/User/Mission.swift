@@ -36,13 +36,13 @@ enum MissionLevel {
 
 @Observable
 final class Mission {
-    enum State {
-        /// "달성 완료"
-        case claimed
+    enum State: Int {
         /// "획득하기"
         case claimable
         /// "진행중"
         case inProgress
+        /// "달성 완료"
+        case claimed
     }
 
     /// 미션 아이디
