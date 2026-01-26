@@ -48,6 +48,8 @@ final class Record {
     var dodgeMaxCombo: Int = 0
     /// 버그피하기 총 버그 회피 횟수
     var dodgeBugAvoidedCount: Int = 0
+    /// 버그피하기 버그 수집 횟수
+    var dodgeBugCollectCount: Int = 0
 
     // MARK: - Stacking Game Records
     /// 물건 쌓기 성공 횟수
@@ -147,7 +149,7 @@ extension Record {
             dodgeMaxCombo = max(currentCombo, dodgeMaxCombo)
 
         case .dodgeFail:
-            break
+            dodgeBugCollectCount += 1
 
         case .stackingSuccess:
             stackingSuccessCount += 1
