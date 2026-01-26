@@ -15,8 +15,6 @@ protocol Game {
     var kind: GameType { get set }
     /// 유저
     var user: User { get set }
-    /// 계산기
-    var calculator: Calculator { get set }
     /// 피버 시스템
     var feverSystem: FeverSystem { get set }
     /// 버프 시스템

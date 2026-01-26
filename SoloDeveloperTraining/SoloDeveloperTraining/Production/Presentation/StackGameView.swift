@@ -32,7 +32,7 @@ struct StackGameView: View {
         isGameStarted: Binding<Bool>,
         animationSystem: CharacterAnimationSystem? = nil
     ) {
-        self.stackGame = StackGame(user: user, calculator: .init(), animationSystem: animationSystem)
+        self.stackGame = StackGame(user: user, animationSystem: animationSystem)
         self._isGameStarted = isGameStarted
         self.scene = StackGameScene(
             stackGame: stackGame,

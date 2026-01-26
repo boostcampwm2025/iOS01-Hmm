@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ContentView: View {
     @State var user: User
-    let calculator: Calculator
     let autoGainSystem: AutoGainSystem
 
     init() {
@@ -55,28 +54,26 @@ struct ContentView: View {
                 .init(key: .init(game: .stack, tier: .beginner), level: 1)
             ]
         )
-        let calculator: Calculator = Calculator()
         self.user = user
-        self.calculator = calculator
         self.autoGainSystem = .init(user: user)
         autoGainSystem.startSystem()
     }
 
     var body: some View {
         TabView {
-            TabGameView(user: user, calculator: calculator)
+            TabGameView(user: user)
                 .tag(1)
                 .tabItem {
                     Image(systemName: "gamecontroller")
                     Text("탭 게임")
                 }
-            LanguageGameTestView(user: user, calculator: calculator)
+            LanguageGameTestView(user: user)
                 .tag(2)
                 .tabItem {
                     Image(systemName: "gamecontroller")
                     Text("언어 맞추기")
                 }
-            ShopTestView(user: user, calculator: calculator)
+            ShopTestView(user: user)
                 .tag(3)
                 .tabItem {
                     Image(systemName: "cart")
@@ -88,19 +85,19 @@ struct ContentView: View {
                     Image(systemName: "note")
                     Text("미션")
                 }
-            DodgeGameTestView(user: user, calculator: calculator)
+            DodgeGameTestView(user: user)
                 .tag(5)
                 .tabItem {
                     Image(systemName: "exclamationmark.triangle")
                     Text("버그피하기")
                 }
-            StackGameTestView(user: user, calculator: calculator)
+            StackGameTestView(user: user)
                 .tag(6)
                 .tabItem {
                     Image(systemName: "square.stack.3d.up")
                     Text("스택 게임")
                 }
-            SkillTestView(user: user, calculator: calculator)
+            SkillTestView(user: user)
                 .tag(7)
                 .tabItem {
                     Image(systemName: "plus")

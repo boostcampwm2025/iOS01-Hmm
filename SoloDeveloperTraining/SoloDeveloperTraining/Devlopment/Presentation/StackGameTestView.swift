@@ -12,8 +12,8 @@ struct StackGameTestView: View {
     @State private var game: StackGame
     private let scene: StackGameScene
 
-    init(user: User, calculator: Calculator) {
-        let game = StackGame(user: user, calculator: calculator)
+    init(user: User) {
+        let game = StackGame(user: user)
         let scene = StackGameScene(stackGame: game)
 
         self.scene = scene

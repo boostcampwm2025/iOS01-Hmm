@@ -28,14 +28,13 @@ struct LanguageGameTestView: View {
     @State private var coffeeCount: Int
     @State private var energyDrinkCount: Int
 
-    init(user: User, calculator: Calculator) {
+    init(user: User) {
         self.user = user
         coffeeCount = user.inventory.count(.coffee) ?? 0
         energyDrinkCount = user.inventory.count(.energyDrink) ?? 0
 
         self.game = .init(
             user: user,
-            calculator: calculator,
             feverSystem: .init(
                 decreaseInterval: 0.1,
                 decreasePercentPerTick: 10

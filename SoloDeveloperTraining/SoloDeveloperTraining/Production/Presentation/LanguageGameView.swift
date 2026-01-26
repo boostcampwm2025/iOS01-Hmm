@@ -59,7 +59,6 @@ struct LanguageGameView: View {
         // 게임 초기화
         self.game = .init(
             user: user,
-            calculator: .init(),
             feverSystem: .init(
                 decreaseInterval: Constant.Game.feverDecreaseInterval,
                 decreasePercentPerTick: Constant.Game.feverDecreasePercentPerTick

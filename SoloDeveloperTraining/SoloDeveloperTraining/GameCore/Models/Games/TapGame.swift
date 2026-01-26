@@ -17,8 +17,6 @@ final class TapGame: Game {
     var kind: GameType
     /// 사용자 정보
     var user: User
-    /// 계산기
-    var calculator: Calculator
     /// 피버 시스템
     var feverSystem: FeverSystem
     /// 버프 시스템
@@ -31,14 +29,12 @@ final class TapGame: Game {
     /// 탭 게임 초기화
     init(
         user: User,
-        calculator: Calculator,
         feverSystem: FeverSystem = FeverSystem(decreaseInterval: 0.1, decreasePercentPerTick: 3),
         buffSystem: BuffSystem,
         animationSystem: CharacterAnimationSystem? = nil
     ) {
         self.kind = .tap
         self.user = user
-        self.calculator = calculator
         self.feverSystem = feverSystem
         self.buffSystem = buffSystem
         self.animationSystem = animationSystem
@@ -59,7 +55,7 @@ final class TapGame: Game {
     @discardableResult
     func didPerformAction(_ input: Void = ()) async -> Int {
         feverSystem.gainFever(Constant.successFever)
-        let gainGold = calculator.calculateGoldPerAction(
+        let gainGold = Calculator.calculateGoldPerAction(
             game: kind,
             user: user,
             feverMultiplier: feverSystem.feverMultiplier,

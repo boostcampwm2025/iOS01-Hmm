@@ -10,18 +10,16 @@ import SwiftUI
 struct SkillTestView: View {
     let user: User
     let skillSystem: SkillSystem
-    let calculator: Calculator
 
-    init(user: User, calculator: Calculator) {
+    init(user: User) {
         self.user = user
         self.skillSystem = .init(user: user)
-        self.calculator = calculator
     }
     var body: some View {
         VStack {
             Text("보유 골드: \(user.wallet.gold)")
             Text("보유 다이아: \(user.wallet.diamond)")
-            Text("초당 획득 골드: \(calculator.calculateGoldPerSecond(user: user))")
+            Text("초당 획득 골드: \(Calculator.calculateGoldPerSecond(user: user))")
 
             List(skillSystem.skillList(), id: \.skill) { skillState in
                 itemRowView(skillState)
@@ -110,5 +108,5 @@ private extension SkillTestView {
             }
         )
     )
-    SkillTestView(user: user, calculator: .init())
+    SkillTestView(user: user)
 }

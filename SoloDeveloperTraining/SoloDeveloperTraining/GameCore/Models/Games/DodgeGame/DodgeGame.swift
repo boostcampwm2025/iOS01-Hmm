@@ -21,8 +21,6 @@ final class DodgeGame: Game {
     var kind: GameType = .dodge
     /// 사용자 정보
     var user: User
-    /// 골드 계산기
-    var calculator: Calculator = Calculator()
     /// 피버 시스템
     var feverSystem: FeverSystem = FeverSystem(decreaseInterval: 1.0, decreasePercentPerTick: 30)
     /// 버프 시스템
@@ -165,7 +163,7 @@ final class DodgeGame: Game {
 
 private extension DodgeGame {
     func getBaseGold() -> Int {
-        let baseGold = calculator.calculateGoldPerAction(
+        let baseGold = Calculator.calculateGoldPerAction(
             game: kind,
             user: user,
             feverMultiplier: feverSystem.feverMultiplier,
