@@ -24,8 +24,10 @@ struct RecordDTO: Codable {
     let languageConsecutiveCorrect: Int
 
     // Bug Dodging Records
-    let goldHitCount: Int
-    let dodgeConsecutiveSuccess: Int
+    let dodgeGoldCollectedCount: Int
+    let dodgeMaxCombo: Int
+    let dodgeBugAvoidedCount: Int
+    let dodgeBugCollectCount: Int
 
     // Stacking Game Records
     let stackingSuccessCount: Int
@@ -61,8 +63,10 @@ struct RecordDTO: Codable {
         self.totalTapCount = record.totalTapCount
         self.languageCorrectCount = record.languageCorrectCount
         self.languageConsecutiveCorrect = record.languageConsecutiveCorrect
-        self.goldHitCount = record.goldHitCount
-        self.dodgeConsecutiveSuccess = record.dodgeConsecutiveSuccess
+        self.dodgeGoldCollectedCount = record.dodgeGoldCollectedCount
+        self.dodgeMaxCombo = record.dodgeMaxCombo
+        self.dodgeBugAvoidedCount = record.dodgeBugAvoidedCount
+        self.dodgeBugCollectCount = record.dodgeBugCollectCount
         self.stackingSuccessCount = record.stackingSuccessCount
         self.stackConsecutiveSuccess = record.stackConsecutiveSuccess
         self.coffeeUseCount = record.coffeeUseCount
@@ -96,8 +100,10 @@ struct RecordDTO: Codable {
         record.languageConsecutiveCorrect = languageConsecutiveCorrect
 
         // Bug Dodging Records
-        record.goldHitCount = goldHitCount
-        record.dodgeConsecutiveSuccess = dodgeConsecutiveSuccess
+        record.dodgeGoldCollectedCount = dodgeGoldCollectedCount
+        record.dodgeMaxCombo = dodgeMaxCombo
+        record.dodgeBugAvoidedCount = dodgeBugAvoidedCount
+        record.dodgeBugCollectCount = dodgeBugCollectCount
 
         // Stacking Game Records
         record.stackingSuccessCount = stackingSuccessCount
