@@ -41,12 +41,12 @@ struct TapGameView: View {
     }
 
     var body: some View {
-        GeometryReader { _ in
+        GeometryReader { geometry in
             VStack(spacing: 0) {
                 // 상단 툴바 (닫기, 아이템 버튼, 피버 게이지)
                 toolbarSection
                 // 터치 가능한 게임 영역
-                tapAreaSection
+                tapAreaSection(geometry: geometry)
             }
         }
     }
@@ -76,9 +76,14 @@ private extension TapGameView {
     }
 
     /// 터치 가능한 게임 영역
-    var tapAreaSection: some View {
+    func tapAreaSection(geometry: GeometryProxy) -> some View {
         ZStack {
-            Color.clear         // ZStack이 전체 영역을 차지하도록 함
+            // 배경 이미지
+            Image(.tapBackground)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+
+            // 효과 라벨들
             ForEach(effectLabels) { effectLabel in
                 EffectLabel(
                     value: effectLabel.value,
@@ -86,15 +91,11 @@ private extension TapGameView {
                 )
                 .position(effectLabel.position)
             }
-        }
-        .background(
-            Image(.tapBackground)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-        )
-        .contentShape(Rectangle())
-        .onTapGesture { location in
-            Task { await handleTap(at: location) }
+
+            // 멀티터치 뷰
+            MultiTouchView { location in
+                Task { await handleTap(at: location) }
+            }
         }
     }
 }
