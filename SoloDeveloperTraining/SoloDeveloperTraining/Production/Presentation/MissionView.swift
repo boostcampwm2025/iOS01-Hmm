@@ -82,11 +82,11 @@ private extension MissionView {
             showToast = false
             let reward = mission.reward
             if reward.gold > 0 && reward.diamond > 0 {
-                toastMessage = "미션을 달성했습니다.\n보상: \(reward.gold) 골드, \(reward.diamond) 다이아"
+                toastMessage = "미션을 달성했습니다.\n보상: \(reward.gold.formatted) 골드, \(reward.diamond.formatted) 다이아"
             } else if reward.gold > 0 {
-                toastMessage = "미션을 달성했습니다.\n보상: \(reward.gold) 골드"
+                toastMessage = "미션을 달성했습니다.\n보상: \(reward.gold.formatted) 골드"
             } else {
-                toastMessage = "미션을 달성했습니다.\n보상: \(reward.diamond) 다이아"
+                toastMessage = "미션을 달성했습니다.\n보상: \(reward.diamond.formatted) 다이아"
             }
             showToast = true
         } else {
