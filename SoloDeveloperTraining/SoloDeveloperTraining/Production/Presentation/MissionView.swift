@@ -77,16 +77,20 @@ private extension MissionView {
 
     func missionCardDidTapHandler(mission: Mission) {
         if mission.missionCardState == .claimable {
-            missionSystem
-                .claimMissionReward(
-                    mission: mission,
-                    wallet: user.wallet
-                )
-        } else {
-            if showToast {
-                showToast = false
-            }
+            missionSystem.claimMissionReward(mission: mission, wallet: user.wallet)
 
+            showToast = false
+            let reward = mission.reward
+            if reward.gold > 0 && reward.diamond > 0 {
+                toastMessage = "미션을 달성했습니다.\n보상: \(reward.gold) 골드, \(reward.diamond) 다이아"
+            } else if reward.gold > 0 {
+                toastMessage = "미션을 달성했습니다.\n보상: \(reward.gold) 골드"
+            } else {
+                toastMessage = "미션을 달성했습니다.\n보상: \(reward.diamond) 다이아"
+            }
+            showToast = true
+        } else {
+            showToast = false
             toastMessage = mission.missionCardState == .claimed ? "이미 보유한 미션입니다." : "아직 달성하지 못한 미션입니다."
             showToast = true
         }
