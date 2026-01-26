@@ -101,7 +101,7 @@ struct ContentView: View {
                 .tag(7)
                 .tabItem {
                     Image(systemName: "plus")
-                    Text("스킬 강화")
+                    Text("스킬")
                 }
         }
     }

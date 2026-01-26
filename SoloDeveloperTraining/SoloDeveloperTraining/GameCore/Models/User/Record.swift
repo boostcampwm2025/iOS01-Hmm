@@ -22,8 +22,8 @@ final class Record {
     var totalEarnedMoney: Int = 0
     /// 누적 소비 재산
     var totalSpentMoney: Int = 0
-    /// 누적 업무 강화 비용
-    var totalWorkEnhancementCost: Int = 0
+    /// 누적 스킬 업그레이드 비용
+    var totalSkillUpgradeCost: Int = 0
     /// 누적 장비 강화 비용
     var totalEquipmentEnhancementCost: Int = 0
     /// 누적 소비 아이템 구입 비용
@@ -113,7 +113,7 @@ extension Record {
         // Financial
         case earnMoney(Int)
         case spendMoney(Int)
-        case workEnhancement(cost: Int)
+        case skillUpgrade(cost: Int)
         case equipmentEnhancement(cost: Int)
         case consumablePurchase(cost: Int)
         case housingMove(cost: Int)
@@ -180,8 +180,8 @@ extension Record {
         case .spendMoney(let amount):
             totalSpentMoney += amount
 
-        case .workEnhancement(let cost):
-            totalWorkEnhancementCost += cost
+        case .skillUpgrade(let cost):
+            totalSkillUpgradeCost += cost
 
         case .equipmentEnhancement(let cost):
             totalEquipmentEnhancementCost += cost
