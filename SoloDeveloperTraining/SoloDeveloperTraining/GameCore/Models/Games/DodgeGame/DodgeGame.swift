@@ -91,12 +91,14 @@ final class DodgeGame: Game {
 
     /// 게임 일시정지 (피버, 버프 시스템 보존)
     func pauseGame() {
-
+        feverSystem.pause()
+        buffSystem.pause()
     }
 
-    /// 게임 재개 (상태 복구)
+    /// 게임 재개
     func resumeGame() {
-
+        feverSystem.resume()
+        buffSystem.resume()
     }
 
     /// 게임 영역 크기 업데이트 (화면 크기 변경 시 호출)
