@@ -24,7 +24,7 @@ final class DodgeGame: Game {
     /// 사용자 정보
     var user: User
     /// 피버 시스템
-    var feverSystem: FeverSystem = FeverSystem(decreaseInterval: 1.0, decreasePercentPerTick: 30)
+    var feverSystem: FeverSystem = FeverSystem(decreaseInterval: 0.1, decreasePercentPerTick: 3)
     /// 버프 시스템
     var buffSystem: BuffSystem = BuffSystem()
     /// 캐릭터 애니메이션 시스템
