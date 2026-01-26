@@ -13,6 +13,17 @@ private enum Constant {
         static let selectionViewBottom: CGFloat = 30
     }
 
+    enum UserDefaults {
+        static let lastSelectedWorkIndexKey = "lastSelectedWorkIndex"
+    }
+
+    enum Description {
+        static let tapGame = "모니터를 최대한 많이 누르세요."
+        static let languageGame = "올바른 버튼을 누르세요."
+        static let dodgeGame = "기기를 기울여 버그를 피하고 골드를 획득하세요."
+        static let stackGame = "최대한 높은 데이터를 쌓으세요."
+    }
+
     static let contentSpacing: CGFloat = 17
     static let descriptionSpacing: CGFloat = 10
 }
@@ -21,16 +32,22 @@ struct WorkSelectedView: View {
 
     let user: User
     let animationSystem: CharacterAnimationSystem?
-    @State var selectedIndex: Int?
+    @State var selectedIndex: Int = 0
     @State var isGameStarted: Bool = false
 
     var body: some View {
         Group {
-            if isGameStarted, let index = selectedIndex {
-                gameView(for: index)
+            if isGameStarted {
+                gameView(for: selectedIndex)
             } else {
                 selectionView
             }
+        }
+        .onAppear {
+            loadLastSelectedIndex()
+        }
+        .onChange(of: selectedIndex) { _, newValue in
+            saveLastSelectedIndex(newValue)
         }
     }
 }
@@ -56,13 +73,8 @@ private extension WorkSelectedView {
 
     var descriptionStack: some View {
         VStack(alignment: .leading, spacing: Constant.descriptionSpacing) {
-            Text("언어 맞추기 게임 스토리 설명")
-                .foregroundStyle(.black)
-                .textStyle(.subheadline)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            Text("언어 맞추기 게임 액션 설명")
-                .foregroundStyle(.gray200)
+            Text(actionDescription(for: selectedIndex))
+                .foregroundStyle(.gray300)
                 .textStyle(.subheadline)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -74,7 +86,6 @@ private extension WorkSelectedView {
         }
         .frame(maxWidth: .infinity, alignment: .bottom)
         .padding(.bottom, Constant.Padding.selectionViewBottom)
-        .disabled(selectedIndex == nil)
     }
 }
 
@@ -99,10 +110,9 @@ private extension WorkSelectedView {
                 imageName: "housing_street"
             ),
             .init(
-                title: "물건 쌓기",
+                title: "데이터 쌓기",
                 description: "효과 설명",
-                imageName: "housing_street",
-                isDisabled: false
+                imageName: "housing_street"
             )
         ]
     }
@@ -121,6 +131,34 @@ private extension WorkSelectedView {
         default:
             EmptyView()
         }
+    }
+
+    func actionDescription(for index: Int) -> String {
+        switch index {
+        case 0:
+            return Constant.Description.tapGame
+        case 1:
+            return Constant.Description.languageGame
+        case 2:
+            return Constant.Description.dodgeGame
+        case 3:
+            return Constant.Description.stackGame
+        default:
+            return ""
+        }
+    }
+
+    func loadLastSelectedIndex() {
+        let savedIndex = UserDefaults.standard.integer(forKey: Constant.UserDefaults.lastSelectedWorkIndexKey)
+        if savedIndex >= 0 && savedIndex < workItems.count {
+            selectedIndex = savedIndex
+        } else {
+            selectedIndex = 0
+        }
+    }
+
+    func saveLastSelectedIndex(_ index: Int) {
+        UserDefaults.standard.set(index, forKey: Constant.UserDefaults.lastSelectedWorkIndexKey)
     }
 }
 
