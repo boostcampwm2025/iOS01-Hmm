@@ -186,7 +186,7 @@ struct MissionFactory {
                 type: .bugDodge(.gold)
             ),
 
-            // MARK: - 물건쌓기
+            // MARK: - 데이터쌓기
             MissionConfig(
                 id: MissionConstants.StackItem.id1,
                 title: MissionConstants.StackItem.title1,

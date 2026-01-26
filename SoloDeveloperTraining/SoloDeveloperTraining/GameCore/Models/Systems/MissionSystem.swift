@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Observation
 
 @Observable
 final class MissionSystem {
@@ -26,6 +25,7 @@ final class MissionSystem {
 
     init(missions: [Mission]) {
         self.missions = missions
+        sortMissions()
     }
 
     /// 기록을 통하여 현재 미션의 상태들을 업데이트 합니다.
@@ -34,6 +34,7 @@ final class MissionSystem {
             .filter { $0.state == .inProgress }
             .forEach { $0.update(record: record) }
 
+        sortMissions()
         checkHasCompletedMission()
     }
 
@@ -42,10 +43,15 @@ final class MissionSystem {
         wallet.addGold(reward.gold)
         wallet.addDiamond(reward.diamond)
 
+        sortMissions()
         checkHasCompletedMission()
     }
 
     private func checkHasCompletedMission() {
         hasCompletedMission = missions.contains { $0.state == .claimable }
+    }
+
+    private func sortMissions() {
+        missions.sort { $0.state.rawValue < $1.state.rawValue }
     }
 }

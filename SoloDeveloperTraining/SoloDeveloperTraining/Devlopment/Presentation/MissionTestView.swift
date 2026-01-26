@@ -44,7 +44,7 @@ struct MissionTestView: View {
                     // 버그 피하기 섹션
                     bugDodgeSection
 
-                    // 물건 쌓기 섹션
+                    // 데이터 쌓기 섹션
                     stackingGameSection
 
                     // 소비 아이템 섹션
@@ -311,7 +311,7 @@ struct MissionTestView: View {
     // MARK: - Stacking Game Section
     private var stackingGameSection: some View {
         VStack(spacing: 15) {
-            Text("물건 쌓기 게임")
+            Text("데이터 쌓기 게임")
                 .font(.headline)
 
             HStack {
