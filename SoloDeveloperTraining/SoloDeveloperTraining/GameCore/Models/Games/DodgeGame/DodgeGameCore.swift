@@ -91,10 +91,10 @@ private extension DodgeGameCore {
         // 랜덤 타입 생성
         let randomValue = Int.random(in: 0..<100)
         let type: DropItem.DropItemType
-        if randomValue < 50 {
-            type = .smallGold
-        } else if randomValue < 80 {
+        if randomValue < 1 {
             type = .largeGold
+        } else if randomValue < 5 {
+            type = .smallGold
         } else {
             type = .bug
         }
