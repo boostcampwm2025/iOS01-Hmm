@@ -34,7 +34,7 @@ enum MissionType {
         case .languageMatch:
             return { $0.languageCorrectCount }
         case .bugDodge:
-            return { $0.goldHitCount }
+            return { $0.dodgeGoldCollectedCount }
         case .stackItem:
             return { $0.stackingSuccessCount }
         case .playTime:
@@ -46,7 +46,7 @@ enum MissionType {
         case .languageConsecutive:
             return { $0.languageConsecutiveCorrect }
         case .bugDodgeConsecutive:
-            return { $0.dodgeConsecutiveSuccess }
+            return { $0.dodgeMaxCombo }
         case .stackConsecutive:
             return { $0.stackConsecutiveSuccess }
         case .tutorial:

@@ -36,6 +36,10 @@ final class DodgeGame: Game {
     /// 게임 코어 시스템 (낙하물 생성, 충돌 감지)
     let gameCore: DodgeGameCore
 
+    // MARK: - Game State
+    /// 현재 연속 회피 콤보
+    var currentCombo: Int = 0
+
     /// 플레이어 위치 동기화 타이머 (120fps)
     private var positionSyncTimer: Timer?
     /// 골드 변화 시 호출되는 콜백 핸들러
@@ -91,6 +95,8 @@ final class DodgeGame: Game {
 
     /// 게임 시작 (피버 시스템 및 게임 코어 타이머 활성화)
     func startGame() {
+        // 콤보 초기화
+        currentCombo = 0
         feverSystem.start()
         gameCore.start()
     }
@@ -117,6 +123,9 @@ final class DodgeGame: Game {
     /// 버그 회피 성공 처리
     /// - Returns: 획득한 골드
     func didDodgeBug() -> Int {
+        // 콤보 증가
+        currentCombo += 1
+
         // 피버 증가
         feverSystem.gainFever(Constant.bugDodgeGainFever)
 
@@ -128,6 +137,8 @@ final class DodgeGame: Game {
         user.wallet.addGold(gainGold)
         /// 누적 재산 업데이트
         user.record.record(.earnMoney(gainGold))
+        /// 버그 회피 기록 (콤보 전달)
+        user.record.record(.dodgeBugAvoid(currentCombo: currentCombo))
 
         // 재화 획득 시 캐릭터 웃게 만들기
         animationSystem?.playSmile()
@@ -149,8 +160,8 @@ final class DodgeGame: Game {
             // 0.8배 획득
             let gainGold = Int(Double(baseGold) * Constant.smallGoldMultiplier)
             user.wallet.addGold(gainGold)
-            /// 골드 획득 수 기록
-            user.record.record(.dodgeGoldHit)
+            /// 골드 수집 기록
+            user.record.record(.dodgeGoldCollect)
             /// 누적 재산 업데이트
             user.record.record(.earnMoney(gainGold))
 
@@ -168,8 +179,8 @@ final class DodgeGame: Game {
             // 1.2배 획득
             let gainGold = Int(Double(baseGold) * Constant.largeGoldMultiplier)
             user.wallet.addGold(gainGold)
-            /// 골드 획득 수 기록
-            user.record.record(.dodgeGoldHit)
+            /// 골드 수집 기록
+            user.record.record(.dodgeGoldCollect)
             /// 누적 재산 업데이트
             user.record.record(.earnMoney(gainGold))
 
@@ -178,6 +189,9 @@ final class DodgeGame: Game {
             return gainGold
 
         case .bug:
+            // 콤보 리셋
+            currentCombo = 0
+
             // 피버 감소
             feverSystem.gainFever(Constant.bugGainFever)
 
@@ -187,7 +201,7 @@ final class DodgeGame: Game {
             // 절반 손실
             let loseGold = baseGold / 2
             user.wallet.spendGold(loseGold)
-            /// 골드 손실 수 기록
+            /// 실패 기록
             user.record.record(.dodgeFail)
             return -loseGold
         }
