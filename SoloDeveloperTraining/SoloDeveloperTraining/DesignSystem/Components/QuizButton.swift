@@ -75,7 +75,7 @@ extension QuizButton {
     private var textLeadingPadding: CGFloat {
         switch style {
         case .option:
-            return 5
+            return 10
         case .submit:
             return 0
         }
