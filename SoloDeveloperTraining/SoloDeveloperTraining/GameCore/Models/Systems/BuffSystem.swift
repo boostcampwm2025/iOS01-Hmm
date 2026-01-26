@@ -20,8 +20,8 @@ final class BuffSystem {
     /// 각 버프의 배수
     private var multipliers: [ConsumableType: Double] = [:]
 
-    /// 각 버프의 타이머
-    private var timers: [ConsumableType: Timer] = [:]
+    /// 버프 단일 타이머
+    private var timer: Timer?
 
     /// 버프 시스템 일시정지 여부
     private(set) var isPaused: Bool = false
@@ -56,81 +56,79 @@ final class BuffSystem {
 
     /// 소비 아이템 사용
     func useConsumableItem(type: ConsumableType) {
-        // 기존에 같은 타입의 버프가 있으면 타이머 정리
-        timers[type]?.invalidate()
-
         // 버프 정보 설정
         durations[type] = type.duration
         multipliers[type] = type.buffMultiplier
 
         // 타이머 시작
-        let timer = Timer.scheduledTimer(
-            withTimeInterval: decreaseInterval,
-            repeats: true
-        ) { [weak self] _ in
-            guard let self = self else { return }
-            self.decreaseBuffDuration(for: type)
-        }
-
-        timers[type] = timer
+        startTimer()
     }
 
     /// 버프 시스템 종료
     func stop() {
-        // 모든 타이머 정리
-        for (_, timer) in timers {
-            timer.invalidate()
-        }
-        timers.removeAll()
+        // 타이머 정리
+        stopTimer()
         durations.removeAll()
         multipliers.removeAll()
+        isPaused = false
     }
 
     /// 버프 시스템 일시정지
     func pause() {
         guard isRunning && !isPaused else { return }
         isPaused = true
-        for (_, timer) in timers {
-            timer.invalidate()
-        }
-        timers.removeAll()
+        stopTimer()
     }
 
     /// 버프 시스템 재개
     func resume() {
         guard isRunning && isPaused else { return }
         isPaused = false
-        for (type, _) in durations {
-            let timer = Timer.scheduledTimer(
-                withTimeInterval: decreaseInterval,
-                repeats: true
-            ) { [weak self] _ in
-                guard let self else { return }
-                self.decreaseBuffDuration(for: type)
+        startTimer()
+    }
+
+    /// 타이머 시작
+    private func startTimer() {
+        guard timer == nil else { return }
+
+        timer = Timer.scheduledTimer(
+            withTimeInterval: decreaseInterval,
+            repeats: true
+        ) { [weak self] _ in
+            self?.tick()
+        }
+    }
+
+    /// 타이머 종료
+    private func stopTimer() {
+        timer?.invalidate()
+        timer = nil
+    }
+
+    /// 1초마다 각 버프의 정보를 순회하며 시간 감소
+    private func tick() {
+        let keys = Array(durations.keys)
+
+        for type in keys {
+            guard let duration = durations[type] else { continue }
+
+            let newDuration = duration - 1
+
+            if newDuration <= 0 {
+                stopBuff(for: type)
+            } else {
+                durations[type] = newDuration
             }
-            timers[type] = timer
+        }
+
+        if durations.isEmpty {
+            stopTimer()
         }
     }
 
-    /// 특정 버프의 시간 감소
-    private func decreaseBuffDuration(for type: ConsumableType) {
-        guard let duration = durations[type] else { return }
-
-        let newDuration = duration - 1
-
-        // 0 이하로 내려가면 버프 종료
-        if newDuration <= 0 {
-            stopBuff(for: type)
-        } else {
-            durations[type] = newDuration
-        }
-    }
-
-    /// 특정 버프의 타이머 종료
+    /// 특정 버프 종료 (제거)
     private func stopBuff(for type: ConsumableType) {
-        timers[type]?.invalidate()
         durations.removeValue(forKey: type)
         multipliers.removeValue(forKey: type)
-        timers.removeValue(forKey: type)
     }
 }
