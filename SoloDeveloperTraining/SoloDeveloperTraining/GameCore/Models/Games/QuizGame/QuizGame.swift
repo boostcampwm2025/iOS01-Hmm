@@ -57,7 +57,7 @@ final class QuizGame {
         QuizGameState(
             totalDiamondsEarned: correctAnswersCount * Constant.diamondsPerCorrectAnswer,
             progressText: "\(currentQuestionIndex + 1)/\(Constant.questionsPerGame)",
-            nextButtonTitle: currentQuestionIndex >= currentGameQuestions.count - 1 ? "결과 보기" : "다음",
+            nextButtonTitle: currentQuestionIndex >= currentGameQuestions.count - 1 ? "보상받기" : "다음으로",
             isSubmitEnabled: selectedAnswerIndex != nil && phase == .questionInProgress,
             timerProgress: Double(remainingSeconds) / Double(Constant.secondsPerQuestion),
             phase: phase,
@@ -113,6 +113,13 @@ final class QuizGame {
         guard phase == .questionInProgress else { return }
         guard (0...3).contains(index) else { return }
         selectedAnswerIndex = index
+    }
+
+    /// 선택한 답안 해제
+    /// - Note: 문제 풀이 중일 때만 선택 해제 가능
+    func deselectAnswer() {
+        guard phase == .questionInProgress else { return }
+        selectedAnswerIndex = nil
     }
 
     /// 선택한 답안 제출

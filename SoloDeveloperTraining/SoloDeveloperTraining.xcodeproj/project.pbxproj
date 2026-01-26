@@ -34,6 +34,8 @@
 				Production/Presentation/LanguageGameView.swift,
 				Production/Presentation/MainView.swift,
 				Production/Presentation/MissionView.swift,
+				Production/Presentation/QuizGameView.swift,
+				Production/Presentation/MultiTouchView.swift,
 				Production/Presentation/ShopView.swift,
 				Production/Presentation/SkillView.swift,
 				Production/Presentation/StackGameScene.swift,

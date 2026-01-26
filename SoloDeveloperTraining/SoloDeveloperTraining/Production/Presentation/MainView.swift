@@ -29,6 +29,11 @@ private enum Constant {
         static let title: String = "커리어"
         static let maxHeight: CGFloat = 650
     }
+
+    enum QuizButton {
+        static let top: CGFloat = 128
+        static let trailing: CGFloat = 16
+    }
 }
 
 struct MainView: View {
@@ -37,6 +42,7 @@ struct MainView: View {
     @State private var popupContent: PopupConfiguration?
     @State private var careerSystem: CareerSystem?
     @State private var isWorkGameInProgress: Bool = false
+    @State private var showQuizView: Bool = false
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
@@ -81,8 +87,9 @@ struct MainView: View {
                         SpriteView(scene: scene, options: [.allowsTransparency])
                             .frame(width: Constant.spriteViewSize.width, height: Constant.spriteViewSize.height)
                             .background(Color.clear)
-                        Spacer()
                     }
+
+                    // 사운드, 햅틱 버튼
                     VStack {
                         Spacer()
                         HStack {
@@ -90,6 +97,20 @@ struct MainView: View {
                                 .padding()
                             Spacer()
                         }
+                    }
+
+                    // 퀴즈 버튼
+                    VStack {
+                        HStack {
+                            Spacer()
+                            SmallButton(title: "퀴즈", hasBadge: true) {
+                                showQuizView = true
+                            }
+                        }
+                        .padding(.top, Constant.QuizButton.top)
+                        .padding(.trailing, Constant.QuizButton.trailing)
+
+                        Spacer()
                     }
                 }
                 .frame(height: geometry.size.height * Constant.topAreaHeightRatio)
@@ -175,6 +196,9 @@ struct MainView: View {
                             .padding(.horizontal, Constant.Padding.horizontalPadding)
                     }
                 }
+            }
+            .fullScreenCover(isPresented: $showQuizView) {
+                QuizGameView(user: user)
             }
         }
     }

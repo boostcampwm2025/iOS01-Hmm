@@ -18,9 +18,9 @@ final class DodgeGameCore {
     /// 게임 업데이트 주사율 (120fps)
     private let updateInterval: TimeInterval = 1.0 / 120.0
     /// 낙하물 생성 간격 (초)
-    private let spawnInterval: TimeInterval = 0.5
+    private let spawnInterval: TimeInterval = 0.3
     /// 낙하 속도 (120fps 기준)
-    private let fallSpeed: CGFloat = 1.5
+    private let fallSpeed: CGFloat = 3
     /// 플레이어 크기
     private let playerSize: CGSize = CGSize(width: 40, height: 40)
 
@@ -38,6 +38,8 @@ final class DodgeGameCore {
     // MARK: - Public Properties
     /// 충돌 발생 시 호출되는 콜백
     var onCollision: ((DropItem.DropItemType) -> Void)?
+    /// 버그가 땅에 닿았을 때 호출되는 콜백
+    var onBugReachedGround: (() -> Void)?
     /// 플레이어의 X 위치 (MotionSystem에서 동기화)
     var playerX: CGFloat = 0
     /// 게임 영역 너비
@@ -89,10 +91,10 @@ private extension DodgeGameCore {
         // 랜덤 타입 생성
         let randomValue = Int.random(in: 0..<100)
         let type: DropItem.DropItemType
-        if randomValue < 50 {
-            type = .smallGold
-        } else if randomValue < 80 {
+        if randomValue < 1 {
             type = .largeGold
+        } else if randomValue < 5 {
+            type = .smallGold
         } else {
             type = .bug
         }
@@ -121,6 +123,11 @@ private extension DodgeGameCore {
 
         // 충돌 감지 (제거 전에 먼저 체크)
         checkCollisions()
+
+        // 버그가 땅에 닿았는지 확인 (충돌하지 않고 화면을 벗어난 경우)
+        for index in indicesToRemove where fallingItems[index].type == .bug {
+            onBugReachedGround?()
+        }
 
         // 역순으로 제거
         for index in indicesToRemove.reversed() {
