@@ -29,8 +29,8 @@ private enum Constant {
     }
 
     enum Size {
-        static let closeButtonWidth: CGFloat = 20
-        static let closeButtonHeight: CGFloat = 20
+        static let closeButtonWidth: CGFloat = 28
+        static let closeButtonHeight: CGFloat = 28
     }
 }
 
@@ -145,7 +145,7 @@ private struct QuizHeaderView: View {
                 } label: {
                     Image(systemName: "xmark.square.fill")
                         .resizable()
-                        .foregroundStyle(AppColors.gray300)
+                        .foregroundStyle(.black)
                         .frame(
                             width: Constant.Size.closeButtonWidth,
                             height: Constant.Size.closeButtonHeight
@@ -203,6 +203,7 @@ private struct QuizExplanationView: View {
                     )
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
+                    .minimumScaleFactor(0.8)
             }
 
             Spacer(minLength: 0)
