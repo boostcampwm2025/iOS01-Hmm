@@ -125,10 +125,8 @@ private extension DodgeGameCore {
         checkCollisions()
 
         // 버그가 땅에 닿았는지 확인 (충돌하지 않고 화면을 벗어난 경우)
-        for index in indicesToRemove {
-            if fallingItems[index].type == .bug {
-                onBugReachedGround?()
-            }
+        for index in indicesToRemove where fallingItems[index].type == .bug {
+            onBugReachedGround?()
         }
 
         // 역순으로 제거
