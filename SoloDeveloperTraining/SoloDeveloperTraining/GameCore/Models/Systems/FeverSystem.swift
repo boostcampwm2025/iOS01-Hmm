@@ -32,8 +32,10 @@ final class FeverSystem: FeverState {
     }
     /// 피버 감소 타이머
     private var decreaseTimer: Timer?
-    /// 피버 시스템 실행 중 여부
+    /// 피버 시스템 자체의 실행 중 여부
     private(set) var isRunning: Bool = false
+    /// 피버 시스템 일시정지 여부
+    private(set) var isPaused: Bool = false
     /// 피버 단계별 배수
     var feverMultiplier: Double {
         switch feverStage {
@@ -81,6 +83,28 @@ final class FeverSystem: FeverState {
         isRunning = false
         decreaseTimer?.invalidate()
         decreaseTimer = nil
+    }
+
+    /// 피버 시스템 일시정지
+    func pause() {
+        guard isRunning && !isPaused else { return }
+        isPaused = true
+        decreaseTimer?.invalidate()
+        decreaseTimer = nil
+    }
+
+    /// 피버 시스템 재개
+    func resume() {
+        guard isRunning && isPaused else { return }
+        isPaused = false
+        decreaseTimer = Timer.scheduledTimer(
+            withTimeInterval: decreaseInterval,
+            repeats: true
+        ) { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.decreaseFever()
+            }
+        }
     }
 
     // MARK: - Private Methods

@@ -23,7 +23,10 @@ final class BuffSystem {
     /// 각 버프의 타이머
     private var timers: [ConsumableType: Timer] = [:]
 
-    /// 버프 시스템 실행 중 여부 (하나라도 버프가 활성화되어 있으면 true)
+    /// 버프 시스템 일시정지 여부
+    private(set) var isPaused: Bool = false
+
+    /// 버프 시스템 자체의 실행 중 여부 (하나라도 버프가 활성화되어 있으면 true)
     var isRunning: Bool {
         !durations.isEmpty
     }
@@ -75,12 +78,38 @@ final class BuffSystem {
     /// 버프 시스템 종료
     func stop() {
         // 모든 타이머 정리
-        for (type, timer) in timers {
+        for (_, timer) in timers {
             timer.invalidate()
         }
+        timers.removeAll()
         durations.removeAll()
         multipliers.removeAll()
+    }
+
+    /// 버프 시스템 일시정지
+    func pause() {
+        guard isRunning && !isPaused else { return }
+        isPaused = true
+        for (_, timer) in timers {
+            timer.invalidate()
+        }
         timers.removeAll()
+    }
+
+    /// 버프 시스템 재개
+    func resume() {
+        guard isRunning && isPaused else { return }
+        isPaused = false
+        for (type, _) in durations {
+            let timer = Timer.scheduledTimer(
+                withTimeInterval: decreaseInterval,
+                repeats: true
+            ) { [weak self] _ in
+                guard let self else { return }
+                self.decreaseBuffDuration(for: type)
+            }
+            timers[type] = timer
+        }
     }
 
     /// 특정 버프의 시간 감소
