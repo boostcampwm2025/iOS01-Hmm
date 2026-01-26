@@ -22,8 +22,25 @@ final class FileManagerUserRepository: UserRepository {
     }
 
     func save(_ user: User) async throws {
-        let dto = try await createDTO(from: user)
-        let data = try JSONEncoder().encode(dto)
+        let id = user.id
+        let nickname = user.nickname
+        let career = await user.career
+        let wallet = user.wallet
+        let inventory = user.inventory
+        let record = user.record
+        let skills = Array(user.skills)
+
+        let userDTO = UserDTO(
+            id: id,
+            nickname: nickname,
+            career: CareerDTO(from: career),
+            wallet: WalletDTO(from: wallet),
+            inventory: InventoryDTO(from: inventory),
+            record: RecordDTO(from: record),
+            skills: skills.map { SkillDTO(from: $0) }
+        )
+
+        let data = try JSONEncoder().encode(userDTO)
         try data.write(to: fileURL, options: [.atomic])
     }
 
@@ -33,44 +50,16 @@ final class FileManagerUserRepository: UserRepository {
         }
 
         let data = try Data(contentsOf: fileURL)
-        let dto = try JSONDecoder().decode(UserDTO.self, from: data)
-        return try await createUser(from: dto)
-    }
-
-    private func createDTO(from user: User) async throws -> UserDTO {
-        let id = user.id
-        let nickname = user.nickname
-        let career = await user.career
-        let wallet = user.wallet
-        let inventory = user.inventory
-        let record = user.record
-        let skills = user.skills
-
-        return UserDTO(
-            id: id,
-            nickname: nickname,
-            career: CareerDTO(from: career),
-            wallet: WalletDTO(from: wallet),
-            inventory: InventoryDTO(from: inventory),
-            record: RecordDTO(from: record),
-            skills: skills.map { SkillDTO(from: $0) }
-        )
-    }
-
-    private func createUser(from dto: UserDTO) async throws -> User {
-        let wallet = dto.wallet.toWallet()
-        let inventory = dto.inventory.toInventory()
-        let record = dto.record.toRecord()
-        let skills = Set(dto.skills.map { $0.toSkill() })
+        let userDTO = try JSONDecoder().decode(UserDTO.self, from: data)
 
         return User(
-            id: dto.id,
-            nickname: dto.nickname,
-            career: dto.career.toCareer(),
-            wallet: wallet,
-            inventory: inventory,
-            record: record,
-            skills: skills
+            id: userDTO.id,
+            nickname: userDTO.nickname,
+            career: userDTO.career.toCareer(),
+            wallet: userDTO.wallet.toWallet(),
+            inventory: userDTO.inventory.toInventory(),
+            record: userDTO.record.toRecord(),
+            skills: Set(userDTO.skills.map { $0.toSkill() })
         )
     }
 }

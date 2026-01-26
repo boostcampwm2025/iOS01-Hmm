@@ -28,7 +28,7 @@ struct SoloDeveloperTrainingApp: App {
     @State private var showTutorial = false
     @State private var user: User?
     @Environment(\.scenePhase) private var scenePhase
-    
+
     private let userRepository: UserRepository = FileManagerUserRepository()
 
     var body: some Scene {
@@ -70,7 +70,7 @@ struct SoloDeveloperTrainingApp: App {
             .onAppear {
                 loadUser()
             }
-            .onChange(of: scenePhase) { oldPhase, newPhase in
+            .onChange(of: scenePhase) { _, newPhase in
                 if newPhase == .background || newPhase == .inactive {
                     saveUser()
                 }
@@ -96,7 +96,7 @@ private extension SoloDeveloperTrainingApp {
             }
         }
     }
-    
+
     /// 현재 User를 저장합니다.
     func saveUser() {
         guard let user = user else { return }
@@ -108,7 +108,7 @@ private extension SoloDeveloperTrainingApp {
             }
         }
     }
-    
+
     @ViewBuilder
     var nicknameSetupOverlay: some View {
         if showNicknameSetup {
