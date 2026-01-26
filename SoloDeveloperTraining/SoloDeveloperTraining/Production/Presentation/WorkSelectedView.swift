@@ -33,7 +33,17 @@ struct WorkSelectedView: View {
     let user: User
     let animationSystem: CharacterAnimationSystem?
     @State var selectedIndex: Int = 0
-    @State var isGameStarted: Bool = false
+    @Binding var isGameStarted: Bool
+
+    init(
+        user: User,
+        animationSystem: CharacterAnimationSystem?,
+        isGameStarted: Binding<Bool>
+    ) {
+        self.user = user
+        self.animationSystem = animationSystem
+        self._isGameStarted = isGameStarted
+    }
 
     var body: some View {
         Group {
@@ -163,6 +173,8 @@ private extension WorkSelectedView {
 }
 
 #Preview {
+    @Previewable @State var isGameStarted = false
+
     let user = User(
         nickname: "Test",
         wallet: .init(),
@@ -170,5 +182,9 @@ private extension WorkSelectedView {
         record: .init()
     )
 
-    WorkSelectedView(user: user, animationSystem: nil)
+    WorkSelectedView(
+        user: user,
+        animationSystem: nil,
+        isGameStarted: $isGameStarted
+    )
 }

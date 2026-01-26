@@ -36,6 +36,7 @@ struct MainView: View {
     @State private var selectedTab: TabItem = .work
     @State private var popupContent: PopupConfiguration?
     @State private var careerSystem: CareerSystem?
+    @State private var isWorkGameInProgress: Bool = false
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
@@ -103,16 +104,36 @@ struct MainView: View {
                     hasCompletedMisson: user.record
                         .missionSystem.hasCompletedMission)
 
-                Group {
-                    switch selectedTab {
-                    case .work:
-                        WorkSelectedView(user: user, animationSystem: animationSystem)
-                    case .skill:
-                        SkillView(user: user, popupContent: $popupContent)
-                    case .shop:
-                        ShopView(user: user, popupContent: $popupContent)
-                    case .mission:
-                        MissionView(user: user)
+                ZStack {
+                    // 업무 탭: 게임이 진행 중일 때
+                    if isWorkGameInProgress {
+                        WorkSelectedView(
+                            user: user,
+                            animationSystem: animationSystem,
+                            isGameStarted: $isWorkGameInProgress
+                        )
+                        .opacity(selectedTab == .work ? 1 : 0)
+                        .allowsHitTesting(selectedTab == .work)
+                    }
+
+                    // 일반 탭
+                    if !isWorkGameInProgress || selectedTab != .work {
+                        switch selectedTab {
+                        case .work:
+                            if !isWorkGameInProgress {
+                                WorkSelectedView(
+                                    user: user,
+                                    animationSystem: animationSystem,
+                                    isGameStarted: $isWorkGameInProgress
+                                )
+                            }
+                        case .skill:
+                            SkillView(user: user, popupContent: $popupContent)
+                        case .shop:
+                            ShopView(user: user, popupContent: $popupContent)
+                        case .mission:
+                            MissionView(user: user)
+                        }
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
