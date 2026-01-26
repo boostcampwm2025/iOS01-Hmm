@@ -126,8 +126,6 @@ final class DodgeGame: Game {
         // 1.0배 획득
         let gainGold = Int(Double(baseGold) * Constant.bugDodgeMultiplier)
         user.wallet.addGold(gainGold)
-        /// 버그 회피 수 기록
-        user.record.record(.dodgeGoldHit)
         /// 누적 재산 업데이트
         user.record.record(.earnMoney(gainGold))
 
