@@ -98,6 +98,16 @@ final class LanguageGame: Game {
         itemList = []
     }
 
+    /// 게임 일시정지 (피버, 버프 시스템 보존)
+    func pauseGame() {
+
+    }
+
+    /// 게임 재개 (상태 복구)
+    func resumeGame() {
+
+    }
+
     func didPerformAction(_ input: LanguageType) async -> Int {
         let isSuccess = languageButtonTapHandler(tappedItemType: input)
         feverSystem

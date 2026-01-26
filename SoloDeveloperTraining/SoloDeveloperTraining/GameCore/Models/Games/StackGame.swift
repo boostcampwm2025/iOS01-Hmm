@@ -60,6 +60,16 @@ final class StackGame: Game {
         isPlaying = false
     }
 
+    /// 게임 일시정지 (피버, 버프 시스템 보존)
+    func pauseGame() {
+
+    }
+
+    /// 게임 재개 (상태 복구)
+    func resumeGame() {
+
+    }
+
     /// 액션 수행 (Game 프로토콜 요구사항)
     @discardableResult
     func didPerformAction(_ input: BlockType) async -> Int { 0 }
