@@ -32,8 +32,7 @@ private enum Constant {
 }
 
 struct DodgeGameView: View {
-    private var game: DodgeGame
-
+    @State private var game: DodgeGame
     @State private var gameAreaWidth: CGFloat = 0
     @State private var gameAreaHeight: CGFloat = 0
     @State private var isFacingLeft: Bool = false
