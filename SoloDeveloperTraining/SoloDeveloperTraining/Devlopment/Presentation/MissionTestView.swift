@@ -645,7 +645,7 @@ struct MissionTestView: View {
 
     private func performDodgeGoldHit(count: Int = 1) {
         for _ in 0..<count {
-            record.record(.dodgeGoldHit)
+            record.record(.dodgeGoldCollect)
         }
         missionSystem.updateCompletedMissions(record: record)
     }
