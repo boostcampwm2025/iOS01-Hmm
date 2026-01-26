@@ -244,7 +244,7 @@ struct MissionTestView: View {
                 VStack {
                     Text("골드 획득")
                         .font(.caption)
-                    Text("\(record.goldHitCount)")
+                    Text("\(record.dodgeGoldCollectedCount)")
                         .font(.title3)
                         .bold()
                         .foregroundStyle(.yellow)
@@ -253,9 +253,9 @@ struct MissionTestView: View {
                 Spacer()
 
                 VStack {
-                    Text("연속 성공")
+                    Text("최고 콤보")
                         .font(.caption)
-                    Text("\(record.dodgeConsecutiveSuccess)")
+                    Text("\(record.dodgeMaxCombo)")
                         .font(.title3)
                         .bold()
                         .foregroundStyle(.cyan)
@@ -645,7 +645,7 @@ struct MissionTestView: View {
 
     private func performDodgeGoldHit(count: Int = 1) {
         for _ in 0..<count {
-            record.record(.dodgeGoldHit)
+            record.record(.dodgeGoldCollect)
         }
         missionSystem.updateCompletedMissions(record: record)
     }

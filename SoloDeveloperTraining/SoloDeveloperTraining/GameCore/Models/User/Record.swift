@@ -42,10 +42,14 @@ final class Record {
     var languageConsecutiveCorrect: Int = 0
 
     // MARK: - Bug Dodging Records
-    /// 골드 획득 횟수
-    var goldHitCount: Int = 0
-    /// 버그피하기 연속 성공 횟수
-    var dodgeConsecutiveSuccess: Int = 0
+    /// 버그피하기 골드 수집 횟수
+    var dodgeGoldCollectedCount: Int = 0
+    /// 버그피하기 최고 콤보 (역대 최고 연속 회피 횟수)
+    var dodgeMaxCombo: Int = 0
+    /// 버그피하기 총 버그 회피 횟수
+    var dodgeBugAvoidedCount: Int = 0
+    /// 버그피하기 버그 수집 횟수
+    var dodgeBugCollectCount: Int = 0
 
     // MARK: - Stacking Game Records
     /// 데이터 쌓기 성공 횟수
@@ -91,7 +95,8 @@ extension Record {
         case languageIncorrect
 
         // Bug Dodging
-        case dodgeGoldHit
+        case dodgeGoldCollect
+        case dodgeBugAvoid(currentCombo: Int)
         case dodgeFail
 
         // Stacking Game
@@ -136,12 +141,15 @@ extension Record {
         case .languageIncorrect:
             languageConsecutiveCorrect = 0
 
-        case .dodgeGoldHit:
-            goldHitCount += 1
-            dodgeConsecutiveSuccess += 1
+        case .dodgeGoldCollect:
+            dodgeGoldCollectedCount += 1
+
+        case .dodgeBugAvoid(let currentCombo):
+            dodgeBugAvoidedCount += 1
+            dodgeMaxCombo = max(currentCombo, dodgeMaxCombo)
 
         case .dodgeFail:
-            dodgeConsecutiveSuccess = 0
+            dodgeBugCollectCount += 1
 
         case .stackingSuccess:
             stackingSuccessCount += 1
