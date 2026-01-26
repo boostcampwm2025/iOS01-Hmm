@@ -27,6 +27,9 @@ struct SoloDeveloperTrainingApp: App {
     @State private var showNicknameSetup = false
     @State private var showTutorial = false
     @State private var user: User?
+    @Environment(\.scenePhase) private var scenePhase
+    
+    private let userRepository: UserRepository = FileManagerUserRepository()
 
     var body: some Scene {
         WindowGroup {
@@ -64,6 +67,14 @@ struct SoloDeveloperTrainingApp: App {
                     }
                 }
             }
+            .onAppear {
+                loadUser()
+            }
+            .onChange(of: scenePhase) { oldPhase, newPhase in
+                if newPhase == .background || newPhase == .inactive {
+                    saveUser()
+                }
+            }
 #endif
         }
     }
@@ -71,6 +82,33 @@ struct SoloDeveloperTrainingApp: App {
 
 #if !DEV_BUILD
 private extension SoloDeveloperTrainingApp {
+    /// 저장된 User를 로드합니다.
+    func loadUser() {
+        Task {
+            do {
+                if let loadedUser = try await userRepository.load() {
+                    await MainActor.run {
+                        self.user = loadedUser
+                    }
+                }
+            } catch {
+                print("Failed to load user: \(error)")
+            }
+        }
+    }
+    
+    /// 현재 User를 저장합니다.
+    func saveUser() {
+        guard let user = user else { return }
+        Task {
+            do {
+                try await userRepository.save(user)
+            } catch {
+                print("Failed to save user: \(error)")
+            }
+        }
+    }
+    
     @ViewBuilder
     var nicknameSetupOverlay: some View {
         if showNicknameSetup {
