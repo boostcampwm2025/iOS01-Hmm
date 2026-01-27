@@ -16,13 +16,13 @@ final class MotionSystem {
 
     // MARK: - 설정값
     /// 모션 업데이트 주사율 (120fps)
-    private let updateInterval = 1.0 / 120.0
+    private let updateInterval = 1.0 / Policy.Game.Dodge.updateFPS
     /// 데드존 임계값 (이 값 이하의 기울기는 무시)
-    private let threshold: Double = 0.05
+    private let threshold: Double = Policy.Game.Dodge.Motion.deadZoneThreshold
     /// 최대 이동 속도 (기울기 1.0일 때)
-    private let maxSpeed: CGFloat = 2000.0
+    private let maxSpeed: CGFloat = Policy.Game.Dodge.Motion.maxSpeed
     /// 최소 이동 속도 (기울기 threshold일 때)
-    private let minSpeed: CGFloat = 300.0
+    private let minSpeed: CGFloat = Policy.Game.Dodge.Motion.minSpeed
 
     /// 캐릭터의 X 위치
     var characterX: CGFloat = 0
