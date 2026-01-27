@@ -15,7 +15,7 @@ private enum Constant {
 
     enum Padding {
         static let horizontal: CGFloat = 16
-        static let vertical: CGFloat = 14
+        static let vertical: CGFloat = 10
         static let buttonVertical: CGFloat = 4.5
         static let badgeTrailing: CGFloat = 6
         static let badgeBottom: CGFloat = 40

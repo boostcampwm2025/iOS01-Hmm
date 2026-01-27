@@ -9,7 +9,7 @@ import SwiftUI
 
 private enum Constant {
     enum Size {
-        static let closeButton = CGSize(width: 24, height: 24)
+        static let closeButton = CGSize(width: 31, height: 31)
         static let coffeeIcon = CGSize(width: 22, height: 22)
         static let energyDrinkIcon = CGSize(width: 20, height: 22)
     }
@@ -115,14 +115,26 @@ private extension GameToolBar {
                         width: Constant.Size.coffeeIcon.width,
                         height: Constant.Size.coffeeIcon.height
                     )
+                    .opacity(coffeeCount.wrappedValue == 0 ? Constant.disabledAlpha : 1.0)
+                    .mask(
+                        GeometryReader { geometry in
+                            VStack(spacing: 0) {
+                                Rectangle()
+                                    .opacity(Constant.disabledAlpha)
+                                    .frame(height: geometry.size.height * cooldownProgress(for: .coffee))
+                                Rectangle()
+                                    .opacity(1)
+                                    .frame(height: geometry.size.height * (1 - cooldownProgress(for: .coffee)))
+                            }
+                        }
+                    )
                 Text("\(coffeeCount.wrappedValue)")
                     .textStyle(.caption2)
-                    .foregroundStyle(.black)
+                    .foregroundStyle(isCoffeeBuffActive ? .gray300 : .black)
                     .frame(width: Constant.itemCountLabelWidth)
             }
         }
-        .disabled(isCoffeeBuffActive)
-        .opacity(isCoffeeBuffActive ? Constant.disabledAlpha : 1.0)
+        .disabled(isCoffeeBuffActive || coffeeCount.wrappedValue == 0)
     }
 
     /// 에너지 드링크 아이템 버튼
@@ -137,14 +149,26 @@ private extension GameToolBar {
                         width: Constant.Size.energyDrinkIcon.width,
                         height: Constant.Size.energyDrinkIcon.height
                     )
+                    .opacity(energyDrinkCount.wrappedValue == 0 ? Constant.disabledAlpha : 1.0)
+                    .mask(
+                        GeometryReader { geometry in
+                            VStack(spacing: 0) {
+                                Rectangle()
+                                    .opacity(Constant.disabledAlpha)
+                                    .frame(height: geometry.size.height * cooldownProgress(for: .energyDrink))
+                                Rectangle()
+                                    .opacity(1)
+                                    .frame(height: geometry.size.height * (1 - cooldownProgress(for: .energyDrink)))
+                            }
+                        }
+                    )
                 Text("\(energyDrinkCount.wrappedValue)")
                     .textStyle(.caption2)
-                    .foregroundStyle(.black)
+                    .foregroundStyle(isEnergyDrinkBuffActive ? .gray300 : .black)
                     .frame(width: Constant.itemCountLabelWidth)
             }
         }
-        .disabled(isEnergyDrinkBuffActive)
-        .opacity(isEnergyDrinkBuffActive ? Constant.disabledAlpha : 1.0)
+        .disabled(isEnergyDrinkBuffActive || energyDrinkCount.wrappedValue == 0)
     }
 }
 
@@ -203,6 +227,22 @@ private extension GameToolBar {
             progressRatio = 0
         }
         return totalWidth * progressRatio
+    }
+
+    /// 소비 아이템 쿨타임 진행도 (0.0 ~ 1.0, 0이 쿨타임 완료, 1이 쿨타임 시작)
+    func cooldownProgress(for type: ConsumableType) -> Double {
+        let duration: Int
+        switch type {
+        case .coffee:
+            duration = buffSystem.coffeeDuration
+        case .energyDrink:
+            duration = buffSystem.energyDrinkDuration
+        }
+
+        guard duration > 0 else { return 0.0 }
+        let totalDuration = Double(type.duration)
+        let remainingDuration = Double(duration)
+        return remainingDuration / totalDuration
     }
 }
 
