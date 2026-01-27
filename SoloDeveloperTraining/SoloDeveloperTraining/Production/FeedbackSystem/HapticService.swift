@@ -18,7 +18,7 @@ final class HapticService {
 
     var isEnabled: Bool {
         didSet {
-            localStorage.set(key: Constant.hapticEnabledKey, value: isEnabled)
+            localStorage.set(isEnabled, forKey: Constant.hapticEnabledKey)
         }
     }
 

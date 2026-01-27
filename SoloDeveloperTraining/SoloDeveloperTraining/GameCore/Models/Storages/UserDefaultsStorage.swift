@@ -18,8 +18,8 @@ struct UserDefaultsStorage: KeyValueLocalStorage {
         userDefaults.register(defaults: defaults)
     }
 
-    func set(key: String, value: Any) {
-        userDefaults.set(value, forKey: key)
+    func set(_ value: Any, forKey: String) {
+        userDefaults.set(value, forKey: forKey)
     }
 
     func integer(key: String) -> Int {

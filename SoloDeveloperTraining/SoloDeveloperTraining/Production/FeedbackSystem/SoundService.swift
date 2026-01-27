@@ -21,7 +21,7 @@ final class SoundService {
 
     var isEnabled: Bool {
         didSet {
-            localStorage.set(key: isEnabled, value: Constant.soundEnabledKey)
+            localStorage.set(isEnabled, forKey: Constant.soundEnabledKey)
         }
     }
 

@@ -34,7 +34,6 @@ struct WorkSelectedView: View {
     let animationSystem: CharacterAnimationSystem?
     @State var selectedIndex: Int = 0
     @Binding var isGameStarted: Bool
-    
     private let localStorage: KeyValueLocalStorage = UserDefaultsStorage()
 
     init(
@@ -170,7 +169,7 @@ private extension WorkSelectedView {
     }
 
     func saveLastSelectedIndex(_ index: Int) {
-        localStorage.set(key: Constant.UserDefaults.lastSelectedWorkIndexKey, value: index)
+        localStorage.set(index, forKey: Constant.UserDefaults.lastSelectedWorkIndexKey)
     }
 }
 
