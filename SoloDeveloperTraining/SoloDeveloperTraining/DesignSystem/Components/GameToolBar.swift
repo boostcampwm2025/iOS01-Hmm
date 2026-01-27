@@ -130,7 +130,7 @@ private extension GameToolBar {
                     )
                 Text("\(coffeeCount.wrappedValue)")
                     .textStyle(.caption2)
-                    .foregroundStyle(.black)
+                    .foregroundStyle(isCoffeeBuffActive ? .gray300 : .black)
                     .frame(width: Constant.itemCountLabelWidth)
             }
         }
@@ -164,7 +164,7 @@ private extension GameToolBar {
                     )
                 Text("\(energyDrinkCount.wrappedValue)")
                     .textStyle(.caption2)
-                    .foregroundStyle(.black)
+                    .foregroundStyle(isEnergyDrinkBuffActive ? .gray300 : .black)
                     .frame(width: Constant.itemCountLabelWidth)
             }
         }
