@@ -5,10 +5,6 @@
 //  Created by SeoJunYoung on 1/6/26.
 //
 
-private enum Constant {
-    static let successFever: Double = 33.0
-}
-
 /// 탭 게임 클래스
 final class TapGame: Game {
     typealias ActionInput = Void
@@ -29,7 +25,10 @@ final class TapGame: Game {
     /// 탭 게임 초기화
     init(
         user: User,
-        feverSystem: FeverSystem = FeverSystem(decreaseInterval: 0.1, decreasePercentPerTick: 3),
+        feverSystem: FeverSystem = FeverSystem(
+            decreaseInterval: Policy.Fever.decreaseInterval,
+            decreasePercentPerTick: Policy.Fever.Tap.decreaseAmount / Policy.Fever.decreaseInterval
+        ),
         buffSystem: BuffSystem,
         animationSystem: CharacterAnimationSystem? = nil
     ) {
@@ -54,7 +53,7 @@ final class TapGame: Game {
     /// 탭 액션 수행 및 골드 획득
     @discardableResult
     func didPerformAction(_ input: Void = ()) async -> Int {
-        feverSystem.gainFever(Constant.successFever)
+        feverSystem.gainFever(Policy.Fever.Tap.gainPerTap)
         let gainGold = Calculator.calculateGoldPerAction(
             game: kind,
             user: user,
