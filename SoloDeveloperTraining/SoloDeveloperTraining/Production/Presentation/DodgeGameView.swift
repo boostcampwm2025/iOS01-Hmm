@@ -38,6 +38,8 @@ struct DodgeGameView: View {
     @State private var gameAreaHeight: CGFloat = 0
     @State private var isFacingLeft: Bool = false
     @State private var goldEffects: [EffectLabelData] = []
+    // 일시정지 상태 추가
+    @State private var isGamePaused: Bool = false
 
     @Binding var isGameStarted: Bool
 
@@ -69,7 +71,15 @@ struct DodgeGameView: View {
             .onDisappear {
                 game.stopGame()
             }
-        }
+        }.pauseGameStyle(onLeave: {
+            handleCloseButton()
+        }, onPause: {
+            isGamePaused = true
+            game.pauseGame()
+        }, onResume: {
+            isGamePaused = false
+            game.resumeGame()
+        })
     }
 }
 
@@ -113,7 +123,7 @@ private extension DodgeGameView {
 
     /// 플레이어
     var playerView: some View {
-        RunningCharacter(isFacingLeft: isFacingLeft)
+        RunningCharacter(isFacingLeft: isFacingLeft, isGamePaused: isGamePaused)
             .frame(
                 width: Constant.Size.character.width,
                 height: Constant.Size.character.height

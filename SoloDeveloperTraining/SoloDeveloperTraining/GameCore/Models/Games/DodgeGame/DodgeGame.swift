@@ -93,12 +93,14 @@ final class DodgeGame: Game {
     func pauseGame() {
         feverSystem.pause()
         buffSystem.pause()
+        gameCore.stop()
     }
 
     /// 게임 재개
     func resumeGame() {
         feverSystem.resume()
         buffSystem.resume()
+        gameCore.start()
     }
 
     /// 게임 영역 크기 업데이트 (화면 크기 변경 시 호출)
