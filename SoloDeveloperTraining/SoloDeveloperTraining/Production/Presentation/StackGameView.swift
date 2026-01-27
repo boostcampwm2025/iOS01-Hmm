@@ -20,7 +20,7 @@ private enum Constant {
 
 struct StackGameView: View {
     let stackGame: StackGame
-    let scene: StackGameScene
+    @State private var scene: StackGameScene
 
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
@@ -34,10 +34,11 @@ struct StackGameView: View {
     ) {
         self.stackGame = StackGame(user: user, animationSystem: animationSystem)
         self._isGameStarted = isGameStarted
-        self.scene = StackGameScene(
+        let initialScene = StackGameScene(
             stackGame: stackGame,
-            onBlockDropped: { _ in
-            })
+            onBlockDropped: { _ in }
+        )
+        self._scene = State(initialValue: initialScene)
     }
 
     var body: some View {

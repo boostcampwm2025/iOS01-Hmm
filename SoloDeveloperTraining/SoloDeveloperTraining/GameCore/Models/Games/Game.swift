@@ -48,7 +48,7 @@ enum GameType: Int, CaseIterable {
         case .tap: "코드짜기"
         case .language: "언어 맞추기"
         case .dodge: "버그 피하기"
-        case .stack: "물건 쌓기"
+        case .stack: "데이터 쌓기"
         }
     }
 }

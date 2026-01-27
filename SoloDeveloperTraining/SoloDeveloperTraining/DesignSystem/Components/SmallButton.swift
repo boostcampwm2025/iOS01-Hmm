@@ -20,6 +20,10 @@ private enum Constant {
     enum Offset {
         static let badgeOffsetX: CGFloat = 17
         static let badgeOffsetY: CGFloat = -15
+        static let pressedX: CGFloat = 2
+        static let pressedY: CGFloat = 3
+        static let shadowX: CGFloat = 2
+        static let shadowY: CGFloat = 3
     }
 
     enum Opacity {
@@ -38,19 +42,42 @@ struct SmallButton: View {
 
     var body: some View {
         Button(action: action) {
-            Text(title)
-                .textStyle(.body)
-                .foregroundColor(.white)
-                .frame(width: Constant.Size.buttonWidth, height: Constant.Size.buttonHeight)
-                .background(isEnabled ? .orange500 : .gray200)
-                .cornerRadius(Constant.radius)
-                .opacity(isPressed ? Constant.Opacity.pressed : Constant.Opacity.unPressed)
-                .overlay(alignment: .topTrailing) {
-                    if hasBadge { badge }
+            ZStack {
+                Text(title)
+                    .textStyle(.body)
+                    .foregroundColor(.white)
+                    .frame(width: Constant.Size.buttonWidth, height: Constant.Size.buttonHeight)
+                    .background(backgroundColor)
+                    .cornerRadius(Constant.radius)
+                    .opacity(isPressed ? Constant.Opacity.pressed : Constant.Opacity.unPressed)
+                    .overlay(alignment: .topTrailing) {
+                        if hasBadge { badge }
+                    }
+                    .offset(
+                        x: (hasBadge && isPressed) ? Constant.Offset.pressedX : 0,
+                        y: (hasBadge && isPressed) ? Constant.Offset.pressedY : 0
+                    )
+                    .layoutPriority(1)
+
+                if hasBadge {
+                    Rectangle()
+                        .fill(Color.black)
+                        .frame(width: Constant.Size.buttonWidth, height: Constant.Size.buttonHeight)
+                        .cornerRadius(Constant.radius)
+                        .offset(x: Constant.Offset.shadowX, y: Constant.Offset.shadowY)
+                        .zIndex(-1)
                 }
+            }
         }
         .disabled(!isEnabled)
         .buttonStyle(.pressable(isPressed: $isPressed))
+    }
+
+    private var backgroundColor: Color {
+        if !isEnabled {
+            return .gray200
+        }
+        return hasBadge ? AppColors.lightOrange : .orange500
     }
 
     private var badge: some View {
