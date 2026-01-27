@@ -24,7 +24,7 @@ final class AutoGainSystem {
         // 기존 타이머가 있으면 정리
         stopSystem()
 
-        let timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+        let timer = Timer.scheduledTimer(withTimeInterval: Policy.System.AutoGain.interval, repeats: true) { [weak self] _ in
             self?.gainGold()
         }
         // 스크롤 중에도 타이머가 작동하도록 common 모드에 추가
