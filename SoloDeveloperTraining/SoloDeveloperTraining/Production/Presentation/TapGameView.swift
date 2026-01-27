@@ -48,7 +48,13 @@ struct TapGameView: View {
                 // 터치 가능한 게임 영역
                 tapAreaSection(geometry: geometry)
             }
-        }
+        }.pauseGameStyle(onLeave: {
+            handleCloseButton()
+        }, onPause: {
+            tapGame.pauseGame()
+        }, onResume: {
+            tapGame.resumeGame()
+        })
     }
 }
 

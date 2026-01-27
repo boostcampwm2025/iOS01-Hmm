@@ -83,7 +83,13 @@ struct LanguageGameView: View {
                 languageButtonsSection
                 Spacer()
             }
-        }
+        }.pauseGameStyle(onLeave: {
+            handleCloseButton()
+        }, onPause: {
+            game.pauseGame()
+        }, onResume: {
+            game.resumeGame()
+        })
     }
 }
 
