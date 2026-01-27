@@ -21,9 +21,21 @@ enum SkillTier: Int, CaseIterable {
 
     var levelRange: LevelRange {
         switch self {
-        case .beginner: LevelRange(minValue: 1, maxValue: 9999)
-        case .intermediate: LevelRange(minValue: 0, maxValue: 9999)
-        case .advanced: LevelRange(minValue: 0, maxValue: 9999)
+        case .beginner:
+            LevelRange(
+                minValue: Policy.Skill.beginnerMinLevel,
+                maxValue: Policy.Skill.beginnerMaxLevel
+            )
+        case .intermediate:
+            LevelRange(
+                minValue: Policy.Skill.intermediateMinLevel,
+                maxValue: Policy.Skill.intermediateMaxLevel
+            )
+        case .advanced:
+            LevelRange(
+                minValue: Policy.Skill.advancedMinLevel,
+                maxValue: Policy.Skill.advancedMaxLevel
+            )
         }
     }
 }

@@ -7,13 +7,6 @@
 
 import Foundation
 
-private enum Constant {
-    enum Fever {
-        static let successFever: Double = 33.0
-        static let failureFever: Double = -successFever
-    }
-}
-
 enum LanguageType: String, CaseIterable {
     case swift = "Swift"
     case kotlin = "Kotlin"
@@ -75,7 +68,10 @@ final class LanguageGame: Game {
 
     init(
         user: User,
-        feverSystem: FeverSystem,
+        feverSystem: FeverSystem = FeverSystem(
+            decreaseInterval: Policy.Fever.decreaseInterval,
+            decreasePercentPerTick: Policy.Fever.Language.decreasePercent
+        ),
         buffSystem: BuffSystem,
         itemCount: Int,
         animationSystem: CharacterAnimationSystem? = nil
@@ -102,7 +98,7 @@ final class LanguageGame: Game {
         let isSuccess = languageButtonTapHandler(tappedItemType: input)
         feverSystem
             .gainFever(
-                isSuccess ? Constant.Fever.successFever : Constant.Fever.failureFever
+                isSuccess ? Policy.Fever.Language.gainPerCorrect : Policy.Fever.Language.lossPerIncorrect
             )
         let gainGold = Calculator.calculateGoldPerAction(
             game: kind,
@@ -120,10 +116,10 @@ final class LanguageGame: Game {
             animationSystem?.playSmile()
             return gainGold
         }
-        await user.wallet.spendGold(gainGold / 2)
+        await user.wallet.spendGold(Int(Double(gainGold) * Policy.Game.Language.incorrectGoldLossMultiplier))
         /// 오답 횟수 기록
         user.record.record(.languageIncorrect)
-        return (gainGold / 2) * -1
+        return Int(Double(gainGold) * Policy.Game.Language.incorrectGoldLossMultiplier) * -1
     }
 
     private func languageButtonTapHandler(tappedItemType: LanguageType) -> Bool {

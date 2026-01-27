@@ -22,44 +22,53 @@ final class Skill: Hashable {
 
     /// 획득 재화량
     var gainGold: Double {
+        let baseGold: Int
+        let multiplier: Int
+
         switch key.game {
         case .tap:
+            baseGold = Policy.Skill.Tap.baseGold
             switch key.tier {
             case .beginner:
-                return Double(1 * level)
+                multiplier = Policy.Skill.Tap.beginnerGoldMultiplier
             case .intermediate:
-                return Double(2 * level)
+                multiplier = Policy.Skill.Tap.intermediateGoldMultiplier
             case .advanced:
-                return Double(3 * level)
+                multiplier = Policy.Skill.Tap.advancedGoldMultiplier
             }
         case .language:
+            baseGold = Policy.Skill.Language.baseGold
             switch key.tier {
             case .beginner:
-                return Double(1 * level)
+                multiplier = Policy.Skill.Language.beginnerGoldMultiplier
             case .intermediate:
-                return Double(2 * level)
+                multiplier = Policy.Skill.Language.intermediateGoldMultiplier
             case .advanced:
-                return Double(3 * level)
+                multiplier = Policy.Skill.Language.advancedGoldMultiplier
             }
         case .dodge:
+            baseGold = Policy.Skill.Dodge.baseGold
             switch key.tier {
             case .beginner:
-                return Double(1 * level)
+                multiplier = Policy.Skill.Dodge.beginnerGoldMultiplier
             case .intermediate:
-                return Double(2 * level)
+                multiplier = Policy.Skill.Dodge.intermediateGoldMultiplier
             case .advanced:
-                return Double(3 * level)
+                multiplier = Policy.Skill.Dodge.advancedGoldMultiplier
             }
         case .stack:
+            baseGold = Policy.Skill.Stack.baseGold
             switch key.tier {
             case .beginner:
-                return Double(1 * level)
+                multiplier = Policy.Skill.Stack.beginnerGoldMultiplier
             case .intermediate:
-                return Double(2 * level)
+                multiplier = Policy.Skill.Stack.intermediateGoldMultiplier
             case .advanced:
-                return Double(3 * level)
+                multiplier = Policy.Skill.Stack.advancedGoldMultiplier
             }
         }
+
+        return Double(baseGold + multiplier * level)
     }
 
     /// 이미지 리소스
@@ -91,14 +100,61 @@ final class Skill: Hashable {
 
     /// 업그레이드 비용
     var upgradeCost: Cost {
-        switch key.tier {
-        case .beginner:
-            return .init(gold: (10 * level), diamond: level / 1000 * 10)
-        case .intermediate:
-            return .init(gold: (20 * level), diamond: level / 1000 * 10)
-        case .advanced:
-            return .init(gold: (30 * level), diamond: level / 1000 * 10)
+        let goldCostMultiplier: Int
+        let diamondCostDivider: Int
+        let diamondCostMultiplier: Int
+
+        switch key.game {
+        case .tap:
+            switch key.tier {
+            case .beginner:
+                goldCostMultiplier = Policy.Skill.Tap.beginnerGoldCostMultiplier
+            case .intermediate:
+                goldCostMultiplier = Policy.Skill.Tap.intermediateGoldCostMultiplier
+            case .advanced:
+                goldCostMultiplier = Policy.Skill.Tap.advancedGoldCostMultiplier
+            }
+            diamondCostDivider = Policy.Skill.Tap.diamondCostDivider
+            diamondCostMultiplier = Policy.Skill.Tap.diamondCostMultiplier
+        case .language:
+            switch key.tier {
+            case .beginner:
+                goldCostMultiplier = Policy.Skill.Language.beginnerGoldCostMultiplier
+            case .intermediate:
+                goldCostMultiplier = Policy.Skill.Language.intermediateGoldCostMultiplier
+            case .advanced:
+                goldCostMultiplier = Policy.Skill.Language.advancedGoldCostMultiplier
+            }
+            diamondCostDivider = Policy.Skill.Language.diamondCostDivider
+            diamondCostMultiplier = Policy.Skill.Language.diamondCostMultiplier
+        case .dodge:
+            switch key.tier {
+            case .beginner:
+                goldCostMultiplier = Policy.Skill.Dodge.beginnerGoldCostMultiplier
+            case .intermediate:
+                goldCostMultiplier = Policy.Skill.Dodge.intermediateGoldCostMultiplier
+            case .advanced:
+                goldCostMultiplier = Policy.Skill.Dodge.advancedGoldCostMultiplier
+            }
+            diamondCostDivider = Policy.Skill.Dodge.diamondCostDivider
+            diamondCostMultiplier = Policy.Skill.Dodge.diamondCostMultiplier
+        case .stack:
+            switch key.tier {
+            case .beginner:
+                goldCostMultiplier = Policy.Skill.Stack.beginnerGoldCostMultiplier
+            case .intermediate:
+                goldCostMultiplier = Policy.Skill.Stack.intermediateGoldCostMultiplier
+            case .advanced:
+                goldCostMultiplier = Policy.Skill.Stack.advancedGoldCostMultiplier
+            }
+            diamondCostDivider = Policy.Skill.Stack.diamondCostDivider
+            diamondCostMultiplier = Policy.Skill.Stack.diamondCostMultiplier
         }
+
+        return .init(
+            gold: goldCostMultiplier * level,
+            diamond: level / diamondCostDivider * diamondCostMultiplier
+        )
     }
 
     init(key: SkillKey, level: Int? = nil) {
