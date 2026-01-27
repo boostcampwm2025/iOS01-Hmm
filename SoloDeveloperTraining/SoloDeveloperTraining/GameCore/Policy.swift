@@ -244,6 +244,26 @@ enum Policy {
 
     // MARK: - 장비 아이템
     enum Equipment {
+        // 업그레이드 비용 (모든 장비 공통)
+        static let brokenUpgradeCost: Int = 50_000
+        static let cheapUpgradeCost: Int = 100_000
+        static let vintageUpgradeCost: Int = 200_000
+        static let decentUpgradeCost: Int = 500_000
+        static let premiumUpgradeCost: Int = 1_000_000
+        static let diamondUpgradeCost: Int = 2_000_000
+        static let limitedUpgradeCost: Int = 5_000_000
+        static let nationalTreasureUpgradeCost: Int = 999_999_999_999
+
+        // 업그레이드 성공 확률 (모든 장비 공통)
+        static let brokenSuccessRate: Double = 1.0
+        static let cheapSuccessRate: Double = 0.8
+        static let vintageSuccessRate: Double = 0.6
+        static let decentSuccessRate: Double = 0.4
+        static let premiumSuccessRate: Double = 0.3
+        static let diamondSuccessRate: Double = 0.2
+        static let limitedSuccessRate: Double = 0.1
+        static let nationalTreasureSuccessRate: Double = 0.0
+
         /// 키보드
         enum Keyboard {
             // 초당 골드 획득량
@@ -255,26 +275,6 @@ enum Policy {
             static let diamondGoldPerSecond: Int = 1000
             static let limitedGoldPerSecond: Int = 2000
             static let nationalTreasureGoldPerSecond: Int = 5000
-
-            // 업그레이드 비용
-            static let brokenUpgradeCost: Int = 50_000
-            static let cheapUpgradeCost: Int = 100_000
-            static let vintageUpgradeCost: Int = 200_000
-            static let decentUpgradeCost: Int = 500_000
-            static let premiumUpgradeCost: Int = 1_000_000
-            static let diamondUpgradeCost: Int = 2_000_000
-            static let limitedUpgradeCost: Int = 5_000_000
-            static let nationalTreasureUpgradeCost: Int = 999_999_999_999
-
-            // 업그레이드 성공 확률
-            static let brokenSuccessRate: Double = 1.0
-            static let cheapSuccessRate: Double = 0.8
-            static let vintageSuccessRate: Double = 0.6
-            static let decentSuccessRate: Double = 0.4
-            static let premiumSuccessRate: Double = 0.3
-            static let diamondSuccessRate: Double = 0.2
-            static let limitedSuccessRate: Double = 0.1
-            static let nationalTreasureSuccessRate: Double = 0.0
         }
 
         /// 마우스
@@ -288,26 +288,6 @@ enum Policy {
             static let diamondGoldPerSecond: Int = 1000
             static let limitedGoldPerSecond: Int = 2000
             static let nationalTreasureGoldPerSecond: Int = 5000
-
-            // 업그레이드 비용
-            static let brokenUpgradeCost: Int = 50_000
-            static let cheapUpgradeCost: Int = 100_000
-            static let vintageUpgradeCost: Int = 200_000
-            static let decentUpgradeCost: Int = 500_000
-            static let premiumUpgradeCost: Int = 1_000_000
-            static let diamondUpgradeCost: Int = 2_000_000
-            static let limitedUpgradeCost: Int = 5_000_000
-            static let nationalTreasureUpgradeCost: Int = 999_999_999_999
-
-            // 업그레이드 성공 확률
-            static let brokenSuccessRate: Double = 1.0
-            static let cheapSuccessRate: Double = 0.8
-            static let vintageSuccessRate: Double = 0.6
-            static let decentSuccessRate: Double = 0.4
-            static let premiumSuccessRate: Double = 0.3
-            static let diamondSuccessRate: Double = 0.2
-            static let limitedSuccessRate: Double = 0.1
-            static let nationalTreasureSuccessRate: Double = 0.0
         }
 
         /// 모니터
@@ -321,26 +301,6 @@ enum Policy {
             static let diamondGoldPerSecond: Int = 1000
             static let limitedGoldPerSecond: Int = 2000
             static let nationalTreasureGoldPerSecond: Int = 5000
-
-            // 업그레이드 비용
-            static let brokenUpgradeCost: Int = 50_000
-            static let cheapUpgradeCost: Int = 100_000
-            static let vintageUpgradeCost: Int = 200_000
-            static let decentUpgradeCost: Int = 500_000
-            static let premiumUpgradeCost: Int = 1_000_000
-            static let diamondUpgradeCost: Int = 2_000_000
-            static let limitedUpgradeCost: Int = 5_000_000
-            static let nationalTreasureUpgradeCost: Int = 999_999_999_999
-
-            // 업그레이드 성공 확률
-            static let brokenSuccessRate: Double = 1.0
-            static let cheapSuccessRate: Double = 0.8
-            static let vintageSuccessRate: Double = 0.6
-            static let decentSuccessRate: Double = 0.4
-            static let premiumSuccessRate: Double = 0.3
-            static let diamondSuccessRate: Double = 0.2
-            static let limitedSuccessRate: Double = 0.1
-            static let nationalTreasureSuccessRate: Double = 0.0
         }
 
         /// 의자
@@ -354,26 +314,6 @@ enum Policy {
             static let diamondGoldPerSecond: Int = 1000
             static let limitedGoldPerSecond: Int = 2000
             static let nationalTreasureGoldPerSecond: Int = 5000
-
-            // 업그레이드 비용
-            static let brokenUpgradeCost: Int = 50_000
-            static let cheapUpgradeCost: Int = 100_000
-            static let vintageUpgradeCost: Int = 200_000
-            static let decentUpgradeCost: Int = 500_000
-            static let premiumUpgradeCost: Int = 1_000_000
-            static let diamondUpgradeCost: Int = 2_000_000
-            static let limitedUpgradeCost: Int = 5_000_000
-            static let nationalTreasureUpgradeCost: Int = 999_999_999_999
-
-            // 업그레이드 성공 확률
-            static let brokenSuccessRate: Double = 1.0
-            static let cheapSuccessRate: Double = 0.8
-            static let vintageSuccessRate: Double = 0.6
-            static let decentSuccessRate: Double = 0.4
-            static let premiumSuccessRate: Double = 0.3
-            static let diamondSuccessRate: Double = 0.2
-            static let limitedSuccessRate: Double = 0.1
-            static let nationalTreasureSuccessRate: Double = 0.0
         }
     }
 
