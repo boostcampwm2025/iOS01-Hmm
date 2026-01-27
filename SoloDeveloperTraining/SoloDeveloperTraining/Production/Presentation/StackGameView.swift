@@ -21,7 +21,7 @@ private enum Constant {
 struct StackGameView: View {
     let stackGame: StackGame
     @State private var scene: StackGameScene
-
+    @State private var feverSystem: FeverSystem
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
 
@@ -33,6 +33,7 @@ struct StackGameView: View {
         animationSystem: CharacterAnimationSystem? = nil
     ) {
         self.stackGame = StackGame(user: user, animationSystem: animationSystem)
+        self._feverSystem = State(wrappedValue: stackGame.feverSystem)
         self._isGameStarted = isGameStarted
         let initialScene = StackGameScene(
             stackGame: stackGame,
@@ -66,7 +67,7 @@ private extension StackGameView {
             closeButtonDidTapHandler: handleCloseButton,
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
-            feverState: stackGame.feverSystem,
+            feverState: feverSystem,
             buffSystem: stackGame.buffSystem,
             coffeeCount: .constant(stackGame.user.inventory.count(.coffee) ?? 0),
             energyDrinkCount: .constant(stackGame.user.inventory.count(.energyDrink) ?? 0)
