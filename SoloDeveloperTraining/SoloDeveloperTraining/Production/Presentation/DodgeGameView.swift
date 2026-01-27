@@ -77,8 +77,14 @@ struct DodgeGameView: View {
                 isGameViewDisappeared: $isGameViewDisappeared,
                 height: geometry.size.height,
                 onLeave: { handleCloseButton() },
-                onPause: { game.pauseGame() },
-                onResume: { game.resumeGame() }
+                onPause: {
+                    isGamePaused = true
+                    game.pauseGame()
+                },
+                onResume: {
+                    isGamePaused = false
+                    game.resumeGame()
+                }
             )
         }
     }
