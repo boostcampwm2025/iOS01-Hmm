@@ -51,12 +51,14 @@ struct TapGameView: View {
                 // 터치 가능한 게임 영역
                 tapAreaSection(geometry: geometry)
             }
-        }.pauseGameStyle(
-            isGameViewDisappeared: $isGameViewDisappeared,
-            onLeave: { handleCloseButton() },
-            onPause: { tapGame.pauseGame() },
-            onResume: { tapGame.resumeGame()}
-        )
+            .pauseGameStyle(
+                isGameViewDisappeared: $isGameViewDisappeared,
+                height: geometry.size.height,
+                onLeave: { handleCloseButton() },
+                onPause: { tapGame.pauseGame() },
+                onResume: { tapGame.resumeGame() }
+            )
+        }
     }
 }
 

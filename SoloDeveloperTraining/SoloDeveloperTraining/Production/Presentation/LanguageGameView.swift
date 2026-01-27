@@ -78,7 +78,7 @@ struct LanguageGameView: View {
     }
 
     var body: some View {
-        GeometryReader { _ in
+        GeometryReader { geometry in
             VStack(alignment: .center, spacing: 0) {
                 // 상단 툴바 (닫기, 아이템 버튼, 피버 게이지)
                 toolbarSection
@@ -90,12 +90,14 @@ struct LanguageGameView: View {
                 languageButtonsSection
                 Spacer()
             }
-        }.pauseGameStyle(
-            isGameViewDisappeared: $isGameViewDisappeared,
-            onLeave: { handleCloseButton() },
-            onPause: { game.pauseGame() },
-            onResume: { game.resumeGame() }
-        )
+            .pauseGameStyle(
+                isGameViewDisappeared: $isGameViewDisappeared,
+                height: geometry.size.height,
+                onLeave: { handleCloseButton() },
+                onPause: { game.pauseGame() },
+                onResume: { game.resumeGame() }
+            )
+        }
     }
 }
 

@@ -60,9 +60,10 @@ struct StackGameView: View {
             }
             .pauseGameStyle(
                 isGameViewDisappeared: $isGameViewDisappeared,
+                height: geometry.size.height,
                 onLeave: { handleCloseButton() },
                 onPause: { scene.pauseGame() },
-                onResume: { scene.resumeGame()}
+                onResume: { scene.resumeGame() }
             )
         }
     }

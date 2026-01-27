@@ -8,7 +8,6 @@
 import SwiftUI
 
 private enum Constant {
-    static let height: CGFloat = 407
     static let opacity: Double = 0.5
     static let animation: Animation = .easeOut(duration: 0.25)
     static let blurRadius: CGFloat = 2
@@ -30,6 +29,7 @@ struct GamePauseWrapper: ViewModifier {
     @State private var isPaused: Bool = false
 
     @Binding var isGameViewDisappeared: Bool
+    let height: CGFloat
     let onLeave: () -> Void
     let onPause: () -> Void
     let onResume: () -> Void
@@ -60,7 +60,7 @@ private extension GamePauseWrapper {
         ZStack {
             Rectangle()
                 .fill(.white.opacity(Constant.opacity))
-                .frame(height: Constant.height)
+                .frame(height: height)
                 .contentShape(Rectangle())
                 .onTapGesture { } // 배경 터치 무효화
 
