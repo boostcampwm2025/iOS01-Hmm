@@ -27,7 +27,7 @@ final class TapGame: Game {
         user: User,
         feverSystem: FeverSystem = FeverSystem(
             decreaseInterval: Policy.Fever.decreaseInterval,
-            decreasePercentPerTick: Policy.Fever.Tap.decreaseAmount / Policy.Fever.decreaseInterval
+            decreasePercentPerTick: Policy.Fever.Tap.decreasePercent
         ),
         buffSystem: BuffSystem,
         animationSystem: CharacterAnimationSystem? = nil

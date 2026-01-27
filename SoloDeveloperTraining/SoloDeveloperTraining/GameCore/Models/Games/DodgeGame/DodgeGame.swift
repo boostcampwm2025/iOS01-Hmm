@@ -17,7 +17,7 @@ final class DodgeGame: Game {
     /// 피버 시스템
     var feverSystem: FeverSystem = FeverSystem(
         decreaseInterval: Policy.Fever.decreaseInterval,
-        decreasePercentPerTick: Policy.Fever.Dodge.decreaseAmount / Policy.Fever.decreaseInterval
+        decreasePercentPerTick: Policy.Fever.Dodge.decreasePercent
     )
     /// 버프 시스템
     var buffSystem: BuffSystem = BuffSystem()

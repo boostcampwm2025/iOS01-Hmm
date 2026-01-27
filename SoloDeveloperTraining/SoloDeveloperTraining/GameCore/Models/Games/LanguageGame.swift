@@ -70,7 +70,7 @@ final class LanguageGame: Game {
         user: User,
         feverSystem: FeverSystem = FeverSystem(
             decreaseInterval: Policy.Fever.decreaseInterval,
-            decreasePercentPerTick: Policy.Fever.Language.decreaseAmount / Policy.Fever.decreaseInterval
+            decreasePercentPerTick: Policy.Fever.Language.decreasePercent
         ),
         buffSystem: BuffSystem,
         itemCount: Int,

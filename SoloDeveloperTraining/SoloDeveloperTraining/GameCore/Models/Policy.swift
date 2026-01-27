@@ -47,20 +47,20 @@ enum Policy {
 
         /// 코드 짜기 (TapGame)
         enum Tap {
-            static let decreaseAmount: Double = 1.5
+            static let decreasePercent: Double = 1.5
             static let gainPerTap: Double = 33.0
         }
 
         /// 언어 맞추기 (LanguageGame)
         enum Language {
-            static let decreaseAmount: Double = 1.5
+            static let decreasePercent: Double = 1.5
             static let gainPerCorrect: Double = 33.0
             static let lossPerIncorrect: Double = -33.0
         }
 
         /// 버그 피하기 (DodgeGame)
         enum Dodge {
-            static let decreaseAmount: Double = 1.5
+            static let decreasePercent: Double = 1.5
             static let gainPerSmallGold: Double = 33.0
             static let gainPerLargeGold: Double = 33.0
             static let gainPerBugDodge: Double = 10.0
@@ -69,7 +69,7 @@ enum Policy {
 
         /// 데이터 쌓기 (StackGame)
         enum Stack {
-            static let decreaseAmount: Double = 0.5
+            static let decreasePercent: Double = 0.5
             static let gainPerSuccess: Double = 80.0
             static let lossPerFailure: Double = -40.0
         }

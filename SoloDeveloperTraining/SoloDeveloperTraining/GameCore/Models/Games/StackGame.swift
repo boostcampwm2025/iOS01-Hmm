@@ -21,7 +21,7 @@ final class StackGame: Game {
     var user: User
     var feverSystem: FeverSystem = .init(
         decreaseInterval: Policy.Fever.decreaseInterval,
-        decreasePercentPerTick: Policy.Fever.Stack.decreaseAmount / Policy.Fever.decreaseInterval
+        decreasePercentPerTick: Policy.Fever.Stack.decreasePercent
     )
     var buffSystem: BuffSystem = .init()
     var animationSystem: CharacterAnimationSystem?
