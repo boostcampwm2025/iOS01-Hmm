@@ -75,19 +75,19 @@ enum HousingTier: Int, CaseIterable {
     var cost: Cost {
         switch self {
         case .street:
-            return .init(gold: 0)
+            return .init(gold: Policy.Housing.streetPurchaseCost)
         case .semiBasement:
-            return .init(gold: 500_000)
+            return .init(gold: Policy.Housing.semiBasementPurchaseCost)
         case .rooftop:
-            return .init(gold: 1_000_000)
+            return .init(gold: Policy.Housing.rooftopPurchaseCost)
         case .villa:
-            return .init(gold: 2_500_000)
+            return .init(gold: Policy.Housing.villaPurchaseCost)
         case .apartment:
-            return .init(gold: 5_000_000)
+            return .init(gold: Policy.Housing.apartmentPurchaseCost)
         case .house:
-            return .init(gold: 10_000_000)
+            return .init(gold: Policy.Housing.housePurchaseCost)
         case .pentHouse:
-            return .init(gold: 50_000_000)
+            return .init(gold: Policy.Housing.pentHousePurchaseCost)
         }
     }
 
@@ -95,19 +95,19 @@ enum HousingTier: Int, CaseIterable {
     var goldPerSecond: Int {
         switch self {
         case .street:
-            return 0
+            return Policy.Housing.streetGoldPerSecond
         case .semiBasement:
-            return 20
+            return Policy.Housing.semiBasementGoldPerSecond
         case .rooftop:
-            return 50
+            return Policy.Housing.rooftopGoldPerSecond
         case .villa:
-            return 100
+            return Policy.Housing.villaGoldPerSecond
         case .apartment:
-            return 250
+            return Policy.Housing.apartmentGoldPerSecond
         case .house:
-            return 500
+            return Policy.Housing.houseGoldPerSecond
         case .pentHouse:
-            return 1000
+            return Policy.Housing.pentHouseGoldPerSecond
         }
     }
 }
