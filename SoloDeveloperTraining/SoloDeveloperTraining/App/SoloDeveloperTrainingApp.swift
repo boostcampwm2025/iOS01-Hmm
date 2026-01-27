@@ -14,6 +14,7 @@ private enum Constant {
 
     enum Padding {
         static let nicknamePopupHorizontal: CGFloat = 25
+        static let errorPopupVertical: CGFloat = 20
     }
 
     enum Opacity {
@@ -27,6 +28,8 @@ struct SoloDeveloperTrainingApp: App {
     @State private var showNicknameSetup = false
     @State private var showTutorial = false
     @State private var user: User?
+    @State private var showErrorPopup = false
+    @State private var errorMessage: String = ""
     @Environment(\.scenePhase) private var scenePhase
 
     private let userRepository: UserRepository = FileManagerUserRepository()
@@ -53,6 +56,9 @@ struct SoloDeveloperTrainingApp: App {
             .animation(.easeOut(duration: Constant.Animation.duration), value: hasSeenIntro)
             .overlay {
                 nicknameSetupOverlay
+            }
+            .overlay {
+                errorPopupOverlay
             }
             .fullScreenCover(isPresented: $showTutorial) {
                 TutorialView(isPresented: $showTutorial) {
@@ -92,7 +98,10 @@ private extension SoloDeveloperTrainingApp {
                     }
                 }
             } catch {
-                print("Failed to load user: \(error)")
+                await MainActor.run {
+                    self.errorMessage = "사용자 데이터를 불러오는데 실패했습니다.\n\(error.localizedDescription)"
+                    self.showErrorPopup = true
+                }
             }
         }
     }
@@ -104,7 +113,10 @@ private extension SoloDeveloperTrainingApp {
             do {
                 try await userRepository.save(user)
             } catch {
-                print("Failed to save user: \(error)")
+                await MainActor.run {
+                    self.errorMessage = "사용자 데이터를 저장하는데 실패했습니다.\n\(error.localizedDescription)"
+                    self.showErrorPopup = true
+                }
             }
         }
     }
@@ -130,6 +142,36 @@ private extension SoloDeveloperTrainingApp {
                         showTutorial = true
                     }
                 )
+                .padding(.horizontal, Constant.Padding.nicknamePopupHorizontal)
+            }
+        }
+    }
+
+    @ViewBuilder
+    var errorPopupOverlay: some View {
+        if showErrorPopup {
+            ZStack {
+                Color.black.opacity(Constant.Opacity.overlay)
+                    .ignoresSafeArea()
+
+                Popup(title: "오류") {
+                    VStack(spacing: 0) {
+                        Text(errorMessage)
+                            .textStyle(.body)
+                            .foregroundColor(.black)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, Constant.Padding.errorPopupVertical)
+
+                        HStack(spacing: 0) {
+                            Spacer()
+                            MediumButton(title: "확인", isFilled: true) {
+                                showErrorPopup = false
+                            }
+                            Spacer()
+                        }
+                    }
+                }
                 .padding(.horizontal, Constant.Padding.nicknamePopupHorizontal)
             }
         }
