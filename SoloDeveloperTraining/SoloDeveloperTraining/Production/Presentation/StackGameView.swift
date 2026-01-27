@@ -14,7 +14,7 @@ private enum Constant {
 
     enum Padding {
         static let horizontal: CGFloat = 16
-        static let toolBarBottom: CGFloat = 14
+        static let toolBarBottom: CGFloat = 10
     }
 }
 
