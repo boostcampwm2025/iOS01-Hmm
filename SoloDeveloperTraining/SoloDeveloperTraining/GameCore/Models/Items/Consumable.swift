@@ -69,9 +69,9 @@ enum ConsumableType {
     var buffMultiplier: Double {
         switch self {
         case .coffee:
-            return 1.5
+            return Policy.Consumable.Coffee.buffMultiplier
         case .energyDrink:
-            return 2.0
+            return Policy.Consumable.EnergyDrink.buffMultiplier
         }
     }
 
@@ -79,9 +79,9 @@ enum ConsumableType {
     var duration: Int {
         switch self {
         case .coffee:
-            return 30
+            return Policy.Consumable.Coffee.duration
         case .energyDrink:
-            return 15
+            return Policy.Consumable.EnergyDrink.duration
         }
     }
 
@@ -89,9 +89,9 @@ enum ConsumableType {
     var cost: Cost {
         switch self {
         case .coffee:
-            return .init(diamond: 5)
+            return .init(diamond: Policy.Consumable.Coffee.priceDiamond)
         case .energyDrink:
-            return .init(diamond: 10)
+            return .init(diamond: Policy.Consumable.EnergyDrink.priceDiamond)
         }
     }
 
