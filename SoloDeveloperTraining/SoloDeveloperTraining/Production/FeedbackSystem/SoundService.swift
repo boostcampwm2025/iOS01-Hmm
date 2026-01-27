@@ -17,21 +17,19 @@ final class SoundService {
     static let shared = SoundService()
 
     private var player: AVAudioPlayer?
+    private let localStorage: KeyValueLocalStorage = UserDefaultStorage()
 
     var isEnabled: Bool {
         didSet {
-            UserDefaults.standard
-                .set(isEnabled, forKey: Constant.soundEnabledKey)
+            localStorage.set(key: isEnabled, value: Constant.soundEnabledKey)
         }
     }
 
     private init() {
         // 저장된 키가 없을 경우 기본값 등록
-        UserDefaults.standard
-            .register(defaults: [Constant.soundEnabledKey: true])
+        localStorage.register(defaults: [Constant.soundEnabledKey: true])
 
-        self.isEnabled = UserDefaults.standard
-            .bool(forKey: Constant.soundEnabledKey)
+        self.isEnabled = localStorage.bool(key: Constant.soundEnabledKey)
 
         try? AVAudioSession.sharedInstance().setCategory(
             .playback,    // 무음모드 무시
