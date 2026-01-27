@@ -11,11 +11,8 @@ import Observation
 /// 버프 시스템 관리 클래스
 @Observable
 final class BuffSystem {
-    /// 감소 주기 (초 단위)
-    private let decreaseInterval: TimeInterval = 1
-
-    /// 각 버프의 남은 시간 (초)
-    private var durations: [ConsumableType: Int] = [:]
+    /// 각 버프의 종료 시각
+    private var endTimes: [ConsumableType: TimeInterval] = [:]
 
     /// 각 버프의 배수
     private var multipliers: [ConsumableType: Double] = [:]
@@ -26,65 +23,92 @@ final class BuffSystem {
     /// 버프 시스템 일시정지 여부
     private(set) var isPaused: Bool = false
 
-    /// 버프 시스템 자체의 실행 중 여부 (하나라도 버프가 활성화되어 있으면 true)
+    /// pause 시작 시각
+    private var pauseStartTime: TimeInterval?
+
+    // MARK: - Computed Properties
+
+    /// 하나라도 활성화된 버프가 있는지
     var isRunning: Bool {
-        !durations.isEmpty
+        !endTimes.isEmpty
     }
 
     /// 전체 버프 배수 (모든 활성화된 버프의 배수를 곱한 값)
     var multiplier: Double {
-        if multipliers.isEmpty {
-            return 1.0
-        }
-        return multipliers.values.reduce(1.0) { $0 * $1 }
+        multipliers.values.reduce(1.0, *)
     }
 
     /// 커피 버프 남은 시간 (초)
     var coffeeDuration: Int {
-        durations[.coffee] ?? 0
+        remainingDuration(for: .coffee)
     }
 
     /// 에너지 드링크 버프 남은 시간 (초)
     var energyDrinkDuration: Int {
-        durations[.energyDrink] ?? 0
+        remainingDuration(for: .energyDrink)
     }
 
-    /// 남은 버프 시간 (초) - 가장 긴 시간을 반환 (하위 호환성)
+    /// 가장 긴 버프 남은 시간 (하위 호환)
     var duration: Int {
         max(coffeeDuration, energyDrinkDuration)
     }
 
+    // MARK: - Public Methods
+
     /// 소비 아이템 사용
     func useConsumableItem(type: ConsumableType) {
-        // 버프 정보 설정
-        durations[type] = type.duration
+        let now = currentTime
+        endTimes[type] = now + TimeInterval(type.duration)
         multipliers[type] = type.buffMultiplier
-
-        // 타이머 시작
         startTimer()
     }
 
     /// 버프 시스템 종료
     func stop() {
-        // 타이머 정리
         stopTimer()
-        durations.removeAll()
+        endTimes.removeAll()
         multipliers.removeAll()
         isPaused = false
+        pauseStartTime = nil
     }
 
     /// 버프 시스템 일시정지
     func pause() {
-        guard isRunning && !isPaused else { return }
+        guard isRunning, !isPaused else { return }
         isPaused = true
+        pauseStartTime = currentTime
         stopTimer()
     }
 
     /// 버프 시스템 재개
     func resume() {
-        guard isRunning && isPaused else { return }
+        guard isRunning, isPaused, let pauseStartTime else { return }
+
+        let now = currentTime
+        let pausedDuration = now - pauseStartTime
+
+        // 모든 버프의 종료 시각을 pause된 시간만큼 뒤로 밀기
+        for type in endTimes.keys {
+            endTimes[type]! += pausedDuration
+        }
+
+        self.pauseStartTime = nil
         isPaused = false
         startTimer()
+    }
+
+    // MARK: - Private Helpers
+
+    /// 현재 시간 (절대)
+    private var currentTime: TimeInterval {
+        Date.timeIntervalSinceReferenceDate
+    }
+
+    /// 남은 시간 계산 (초)
+    private func remainingDuration(for type: ConsumableType) -> Int {
+        guard let endTime = endTimes[type] else { return 0 }
+        let remaining = endTime - currentTime
+        return max(0, Int(ceil(remaining)))
     }
 
     /// 타이머 시작
@@ -92,7 +116,7 @@ final class BuffSystem {
         guard timer == nil else { return }
 
         timer = Timer.scheduledTimer(
-            withTimeInterval: decreaseInterval,
+            withTimeInterval: 1,
             repeats: true
         ) { [weak self] _ in
             self?.tick()
@@ -105,30 +129,22 @@ final class BuffSystem {
         timer = nil
     }
 
-    /// 1초마다 각 버프의 정보를 순회하며 시간 감소
+    /// 1초 주기로 종료된 버프 정리
     private func tick() {
-        let keys = Array(durations.keys)
+        let now = currentTime
 
-        for type in keys {
-            guard let duration = durations[type] else { continue }
-
-            let newDuration = duration - 1
-
-            if newDuration <= 0 {
-                stopBuff(for: type)
-            } else {
-                durations[type] = newDuration
-            }
+        for (type, endTime) in endTimes where now >= endTime {
+            stopBuff(for: type)
         }
 
-        if durations.isEmpty {
+        if endTimes.isEmpty {
             stopTimer()
         }
     }
 
-    /// 특정 버프 종료 (제거)
+    /// 특정 버프 제거
     private func stopBuff(for type: ConsumableType) {
-        durations.removeValue(forKey: type)
+        endTimes.removeValue(forKey: type)
         multipliers.removeValue(forKey: type)
     }
 }
