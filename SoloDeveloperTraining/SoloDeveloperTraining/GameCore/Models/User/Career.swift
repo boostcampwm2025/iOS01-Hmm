@@ -78,25 +78,25 @@ enum Career: String, CaseIterable {
     var requiredWealth: Int {
         switch self {
         case .unemployed:
-            return 0
+            return Policy.Career.unemployed
         case .laptopOwner:
-            return 1_000
+            return Policy.Career.laptopOwner
         case .aspiringDeveloper:
-            return 1_500
+            return Policy.Career.aspiringDeveloper
         case .juniorDeveloper:
-            return 10_000
+            return Policy.Career.juniorDeveloper
         case .normalDeveloper:
-            return 50_000
+            return Policy.Career.normalDeveloper
         case .nightOwlDeveloper:
-            return 200_000
+            return Policy.Career.nightOwlDeveloper
         case .skilledDeveloper:
-            return 1_000_000
+            return Policy.Career.skilledDeveloper
         case .famousDeveloper:
-            return 5_000_000
+            return Policy.Career.famousDeveloper
         case .allRounderDeveloper:
-            return 20_000_000
+            return Policy.Career.allRounderDeveloper
         case .worldClassDeveloper:
-            return 100_000_000
+            return Policy.Career.worldClassDeveloper
         }
     }
 
