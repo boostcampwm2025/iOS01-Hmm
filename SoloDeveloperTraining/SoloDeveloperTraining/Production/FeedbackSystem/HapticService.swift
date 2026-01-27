@@ -14,21 +14,19 @@ private enum Constant {
 @Observable
 final class HapticService {
     static let shared = HapticService()
+    private let localStorage: KeyValueLocalStorage = UserDefaultStorage()
 
     var isEnabled: Bool {
         didSet {
-            UserDefaults.standard
-                .set(isEnabled, forKey: Constant.hapticEnabledKey)
+            localStorage.set(key: Constant.hapticEnabledKey, value: isEnabled)
         }
     }
 
     private init() {
         // 저장된 키가 없을 경우 기본값 등록
-        UserDefaults.standard
-            .register(defaults: [Constant.hapticEnabledKey: true])
+        localStorage.register(defaults: [Constant.hapticEnabledKey: true])
 
-        self.isEnabled = UserDefaults.standard
-            .bool(forKey: Constant.hapticEnabledKey)
+        self.isEnabled = localStorage.bool(key: Constant.hapticEnabledKey)
     }
 
     func toggle() {
