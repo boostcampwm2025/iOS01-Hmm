@@ -53,6 +53,13 @@ struct StackGameView: View {
             .onAppear {
                 setupGameCallbacks(with: geometry)
             }
+            .pauseGameStyle(onLeave: {
+                handleCloseButton()
+            }, onPause: {
+                scene.pauseGame()
+            }, onResume: {
+                scene.resumeGame()
+            })
         }
     }
 }

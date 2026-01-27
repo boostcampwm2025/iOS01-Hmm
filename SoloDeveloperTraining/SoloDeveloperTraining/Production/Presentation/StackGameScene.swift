@@ -41,6 +41,8 @@ final class StackGameScene: SKScene {
     private var currentHeight: CGFloat = 0
     /// 블록 배치 처리 중 여부 (UI 인터랙션 차단용)
     private var isProcessing = false
+    /// 예약된 작업들 (일시정지 시 취소용)
+    private var pendingWorkItems: [DispatchWorkItem] = []
 
     var onBlockDropped: ((Int) -> Void)
 
@@ -63,7 +65,7 @@ final class StackGameScene: SKScene {
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard currentBlockView != nil, !isProcessing else { return }
+        guard currentBlockView != nil, !isProcessing, !isPaused else { return }
         dropBlock()
     }
 
@@ -114,6 +116,63 @@ final class StackGameScene: SKScene {
         physicsWorld.speed = 0
     }
 
+    /// 게임 Scene 일시정지
+    func pauseGame() {
+        stackGame.pauseGame()
+        physicsWorld.speed = 0
+        currentBlockView?.stopMoving()
+        cancelAllPendingWork()
+    }
+
+    /// 게임 Scene 재개
+    func resumeGame() {
+        stackGame.resumeGame()
+        physicsWorld.speed = 1
+
+        guard let oldBlockView = currentBlockView else {
+            spawnBlock()
+            return
+        }
+
+        // 이전 블록의 타입과 크기 저장
+        let blockType = oldBlockView.blockType
+        let blockSize = oldBlockView.size
+
+        // 이전 블록 제거
+        oldBlockView.removeFromParent()
+
+        // 새 블록 생성 위치 계산
+        let spawnY = (camera?.position.y ?? size.height / 2) + size.height / 2 - (
+            Constant.Offset.spawnYOffset + blockSize.height / 2)
+        let leftEdge = blockSize.width / 2
+        let rightEdge = size.width - blockSize.width / 2
+
+        // 새 블록 생성
+        let newBlockView = BlockItem(type: blockType)
+        newBlockView.position = CGPoint(x: leftEdge, y: spawnY)
+        newBlockView.startMoving(distance: rightEdge - leftEdge)
+
+        self.currentBlockView = newBlockView
+        addChild(newBlockView)
+    }
+
+    /// 지연 작업 예약 (일시정지 시 취소 가능)
+    private func scheduleWork(after delay: TimeInterval, work: @escaping () -> Void) {
+        let workItem = DispatchWorkItem { [weak self] in
+            guard let self = self, !self.isPaused else { return }
+            work()
+            // 배열에서 제거 로직 제거 (참조 비교 문제)
+        }
+        pendingWorkItems.append(workItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
+    }
+
+    /// 예약된 모든 작업 취소
+    private func cancelAllPendingWork() {
+        pendingWorkItems.forEach { $0.cancel() }
+        pendingWorkItems.removeAll()
+    }
+
     /// 게임 시작 시 가장 아래에 배치되는 초기 블록을 생성합니다.
     /// - 고정된 물리 바디를 가진 파란색 블록 생성
     /// - 게임 코어에 초기 블록 등록
@@ -134,6 +193,9 @@ final class StackGameScene: SKScene {
     /// - 카메라 기준 상단 위치에서 생성
     /// - 좌우 이동 애니메이션 시작
     private func spawnBlock() {
+        // 일시정지 상태에서는 동작을 막음
+        guard !isPaused else { return }
+
         isProcessing = false
 
         let blockType = BlockType.allCases.randomElement() ?? .blue
@@ -175,7 +237,8 @@ final class StackGameScene: SKScene {
     private func evaluateBlock() {
         guard
             let block = currentBlockView,
-            let previousBlock = stackGame.previousBlock
+            let previousBlock = stackGame.previousBlock,
+            !isPaused
         else { return }
 
         // StackGame의 previousBlock 정보를 사용해 목표 Y 계산
@@ -187,7 +250,7 @@ final class StackGameScene: SKScene {
             checkAlignmentAndHandle(targetY: targetY)
         } else {
             // 아직 도달하지 않았으면 재확인
-            DispatchQueue.main.asyncAfter(deadline: .now() + Constant.Time.evaluationCheckInterval) { [weak self] in
+            scheduleWork(after: Constant.Time.evaluationCheckInterval) { [weak self] in
                 self?.evaluateBlock()
             }
         }
@@ -242,7 +305,8 @@ final class StackGameScene: SKScene {
             onBlockDropped(stackGame.placeBombSuccess())
             // 실패 사운드 재생
             SoundService.shared.trigger(.failure)
-            DispatchQueue.main.asyncAfter(deadline: .now() + Constant.Time.bombRemovalDelay) { [weak self] in
+
+            scheduleWork(after: Constant.Time.bombRemovalDelay) { [weak self] in
                 block.removeFromParent()
                 self?.spawnBlock()
             }
@@ -260,7 +324,7 @@ final class StackGameScene: SKScene {
                 camera.run(moveCamera)
             }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + Constant.Time.nextBlockSpawnDelay) { [weak self] in
+            scheduleWork(after: Constant.Time.nextBlockSpawnDelay) { [weak self] in
                 self?.spawnBlock()
             }
         }
@@ -288,7 +352,7 @@ final class StackGameScene: SKScene {
         }
 
         // 일정 시간 후 블록 제거 및 다음 블록 생성
-        DispatchQueue.main.asyncAfter(deadline: .now() + Constant.Time.failedBlockRemovalDelay) { [weak self] in
+        scheduleWork(after: Constant.Time.failedBlockRemovalDelay) { [weak self] in
             block.removeFromParent()
             self?.spawnBlock()
         }

@@ -35,7 +35,6 @@ final class StackGame: Game {
     var screenSize: CGSize = .init(width: 0, height: 0)
 
     private(set) var score: Int = 0
-    private(set) var isPlaying: Bool = false
     private(set) var blocks: [StackBlock] = []
     private(set) var currentBlock: StackBlock?
     private(set) var previousBlock: StackBlock?
@@ -47,7 +46,6 @@ final class StackGame: Game {
 
     func startGame() {
         feverSystem.start()
-        isPlaying = true
         score = 0
         blocks = []
         currentBlock = nil
@@ -57,7 +55,6 @@ final class StackGame: Game {
     func stopGame() {
         feverSystem.stop()
         buffSystem.stop()
-        isPlaying = false
     }
 
     /// 게임 일시정지 (피버, 버프 시스템 보존)
