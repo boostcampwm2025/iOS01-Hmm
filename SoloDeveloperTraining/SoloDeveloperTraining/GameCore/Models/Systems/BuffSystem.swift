@@ -12,7 +12,7 @@ import Observation
 @Observable
 final class BuffSystem {
     /// 감소 주기 (초 단위)
-    private let decreaseInterval: TimeInterval = 1
+    private let decreaseInterval: TimeInterval = Policy.System.Buff.decreaseInterval
 
     /// 각 버프의 남은 시간 (초)
     private var durations: [ConsumableType: Int] = [:]
