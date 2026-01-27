@@ -16,11 +16,11 @@ private enum Constant {
 final class DodgeGameCore {
     // MARK: - 게임 설정
     /// 게임 업데이트 주사율 (120fps)
-    private let updateInterval: TimeInterval = 1.0 / 120.0
+    private let updateInterval: TimeInterval = 1.0 / Policy.Game.Dodge.updateFPS
     /// 낙하물 생성 간격 (초)
-    private let spawnInterval: TimeInterval = 0.3
+    private let spawnInterval: TimeInterval = Policy.Game.Dodge.spawnInterval
     /// 낙하 속도 (120fps 기준)
-    private let fallSpeed: CGFloat = 3
+    private let fallSpeed: CGFloat = Policy.Game.Dodge.fallSpeed
     /// 플레이어 크기
     private let playerSize: CGSize = CGSize(width: 40, height: 40)
 
@@ -86,14 +86,13 @@ final class DodgeGameCore {
 // MARK: - Private Methods
 private extension DodgeGameCore {
     /// 새로운 낙하물 생성
-    /// - 생성 확률: smallGold 50%, largeGold 30%, bug 20%
     func spawnItem() {
         // 랜덤 타입 생성
         let randomValue = Int.random(in: 0..<100)
         let type: DropItem.DropItemType
-        if randomValue < 1 {
+        if randomValue < Policy.Game.Dodge.largeGoldSpawnRate {
             type = .largeGold
-        } else if randomValue < 5 {
+        } else if randomValue < Policy.Game.Dodge.largeGoldSpawnRate + Policy.Game.Dodge.smallGoldSpawnRate {
             type = .smallGold
         } else {
             type = .bug
