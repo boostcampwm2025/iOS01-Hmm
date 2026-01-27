@@ -120,6 +120,8 @@ final class StackGameScene: SKScene {
     func pauseGame() {
         stackGame.pauseGame()
         physicsWorld.speed = 0
+        isProcessing = true
+
         currentBlockView?.stopMoving()
         cancelAllPendingWork()
     }
@@ -128,6 +130,7 @@ final class StackGameScene: SKScene {
     func resumeGame() {
         stackGame.resumeGame()
         physicsWorld.speed = 1
+        isProcessing = false
 
         guard let oldBlockView = currentBlockView else {
             spawnBlock()
