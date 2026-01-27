@@ -8,19 +8,29 @@
 import Foundation
 
 struct UserDefaultsStorage: KeyValueLocalStorage {
-    func set(key: String, value: Any) {
-        UserDefaults.standard.set(value, forKey: key)
-    }
+    private let userDefaults: UserDefaults
 
-    func integer(key: String) -> Int {
-        return UserDefaults.standard.integer(forKey: key)
-    }
-    
-    func bool(key: String) -> Bool {
-        return UserDefaults.standard.bool(forKey: key)
+    init(userDefaults: UserDefaults = .standard) {
+        self.userDefaults = userDefaults
     }
 
     func register(defaults: [String: Any]) {
-        UserDefaults.standard.register(defaults: defaults)
+        userDefaults.register(defaults: defaults)
     }
- }
+
+    func set(key: String, value: Any) {
+        userDefaults.set(value, forKey: key)
+    }
+
+    func integer(key: String) -> Int {
+        return userDefaults.integer(forKey: key)
+    }
+    
+    func bool(key: String) -> Bool {
+        return userDefaults.bool(forKey: key)
+    }
+
+    func any(key: String) -> Any? {
+        return userDefaults.object(forKey: key)
+    }
+}
