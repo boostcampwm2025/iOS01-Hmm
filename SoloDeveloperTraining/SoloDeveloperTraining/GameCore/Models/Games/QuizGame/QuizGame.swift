@@ -9,12 +9,6 @@ import Foundation
 import Observation
 
 private enum Constant {
-    /// 게임당 출제되는 문제 수
-    static let questionsPerGame = 3
-    /// 문제당 제한 시간 (초)
-    static let secondsPerQuestion = 60
-    /// 정답당 지급되는 다이아 개수
-    static let diamondsPerCorrectAnswer = 5
     /// 퀴즈 데이터 파일명 (확장자 제외)
     static let questionLoadFileName = "QuizData"
 }
@@ -46,7 +40,7 @@ final class QuizGame {
     private var questionTimer: Timer?
     /// 현재 문제의 남은 시간 (초)
     /// - 매 초마다 1씩 감소
-    private(set) var remainingSeconds: Int = Constant.secondsPerQuestion
+    private(set) var remainingSeconds: Int = Policy.Game.Quiz.secondsPerQuestion
     /// 게임의 현재 진행 단계
     private(set) var phase: QuizGamePhase = .loading
     /// 현재 세션에서 맞춘 문제 개수
@@ -55,11 +49,11 @@ final class QuizGame {
     /// 모든 상태 정보
     var state: QuizGameState {
         QuizGameState(
-            totalDiamondsEarned: correctAnswersCount * Constant.diamondsPerCorrectAnswer,
-            progressText: "\(currentQuestionIndex + 1)/\(Constant.questionsPerGame)",
+            totalDiamondsEarned: correctAnswersCount * Policy.Game.Quiz.diamondsPerCorrect,
+            progressText: "\(currentQuestionIndex + 1)/\(Policy.Game.Quiz.questionsPerGame)",
             nextButtonTitle: currentQuestionIndex >= currentGameQuestions.count - 1 ? "보상받기" : "다음으로",
             isSubmitEnabled: selectedAnswerIndex != nil && phase == .questionInProgress,
-            timerProgress: Double(remainingSeconds) / Double(Constant.secondsPerQuestion),
+            timerProgress: Double(remainingSeconds) / Double(Policy.Game.Quiz.secondsPerQuestion),
             phase: phase,
             currentQuestion: currentQuestion,
             selectedAnswerIndex: selectedAnswerIndex,
@@ -86,7 +80,7 @@ final class QuizGame {
         // 랜덤하게 3문제 선택
         currentGameQuestions = QuizDataLoader.selectRandomQuestions(
             from: allQuestions,
-            count: Constant.questionsPerGame
+            count: Policy.Game.Quiz.questionsPerGame
         )
 
         // 게임 상태 초기화
@@ -178,7 +172,7 @@ private extension QuizGame {
         // 상태 초기화
         selectedAnswerIndex = nil
         currentAnswerResult = nil
-        remainingSeconds = Constant.secondsPerQuestion
+        remainingSeconds = Policy.Game.Quiz.secondsPerQuestion
         phase = .questionInProgress
 
         // 타이머 시작
@@ -215,7 +209,7 @@ private extension QuizGame {
         stopTimer()
 
         // 다이아 보상 지급 (정답당 5개)
-        let diamondsToAward = correctAnswersCount * Constant.diamondsPerCorrectAnswer
+        let diamondsToAward = correctAnswersCount * Policy.Game.Quiz.diamondsPerCorrect
         user.wallet.addDiamond(diamondsToAward)
 
         phase = .completed
