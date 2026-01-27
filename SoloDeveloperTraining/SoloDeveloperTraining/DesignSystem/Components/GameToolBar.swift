@@ -9,7 +9,7 @@ import SwiftUI
 
 private enum Constant {
     enum Size {
-        static let closeButton = CGSize(width: 24, height: 24)
+        static let closeButton = CGSize(width: 31, height: 31)
         static let coffeeIcon = CGSize(width: 22, height: 22)
         static let energyDrinkIcon = CGSize(width: 20, height: 22)
     }
