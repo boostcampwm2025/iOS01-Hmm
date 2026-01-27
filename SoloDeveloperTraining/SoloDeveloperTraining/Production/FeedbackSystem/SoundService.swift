@@ -17,7 +17,7 @@ final class SoundService {
     static let shared = SoundService()
 
     private var player: AVAudioPlayer?
-    private let localStorage: KeyValueLocalStorage = UserDefaultStorage()
+    private let localStorage: KeyValueLocalStorage = UserDefaultsStorage()
 
     var isEnabled: Bool {
         didSet {

@@ -14,7 +14,7 @@ private enum Constant {
 @Observable
 final class HapticService {
     static let shared = HapticService()
-    private let localStorage: KeyValueLocalStorage = UserDefaultStorage()
+    private let localStorage: KeyValueLocalStorage = UserDefaultsStorage()
 
     var isEnabled: Bool {
         didSet {
