@@ -29,7 +29,7 @@ private enum Constant {
 struct TutorialPage {
     let title: String
     let description: String
-    let imageName: String?
+    let imageName: ImageResource
 }
 
 struct TutorialPageView: View {
@@ -37,34 +37,19 @@ struct TutorialPageView: View {
 
     var body: some View {
         VStack(spacing: Constant.Spacing.content) {
-            Spacer()
-            imageView
             textGroup
-            Spacer()
+            imageView
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 }
 
 private extension TutorialPageView {
-    @ViewBuilder
     var imageView: some View {
-        if let imageName = page.imageName {
-            Image(imageName)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(maxWidth: Constant.Size.imageMaxWidth, maxHeight: Constant.Size.imageMaxHeight)
-        } else {
-            placeholderView
-        }
-    }
-
-    var placeholderView: some View {
-        RoundedRectangle(cornerRadius: Constant.Size.cornerRadius)
-            .fill(AppColors.gray200)
-            .frame(width: Constant.Size.placeholderWidth, height: Constant.Size.placeholderHeight)
-            .overlay {
-                Text("이미지")
-            }
+        Image(page.imageName)
+            .resizable()
+            .scaledToFit()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     var textGroup: some View {
