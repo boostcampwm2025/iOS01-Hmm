@@ -16,18 +16,20 @@ private enum Constant {
 
 struct TapGameView: View {
     // MARK: - Properties
-    /// 의존 게임
-    let tapGame: TapGame
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
+    @Binding var isGameViewDisappeared: Bool
 
     // MARK: - State
+    /// 의존 게임
+    @State private var tapGame: TapGame
     /// 터치한 위치에 표시될 EffectLabel들의 위치와 값
     @State private var effectLabels: [EffectLabelData] = []
 
     init(
         user: User,
         isGameStarted: Binding<Bool>,
+        isGameViewDisappeared: Binding<Bool>,
         animationSystem: CharacterAnimationSystem?
     ) {
         let tapGame = TapGame(
@@ -35,9 +37,10 @@ struct TapGameView: View {
             buffSystem: BuffSystem(),
             animationSystem: animationSystem
         )
-        tapGame.startGame()
-        self.tapGame = tapGame
+        self._tapGame = State(initialValue: tapGame)
         self._isGameStarted = isGameStarted
+        self._isGameViewDisappeared = isGameViewDisappeared
+        self.tapGame.startGame()
     }
 
     var body: some View {
@@ -48,13 +51,12 @@ struct TapGameView: View {
                 // 터치 가능한 게임 영역
                 tapAreaSection(geometry: geometry)
             }
-        }.pauseGameStyle(onLeave: {
-            handleCloseButton()
-        }, onPause: {
-            tapGame.pauseGame()
-        }, onResume: {
-            tapGame.resumeGame()
-        })
+        }.pauseGameStyle(
+            isGameViewDisappeared: $isGameViewDisappeared,
+            onLeave: { handleCloseButton() },
+            onPause: { tapGame.pauseGame() },
+            onResume: { tapGame.resumeGame()}
+        )
     }
 }
 
@@ -157,6 +159,8 @@ private extension TapGameView {
 
 #Preview {
     @Previewable @State var isGameStarted: Bool = true
+    @Previewable @State var isGameViewDisappeared: Bool = true
+
     let user = User(
         nickname: "Preview User",
         wallet: Wallet(gold: 10000, diamond: 50),
@@ -173,5 +177,10 @@ private extension TapGameView {
         ]
     )
 
-    TapGameView(user: user, isGameStarted: $isGameStarted, animationSystem: nil)
+    TapGameView(
+        user: user,
+        isGameStarted: $isGameStarted,
+        isGameViewDisappeared: $isGameViewDisappeared,
+        animationSystem: nil
+    )
 }

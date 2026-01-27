@@ -29,6 +29,7 @@ struct GamePauseWrapper: ViewModifier {
     @Environment(\.scenePhase) private var scenePhase
     @State private var isPaused: Bool = false
 
+    @Binding var isGameViewDisappeared: Bool
     let onLeave: () -> Void
     let onPause: () -> Void
     let onResume: () -> Void
@@ -37,7 +38,6 @@ struct GamePauseWrapper: ViewModifier {
         ZStack {
             content
                 .blur(radius: isPaused ? Constant.blurRadius : 0)
-
             if isPaused {
                 pauseOverlay
                     .transition(.opacity.combined(with: .scale(scale: 0.95)))
@@ -45,6 +45,11 @@ struct GamePauseWrapper: ViewModifier {
         }
         .onChange(of: scenePhase) { oldPhase, newPhase in
             handleScenePhase(oldPhase: oldPhase, newPhase: newPhase)
+        }
+        .onChange(of: isGameViewDisappeared) { _, newValue in
+            if newValue {
+                handleGameViewDisappeard()
+            }
         }
     }
 }
@@ -96,11 +101,15 @@ private extension GamePauseWrapper {
 
 // MARK: - Actions
 private extension GamePauseWrapper {
+    func handleGameViewDisappeard() {
+        isPaused = true
+        onPause()
+    }
+
     func handleScenePhase(oldPhase: ScenePhase, newPhase: ScenePhase) {
         // 앱이 비활성 상태로 갈 때 즉시 일시정지
         if newPhase != .active {
-            isPaused = true
-            onPause()
+            handleGameViewDisappeard()
         }
     }
 

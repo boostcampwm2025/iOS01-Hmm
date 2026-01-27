@@ -34,15 +34,18 @@ struct WorkSelectedView: View {
     let animationSystem: CharacterAnimationSystem?
     @State var selectedIndex: Int = 0
     @Binding var isGameStarted: Bool
+    @Binding var isGameViewDisappeared: Bool
 
     init(
         user: User,
         animationSystem: CharacterAnimationSystem?,
-        isGameStarted: Binding<Bool>
+        isGameStarted: Binding<Bool>,
+        isGameViewDisappeared: Binding<Bool>,
     ) {
         self.user = user
         self.animationSystem = animationSystem
         self._isGameStarted = isGameStarted
+        self._isGameViewDisappeared = isGameViewDisappeared
     }
 
     var body: some View {
@@ -131,13 +134,18 @@ private extension WorkSelectedView {
     func gameView(for index: Int) -> some View {
         switch index {
         case 0:
-            TapGameView(user: user, isGameStarted: $isGameStarted, animationSystem: animationSystem)
+            TapGameView(
+                user: user,
+                isGameStarted: $isGameStarted,
+                isGameViewDisappeared: $isGameViewDisappeared,
+                animationSystem: animationSystem
+            )
         case 1:
-            LanguageGameView(user: user, isGameStarted: $isGameStarted, animationSystem: animationSystem)
+            LanguageGameView(user: user, isGameStarted: $isGameStarted, isGameViewDisappeared: $isGameViewDisappeared, animationSystem: animationSystem)
         case 2:
-            DodgeGameView(user: user, isGameStarted: $isGameStarted, animationSystem: animationSystem)
+            DodgeGameView(user: user, isGameStarted: $isGameStarted, isGameViewDisappeared: $isGameViewDisappeared, animationSystem: animationSystem)
         case 3:
-            StackGameView(user: user, isGameStarted: $isGameStarted, animationSystem: animationSystem)
+            StackGameView(user: user, isGameStarted: $isGameStarted, isGameViewDisappeared: $isGameViewDisappeared, animationSystem: animationSystem)
         default:
             EmptyView()
         }
@@ -174,6 +182,7 @@ private extension WorkSelectedView {
 
 #Preview {
     @Previewable @State var isGameStarted = false
+    @Previewable @State var isGameViewDisappeared = false
 
     let user = User(
         nickname: "Test",
@@ -185,6 +194,7 @@ private extension WorkSelectedView {
     WorkSelectedView(
         user: user,
         animationSystem: nil,
-        isGameStarted: $isGameStarted
+        isGameStarted: $isGameStarted,
+        isGameViewDisappeared: $isGameViewDisappeared,
     )
 }

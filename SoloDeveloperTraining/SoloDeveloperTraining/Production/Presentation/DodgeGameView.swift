@@ -41,13 +41,16 @@ struct DodgeGameView: View {
     @State private var isGamePaused: Bool = false
 
     @Binding var isGameStarted: Bool
+    @Binding var isGameViewDisappeared: Bool
 
     init(
         user: User,
         isGameStarted: Binding<Bool>,
+        isGameViewDisappeared: Binding<Bool>,
         animationSystem: CharacterAnimationSystem? = nil
     ) {
         self._isGameStarted = isGameStarted
+        self._isGameViewDisappeared = isGameViewDisappeared
         self.game = DodgeGame(
             user: user,
             gameAreaSize: CGSize.zero,
@@ -70,15 +73,16 @@ struct DodgeGameView: View {
             .onDisappear {
                 game.stopGame()
             }
-        }.pauseGameStyle(onLeave: {
-            handleCloseButton()
-        }, onPause: {
-            isGamePaused = true
-            game.pauseGame()
-        }, onResume: {
-            isGamePaused = false
-            game.resumeGame()
-        })
+        }.pauseGameStyle(
+            isGameViewDisappeared: $isGameViewDisappeared,
+            onLeave: { handleCloseButton() },
+            onPause: {
+                isGamePaused = true
+                game.pauseGame()
+            }, onResume: {
+                isGamePaused = false
+                game.resumeGame()
+            })
     }
 }
 
@@ -221,6 +225,7 @@ private extension DodgeGameView {
 
 #Preview {
     @Previewable @State var isGameStarted = true
+    @Previewable @State var isGameViewDisappeared = true
 
     let wallet = Wallet(gold: 1000, diamond: 0)
     let inventory = Inventory(
@@ -241,16 +246,20 @@ private extension DodgeGameView {
             .init(key: SkillKey(game: .dodge, tier: .beginner), level: 1000)
         ]
     )
-
+    
     GeometryReader { geometry in
         VStack(spacing: 0) {
             Spacer()
                 .frame(maxHeight: .infinity)
                 .background(Color.gray.opacity(0.2))
 
-            DodgeGameView(user: user, isGameStarted: $isGameStarted)
-                .ignoresSafeArea()
-                .frame(height: geometry.size.height / 2 - Constant.Size.ground)
+            DodgeGameView(
+                user: user,
+                isGameStarted: $isGameStarted,
+                isGameViewDisappeared: $isGameViewDisappeared
+            )
+            .ignoresSafeArea()
+            .frame(height: geometry.size.height / 2 - Constant.Size.ground)
         }
     }
 }

@@ -19,21 +19,25 @@ private enum Constant {
 }
 
 struct StackGameView: View {
-    let stackGame: StackGame
+    @State private var stackGame: StackGame
     @State private var scene: StackGameScene
 
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
+    @Binding var isGameViewDisappeared: Bool
 
     @State private var effectLabels: [EffectLabelData] = []
 
     init(
         user: User,
         isGameStarted: Binding<Bool>,
+        isGameViewDisappeared: Binding<Bool>,
         animationSystem: CharacterAnimationSystem? = nil
     ) {
-        self.stackGame = StackGame(user: user, animationSystem: animationSystem)
+        let stackGame = StackGame(user: user, animationSystem: animationSystem)
+        self._stackGame = State(initialValue: stackGame)
         self._isGameStarted = isGameStarted
+        self._isGameViewDisappeared = isGameViewDisappeared
         let initialScene = StackGameScene(
             stackGame: stackGame,
             onBlockDropped: { _ in }
@@ -54,13 +58,12 @@ struct StackGameView: View {
             .onAppear {
                 setupGameCallbacks(with: geometry)
             }
-            .pauseGameStyle(onLeave: {
-                handleCloseButton()
-            }, onPause: {
-                scene.pauseGame()
-            }, onResume: {
-                scene.resumeGame()
-            })
+            .pauseGameStyle(
+                isGameViewDisappeared: $isGameViewDisappeared,
+                onLeave: { handleCloseButton() },
+                onPause: { scene.pauseGame() },
+                onResume: { scene.resumeGame()}
+            )
         }
     }
 }

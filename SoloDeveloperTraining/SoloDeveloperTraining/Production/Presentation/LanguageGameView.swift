@@ -32,7 +32,7 @@ private enum Constant {
 struct LanguageGameView: View {
     // MARK: Properties
     let user: User
-    let game: LanguageGame
+
     /// 게임에 사용되는 언어 타입 목록
     private let languageTypeList: [LanguageType] = [
         .swift,
@@ -44,6 +44,10 @@ struct LanguageGameView: View {
     // MARK: State Properties
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
+    @Binding var isGameViewDisappeared: Bool
+
+    /// 상태를 유지
+    @State private var game: LanguageGame
 
     /// 획득한 골드를 표시하기 위한 효과 라벨 배열
     @State private var effectValues: [(id: UUID, value: Int)] = []
@@ -51,13 +55,15 @@ struct LanguageGameView: View {
     init(
         user: User,
         isGameStarted: Binding<Bool>,
+        isGameViewDisappeared: Binding<Bool>,
         animationSystem: CharacterAnimationSystem? = nil
     ) {
         self._isGameStarted = isGameStarted
+        self._isGameViewDisappeared = isGameViewDisappeared
         self.user = user
 
         // 게임 초기화
-        self.game = .init(
+        let game = LanguageGame(
             user: user,
             feverSystem: .init(
                 decreaseInterval: Constant.Game.feverDecreaseInterval,
@@ -67,6 +73,7 @@ struct LanguageGameView: View {
             itemCount: Constant.Game.itemCount,
             animationSystem: animationSystem
         )
+        self._game = State(initialValue: game)
         self.game.startGame()
     }
 
@@ -83,13 +90,12 @@ struct LanguageGameView: View {
                 languageButtonsSection
                 Spacer()
             }
-        }.pauseGameStyle(onLeave: {
-            handleCloseButton()
-        }, onPause: {
-            game.pauseGame()
-        }, onResume: {
-            game.resumeGame()
-        })
+        }.pauseGameStyle(
+            isGameViewDisappeared: $isGameViewDisappeared,
+            onLeave: { handleCloseButton() },
+            onPause: { game.pauseGame() },
+            onResume: { game.resumeGame() }
+        )
     }
 }
 
@@ -191,6 +197,7 @@ private extension LanguageGameView {
 
 #Preview {
     @Previewable @State var isGameStarted = true
+    @Previewable @State var isGameViewDisappeared = true
     let user = User(
         nickname: "Test",
         wallet: .init(),
@@ -201,5 +208,5 @@ private extension LanguageGameView {
         ]
     )
 
-    LanguageGameView(user: user, isGameStarted: $isGameStarted, animationSystem: nil)
+    LanguageGameView(user: user, isGameStarted: $isGameStarted, isGameViewDisappeared: $isGameViewDisappeared, animationSystem: nil)
 }

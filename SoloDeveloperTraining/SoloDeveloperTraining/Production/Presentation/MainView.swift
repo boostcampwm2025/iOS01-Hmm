@@ -131,7 +131,12 @@ struct MainView: View {
                         WorkSelectedView(
                             user: user,
                             animationSystem: animationSystem,
-                            isGameStarted: $isWorkGameInProgress
+                            isGameStarted: $isWorkGameInProgress,
+                            isGameViewDisappeared: Binding(
+                                get: {
+                                    selectedTab != .work || showQuizView
+                                },
+                                set: { _ in })
                         )
                         .opacity(selectedTab == .work ? 1 : 0)
                         .allowsHitTesting(selectedTab == .work)
@@ -145,7 +150,12 @@ struct MainView: View {
                                 WorkSelectedView(
                                     user: user,
                                     animationSystem: animationSystem,
-                                    isGameStarted: $isWorkGameInProgress
+                                    isGameStarted: $isWorkGameInProgress,
+                                    isGameViewDisappeared: Binding(
+                                        get: {
+                                            selectedTab != .work || showQuizView
+                                        },
+                                        set: { _ in })
                                 )
                             }
                         case .skill:
