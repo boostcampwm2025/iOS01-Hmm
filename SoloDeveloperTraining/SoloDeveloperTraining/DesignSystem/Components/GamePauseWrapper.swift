@@ -30,6 +30,7 @@ struct GamePauseWrapper: ViewModifier {
     @State private var isPaused: Bool = false
 
     let onLeave: () -> Void
+    let onPause: () -> Void
     let onResume: () -> Void
 
     func body(content: Content) -> some View {
@@ -99,6 +100,7 @@ private extension GamePauseWrapper {
         // 앱이 비활성 상태로 갈 때 즉시 일시정지
         if newPhase != .active {
             isPaused = true
+            onPause()
         }
     }
 
