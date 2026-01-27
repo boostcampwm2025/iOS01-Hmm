@@ -40,14 +40,16 @@ final class FileManagerUserRepository: UserRepository {
             skills: skills.map { SkillDTO(from: $0) }
         )
 
+        let url = fileURL
         let data = try JSONEncoder().encode(userDTO)
-        try data.write(to: fileURL, options: [.atomic])
+
+        Task.detached {
+            try data.write(to: url, options: [.atomic])
+        }
     }
 
     func load() async throws -> User? {
-        guard fileManager.fileExists(atPath: fileURL.path) else {
-            return nil
-        }
+        guard fileManager.fileExists(atPath: fileURL.path) else { return nil }
 
         let data = try Data(contentsOf: fileURL)
         let userDTO = try JSONDecoder().decode(UserDTO.self, from: data)
