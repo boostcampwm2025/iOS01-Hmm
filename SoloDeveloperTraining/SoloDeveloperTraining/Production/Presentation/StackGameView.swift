@@ -19,26 +19,25 @@ private enum Constant {
 }
 
 struct StackGameView: View {
-    let stackGame: StackGame
+    @State private var stackGame: StackGame
     @State private var scene: StackGameScene
-    @State private var feverSystem: FeverSystem
+    @State private var effectLabels: [EffectLabelData] = []
+
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
-
-    @State private var effectLabels: [EffectLabelData] = []
 
     init(
         user: User,
         isGameStarted: Binding<Bool>,
         animationSystem: CharacterAnimationSystem? = nil
     ) {
-        self.stackGame = StackGame(user: user, animationSystem: animationSystem)
-        self._feverSystem = State(wrappedValue: stackGame.feverSystem)
-        self._isGameStarted = isGameStarted
+        let stackGame = StackGame(user: user, animationSystem: animationSystem)
         let initialScene = StackGameScene(
             stackGame: stackGame,
             onBlockDropped: { _ in }
         )
+        self._isGameStarted = isGameStarted
+        self._stackGame = State(initialValue: stackGame)
         self._scene = State(initialValue: initialScene)
     }
 
@@ -67,7 +66,7 @@ private extension StackGameView {
             closeButtonDidTapHandler: handleCloseButton,
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
-            feverState: feverSystem,
+            feverState: stackGame.feverSystem,
             buffSystem: stackGame.buffSystem,
             coffeeCount: .constant(stackGame.user.inventory.count(.coffee) ?? 0),
             energyDrinkCount: .constant(stackGame.user.inventory.count(.energyDrink) ?? 0)
