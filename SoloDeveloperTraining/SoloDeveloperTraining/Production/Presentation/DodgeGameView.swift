@@ -132,7 +132,7 @@ private extension DodgeGameView {
                 height: Constant.Size.character.height
             )
             .position(
-                x: gameAreaWidth / 2 + game.motionSystem.characterX,
+                x: gameAreaWidth / 2 + (isGamePaused ? 0 : game.motionSystem.characterX),
                 y: gameAreaHeight * (1 - Constant.Position.characterYRatio)
             )
             .onChange(of: game.motionSystem.characterX) { oldPositionX, newPositionX in
@@ -217,6 +217,7 @@ private extension DodgeGameView {
 
     /// 캐릭터의 진행 방향을 업데이트 합니다.
     func updateCharacterDirection(oldPositionX: CGFloat, newPositionX: CGFloat) {
+        guard !isGamePaused else { return }
         if abs(newPositionX - oldPositionX) > Constant.Threshold.directionChange {
             isFacingLeft = newPositionX < oldPositionX
         }
