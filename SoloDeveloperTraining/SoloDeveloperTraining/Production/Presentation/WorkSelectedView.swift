@@ -52,7 +52,6 @@ struct WorkSelectedView: View {
         self._isGameStarted = isGameStarted
         self._isGameViewDisappeared = isGameViewDisappeared
         self._careerSystem = careerSystem
-        self._workItems = State(initialValue: Self.createWorkItems(career: careerSystem.wrappedValue?.currentCareer))
     }
 
     var body: some View {
@@ -64,13 +63,14 @@ struct WorkSelectedView: View {
             }
         }
         .onAppear {
+            workItems = createWorkItems(career: careerSystem?.currentCareer)
             loadLastSelectedIndex()
         }
         .onChange(of: selectedIndex) { _, newValue in
             saveLastSelectedIndex(newValue)
         }
         .onChange(of: careerSystem?.currentCareer) { _, newValue in
-            workItems = Self.createWorkItems(career: newValue)
+            workItems = createWorkItems(career: newValue)
         }
     }
 }
@@ -115,7 +115,7 @@ private extension WorkSelectedView {
 // MARK: - Helper
 private extension WorkSelectedView {
 
-    static func createWorkItems(career: Career?) -> [WorkItem] {
+    func createWorkItems(career: Career?) -> [WorkItem] {
         let currentCareer = career ?? .unemployed
 
         let tapDisabled: Bool
