@@ -1,0 +1,20 @@
+name: Release Note Drafter
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+  pull-requests: read # PR 읽기 권한 부여
+
+jobs:
+  update_release_draft:
+    if: github.event.pull_request.merged == true # PR이 main에 병합될 경우만 실행
+    runs-on: ubuntu-latest
+    steps:
+      - uses: release-drafter/release-drafter@v6
+        with:
+          publish: true # Draft 생성 시 즉시 publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
