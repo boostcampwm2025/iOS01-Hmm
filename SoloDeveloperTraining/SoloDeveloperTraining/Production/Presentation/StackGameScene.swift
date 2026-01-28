@@ -41,6 +41,8 @@ final class StackGameScene: SKScene {
     private var currentHeight: CGFloat = 0
     /// 블록 배치 처리 중 여부 (UI 인터랙션 차단용)
     private var isProcessing = false
+    /// 자체 게임 상태 관리 변수
+    private var isGamePaused = false
 
     var onBlockDropped: ((Int) -> Void)
 
@@ -63,7 +65,7 @@ final class StackGameScene: SKScene {
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard currentBlockView != nil, !isProcessing else { return }
+        guard currentBlockView != nil, !isProcessing, !isGamePaused else { return }
         dropBlock()
     }
 
@@ -114,6 +116,26 @@ final class StackGameScene: SKScene {
         physicsWorld.speed = 0
     }
 
+    /// 게임 Scene 일시정지
+    func pauseGame() {
+        stackGame.pauseGame()
+        isGamePaused = true
+        physicsWorld.speed = 0
+        currentBlockView?.removeAllActions()
+        currentBlockView?.removeFromParent()
+        currentBlockView = nil
+    }
+
+    /// 게임 Scene 재개
+    func resumeGame() {
+        stackGame.resumeGame()
+        isGamePaused = false
+        physicsWorld.speed = 1
+        if currentBlockView == nil {
+            spawnBlock()
+        }
+    }
+
     /// 게임 시작 시 가장 아래에 배치되는 초기 블록을 생성합니다.
     /// - 고정된 물리 바디를 가진 파란색 블록 생성
     /// - 게임 코어에 초기 블록 등록
@@ -134,6 +156,9 @@ final class StackGameScene: SKScene {
     /// - 카메라 기준 상단 위치에서 생성
     /// - 좌우 이동 애니메이션 시작
     private func spawnBlock() {
+        // 일시정지 상태에서는 동작을 막음
+        guard !isGamePaused else { return }
+
         isProcessing = false
 
         let blockType = BlockType.allCases.randomElement() ?? .blue
@@ -175,7 +200,8 @@ final class StackGameScene: SKScene {
     private func evaluateBlock() {
         guard
             let block = currentBlockView,
-            let previousBlock = stackGame.previousBlock
+            let previousBlock = stackGame.previousBlock,
+            !isPaused
         else { return }
 
         // StackGame의 previousBlock 정보를 사용해 목표 Y 계산
@@ -187,7 +213,7 @@ final class StackGameScene: SKScene {
             checkAlignmentAndHandle(targetY: targetY)
         } else {
             // 아직 도달하지 않았으면 재확인
-            DispatchQueue.main.asyncAfter(deadline: .now() + Constant.Time.evaluationCheckInterval) { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() +  Constant.Time.evaluationCheckInterval) { [weak self] in
                 self?.evaluateBlock()
             }
         }
@@ -242,6 +268,7 @@ final class StackGameScene: SKScene {
             onBlockDropped(stackGame.placeBombSuccess())
             // 실패 사운드 재생
             SoundService.shared.trigger(.failure)
+
             DispatchQueue.main.asyncAfter(deadline: .now() + Constant.Time.bombRemovalDelay) { [weak self] in
                 block.removeFromParent()
                 self?.spawnBlock()

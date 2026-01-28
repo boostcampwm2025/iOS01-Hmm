@@ -25,13 +25,19 @@ struct StackGameView: View {
 
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
+    @Binding var isGameViewDisappeared: Bool
 
     init(
         user: User,
         isGameStarted: Binding<Bool>,
+        isGameViewDisappeared: Binding<Bool>,
         animationSystem: CharacterAnimationSystem? = nil
     ) {
         let stackGame = StackGame(user: user, animationSystem: animationSystem)
+        self._stackGame = State(initialValue: stackGame)
+        self._isGameStarted = isGameStarted
+        self._isGameViewDisappeared = isGameViewDisappeared
+
         let initialScene = StackGameScene(
             stackGame: stackGame,
             onBlockDropped: { _ in }
@@ -54,6 +60,13 @@ struct StackGameView: View {
             .onAppear {
                 setupGameCallbacks(with: geometry)
             }
+            .pauseGameStyle(
+                isGameViewDisappeared: $isGameViewDisappeared,
+                height: geometry.size.height,
+                onLeave: { handleCloseButton() },
+                onPause: { scene.pauseGame() },
+                onResume: { scene.resumeGame() }
+            )
         }
     }
 }

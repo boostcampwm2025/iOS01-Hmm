@@ -26,6 +26,10 @@ protocol Game {
     func startGame()
     /// 게임 종료
     func stopGame()
+    /// 게임 일시정지
+    func pauseGame()
+    /// 게임 재개
+    func resumeGame()
     /// action 수행
     @discardableResult
     func didPerformAction(_ input: ActionInput) async -> Int

@@ -50,6 +50,18 @@ final class TapGame: Game {
         feverSystem.stop()
     }
 
+    /// 게임 일시정지 (피버, 버프 시스템 보존)
+    func pauseGame() {
+        feverSystem.pause()
+        buffSystem.pause()
+    }
+
+    /// 게임 재개
+    func resumeGame() {
+        feverSystem.resume()
+        buffSystem.resume()
+    }
+
     /// 탭 액션 수행 및 골드 획득
     @discardableResult
     func didPerformAction(_ input: Void = ()) async -> Int {

@@ -37,15 +37,20 @@ struct DodgeGameView: View {
     @State private var gameAreaHeight: CGFloat = 0
     @State private var isFacingLeft: Bool = false
     @State private var goldEffects: [EffectLabelData] = []
+    // 일시정지 상태 추가
+    @State private var isGamePaused: Bool = false
 
     @Binding var isGameStarted: Bool
+    @Binding var isGameViewDisappeared: Bool
 
     init(
         user: User,
         isGameStarted: Binding<Bool>,
+        isGameViewDisappeared: Binding<Bool>,
         animationSystem: CharacterAnimationSystem? = nil
     ) {
         self._isGameStarted = isGameStarted
+        self._isGameViewDisappeared = isGameViewDisappeared
         self.game = DodgeGame(
             user: user,
             gameAreaSize: CGSize.zero,
@@ -68,6 +73,19 @@ struct DodgeGameView: View {
             .onDisappear {
                 game.stopGame()
             }
+            .pauseGameStyle(
+                isGameViewDisappeared: $isGameViewDisappeared,
+                height: geometry.size.height,
+                onLeave: { handleCloseButton() },
+                onPause: {
+                    isGamePaused = true
+                    game.pauseGame()
+                },
+                onResume: {
+                    isGamePaused = false
+                    game.resumeGame()
+                }
+            )
         }
     }
 }
@@ -112,13 +130,13 @@ private extension DodgeGameView {
 
     /// 플레이어
     var playerView: some View {
-        RunningCharacter(isFacingLeft: isFacingLeft)
+        RunningCharacter(isFacingLeft: isFacingLeft, isGamePaused: isGamePaused)
             .frame(
                 width: Constant.Size.character.width,
                 height: Constant.Size.character.height
             )
             .position(
-                x: gameAreaWidth / 2 + game.motionSystem.characterX,
+                x: gameAreaWidth / 2 + (isGamePaused ? 0 : game.motionSystem.characterX),
                 y: gameAreaHeight * (1 - Constant.Position.characterYRatio)
             )
             .onChange(of: game.motionSystem.characterX) { oldPositionX, newPositionX in
@@ -203,6 +221,7 @@ private extension DodgeGameView {
 
     /// 캐릭터의 진행 방향을 업데이트 합니다.
     func updateCharacterDirection(oldPositionX: CGFloat, newPositionX: CGFloat) {
+        guard !isGamePaused else { return }
         if abs(newPositionX - oldPositionX) > Constant.Threshold.directionChange {
             isFacingLeft = newPositionX < oldPositionX
         }
@@ -211,6 +230,7 @@ private extension DodgeGameView {
 
 #Preview {
     @Previewable @State var isGameStarted = true
+    @Previewable @State var isGameViewDisappeared = true
 
     let wallet = Wallet(gold: 1000, diamond: 0)
     let inventory = Inventory(
@@ -238,9 +258,13 @@ private extension DodgeGameView {
                 .frame(maxHeight: .infinity)
                 .background(Color.gray.opacity(0.2))
 
-            DodgeGameView(user: user, isGameStarted: $isGameStarted)
-                .ignoresSafeArea()
-                .frame(height: geometry.size.height / 2 - Constant.Size.ground)
+            DodgeGameView(
+                user: user,
+                isGameStarted: $isGameStarted,
+                isGameViewDisappeared: $isGameViewDisappeared
+            )
+            .ignoresSafeArea()
+            .frame(height: geometry.size.height / 2 - Constant.Size.ground)
         }
     }
 }
