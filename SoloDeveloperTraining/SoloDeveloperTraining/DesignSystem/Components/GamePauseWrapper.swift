@@ -14,7 +14,7 @@ private enum Constant {
     static let iconSize: CGFloat = 28
 
     enum Spacing {
-        static let buttonHorizontal: CGFloat = 32
+        static let buttonHorizontal: CGFloat = 50
         static let iconTextHorizontal: CGFloat = 8
     }
 
@@ -29,6 +29,7 @@ struct GamePauseWrapper: ViewModifier {
     @State private var isPaused: Bool = false
 
     @Binding var isGameViewDisappeared: Bool
+
     let height: CGFloat
     let onLeave: () -> Void
     let onPause: () -> Void

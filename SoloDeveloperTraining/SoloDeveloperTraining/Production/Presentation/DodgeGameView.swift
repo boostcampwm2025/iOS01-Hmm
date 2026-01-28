@@ -251,7 +251,7 @@ private extension DodgeGameView {
             .init(key: SkillKey(game: .dodge, tier: .beginner), level: 1000)
         ]
     )
-    
+
     GeometryReader { geometry in
         VStack(spacing: 0) {
             Spacer()

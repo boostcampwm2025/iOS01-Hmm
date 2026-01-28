@@ -12,7 +12,13 @@ extension View {
         self.modifier(Toast(isShowing: isShowing, message: message, duration: duration))
     }
 
-    func pauseGameStyle(isGameViewDisappeared: Binding<Bool>, height: CGFloat, onLeave: @escaping () -> Void, onPause: @escaping () -> Void, onResume: @escaping () -> Void) -> some View {
+    func pauseGameStyle(
+        isGameViewDisappeared: Binding<Bool>,
+        height: CGFloat,
+        onLeave: @escaping () -> Void,
+        onPause: @escaping () -> Void,
+        onResume: @escaping () -> Void
+    ) -> some View {
         self.modifier(
             GamePauseWrapper(
                 isGameViewDisappeared: isGameViewDisappeared,
