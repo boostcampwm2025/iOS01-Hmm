@@ -36,6 +36,8 @@ struct WorkSelectedView: View {
     @Binding var isGameStarted: Bool
     @Binding var isGameViewDisappeared: Bool
 
+    private let localStorage: KeyValueLocalStorage = UserDefaultsStorage()
+
     init(
         user: User,
         animationSystem: CharacterAnimationSystem?,
@@ -110,22 +112,22 @@ private extension WorkSelectedView {
             .init(
                 title: "코드짜기",
                 description: "효과 설명",
-                imageName: "housing_street"
+                imageName: GameType.tap.imageName
             ),
             .init(
                 title: "언어 맞추기",
                 description: "효과 설명",
-                imageName: "housing_street"
+                imageName: GameType.language.imageName
             ),
             .init(
                 title: "버그 피하기",
                 description: "효과 설명",
-                imageName: "housing_street"
+                imageName: GameType.dodge.imageName
             ),
             .init(
                 title: "데이터 쌓기",
                 description: "효과 설명",
-                imageName: "housing_street"
+                imageName: GameType.stack.imageName
             )
         ]
     }
@@ -167,7 +169,7 @@ private extension WorkSelectedView {
     }
 
     func loadLastSelectedIndex() {
-        let savedIndex = UserDefaults.standard.integer(forKey: Constant.UserDefaults.lastSelectedWorkIndexKey)
+        let savedIndex = localStorage.integer(key: Constant.UserDefaults.lastSelectedWorkIndexKey)
         if savedIndex >= 0 && savedIndex < workItems.count {
             selectedIndex = savedIndex
         } else {
@@ -176,7 +178,7 @@ private extension WorkSelectedView {
     }
 
     func saveLastSelectedIndex(_ index: Int) {
-        UserDefaults.standard.set(index, forKey: Constant.UserDefaults.lastSelectedWorkIndexKey)
+        localStorage.set(index, forKey: Constant.UserDefaults.lastSelectedWorkIndexKey)
     }
 }
 

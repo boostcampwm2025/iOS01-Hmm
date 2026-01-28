@@ -51,4 +51,18 @@ enum GameType: Int, CaseIterable {
         case .stack: "데이터 쌓기"
         }
     }
+    
+    /// 업무 이미지 명
+    var imageName: String {
+        switch self {
+        case .tap:
+            return "work_tap"
+        case .language:
+            return "work_language"
+        case .dodge:
+            return "work_dodge"
+        case .stack:
+            return "work_stack"
+        }
+    }
 }

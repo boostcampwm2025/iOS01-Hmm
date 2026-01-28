@@ -7,15 +7,6 @@
 
 import Foundation
 
-private enum Constant {
-    static let defaultGainFever: Double = 33
-    static let bugGainFever: Double = -50
-    static let bugDodgeGainFever: Double = 10
-    static let smallGoldMultiplier: Double = 1.5
-    static let largeGoldMultiplier: Double = 2
-    static let bugDodgeMultiplier: Double = 0.5
-}
-
 final class DodgeGame: Game {
     typealias ActionInput = DropItem.DropItemType
 
@@ -24,7 +15,10 @@ final class DodgeGame: Game {
     /// 사용자 정보
     var user: User
     /// 피버 시스템
-    var feverSystem: FeverSystem = FeverSystem(decreaseInterval: 0.1, decreasePercentPerTick: 3)
+    var feverSystem: FeverSystem = FeverSystem(
+        decreaseInterval: Policy.Fever.decreaseInterval,
+        decreasePercentPerTick: Policy.Fever.Dodge.decreasePercent
+    )
     /// 버프 시스템
     var buffSystem: BuffSystem = BuffSystem()
     /// 캐릭터 애니메이션 시스템
@@ -82,7 +76,7 @@ final class DodgeGame: Game {
         }
 
         // 플레이어 위치 동기화 타이머 시작 (120fps)
-        positionSyncTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 120.0, repeats: true) { [weak self] _ in
+        positionSyncTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / Policy.Game.Dodge.updateFPS, repeats: true) { [weak self] _ in
             guard let self = self else { return }
             self.gameCore.playerX = self.motionSystem.characterX
         }
@@ -141,13 +135,13 @@ final class DodgeGame: Game {
         currentCombo += 1
 
         // 피버 증가
-        feverSystem.gainFever(Constant.bugDodgeGainFever)
+        feverSystem.gainFever(Policy.Fever.Dodge.gainPerBugDodge)
 
         // 기본 골드 계산
         let baseGold = getBaseGold()
 
         // 1.0배 획득
-        let gainGold = Int(Double(baseGold) * Constant.bugDodgeMultiplier)
+        let gainGold = Int(Double(baseGold) * Policy.Game.Dodge.bugDodgeGoldMultiplier)
         user.wallet.addGold(gainGold)
         /// 누적 재산 업데이트
         user.record.record(.earnMoney(gainGold))
@@ -166,13 +160,13 @@ final class DodgeGame: Game {
         switch input {
         case .smallGold:
             // 피버 증가
-            feverSystem.gainFever(Constant.defaultGainFever)
+            feverSystem.gainFever(Policy.Fever.Dodge.gainPerSmallGold)
 
             // 기본 골드 계산
             let baseGold = getBaseGold()
 
             // 0.8배 획득
-            let gainGold = Int(Double(baseGold) * Constant.smallGoldMultiplier)
+            let gainGold = Int(Double(baseGold) * Policy.Game.Dodge.smallGoldMultiplier)
             user.wallet.addGold(gainGold)
             /// 골드 수집 기록
             user.record.record(.dodgeGoldCollect)
@@ -185,13 +179,13 @@ final class DodgeGame: Game {
 
         case .largeGold:
             // 피버 증가
-            feverSystem.gainFever(Constant.defaultGainFever)
+            feverSystem.gainFever(Policy.Fever.Dodge.gainPerLargeGold)
 
             // 기본 골드 계산
             let baseGold = getBaseGold()
 
             // 1.2배 획득
-            let gainGold = Int(Double(baseGold) * Constant.largeGoldMultiplier)
+            let gainGold = Int(Double(baseGold) * Policy.Game.Dodge.largeGoldMultiplier)
             user.wallet.addGold(gainGold)
             /// 골드 수집 기록
             user.record.record(.dodgeGoldCollect)
@@ -207,13 +201,13 @@ final class DodgeGame: Game {
             currentCombo = 0
 
             // 피버 감소
-            feverSystem.gainFever(Constant.bugGainFever)
+            feverSystem.gainFever(Policy.Fever.Dodge.lossPerBugHit)
 
             // 기본 골드 계산
             let baseGold = getBaseGold()
 
-            // 절반 손실
-            let loseGold = baseGold / 2
+            // 골드 손실
+            let loseGold = Int(Double(baseGold) * Policy.Game.Dodge.bugHitLossGoldMultiplier)
             user.wallet.spendGold(loseGold)
             /// 실패 기록
             user.record.record(.dodgeFail)

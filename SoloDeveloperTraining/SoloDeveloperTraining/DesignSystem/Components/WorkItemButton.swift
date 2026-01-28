@@ -51,6 +51,7 @@ private extension WorkItemButton {
             backgroundShape
             contentStack
         }
+        .frame(height: Constant.buttonHeight)
     }
 
     var backgroundShape: some View {
@@ -65,7 +66,7 @@ private extension WorkItemButton {
     }
 
     var contentStack: some View {
-        VStack {
+        VStack(spacing: 0) {
             titleLabel
             descriptionLabel
             itemImage
@@ -87,16 +88,21 @@ private extension WorkItemButton {
     }
 
     var itemImage: some View {
-        Image(imageName)
-            .resizable()
-            .padding(.top, Constant.Padding.imageTop)
-            .padding(.horizontal, Constant.Padding.imageHorizontal)
-            .padding(.bottom, Constant.Padding.imageBottom)
-            .overlay {
-                if buttonState == .disabled {
-                    disabledOverlay
-                }
+        GeometryReader { geometry in
+            Image(imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: geometry.size.width, height: geometry.size.height)
+                .clipped()
+        }
+        .padding(.top, Constant.Padding.imageTop)
+        .padding(.horizontal, Constant.Padding.imageHorizontal)
+        .padding(.bottom, Constant.Padding.imageBottom)
+        .overlay {
+            if buttonState == .disabled {
+                disabledOverlay
             }
+        }
     }
 
     var disabledOverlay: some View {

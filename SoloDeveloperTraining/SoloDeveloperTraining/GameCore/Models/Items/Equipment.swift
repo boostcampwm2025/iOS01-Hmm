@@ -53,78 +53,78 @@ final class Equipment: Item {
         case .keyboard:
             switch tier {
             case .broken:
-                return 100
+                return Policy.Equipment.Keyboard.brokenGoldPerSecond
             case .cheap:
-                return 150
+                return Policy.Equipment.Keyboard.cheapGoldPerSecond
             case .vintage:
-                return 200
+                return Policy.Equipment.Keyboard.vintageGoldPerSecond
             case .decent:
-                return 300
+                return Policy.Equipment.Keyboard.decentGoldPerSecond
             case .premium:
-                return 500
+                return Policy.Equipment.Keyboard.premiumGoldPerSecond
             case .diamond:
-                return 1000
+                return Policy.Equipment.Keyboard.diamondGoldPerSecond
             case .limited:
-                return 2000
+                return Policy.Equipment.Keyboard.limitedGoldPerSecond
             case .nationalTreasure:
-                return 5000
+                return Policy.Equipment.Keyboard.nationalTreasureGoldPerSecond
             }
         case .mouse:
             switch tier {
             case .broken:
-                return 100
+                return Policy.Equipment.Mouse.brokenGoldPerSecond
             case .cheap:
-                return 150
+                return Policy.Equipment.Mouse.cheapGoldPerSecond
             case .vintage:
-                return 200
+                return Policy.Equipment.Mouse.vintageGoldPerSecond
             case .decent:
-                return 300
+                return Policy.Equipment.Mouse.decentGoldPerSecond
             case .premium:
-                return 500
+                return Policy.Equipment.Mouse.premiumGoldPerSecond
             case .diamond:
-                return 1000
+                return Policy.Equipment.Mouse.diamondGoldPerSecond
             case .limited:
-                return 2000
+                return Policy.Equipment.Mouse.limitedGoldPerSecond
             case .nationalTreasure:
-                return 5000
+                return Policy.Equipment.Mouse.nationalTreasureGoldPerSecond
             }
         case .monitor:
             switch tier {
             case .broken:
-                return 100
+                return Policy.Equipment.Monitor.brokenGoldPerSecond
             case .cheap:
-                return 150
+                return Policy.Equipment.Monitor.cheapGoldPerSecond
             case .vintage:
-                return 200
+                return Policy.Equipment.Monitor.vintageGoldPerSecond
             case .decent:
-                return 300
+                return Policy.Equipment.Monitor.decentGoldPerSecond
             case .premium:
-                return 500
+                return Policy.Equipment.Monitor.premiumGoldPerSecond
             case .diamond:
-                return 1000
+                return Policy.Equipment.Monitor.diamondGoldPerSecond
             case .limited:
-                return 2000
+                return Policy.Equipment.Monitor.limitedGoldPerSecond
             case .nationalTreasure:
-                return 5000
+                return Policy.Equipment.Monitor.nationalTreasureGoldPerSecond
             }
         case .chair:
             switch tier {
             case .broken:
-                return 100
+                return Policy.Equipment.Chair.brokenGoldPerSecond
             case .cheap:
-                return 150
+                return Policy.Equipment.Chair.cheapGoldPerSecond
             case .vintage:
-                return 200
+                return Policy.Equipment.Chair.vintageGoldPerSecond
             case .decent:
-                return 300
+                return Policy.Equipment.Chair.decentGoldPerSecond
             case .premium:
-                return 500
+                return Policy.Equipment.Chair.premiumGoldPerSecond
             case .diamond:
-                return 1000
+                return Policy.Equipment.Chair.diamondGoldPerSecond
             case .limited:
-                return 2000
+                return Policy.Equipment.Chair.limitedGoldPerSecond
             case .nationalTreasure:
-                return 5000
+                return Policy.Equipment.Chair.nationalTreasureGoldPerSecond
             }
         }
     }
@@ -220,21 +220,21 @@ enum EquipmentTier: Int {
     var cost: Cost {
         switch self {
         case .broken:
-            return Cost(gold: 50_000)
+            return Cost(gold: Policy.Equipment.brokenUpgradeCost)
         case .cheap:
-            return Cost(gold: 100_000)
+            return Cost(gold: Policy.Equipment.cheapUpgradeCost)
         case .vintage:
-            return Cost(gold: 200_000)
+            return Cost(gold: Policy.Equipment.vintageUpgradeCost)
         case .decent:
-            return Cost(gold: 500_000)
+            return Cost(gold: Policy.Equipment.decentUpgradeCost)
         case .premium:
-            return Cost(gold: 1_000_000)
+            return Cost(gold: Policy.Equipment.premiumUpgradeCost)
         case .diamond:
-            return Cost(gold: 2_000_000)
+            return Cost(gold: Policy.Equipment.diamondUpgradeCost)
         case .limited:
-            return Cost(gold: 5_000_000)
+            return Cost(gold: Policy.Equipment.limitedUpgradeCost)
         case .nationalTreasure:
-            return Cost(gold: 999_999_999_999)
+            return Cost(gold: Policy.Equipment.nationalTreasureUpgradeCost)
         }
     }
 
@@ -242,21 +242,21 @@ enum EquipmentTier: Int {
     var upgradeSuccessRate: Double {
         switch self {
         case .broken:
-            return 1.0
+            return Policy.Equipment.brokenSuccessRate
         case .cheap:
-            return 0.8
+            return Policy.Equipment.cheapSuccessRate
         case .vintage:
-            return 0.6
+            return Policy.Equipment.vintageSuccessRate
         case .decent:
-            return 0.4
+            return Policy.Equipment.decentSuccessRate
         case .premium:
-            return 0.3
+            return Policy.Equipment.premiumSuccessRate
         case .diamond:
-            return 0.2
+            return Policy.Equipment.diamondSuccessRate
         case .limited:
-            return 0.1
+            return Policy.Equipment.limitedSuccessRate
         case .nationalTreasure:
-            return 0.0
+            return Policy.Equipment.nationalTreasureSuccessRate
         }
     }
 

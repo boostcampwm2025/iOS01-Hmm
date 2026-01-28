@@ -75,21 +75,53 @@ private extension SkillSystem {
     }
 
     func canUnlock(skill: Skill) -> Bool {
-        switch skill.key.tier {
-        case .beginner:
-            // TODO: - 각 게임의 해금 조건과 동일하도록 수정
-            return true
-        case .intermediate:
-            guard let beginnerSkill = getPreviousTierSkill(key: .init(game: skill.key.game, tier: .beginner)) else {
-                return false
+        let unlockLevel: Int
+
+        switch skill.key.game {
+        case .tap:
+            switch skill.key.tier {
+            case .beginner:
+                return true
+            case .intermediate:
+                unlockLevel = Policy.Skill.Tap.intermediateUnlockLevel
+            case .advanced:
+                unlockLevel = Policy.Skill.Tap.advancedUnlockLevel
             }
-            return beginnerSkill.level >= 1000
-        case .advanced:
-            guard let intermediateSkill = getPreviousTierSkill(key: .init(game: skill.key.game, tier: .intermediate)) else {
-                return false
+        case .language:
+            switch skill.key.tier {
+            case .beginner:
+                return true
+            case .intermediate:
+                unlockLevel = Policy.Skill.Language.intermediateUnlockLevel
+            case .advanced:
+                unlockLevel = Policy.Skill.Language.advancedUnlockLevel
             }
-            return intermediateSkill.level >= 1000
+        case .dodge:
+            switch skill.key.tier {
+            case .beginner:
+                return true
+            case .intermediate:
+                unlockLevel = Policy.Skill.Dodge.intermediateUnlockLevel
+            case .advanced:
+                unlockLevel = Policy.Skill.Dodge.advancedUnlockLevel
+            }
+        case .stack:
+            switch skill.key.tier {
+            case .beginner:
+                return true
+            case .intermediate:
+                unlockLevel = Policy.Skill.Stack.intermediateUnlockLevel
+            case .advanced:
+                unlockLevel = Policy.Skill.Stack.advancedUnlockLevel
+            }
         }
+
+        // intermediate나 advanced인 경우
+        let previousTier: SkillTier = skill.key.tier == .intermediate ? .beginner : .intermediate
+        guard let previousSkill = getPreviousTierSkill(key: .init(game: skill.key.game, tier: previousTier)) else {
+            return false
+        }
+        return previousSkill.level >= unlockLevel
     }
 
     func getPreviousTierSkill(key: SkillKey) -> Skill? {

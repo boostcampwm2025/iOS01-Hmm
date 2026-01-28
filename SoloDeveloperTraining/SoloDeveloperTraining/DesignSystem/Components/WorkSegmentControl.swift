@@ -80,23 +80,23 @@ struct WorkItem {
                 WorkItem(
                     title: "테스트",
                     description: "테스트",
-                    imageName: "housing_street"
+                    imageName: GameType.tap.imageName
                 ),
                 WorkItem(
                     title: "테스트",
                     description: "테스트",
-                    imageName: "housing_street"
+                    imageName: GameType.tap.imageName
                 ),
                 WorkItem(
                     title: "테스트",
                     description: "테스트",
-                    imageName: "housing_street",
+                    imageName: GameType.tap.imageName,
                     isDisabled: true
                 ),
                 WorkItem(
                     title: "테스트",
                     description: "테스트",
-                    imageName: "housing_street",
+                    imageName: GameType.tap.imageName,
                     isDisabled: false
                 )
             ],

@@ -14,19 +14,18 @@ private enum Constant {
 
     enum Padding {
         static let horizontal: CGFloat = 16
-        static let toolBarBottom: CGFloat = 14
+        static let toolBarBottom: CGFloat = 10
     }
 }
 
 struct StackGameView: View {
     @State private var stackGame: StackGame
     @State private var scene: StackGameScene
+    @State private var effectLabels: [EffectLabelData] = []
 
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
     @Binding var isGameViewDisappeared: Bool
-
-    @State private var effectLabels: [EffectLabelData] = []
 
     init(
         user: User,
@@ -38,10 +37,13 @@ struct StackGameView: View {
         self._stackGame = State(initialValue: stackGame)
         self._isGameStarted = isGameStarted
         self._isGameViewDisappeared = isGameViewDisappeared
+
         let initialScene = StackGameScene(
             stackGame: stackGame,
             onBlockDropped: { _ in }
         )
+        self._isGameStarted = isGameStarted
+        self._stackGame = State(initialValue: stackGame)
         self._scene = State(initialValue: initialScene)
     }
 

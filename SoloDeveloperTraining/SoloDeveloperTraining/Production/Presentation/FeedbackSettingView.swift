@@ -17,10 +17,10 @@ private enum Constant {
     }
 
     enum ImageName {
-        static let soundActive: String = "speaker.circle.fill"
-        static let soundInactive: String = "speaker.circle"
-        static let hapticActive: String = "iphone.gen1.radiowaves.left.and.right.circle.fill"
-        static let hapticInactive: String = "iphone.gen1.radiowaves.left.and.right.circle"
+        static let soundActive: String = "speaker.wave.2.circle.fill"
+        static let soundInactive: String = "speaker.slash.circle.fill"
+        static let hapticActive: String = "iphone.gen2.radiowaves.left.and.right.circle.fill"
+        static let hapticInactive: String = "iphone.gen2.slash.circle.fill"
     }
 }
 
@@ -32,7 +32,8 @@ struct FeedbackSettingView: View {
                 SoundService.shared.toggle()
             } label: {
                 Image(
-                    systemName: SoundService.shared.isEnabled ? Constant.ImageName.soundActive : Constant.ImageName.soundInactive
+                    systemName:
+                    SoundService.shared.isEnabled ? Constant.ImageName.soundActive : Constant.ImageName.soundInactive
                 )
                 .resizable()
                 .frame(width: Constant.iconSize, height: Constant.iconSize)
@@ -44,10 +45,10 @@ struct FeedbackSettingView: View {
             // 햅틱 버튼
             Button {
                 HapticService.shared.toggle()
-                
             } label: {
                 Image(
-                    systemName: HapticService.shared.isEnabled ? Constant.ImageName.hapticActive : Constant.ImageName.hapticInactive
+                    systemName:
+                    HapticService.shared.isEnabled ? Constant.ImageName.hapticActive : Constant.ImageName.hapticInactive
                 )
                 .resizable()
                 .frame(width: Constant.iconSize, height: Constant.iconSize)

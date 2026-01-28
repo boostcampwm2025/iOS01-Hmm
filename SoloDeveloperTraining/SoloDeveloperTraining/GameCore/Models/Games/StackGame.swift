@@ -11,13 +11,6 @@ private enum Constant {
     enum Position {
         static let initialBlockYPosition: CGFloat = 20
     }
-
-    enum Fever {
-        static let success: Double = 80
-        static let failure: Double = -40
-        static let decreaseInterval: TimeInterval = 0.1
-        static let decreasePercentPerTick: Double = 1
-    }
 }
 
 @Observable
@@ -27,8 +20,8 @@ final class StackGame: Game {
     var kind: GameType = .stack
     var user: User
     var feverSystem: FeverSystem = .init(
-        decreaseInterval: Constant.Fever.decreaseInterval,
-        decreasePercentPerTick: Constant.Fever.decreasePercentPerTick
+        decreaseInterval: Policy.Fever.decreaseInterval,
+        decreasePercentPerTick: Policy.Fever.Stack.decreasePercent
     )
     var buffSystem: BuffSystem = .init()
     var animationSystem: CharacterAnimationSystem?
@@ -154,7 +147,7 @@ final class StackGame: Game {
         user.record.record(.stackingSuccess)
         /// 누적 재산 업데이트
         user.record.record(.earnMoney(goldEarned))
-        feverSystem.gainFever(Constant.Fever.success)
+        feverSystem.gainFever(Policy.Fever.Stack.gainPerSuccess)
 
         // 재화 획득 시 캐릭터 웃게 만들기
         animationSystem?.playSmile()
@@ -171,7 +164,7 @@ final class StackGame: Game {
         user.wallet.spendGold(goldLost)
         /// 실패 수 기록
         user.record.record(.stackingFail)
-        feverSystem.gainFever(Constant.Fever.failure)
+        feverSystem.gainFever(Policy.Fever.Stack.lossPerFailure)
         return -goldLost
         #if DEV_BUILD
             print("💸 골드 손실: \(goldLost), 총액: \(user.wallet.gold)")

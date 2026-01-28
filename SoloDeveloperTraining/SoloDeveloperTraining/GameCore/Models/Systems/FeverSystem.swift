@@ -39,11 +39,11 @@ final class FeverSystem: FeverState {
     /// 피버 단계별 배수
     var feverMultiplier: Double {
         switch feverStage {
-        case 0: return 1.0  // 일반
-        case 1: return 1.2  // 피버 1단계
-        case 2: return 1.5  // 피버 2단계
-        case 3: return 2.0  // 피버 3단계 (MAX)
-        default: return 1.0
+        case 0: return Policy.Fever.Multiplier.stage0
+        case 1: return Policy.Fever.Multiplier.stage1
+        case 2: return Policy.Fever.Multiplier.stage2
+        case 3: return Policy.Fever.Multiplier.stage3
+        default: return Policy.Fever.Multiplier.stage0
         }
     }
 
@@ -62,7 +62,7 @@ final class FeverSystem: FeverState {
     /// - Parameter amount: 획득할 피버량
     func gainFever(_ amount: Double) {
         let sumPercent = feverPercent + amount
-        feverPercent = min(400, max(0, sumPercent))
+        feverPercent = min(Policy.Fever.maxPercent, max(0, sumPercent))
     }
 
     /// 피버 시스템 시작
@@ -125,13 +125,13 @@ final class FeverSystem: FeverState {
         let newStage: Int
 
         switch feverPercent {
-        case 0..<100:
+        case Policy.Fever.StageThreshold.stage0..<Policy.Fever.StageThreshold.stage1:
             newStage = 0  // 일반
-        case 100..<200:
+        case Policy.Fever.StageThreshold.stage1..<Policy.Fever.StageThreshold.stage2:
             newStage = 1  // 피버 1단계
-        case 200..<300:
+        case Policy.Fever.StageThreshold.stage2..<Policy.Fever.StageThreshold.stage3:
             newStage = 2  // 피버 2단계
-        case 300...:
+        case Policy.Fever.StageThreshold.stage3...:
             newStage = 3  // 피버 3단계 (MAX)
         default:
             newStage = 0
