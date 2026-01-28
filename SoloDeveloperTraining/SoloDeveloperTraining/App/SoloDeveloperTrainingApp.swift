@@ -9,7 +9,8 @@ import SwiftUI
 
 private enum Constant {
     enum Animation {
-        static let duration: Double = 1.0
+        static let transitionDuration: Double = 0.5  // 화면 전환
+        static let blinkingDuration: Double = 1.0    // 깜빡임
     }
 
     enum Padding {
@@ -53,7 +54,7 @@ struct SoloDeveloperTrainingApp: App {
                     )
                 }
             }
-            .animation(.easeOut(duration: Constant.Animation.duration), value: hasSeenIntro)
+            .animation(.easeOut(duration: Constant.Animation.transitionDuration), value: hasSeenIntro)
             .overlay {
                 nicknameSetupOverlay
             }
@@ -68,7 +69,7 @@ struct SoloDeveloperTrainingApp: App {
                 }
                 .onAppear {
                     Task {
-                        try? await Task.sleep(nanoseconds: UInt64(Constant.Animation.duration * 1_000_000_000))
+                        try? await Task.sleep(nanoseconds: UInt64(Constant.Animation.transitionDuration * 1_000_000_000))
                         hasSeenIntro = true
                     }
                 }
@@ -132,7 +133,7 @@ private extension SoloDeveloperTrainingApp {
                     onStart: { nickname in
                         user = User(nickname: nickname)
                         showNicknameSetup = false
-                        withAnimation(.easeOut(duration: Constant.Animation.duration)) {
+                        withAnimation(.easeOut(duration: Constant.Animation.transitionDuration)) {
                             hasSeenIntro = true
                         }
                     },
