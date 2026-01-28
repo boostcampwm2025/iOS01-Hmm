@@ -1,0 +1,173 @@
+name: Release Drafter
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  update_release_draft:
+    # PR이 실제로 merge되었을 때만 실행
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      # Xcode 프로젝트에서 버전 정보 추출
+      - name: Extract Xcode version info
+        id: xcode_version
+        run: |
+          # project.pbxproj에서 MARKETING_VERSION 추출 (예: 1.0.0)
+          MARKETING_VERSION=$(grep -m 1 "MARKETING_VERSION = " *.xcodeproj/project.pbxproj | sed 's/.*MARKETING_VERSION = \(.*\);/\1/' | tr -d ' ')
+          
+          # project.pbxproj에서 CURRENT_PROJECT_VERSION 추출 (빌드 번호, 예: 42)
+          BUILD_NUMBER=$(grep -m 1 "CURRENT_PROJECT_VERSION = " *.xcodeproj/project.pbxproj | sed 's/.*CURRENT_PROJECT_VERSION = \(.*\);/\1/' | tr -d ' ')
+          
+          echo "marketing_version=$MARKETING_VERSION" >> $GITHUB_OUTPUT
+          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+          
+          echo "📱 Extracted Marketing Version: $MARKETING_VERSION"
+          echo "🔢 Extracted Build Number: $BUILD_NUMBER"
+      
+      # 버전이 변경되었는지 확인
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          if git rev-parse "v${{ steps.xcode_version.outputs.marketing_version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "⚠️ Tag v${{ steps.xcode_version.outputs.marketing_version }} already exists"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "✅ Tag v${{ steps.xcode_version.outputs.marketing_version }} does not exist"
+          fi
+
+      # PR 조회
+      - name: Get merged PRs since last release
+        # 동일한 버전이 존재하지 않을 경우만 실행
+        if: steps.check_tag.outputs.exists == 'false'
+        id: get_prs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const latestRelease = await github.rest.repos.getLatestRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            }).catch(() => null);
+            
+            const since = latestRelease?.data.published_at || '';
+            
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'closed',
+              base: 'main',
+              sort: 'updated',
+              direction: 'desc'
+            });
+            
+            const mergedPRs = pulls.filter(pr => {
+              if (!pr.merged_at) return false;
+              if (!since) return true;  // 첫 릴리즈면 모든 PR 포함
+              return new Date(pr.merged_at) > new Date(since);
+            });
+            
+            // 라벨별로 PR 분류
+            const features = mergedPRs.filter(pr => 
+              pr.labels.some(l => l.name === 'Feature' || l.name === 'UI' || l.name === 'Design')
+            );
+            const bugfixes = mergedPRs.filter(pr => 
+              pr.labels.some(l => l.name === 'Fix' || l.name === 'Bug')
+            );
+            const maintenance = mergedPRs.filter(pr => 
+              pr.labels.some(l => l.name === 'Chore' || l.name === 'Refactor' || l.name === 'Remove' || l.name === 'Docs' || l.name === 'Test')
+            );
+            // 제외할 라벨: Someday, Release는 릴리즈 노트에 포함하지 않음
+            const others = mergedPRs.filter(pr => 
+              !pr.labels.some(l => ['Feature', 'UI', 'Design', 'Fix', 'Bug', 'Chore', 'Refactor', 'Remove', 'Docs', 'Test', 'Someday', 'Release'].includes(l.name))
+            );
+            
+            let releaseNotes = '## What\'s Changed\n\n';
+            
+            if (features.length > 0) {
+              releaseNotes += '### 🚀 New Features\n';
+              features.forEach(pr => {
+                releaseNotes += `- ${pr.title} @${pr.user.login} (#${pr.number})\n`;   
+              });
+              releaseNotes += '\n';
+            }
+            
+            if (bugfixes.length > 0) {
+              releaseNotes += '### 🐛 Bug Fixes\n';
+              bugfixes.forEach(pr => {
+                releaseNotes += `- ${pr.title} @${pr.user.login} (#${pr.number})\n`;
+              });
+              releaseNotes += '\n';
+            }
+            
+            if (maintenance.length > 0) {
+              releaseNotes += '### 🚩 Maintenance\n';
+              maintenance.forEach(pr => {
+                releaseNotes += `- ${pr.title} @${pr.user.login} (#${pr.number})\n`;
+              });
+              releaseNotes += '\n';
+            }
+            
+            if (others.length > 0) {
+              releaseNotes += '### 📝 Others\n';
+              others.forEach(pr => {
+                releaseNotes += `- ${pr.title} @${pr.user.login} (#${pr.number})\n`;
+              });
+            }
+            
+            return releaseNotes;
+      
+      - name: Create or Update Release Draft
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marketingVersion = '${{ steps.xcode_version.outputs.marketing_version }}';
+            const buildNumber = '${{ steps.xcode_version.outputs.build_number }}';
+            const tagName = `v${marketingVersion}`;
+            const releaseNotes = ${{ steps.get_prs.outputs.result }};
+            
+            // 릴리즈 노트에 버전 정보 추가
+            const fullReleaseNotes = `**Version**: ${marketingVersion}\n**Build**: ${buildNumber}\n\n${releaseNotes}`;
+            
+            // 기존 draft 릴리즈 찾기
+            const { data: releases } = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            
+            const existingDraft = releases.find(r => r.draft && r.tag_name === tagName);
+            
+            if (existingDraft) {
+              // 업데이트
+              await github.rest.repos.updateRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: existingDraft.id,
+                body: fullReleaseNotes
+              });
+              console.log(`✅ Updated draft release: ${tagName} (Build: ${buildNumber})`);
+            } else {
+              // 새로 생성
+              await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: tagName,
+                name: `v${marketingVersion}`,
+                body: fullReleaseNotes,
+                draft: true,
+                prerelease: false
+              });
+              console.log(`✅ Created draft release: ${tagName} (Build: ${buildNumber})`);
+            }
