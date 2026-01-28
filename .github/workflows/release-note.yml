@@ -24,11 +24,12 @@ jobs:
       - name: Extract Xcode version info
         id: xcode_version
         run: |
+          PROJECT_NAME="SoloDeveloperTraining"  # 프로젝트 이름
           # project.pbxproj에서 MARKETING_VERSION 추출 (예: 1.0.0)
-          MARKETING_VERSION=$(grep -m 1 "MARKETING_VERSION = " *.xcodeproj/project.pbxproj | sed 's/.*MARKETING_VERSION = \(.*\);/\1/' | tr -d ' ')
-          
+          MARKETING_VERSION=$(grep -m 1 "MARKETING_VERSION = " "${PROJECT_NAME}/${PROJECT_NAME}.xcodeproj/project.pbxproj" | sed 's/.*MARKETING_VERSION = \(.*\);/\1/' | tr -d ' ')
+
           # project.pbxproj에서 CURRENT_PROJECT_VERSION 추출 (빌드 번호, 예: 42)
-          BUILD_NUMBER=$(grep -m 1 "CURRENT_PROJECT_VERSION = " *.xcodeproj/project.pbxproj | sed 's/.*CURRENT_PROJECT_VERSION = \(.*\);/\1/' | tr -d ' ')
+          BUILD_NUMBER=$(grep -m 1 "CURRENT_PROJECT_VERSION = " "${PROJECT_NAME}/${PROJECT_NAME}.xcodeproj/project.pbxproj" | sed 's/.*MARKETING_VERSION = \(.*\);/\1/' | tr -d ' ')
           
           echo "marketing_version=$MARKETING_VERSION" >> $GITHUB_OUTPUT
           echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
@@ -166,7 +167,7 @@ jobs:
                 tag_name: tagName,
                 name: `v${marketingVersion}`,
                 body: fullReleaseNotes,
-                draft: true,
+                draft: false,
                 prerelease: false
               });
               console.log(`✅ Created draft release: ${tagName} (Build: ${buildNumber})`);
