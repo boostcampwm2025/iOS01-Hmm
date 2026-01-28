@@ -136,7 +136,8 @@ struct MainView: View {
                                 get: {
                                     selectedTab != .work || showQuizView
                                 },
-                                set: { _ in })
+                                set: { _ in }),
+                            careerSystem: $careerSystem
                         )
                         .opacity(selectedTab == .work ? 1 : 0)
                         .allowsHitTesting(selectedTab == .work)
@@ -155,7 +156,8 @@ struct MainView: View {
                                         get: {
                                             selectedTab != .work || showQuizView
                                         },
-                                        set: { _ in })
+                                        set: { _ in }),
+                                    careerSystem: $careerSystem
                                 )
                             }
                         case .skill:
@@ -234,6 +236,7 @@ struct MainView: View {
 #Preview {
     let user = User(
         nickname: "소피아",
+        career: .unemployed,
         wallet: .init(),
         inventory: Inventory(
             equipmentItems: [
@@ -246,10 +249,10 @@ struct MainView: View {
         ),
         record: .init(),
         skills: [
-            .init(key: SkillKey(game: .tap, tier: .beginner), level: 100),
-            .init(key: SkillKey(game: .language, tier: .beginner), level: 100),
-            .init(key: SkillKey(game: .dodge, tier: .beginner), level: 100),
-            .init(key: SkillKey(game: .stack, tier: .beginner), level: 100)
+            .init(key: SkillKey(game: .tap, tier: .beginner), level: 10),
+            .init(key: SkillKey(game: .language, tier: .beginner), level: 1),
+            .init(key: SkillKey(game: .dodge, tier: .beginner), level: 1),
+            .init(key: SkillKey(game: .stack, tier: .beginner), level: 1)
         ]
     )
     MainView(user: user)
