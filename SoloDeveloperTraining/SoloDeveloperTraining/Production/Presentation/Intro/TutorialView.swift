@@ -9,7 +9,6 @@ import SwiftUI
 
 private enum Constant {
     enum Spacing {
-        static let content: CGFloat = 0
         static let indicator: CGFloat = 8
         static let button: CGFloat = 15
     }
@@ -19,39 +18,52 @@ private enum Constant {
     }
 
     enum Padding {
-        static let indicatorTop: CGFloat = 60
-        static let indicatorBottom: CGFloat = 40
         static let buttonHorizontal: CGFloat = 25
-        static let buttonBottom: CGFloat = 50
+        static let buttonVertical: CGFloat = 25
     }
 }
 
 struct TutorialView: View {
-    @Binding var isPresented: Bool
-    let onComplete: () -> Void
-
     @State private var currentPage: Int = 0
+    @Binding var isPresented: Bool
+
+    let onComplete: () -> Void
 
     private let tutorialPages: [TutorialPage] = [
         TutorialPage(
-            title: "환영합니다!",
-            description: "1인 개발자로 성공하기 위한 여정을 시작합니다.",
-            imageName: nil
-        ),
-        TutorialPage(
             title: "게임 플레이",
-            description: "다양한 미니게임을 통해 경험치와 골드를 획득하세요.",
-            imageName: nil
-        ),
-        TutorialPage(
-            title: "장비 강화",
-            description: "장비를 강화하여 더 많은 보상을 받을 수 있습니다.",
-            imageName: nil
+            description: "다양한 미니게임을 통해 골드를 획득하세요.",
+            imageName: .tutorialWork
         ),
         TutorialPage(
             title: "스킬 업그레이드",
             description: "스킬을 업그레이드하여 게임 효율을 높이세요.",
-            imageName: nil
+            imageName: .tutorialSkill
+        ),
+        TutorialPage(
+            title: "장비 강화",
+            description: "장비를 강화하여 더 많은 보상을 받으세요.",
+            imageName: .tutorialItem
+        ),
+        TutorialPage(
+            title: "부동산 구매",
+            description: "부동산을 구매하여 더 많은 보상을 받으세요.",
+            imageName: .tutorialHousing
+        ),
+        TutorialPage(
+            title: "퀴즈 풀기",
+            description: "퀴즈를 풀고 다이아를 획득하세요.",
+            imageName: .tutorialQuiz
+        ),
+        TutorialPage(
+            title: "미션 완료",
+            description: "미션을 완료하여 추가 보상을 받으세요.",
+            imageName: .tutorialMission
+        ),
+        TutorialPage(
+            title: "커리어 성장",
+            description: "커리어를 발전시켜 더 높은 직급에 도전하세요.",
+            imageName: .tutorialCareer
         )
     ]
 
@@ -60,11 +72,11 @@ struct TutorialView: View {
             AppTheme.backgroundColor
                 .ignoresSafeArea()
 
-            VStack(spacing: Constant.Spacing.content) {
-                indicator
+            VStack(spacing: 0) {
                 tutorialContent
                 buttonGroup
             }
+            .ignoresSafeArea()
         }
     }
 }
@@ -79,8 +91,6 @@ private extension TutorialView {
                     .animation(.easeInOut, value: currentPage)
             }
         }
-        .padding(.top, Constant.Padding.indicatorTop)
-        .padding(.bottom, Constant.Padding.indicatorBottom)
     }
 
     var tutorialContent: some View {
@@ -102,7 +112,14 @@ private extension TutorialView {
                         currentPage -= 1
                     }
                 }
+            } else {
+                Color.clear
+                    .frame(width: 89, height: 44)
             }
+
+            Spacer()
+
+            indicator
 
             Spacer()
 
@@ -119,7 +136,7 @@ private extension TutorialView {
             }
         }
         .padding(.horizontal, Constant.Padding.buttonHorizontal)
-        .padding(.bottom, Constant.Padding.buttonBottom)
+        .padding(.vertical, Constant.Padding.buttonVertical)
     }
 }
 
