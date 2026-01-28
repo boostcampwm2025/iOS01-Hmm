@@ -74,6 +74,7 @@ private extension WorkSelectedView {
         VStack(spacing: Constant.contentSpacing) {
             workSegmentControl
             descriptionStack
+            Spacer()
             startButton
         }
         .padding(.horizontal, Constant.Padding.horizontal)
