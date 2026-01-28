@@ -25,7 +25,6 @@ private enum Constant {
 
 struct WorkItemButton: View {
     let title: String
-    let description: String
     let imageName: String
     @Binding var buttonState: ButtonState
     var onTap: (() -> Void)?
@@ -68,7 +67,6 @@ private extension WorkItemButton {
     var contentStack: some View {
         VStack(spacing: 0) {
             titleLabel
-            descriptionLabel
             itemImage
         }
     }
@@ -78,13 +76,6 @@ private extension WorkItemButton {
             .foregroundStyle(.black)
             .textStyle(.headline)
             .padding(.top, Constant.Padding.titleTop)
-    }
-
-    var descriptionLabel: some View {
-        Text(description)
-            .foregroundStyle(.black)
-            .textStyle(.label)
-            .padding(.top, Constant.Padding.descriptionTop)
     }
 
     var itemImage: some View {
@@ -176,19 +167,16 @@ extension WorkItemButton {
         HStack {
             WorkItemButton(
                 title: "타이틀",
-                description: "기본 상태",
                 imageName: "housing_street",
                 buttonState: $buttonState1
             )
             WorkItemButton(
                 title: "타이틀",
-                description: "선택 상태",
                 imageName: "housing_street",
                 buttonState: $buttonState2
             )
             WorkItemButton(
                 title: "타이틀",
-                description: "비활성 상태",
                 imageName: "housing_street",
                 buttonState: $buttonState3
             )

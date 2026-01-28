@@ -20,7 +20,6 @@ struct WorkSegmentControl: View {
             ForEach(items.indices, id: \.self) { index in
                 WorkItemButton(
                     title: items[index].title,
-                    description: items[index].description,
                     imageName: items[index].imageName,
                     buttonState: .constant(buttonState(for: index)),
                     onTap: {
@@ -51,18 +50,15 @@ private extension WorkSegmentControl {
 
 struct WorkItem {
     let title: String
-    let description: String
     let imageName: String
     let isDisabled: Bool
 
     init(
         title: String,
-        description: String,
         imageName: String,
         isDisabled: Bool = false
     ) {
         self.title = title
-        self.description = description
         self.imageName = imageName
         self.isDisabled = isDisabled
     }
@@ -79,23 +75,19 @@ struct WorkItem {
             items: [
                 WorkItem(
                     title: "테스트",
-                    description: "테스트",
                     imageName: GameType.tap.imageName
                 ),
                 WorkItem(
                     title: "테스트",
-                    description: "테스트",
                     imageName: GameType.tap.imageName
                 ),
                 WorkItem(
                     title: "테스트",
-                    description: "테스트",
                     imageName: GameType.tap.imageName,
                     isDisabled: true
                 ),
                 WorkItem(
                     title: "테스트",
-                    description: "테스트",
                     imageName: GameType.tap.imageName,
                     isDisabled: false
                 )
