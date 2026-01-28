@@ -33,8 +33,10 @@ struct WorkSelectedView: View {
     let user: User
     let animationSystem: CharacterAnimationSystem?
     @State var selectedIndex: Int = 0
+    @State var workItems: [WorkItem] = []
     @Binding var isGameStarted: Bool
     @Binding var isGameViewDisappeared: Bool
+    @Binding var careerSystem: CareerSystem?
 
     private let localStorage: KeyValueLocalStorage = UserDefaultsStorage()
 
@@ -43,11 +45,13 @@ struct WorkSelectedView: View {
         animationSystem: CharacterAnimationSystem?,
         isGameStarted: Binding<Bool>,
         isGameViewDisappeared: Binding<Bool>,
+        careerSystem: Binding<CareerSystem?>
     ) {
         self.user = user
         self.animationSystem = animationSystem
         self._isGameStarted = isGameStarted
         self._isGameViewDisappeared = isGameViewDisappeared
+        self._careerSystem = careerSystem
     }
 
     var body: some View {
@@ -59,10 +63,14 @@ struct WorkSelectedView: View {
             }
         }
         .onAppear {
+            workItems = createWorkItems(career: careerSystem?.currentCareer)
             loadLastSelectedIndex()
         }
         .onChange(of: selectedIndex) { _, newValue in
             saveLastSelectedIndex(newValue)
+        }
+        .onChange(of: careerSystem?.currentCareer) { _, newValue in
+            workItems = createWorkItems(career: newValue)
         }
     }
 }
@@ -108,23 +116,45 @@ private extension WorkSelectedView {
 // MARK: - Helper
 private extension WorkSelectedView {
 
-    var workItems: [WorkItem] {
+    func createWorkItems(career: Career?) -> [WorkItem] {
+        let currentCareer = career ?? .unemployed
+
+        let tapDisabled: Bool
+        let languageDisabled: Bool
+        let dodgeDisabled: Bool
+        let stackDisabled: Bool
+
+        switch currentCareer {
+        case .unemployed:
+            (tapDisabled, languageDisabled, dodgeDisabled, stackDisabled) = (false, true, true, true)
+        case .laptopOwner:
+            (tapDisabled, languageDisabled, dodgeDisabled, stackDisabled) = (false, false, true, true)
+        case .aspiringDeveloper:
+            (tapDisabled, languageDisabled, dodgeDisabled, stackDisabled) = (false, false, false, true)
+        default:
+            (tapDisabled, languageDisabled, dodgeDisabled, stackDisabled) = (false, false, false, false)
+        }
+
         return [
             .init(
                 title: "코드짜기",
-                imageName: GameType.tap.imageName
+                imageName: GameType.tap.imageName,
+                isDisabled: tapDisabled
             ),
             .init(
                 title: "언어 맞추기",
-                imageName: GameType.language.imageName
+                imageName: GameType.language.imageName,
+                isDisabled: languageDisabled
             ),
             .init(
                 title: "버그 피하기",
-                imageName: GameType.dodge.imageName
+                imageName: GameType.dodge.imageName,
+                isDisabled: stackDisabled
             ),
             .init(
                 title: "데이터 쌓기",
-                imageName: GameType.stack.imageName
+                imageName: GameType.stack.imageName,
+                isDisabled: stackDisabled
             )
         ]
     }
@@ -197,6 +227,7 @@ private extension WorkSelectedView {
 #Preview {
     @Previewable @State var isGameStarted = false
     @Previewable @State var isGameViewDisappeared = false
+    @Previewable @State var careerSystem: CareerSystem? = nil
 
     let user = User(
         nickname: "Test",
@@ -210,5 +241,6 @@ private extension WorkSelectedView {
         animationSystem: nil,
         isGameStarted: $isGameStarted,
         isGameViewDisappeared: $isGameViewDisappeared,
+        careerSystem: $careerSystem
     )
 }
