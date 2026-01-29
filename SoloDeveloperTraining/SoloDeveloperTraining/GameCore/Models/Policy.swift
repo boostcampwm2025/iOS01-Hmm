@@ -141,14 +141,14 @@ enum Policy {
             static let baseGold: Int = 1
 
             // 티어별 골드 획득 증가량
-            static let beginnerGoldMultiplier: Int = 10
-            static let intermediateGoldMultiplier: Int = 15
-            static let advancedGoldMultiplier: Int = 20
+            static let beginnerGoldMultiplier: Int = 1
+            static let intermediateGoldMultiplier: Int = 10
+            static let advancedGoldMultiplier: Int = 100
 
             // 업그레이드 비용 증가량
-            static let beginnerGoldCostMultiplier: Int = 5
-            static let intermediateGoldCostMultiplier: Int = 15
-            static let advancedGoldCostMultiplier: Int = 25
+            static let beginnerGoldCostMultiplier: Int = 10
+            static let intermediateGoldCostMultiplier: Int = 150
+            static let advancedGoldCostMultiplier: Int = 2500
             static let diamondCostDivider: Int = 100
             static let diamondCostMultiplier: Int = 10
 
@@ -163,14 +163,14 @@ enum Policy {
             static let baseGold: Int = 1
 
             // 티어별 골드 획득 증가량
-            static let beginnerGoldMultiplier: Int = 10
-            static let intermediateGoldMultiplier: Int = 15
-            static let advancedGoldMultiplier: Int = 20
+            static let beginnerGoldMultiplier: Int = 1
+            static let intermediateGoldMultiplier: Int = 10
+            static let advancedGoldMultiplier: Int = 100
 
             // 업그레이드 비용 증가량
-            static let beginnerGoldCostMultiplier: Int = 5
-            static let intermediateGoldCostMultiplier: Int = 15
-            static let advancedGoldCostMultiplier: Int = 25
+            static let beginnerGoldCostMultiplier: Int = 10
+            static let intermediateGoldCostMultiplier: Int = 150
+            static let advancedGoldCostMultiplier: Int = 2500
             static let diamondCostDivider: Int = 100
             static let diamondCostMultiplier: Int = 10
 
@@ -185,14 +185,14 @@ enum Policy {
             static let baseGold: Int = 1
 
             // 티어별 골드 획득 증가량
-            static let beginnerGoldMultiplier: Int = 10
-            static let intermediateGoldMultiplier: Int = 15
-            static let advancedGoldMultiplier: Int = 20
+            static let beginnerGoldMultiplier: Int = 1
+            static let intermediateGoldMultiplier: Int = 10
+            static let advancedGoldMultiplier: Int = 100
 
             // 업그레이드 비용 증가량
-            static let beginnerGoldCostMultiplier: Int = 5
-            static let intermediateGoldCostMultiplier: Int = 15
-            static let advancedGoldCostMultiplier: Int = 25
+            static let beginnerGoldCostMultiplier: Int = 10
+            static let intermediateGoldCostMultiplier: Int = 150
+            static let advancedGoldCostMultiplier: Int = 2500
             static let diamondCostDivider: Int = 100
             static let diamondCostMultiplier: Int = 10
 
@@ -207,14 +207,14 @@ enum Policy {
             static let baseGold: Int = 1
 
             // 티어별 골드 획득 증가량
-            static let beginnerGoldMultiplier: Int = 10
-            static let intermediateGoldMultiplier: Int = 15
-            static let advancedGoldMultiplier: Int = 20
+            static let beginnerGoldMultiplier: Int = 1
+            static let intermediateGoldMultiplier: Int = 10
+            static let advancedGoldMultiplier: Int = 100
 
             // 업그레이드 비용 증가량
-            static let beginnerGoldCostMultiplier: Int = 5
-            static let intermediateGoldCostMultiplier: Int = 15
-            static let advancedGoldCostMultiplier: Int = 25
+            static let beginnerGoldCostMultiplier: Int = 10
+            static let intermediateGoldCostMultiplier: Int = 150
+            static let advancedGoldCostMultiplier: Int = 2500
             static let diamondCostDivider: Int = 100
             static let diamondCostMultiplier: Int = 10
 
