@@ -77,6 +77,7 @@ struct PriceButton: View {
             .contentShape(Rectangle())
             .onTapGesture {
                 if !isDisabled {
+                    SoundService.shared.trigger(.tap)
                     action()
                 }
             }

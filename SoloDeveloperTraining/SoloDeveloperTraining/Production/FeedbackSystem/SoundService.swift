@@ -15,13 +15,16 @@ private enum Constant {
     static let sfxVolumeKey: String = "sfxVolume"
     static let volumeRange: ClosedRange<Int> = 0 ... 100
     static let defaultVolume: Int = 100
+    /// 효과음 동시 재생 상한 (중첩 허용)
+    static let maxConcurrentSFX: Int = 10
 }
 
 @Observable
 final class SoundService {
     static let shared = SoundService()
 
-    private var player: AVAudioPlayer?
+    private var sfxPlayers: [AVAudioPlayer] = []
+    private let sfxDelegate = SoundPlayerDelegate()
     private let localStorage: KeyValueLocalStorage = UserDefaultsStorage()
 
     var isEnabled: Bool {
@@ -67,6 +70,13 @@ final class SoundService {
             .playback,    // 무음모드 무시
             options: [.mixWithOthers]
         )
+        sfxDelegate.onFinish = { [weak self] player in
+            self?.removeFinishedSFXPlayer(player)
+        }
+    }
+
+    func removeFinishedSFXPlayer(_ player: AVAudioPlayer) {
+        sfxPlayers.removeAll { $0 === player }
     }
 
     func toggle() {
@@ -80,13 +90,27 @@ final class SoundService {
     func trigger(_ sound: SoundType) {
         guard isEnabled else { return }
         guard let url = sound.url else { return }
+        if sfxPlayers.count >= Constant.maxConcurrentSFX { return }
         do {
-            player = try AVAudioPlayer(contentsOf: url)
-            player?.volume = Float(sfxVolume) / 100
-            player?.prepareToPlay()
-            player?.play()
+            let player = try AVAudioPlayer(contentsOf: url)
+            player.volume = Float(sfxVolume) / 100
+            player.delegate = sfxDelegate
+            player.prepareToPlay()
+            player.play()
+            sfxPlayers.append(player)
         } catch {
             print("소리를 재생할 수 없음", error)
+        }
+    }
+}
+
+// MARK: - SFX 재생 완료 처리 (중첩 재생용)
+private final class SoundPlayerDelegate: NSObject, AVAudioPlayerDelegate {
+    var onFinish: ((AVAudioPlayer) -> Void)?
+
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        DispatchQueue.main.async { [weak self] in
+            self?.onFinish?(player)
         }
     }
 }

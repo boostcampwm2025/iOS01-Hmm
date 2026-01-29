@@ -66,6 +66,7 @@ struct MissionTestView: View {
             .navigationTitle("미션 시스템 테스트")
             .alert("알림", isPresented: $showAlert) {
                 Button("확인", role: .cancel) {}
+                    .withTapSound()
             } message: {
                 Text(alertMessage)
             }

@@ -174,6 +174,7 @@ struct DodgeGameTestView: View {
                             .cornerRadius(10)
                     }
                 )
+                .withTapSound()
                 .padding(.top, 5)
             }
             .padding()
