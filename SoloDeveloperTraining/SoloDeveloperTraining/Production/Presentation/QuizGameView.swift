@@ -103,7 +103,7 @@ struct QuizGameView: View {
             }
         }
         .onChange(of: state.remainingSeconds) { _, newValue in
-            if newValue == 3 {
+            if newValue == 2 {
                 SoundService.shared.trigger(.countdownTick)
             }
         }
