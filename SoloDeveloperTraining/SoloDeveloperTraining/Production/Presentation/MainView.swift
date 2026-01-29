@@ -30,9 +30,9 @@ private enum Constant {
         static let maxHeight: CGFloat = 650
     }
 
-    enum QuizButton {
+    enum TopButton {
         static let top: CGFloat = 128
-        static let trailing: CGFloat = 16
+        static let horizontal: CGFloat = 16
     }
 }
 
@@ -43,6 +43,7 @@ struct MainView: View {
     @State private var careerSystem: CareerSystem?
     @State private var isWorkGameInProgress: Bool = false
     @State private var showQuizView: Bool = false
+    @State private var showSettingsView: Bool = false
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
@@ -85,6 +86,7 @@ struct MainView: View {
                 await careerSystem?.updateCareer()
             }
             .overlay { popupOverlayView }
+            .overlay { settingsOverlayView }
             .fullScreenCover(isPresented: $showQuizView) {
                 QuizGameView(user: user)
             }
@@ -138,17 +140,16 @@ private extension MainView {
     var topButtonOverlay: some View {
         VStack {
             HStack {
-                // TODO: 설정창으로 변경
-                SmallButton(title: "퀴즈", hasBadge: true) {
-                    showQuizView = true
+                SmallButton(title: "설정", image: Image(.iconSetting)) {
+                    showSettingsView = true
                 }
                 Spacer()
                 SmallButton(title: "퀴즈", hasBadge: true) {
                     showQuizView = true
                 }
             }
-            .padding(.top, Constant.QuizButton.top)
-            .padding(.horizontal, Constant.QuizButton.trailing)
+            .padding(.top, Constant.TopButton.top)
+            .padding(.horizontal, Constant.TopButton.horizontal)
             Spacer()
         }
     }
@@ -214,6 +215,20 @@ private extension MainView {
 
                 Popup(title: popupContent.title, contentView: popupContent.content)
                     .frame(maxHeight: popupContent.maxHeight)
+                    .padding(.horizontal, Constant.Padding.horizontalPadding)
+            }
+        }
+    }
+
+    @ViewBuilder
+    var settingsOverlayView: some View {
+        if showSettingsView {
+            ZStack {
+                Constant.Color.overlay
+                    .ignoresSafeArea()
+                    .onTapGesture { showSettingsView = false }
+
+                FeedbackSettingView(onClose: { showSettingsView = false })
                     .padding(.horizontal, Constant.Padding.horizontalPadding)
             }
         }

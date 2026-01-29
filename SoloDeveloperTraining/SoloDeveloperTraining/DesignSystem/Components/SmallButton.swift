@@ -36,6 +36,7 @@ struct SmallButton: View {
     @State private var isPressed: Bool = false
 
     let title: String
+    var image: Image? = nil
     var hasBadge: Bool = false
     var isEnabled: Bool = true
     let action: () -> Void
@@ -43,9 +44,7 @@ struct SmallButton: View {
     var body: some View {
         Button(action: action) {
             ZStack {
-                Text(title)
-                    .textStyle(.body)
-                    .foregroundColor(.white)
+                buttonContent
                     .frame(width: Constant.Size.buttonWidth, height: Constant.Size.buttonHeight)
                     .background(backgroundColor)
                     .cornerRadius(Constant.radius)
@@ -71,6 +70,21 @@ struct SmallButton: View {
         }
         .disabled(!isEnabled)
         .buttonStyle(.pressable(isPressed: $isPressed))
+
+    }
+
+    @ViewBuilder
+    private var buttonContent: some View {
+        if let image {
+            image
+                .resizable()
+                .scaledToFit()
+                .frame(width: Constant.Size.buttonWidth, height: Constant.Size.buttonHeight)
+        } else {
+            Text(title)
+                .textStyle(.body)
+                .foregroundColor(.white)
+        }
     }
 
     private var backgroundColor: Color {
