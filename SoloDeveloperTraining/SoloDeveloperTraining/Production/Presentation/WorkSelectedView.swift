@@ -95,7 +95,7 @@ private extension WorkSelectedView {
         WorkSegmentControl(
             items: workItems,
             onLockedTap: { requiredCareer in
-                toastMessage = "\(requiredCareer.rawValue)에 도달하면 열려요"
+                toastMessage = "\(requiredCareer.rawValue)부터 플레이할 수 있습니다."
                 showToast = true
             }
             , selectedIndex: $selectedIndex
