@@ -8,37 +8,31 @@
 import Foundation
 
 enum SoundType: String {
-    // MARK: - 공통
-    case success
-    case failure
-    /// 전체 버튼 클릭음 (딸깍, 짧)
+    /// 전체 버튼 클릭음
     case buttonTap
 
     // MARK: - BGM
-    /// 잔잔
     case bgm
 
     // MARK: - 언어 맞추기
-    /// 맞았을 때 (쓰로틀 x)
+    /// 맞았을 때
     case languageCorrect
-    /// 틀렸을 때 (쓰로틀 x)
+    /// 틀렸을 때
     case languageWrong
 
     // MARK: - 버그 피하기
     /// 코인 먹는 소리
     case coinCollect
-    /// 버그 맞는 소리 (연속음)
+    /// 버그 맞는 소리
     case bugHit
 
     // MARK: - 데이터 쌓기
-    /// 블록 쌓기: 툭
+    /// 블록 쌓기
     case blockStack
-    /// 블록 떨굼 (물리엔진에 맞게)
+    /// 블록 떨굼
     case blockDrop
-    /// 폭탄 쌓기: 펑
+    /// 폭탄 쌓기
     case bombStack
-    /// 폭탄 떨굼
-    case bombDrop
 
     // MARK: - 퀴즈
     /// 끝나기 3초 전 째깍
@@ -55,19 +49,16 @@ enum SoundType: String {
     case upgradeFailure
 
     // MARK: - 미션
-    /// 미션 획득 시 짜잔
+    /// 미션 획득 시
     case missionAcquired
 
     /// 탭게임 탭 시
     case tapGameTyping
 
-    /// wav 우선, 없으면 mp3 로드 (AVAudioPlayer 모두 지원)
+    /// wav 우선, 없으면 mp3 로드
     var url: URL? {
         let wav = Bundle.main.url(forResource: rawValue, withExtension: "wav")
         let mp3 = Bundle.main.url(forResource: rawValue, withExtension: "mp3")
-        if case .bombDrop = self {
-            return wav ?? mp3 ?? SoundType.bombStack.url
-        }
         return wav ?? mp3
     }
 }

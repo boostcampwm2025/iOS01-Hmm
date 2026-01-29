@@ -72,6 +72,7 @@ private extension GameToolBar {
                     height: Constant.Size.closeButton.height
                 )
         }
+        .buttonStyle(.soundTap)
     }
 
     /// 피버 게이지 바
