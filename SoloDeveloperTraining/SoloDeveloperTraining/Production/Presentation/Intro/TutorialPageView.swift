@@ -18,7 +18,8 @@ private enum Constant {
         static let imageMaxHeight: CGFloat = 300
         static let placeholderWidth: CGFloat = 300
         static let placeholderHeight: CGFloat = 300
-        static let cornerRadius: CGFloat = 20
+        static let cornerRadius: CGFloat = 4
+        static let strokeWidth: CGFloat = 2
     }
 
     enum Layout {
@@ -40,6 +41,7 @@ struct TutorialPageView: View {
             textGroup
             imageView
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(.bottom, Constant.Size.strokeWidth)
         }
     }
 }
@@ -49,7 +51,11 @@ private extension TutorialPageView {
         Image(page.imageName)
             .resizable()
             .scaledToFit()
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(maxHeight: .infinity)
+            .overlay {
+                RoundedRectangle(cornerRadius: Constant.Size.cornerRadius)
+                    .stroke(.black, lineWidth: Constant.Size.strokeWidth)
+            }
     }
 
     var textGroup: some View {

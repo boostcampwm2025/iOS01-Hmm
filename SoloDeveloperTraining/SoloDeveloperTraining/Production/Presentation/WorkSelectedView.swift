@@ -82,6 +82,7 @@ private extension WorkSelectedView {
         VStack(spacing: Constant.contentSpacing) {
             workSegmentControl
             descriptionStack
+            Spacer()
             startButton
         }
         .padding(.horizontal, Constant.Padding.horizontal)
@@ -137,25 +138,21 @@ private extension WorkSelectedView {
         return [
             .init(
                 title: "코드짜기",
-                description: "효과 설명",
                 imageName: GameType.tap.imageName,
                 isDisabled: tapDisabled
             ),
             .init(
                 title: "언어 맞추기",
-                description: "효과 설명",
                 imageName: GameType.language.imageName,
                 isDisabled: languageDisabled
             ),
             .init(
                 title: "버그 피하기",
-                description: "효과 설명",
                 imageName: GameType.dodge.imageName,
-                isDisabled: dodgeDisabled
+                isDisabled: stackDisabled
             ),
             .init(
                 title: "데이터 쌓기",
-                description: "효과 설명",
                 imageName: GameType.stack.imageName,
                 isDisabled: stackDisabled
             )
@@ -173,11 +170,26 @@ private extension WorkSelectedView {
                 animationSystem: animationSystem
             )
         case 1:
-            LanguageGameView(user: user, isGameStarted: $isGameStarted, isGameViewDisappeared: $isGameViewDisappeared, animationSystem: animationSystem)
+            LanguageGameView(
+                user: user,
+                isGameStarted: $isGameStarted,
+                isGameViewDisappeared: $isGameViewDisappeared,
+                animationSystem: animationSystem
+            )
         case 2:
-            DodgeGameView(user: user, isGameStarted: $isGameStarted, isGameViewDisappeared: $isGameViewDisappeared, animationSystem: animationSystem)
+            DodgeGameView(
+                user: user,
+                isGameStarted: $isGameStarted,
+                isGameViewDisappeared: $isGameViewDisappeared,
+                animationSystem: animationSystem
+            )
         case 3:
-            StackGameView(user: user, isGameStarted: $isGameStarted, isGameViewDisappeared: $isGameViewDisappeared, animationSystem: animationSystem)
+            StackGameView(
+                user: user,
+                isGameStarted: $isGameStarted,
+                isGameViewDisappeared: $isGameViewDisappeared,
+                animationSystem: animationSystem
+            )
         default:
             EmptyView()
         }
