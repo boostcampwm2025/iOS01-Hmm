@@ -14,6 +14,8 @@ private enum Constant {
 }
 
 struct FeedbackSettingView: View {
+    let onClose: (() -> Void)?
+
     var body: some View {
         Popup(title: Constant.title) {
             VStack(alignment: .leading, spacing: Constant.rowSpacing) {
@@ -34,6 +36,7 @@ struct FeedbackSettingView: View {
                     isOn: HapticService.shared.isEnabled,
                     setOn: { HapticService.shared.isEnabled = $0 }
                 )
+                closeButton
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, Constant.horizontalPadding)
@@ -54,6 +57,16 @@ private extension FeedbackSettingView {
             get: { Double(SoundService.shared.sfxVolume) },
             set: { SoundService.shared.sfxVolume = min(max(Int($0), 0), 100) }
         )
+    }
+
+    var closeButton: some View {
+        HStack {
+            Spacer()
+            MediumButton(title: "닫기", isFilled: true) {
+                onClose?()
+            }
+            Spacer()
+        }
     }
 
     func soundSettingSection(
@@ -81,6 +94,8 @@ private extension FeedbackSettingView {
 }
 
 #Preview {
-    FeedbackSettingView()
+    FeedbackSettingView {
+
+    }
         .padding(25)
 }
