@@ -89,8 +89,13 @@ private extension FeedbackSettingView {
                 .textStyle(.title2)
             Spacer()
             MediumButton(title: isOn ? "ON" : "OFF", isFilled: isOn) {
-                setOn(!isOn)
+                var transaction = Transaction()
+                transaction.animation = nil
+                withTransaction(transaction) {
+                    setOn(!isOn)
+                }
             }
+            .transaction { $0.animation = nil }
         }
     }
 }
