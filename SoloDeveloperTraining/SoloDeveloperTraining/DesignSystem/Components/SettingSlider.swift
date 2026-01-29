@@ -7,8 +7,13 @@ import SwiftUI
 
 private enum Constant {
     static let thumbDiameter: CGFloat = 24
-    static var trackHeight: CGFloat { thumbDiameter / 2 }
-    static var trackCornerRadius: CGFloat { trackHeight / 2 }
+    static let thumbRadius: CGFloat = thumbDiameter / 2
+    static let trackHeight: CGFloat = 12
+    static let cornerRadius: CGFloat = 4
+    static let strokeLineWidth: CGFloat = 1
+    static let strokeOpacityEnabled: Double = 0.15
+    static let strokeOpacityDisabled: Double = 0.08
+    static let dragMinimumDistance: CGFloat = 0
 }
 
 struct SettingSlider: View {
@@ -30,31 +35,34 @@ struct SettingSlider: View {
 
             ZStack(alignment: .leading) {
                 // 트랙 배경
-                RoundedRectangle(cornerRadius: Constant.trackCornerRadius)
+                RoundedRectangle(cornerRadius: Constant.cornerRadius)
                     .fill(trackBackgroundColor)
                     .frame(height: Constant.trackHeight)
 
                 // 진행
-                RoundedRectangle(cornerRadius: Constant.trackCornerRadius)
+                RoundedRectangle(cornerRadius: Constant.cornerRadius)
                     .fill(fillColor)
                     .frame(width: max(0, thumbCenterX), height: Constant.trackHeight)
 
                 // 썸
-                RoundedRectangle(cornerRadius: Constant.trackCornerRadius)
+                RoundedRectangle(cornerRadius: Constant.cornerRadius)
                     .fill(thumbColor)
                     .frame(width: Constant.thumbDiameter, height: Constant.thumbDiameter)
                     .overlay {
-                        RoundedRectangle(cornerRadius: Constant.trackCornerRadius)
-                            .stroke(Color.black.opacity(isEnabled ? 0.15 : 0.08), lineWidth: 1)
+                        RoundedRectangle(cornerRadius: Constant.cornerRadius)
+                            .stroke(
+                                Color.black.opacity(isEnabled ? Constant.strokeOpacityEnabled : Constant.strokeOpacityDisabled),
+                                lineWidth: Constant.strokeLineWidth
+                            )
                     }
-                    .offset(x: thumbCenterX - Constant.thumbDiameter / 2)
+                    .offset(x: thumbCenterX - Constant.thumbRadius)
             }
             .frame(height: Constant.thumbDiameter)
             .frame(maxWidth: .infinity)
             .contentShape(Rectangle())
             .allowsHitTesting(isEnabled)
             .gesture(
-                DragGesture(minimumDistance: 0)
+                DragGesture(minimumDistance: Constant.dragMinimumDistance)
                     .onChanged { gesture in
                         guard isEnabled else { return }
                         applyValue(from: gesture.location.x, trackWidth: width)
@@ -67,20 +75,22 @@ struct SettingSlider: View {
         }
         .frame(height: Constant.thumbDiameter)
     }
+}
 
-    private var trackBackgroundColor: Color {
+private extension SettingSlider {
+    var trackBackgroundColor: Color {
         AppColors.beige300
     }
 
-    private var fillColor: Color {
+    var fillColor: Color {
         isEnabled ? AppColors.orange300 : AppColors.gray300
     }
 
-    private var thumbColor: Color {
+    var thumbColor: Color {
         isEnabled ? AppColors.orange500 : AppColors.gray400
     }
 
-    private func applyValue(from locationX: CGFloat, trackWidth: CGFloat) {
+    func applyValue(from locationX: CGFloat, trackWidth: CGFloat) {
         guard trackWidth > 0 else { return }
         let progressRatio = max(0, min(1, locationX / trackWidth))
         var rawValue = range.lowerBound + progressRatio * (range.upperBound - range.lowerBound)
