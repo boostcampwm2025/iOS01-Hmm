@@ -119,7 +119,7 @@ enum Policy {
         /// 퀴즈 게임 (QuizGame)
         enum Quiz {
             static let questionsPerGame: Int = 3                // 게임당 문제 수
-            static let secondsPerQuestion: Int = 60             // 문제당 제한 시간
+            static let secondsPerQuestion: Int = 20             // 문제당 제한 시간
             static let diamondsPerCorrect: Int = 5              // 정답당 다이아
         }
     }
