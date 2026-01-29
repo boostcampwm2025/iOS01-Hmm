@@ -19,8 +19,8 @@ final class Equipment: Item {
         }
         let nextTier = EquipmentTier(rawValue: tier.rawValue + 1) ?? .nationalTreasure
         let nextEquipment = Equipment(type: type, tier: nextTier)
-        let goldDifference = nextEquipment.goldPerSecond - goldPerSecond
-        return "초 당 획득 골드 +\(goldDifference)"
+        let goldDifference: Int = nextEquipment.goldPerSecond - goldPerSecond
+        return "강화시 초당 골드 획득량 \(goldDifference.formatted) 증가"
     }
     var cost: Cost {
         return tier.cost
