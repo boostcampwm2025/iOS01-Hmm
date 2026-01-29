@@ -215,6 +215,7 @@ final class DodgeGame: Game {
             user.record.record(.dodgeFail)
 
             SoundService.shared.trigger(.bugHit)
+            HapticService.shared.trigger(.error)
             return -loseGold
         }
     }

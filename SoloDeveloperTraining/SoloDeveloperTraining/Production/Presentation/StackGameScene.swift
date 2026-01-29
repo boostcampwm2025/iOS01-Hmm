@@ -267,7 +267,7 @@ final class StackGameScene: SKScene {
         if currentBlock.type.isBomb {
             onBlockDropped(stackGame.placeBombSuccess())
             SoundService.shared.trigger(.bombStack)
-
+            HapticService.shared.trigger(.error)
             DispatchQueue.main.asyncAfter(deadline: .now() + Constant.Time.bombRemovalDelay) { [weak self] in
                 block.removeFromParent()
                 self?.spawnBlock()
@@ -309,6 +309,7 @@ final class StackGameScene: SKScene {
         } else {
             onBlockDropped(stackGame.placeBlockFail())
             SoundService.shared.trigger(.blockDrop)
+            HapticService.shared.trigger(.error)
         }
 
         // 일정 시간 후 블록 제거 및 다음 블록 생성

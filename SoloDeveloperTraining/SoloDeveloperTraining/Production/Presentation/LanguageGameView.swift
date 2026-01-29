@@ -167,6 +167,9 @@ private extension LanguageGameView {
         Task {
             let gainedGold = await game.didPerformAction(type)
             SoundService.shared.trigger(gainedGold > 0 ? .languageCorrect : .languageWrong)
+            if gainedGold <= 0 {
+                HapticService.shared.trigger(.error)
+            }
             showEffectLabel(gainedGold: gainedGold)
         }
     }
