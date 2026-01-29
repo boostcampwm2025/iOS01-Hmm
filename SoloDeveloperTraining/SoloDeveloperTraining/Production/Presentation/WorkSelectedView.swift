@@ -33,8 +33,12 @@ struct WorkSelectedView: View {
     let user: User
     let animationSystem: CharacterAnimationSystem?
     @State var selectedIndex: Int = 0
+    @State var workItems: [WorkItem] = []
+    @State private var showToast: Bool = false
+    @State private var toastMessage: String = ""
     @Binding var isGameStarted: Bool
     @Binding var isGameViewDisappeared: Bool
+    @Binding var careerSystem: CareerSystem?
 
     private let localStorage: KeyValueLocalStorage = UserDefaultsStorage()
 
@@ -43,11 +47,13 @@ struct WorkSelectedView: View {
         animationSystem: CharacterAnimationSystem?,
         isGameStarted: Binding<Bool>,
         isGameViewDisappeared: Binding<Bool>,
+        careerSystem: Binding<CareerSystem?>
     ) {
         self.user = user
         self.animationSystem = animationSystem
         self._isGameStarted = isGameStarted
         self._isGameViewDisappeared = isGameViewDisappeared
+        self._careerSystem = careerSystem
     }
 
     var body: some View {
@@ -59,10 +65,14 @@ struct WorkSelectedView: View {
             }
         }
         .onAppear {
+            workItems = createWorkItems(career: careerSystem?.currentCareer)
             loadLastSelectedIndex()
         }
         .onChange(of: selectedIndex) { _, newValue in
             saveLastSelectedIndex(newValue)
+        }
+        .onChange(of: careerSystem?.currentCareer) { _, newValue in
+            workItems = createWorkItems(career: newValue)
         }
     }
 }
@@ -74,15 +84,21 @@ private extension WorkSelectedView {
         VStack(spacing: Constant.contentSpacing) {
             workSegmentControl
             descriptionStack
+            Spacer()
             startButton
         }
         .padding(.horizontal, Constant.Padding.horizontal)
+        .toast(isShowing: $showToast, message: toastMessage)
     }
 
     var workSegmentControl: some View {
         WorkSegmentControl(
             items: workItems,
-            selectedIndex: $selectedIndex
+            onLockedTap: { requiredCareer in
+                toastMessage = "\(requiredCareer.rawValue)부터 플레이할 수 있습니다."
+                showToast = true
+            }
+            , selectedIndex: $selectedIndex
         )
     }
 
@@ -107,29 +123,45 @@ private extension WorkSelectedView {
 // MARK: - Helper
 private extension WorkSelectedView {
 
-    var workItems: [WorkItem] {
+    func createWorkItems(career: Career?) -> [WorkItem] {
+        let currentCareer = career ?? .unemployed
+        let currentWealth = currentCareer.requiredWealth
+
+        let tapUnlocked = currentWealth >= Policy.Career.GameUnlock.tap
+        let languageUnlocked = currentWealth >= Policy.Career.GameUnlock.language
+        let dodgeUnlocked = currentWealth >= Policy.Career.GameUnlock.dodge
+        let stackUnlocked = currentWealth >= Policy.Career.GameUnlock.stack
+
         return [
             .init(
                 title: "코드짜기",
-                description: "효과 설명",
-                imageName: GameType.tap.imageName
+                imageName: GameType.tap.imageName,
+                isDisabled: !tapUnlocked,
+                requiredCareer: findCareer(for: Policy.Career.GameUnlock.tap)
             ),
             .init(
                 title: "언어 맞추기",
-                description: "효과 설명",
-                imageName: GameType.language.imageName
+                imageName: GameType.language.imageName,
+                isDisabled: !languageUnlocked,
+                requiredCareer: findCareer(for: Policy.Career.GameUnlock.language)
             ),
             .init(
                 title: "버그 피하기",
-                description: "효과 설명",
-                imageName: GameType.dodge.imageName
+                imageName: GameType.dodge.imageName,
+                isDisabled: !dodgeUnlocked,
+                requiredCareer: findCareer(for: Policy.Career.GameUnlock.dodge)
             ),
             .init(
                 title: "데이터 쌓기",
-                description: "효과 설명",
-                imageName: GameType.stack.imageName
+                imageName: GameType.stack.imageName,
+                isDisabled: !stackUnlocked,
+                requiredCareer: findCareer(for: Policy.Career.GameUnlock.stack)
             )
         ]
+    }
+
+    func findCareer(for requiredWealth: Int) -> Career? {
+        return Career.allCases.first { $0.requiredWealth == requiredWealth }
     }
 
     @ViewBuilder
@@ -143,11 +175,26 @@ private extension WorkSelectedView {
                 animationSystem: animationSystem
             )
         case 1:
-            LanguageGameView(user: user, isGameStarted: $isGameStarted, isGameViewDisappeared: $isGameViewDisappeared, animationSystem: animationSystem)
+            LanguageGameView(
+                user: user,
+                isGameStarted: $isGameStarted,
+                isGameViewDisappeared: $isGameViewDisappeared,
+                animationSystem: animationSystem
+            )
         case 2:
-            DodgeGameView(user: user, isGameStarted: $isGameStarted, isGameViewDisappeared: $isGameViewDisappeared, animationSystem: animationSystem)
+            DodgeGameView(
+                user: user,
+                isGameStarted: $isGameStarted,
+                isGameViewDisappeared: $isGameViewDisappeared,
+                animationSystem: animationSystem
+            )
         case 3:
-            StackGameView(user: user, isGameStarted: $isGameStarted, isGameViewDisappeared: $isGameViewDisappeared, animationSystem: animationSystem)
+            StackGameView(
+                user: user,
+                isGameStarted: $isGameStarted,
+                isGameViewDisappeared: $isGameViewDisappeared,
+                animationSystem: animationSystem
+            )
         default:
             EmptyView()
         }
@@ -185,6 +232,7 @@ private extension WorkSelectedView {
 #Preview {
     @Previewable @State var isGameStarted = false
     @Previewable @State var isGameViewDisappeared = false
+    @Previewable @State var careerSystem: CareerSystem? = nil
 
     let user = User(
         nickname: "Test",
@@ -198,5 +246,6 @@ private extension WorkSelectedView {
         animationSystem: nil,
         isGameStarted: $isGameStarted,
         isGameViewDisappeared: $isGameViewDisappeared,
+        careerSystem: $careerSystem
     )
 }

@@ -9,7 +9,8 @@ import SwiftUI
 
 private enum Constant {
     enum Animation {
-        static let duration: Double = 1.0
+        static let transitionDuration: Double = 0.5  // 화면 전환
+        static let blinkingDuration: Double = 1.0    // 깜빡임
     }
 
     enum Layout {
@@ -41,7 +42,7 @@ struct IntroView: View {
             if user == nil {
                 showNicknameSetup = true
             } else {
-                withAnimation(.easeOut(duration: Constant.Animation.duration)) {
+                withAnimation(.easeOut(duration: Constant.Animation.transitionDuration)) {
                     hasSeenIntro = true
                 }
             }
@@ -72,7 +73,7 @@ private extension IntroView {
                 .textStyle(.title2)
                 .foregroundColor(.white)
                 .opacity(isBlinking ? Constant.Opacity.blinking : Constant.Opacity.normal)
-                .animation(.easeInOut(duration: Constant.Animation.duration).repeatForever(autoreverses: true), value: isBlinking)
+                .animation(.easeInOut(duration: Constant.Animation.blinkingDuration).repeatForever(autoreverses: true), value: isBlinking)
                 .padding(.bottom, Constant.Layout.bottomPadding)
         }
     }

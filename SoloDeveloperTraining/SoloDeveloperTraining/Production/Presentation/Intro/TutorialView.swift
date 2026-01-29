@@ -9,12 +9,15 @@ import SwiftUI
 
 private enum Constant {
     enum Spacing {
+        static let content: CGFloat = 10
         static let indicator: CGFloat = 8
         static let button: CGFloat = 15
     }
 
     enum Size {
         static let indicatorCircle: CGFloat = 8
+        static let placeholderButtonWidth: CGFloat = 89
+        static let placeholderButtonHeight: CGFloat = 44
     }
 
     enum Padding {
@@ -72,7 +75,7 @@ struct TutorialView: View {
             AppTheme.backgroundColor
                 .ignoresSafeArea()
 
-            VStack(spacing: 0) {
+            VStack(spacing: Constant.Spacing.content) {
                 tutorialContent
                 buttonGroup
             }
@@ -114,7 +117,10 @@ private extension TutorialView {
                 }
             } else {
                 Color.clear
-                    .frame(width: 89, height: 44)
+                    .frame(
+                        width: Constant.Size.placeholderButtonWidth,
+                        height: Constant.Size.placeholderButtonHeight
+                    )
             }
 
             Spacer()

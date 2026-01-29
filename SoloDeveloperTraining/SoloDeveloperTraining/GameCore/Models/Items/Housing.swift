@@ -13,7 +13,7 @@ struct Housing: Item {
         return tier.displayTitle
     }
     var description: String {
-        return "초 당 획득 골드 +\(goldPerSecond)"
+        return "초당 골드 획득량 \(goldPerSecond)"
     }
     var cost: Cost {
         return tier.cost

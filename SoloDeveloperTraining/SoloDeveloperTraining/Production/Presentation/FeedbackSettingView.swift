@@ -2,61 +2,107 @@
 //  FeedbackSettingView.swift
 //  SoloDeveloperTraining
 //
-//  Created by sunjae on 1/22/26.
-//
 
 import SwiftUI
 
 private enum Constant {
-    static let iconSize: CGFloat = 38
-    static let horizontalSpacing: CGFloat = 12
-
-    enum Opacity {
-        static let imageEnabled: Double = 1
-        static let imageDisabled: Double = 0.7
-    }
-
-    enum ImageName {
-        static let soundActive: String = "speaker.wave.2.circle.fill"
-        static let soundInactive: String = "speaker.slash.circle.fill"
-        static let hapticActive: String = "iphone.gen2.radiowaves.left.and.right.circle.fill"
-        static let hapticInactive: String = "iphone.gen2.slash.circle.fill"
-    }
+    static let title: String = "설정"
+    static let rowSpacing: CGFloat = 30
+    static let horizontalPadding: CGFloat = 20
+    static let volumeRange: ClosedRange<Double> = 0 ... 100
+    static let volumeStep: Double = 1
 }
 
 struct FeedbackSettingView: View {
+    let onClose: (() -> Void)?
+
     var body: some View {
-        HStack(spacing: Constant.horizontalSpacing) {
-            // 사운드 버튼
-            Button {
-                SoundService.shared.toggle()
-            } label: {
-                Image(
-                    systemName:
-                    SoundService.shared.isEnabled ? Constant.ImageName.soundActive : Constant.ImageName.soundInactive
+        Popup(title: "") {
+            Text("설정")
+                .textStyle(.largeTitle)
+            VStack(alignment: .leading, spacing: Constant.rowSpacing) {
+                soundSettingSection(
+                    title: "배경음",
+                    isOn: SoundService.shared.isBGMEnabled,
+                    setOn: { SoundService.shared.isBGMEnabled = $0 },
+                    volume: bgmVolumeBinding
                 )
-                .resizable()
-                .frame(width: Constant.iconSize, height: Constant.iconSize)
-                .foregroundColor(.white)
-                .opacity(
-                    SoundService.shared.isEnabled ? Constant.Opacity.imageEnabled : Constant.Opacity.imageDisabled
+                soundSettingSection(
+                    title: "효과음",
+                    isOn: SoundService.shared.isSFXEnabled,
+                    setOn: { SoundService.shared.isSFXEnabled = $0 },
+                    volume: sfxVolumeBinding
                 )
+                settingRow(
+                    title: "햅틱",
+                    isOn: HapticService.shared.isEnabled,
+                    setOn: { HapticService.shared.isEnabled = $0 }
+                )
+                closeButton
             }
-            // 햅틱 버튼
-            Button {
-                HapticService.shared.toggle()
-            } label: {
-                Image(
-                    systemName:
-                    HapticService.shared.isEnabled ? Constant.ImageName.hapticActive : Constant.ImageName.hapticInactive
-                )
-                .resizable()
-                .frame(width: Constant.iconSize, height: Constant.iconSize)
-                .foregroundColor(.white)
-                .opacity(
-                    HapticService.shared.isEnabled ? Constant.Opacity.imageEnabled : Constant.Opacity.imageDisabled
-                )
-            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, Constant.horizontalPadding)
         }
     }
+}
+
+private extension FeedbackSettingView {
+    var bgmVolumeBinding: Binding<Double> {
+        Binding(
+            get: { Double(SoundService.shared.bgmVolume) },
+            set: { SoundService.shared.bgmVolume = min(max(Int($0), 0), 100) }
+        )
+    }
+
+    var sfxVolumeBinding: Binding<Double> {
+        Binding(
+            get: { Double(SoundService.shared.sfxVolume) },
+            set: { SoundService.shared.sfxVolume = min(max(Int($0), 0), 100) }
+        )
+    }
+
+    var closeButton: some View {
+        HStack {
+            Spacer()
+            MediumButton(title: "닫기", isFilled: true) {
+                onClose?()
+            }
+            Spacer()
+        }
+    }
+
+    func soundSettingSection(
+        title: String,
+        isOn: Bool,
+        setOn: @escaping (Bool) -> Void,
+        volume: Binding<Double>
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 15) {
+            settingRow(title: title, isOn: isOn, setOn: setOn)
+            SettingSlider(value: volume, range: Constant.volumeRange, step: Constant.volumeStep, isEnabled: isOn)
+        }
+    }
+
+    func settingRow(title: String, isOn: Bool, setOn: @escaping (Bool) -> Void) -> some View {
+        HStack {
+            Text(title)
+                .textStyle(.title2)
+            Spacer()
+            MediumButton(title: isOn ? "ON" : "OFF", isFilled: isOn) {
+                var transaction = Transaction()
+                transaction.animation = nil
+                withTransaction(transaction) {
+                    setOn(!isOn)
+                }
+            }
+            .transaction { $0.animation = nil }
+        }
+    }
+}
+
+#Preview {
+    FeedbackSettingView {
+
+    }
+        .padding(25)
 }

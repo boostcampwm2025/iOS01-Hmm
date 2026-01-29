@@ -25,7 +25,6 @@ private enum Constant {
 
 struct WorkItemButton: View {
     let title: String
-    let description: String
     let imageName: String
     @Binding var buttonState: ButtonState
     var onTap: (() -> Void)?
@@ -34,6 +33,8 @@ struct WorkItemButton: View {
         buttonContent
             .disabled(buttonState.isDisabled)
             .onTapGesture {
+                guard !buttonState.isDisabled else { return }
+                SoundService.shared.trigger(.buttonTap)
                 if let onTap = onTap {
                     onTap()
                 } else {
@@ -68,7 +69,6 @@ private extension WorkItemButton {
     var contentStack: some View {
         VStack(spacing: 0) {
             titleLabel
-            descriptionLabel
             itemImage
         }
     }
@@ -80,13 +80,6 @@ private extension WorkItemButton {
             .padding(.top, Constant.Padding.titleTop)
     }
 
-    var descriptionLabel: some View {
-        Text(description)
-            .foregroundStyle(.black)
-            .textStyle(.label)
-            .padding(.top, Constant.Padding.descriptionTop)
-    }
-
     var itemImage: some View {
         GeometryReader { geometry in
             Image(imageName)
@@ -94,6 +87,10 @@ private extension WorkItemButton {
                 .aspectRatio(contentMode: .fill)
                 .frame(width: geometry.size.width, height: geometry.size.height)
                 .clipped()
+                .overlay {
+                    RoundedRectangle(cornerRadius: Constant.cornerRadius)
+                        .stroke(.black, lineWidth: Constant.borderWidth)
+                }
         }
         .padding(.top, Constant.Padding.imageTop)
         .padding(.horizontal, Constant.Padding.imageHorizontal)
@@ -176,19 +173,16 @@ extension WorkItemButton {
         HStack {
             WorkItemButton(
                 title: "타이틀",
-                description: "기본 상태",
                 imageName: "housing_street",
                 buttonState: $buttonState1
             )
             WorkItemButton(
                 title: "타이틀",
-                description: "선택 상태",
                 imageName: "housing_street",
                 buttonState: $buttonState2
             )
             WorkItemButton(
                 title: "타이틀",
-                description: "비활성 상태",
                 imageName: "housing_street",
                 buttonState: $buttonState3
             )

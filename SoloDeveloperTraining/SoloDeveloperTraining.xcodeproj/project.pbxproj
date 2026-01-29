@@ -20,10 +20,6 @@
 				"Production/Error/PurchasingError+UserReadableError.swift",
 				"Production/Error/SkillError+UserReadableError.swift",
 				Production/Error/UserReadableError.swift,
-				Production/FeedbackSystem/HapticService.swift,
-				Production/FeedbackSystem/HapticType.swift,
-				Production/FeedbackSystem/SoundService.swift,
-				Production/FeedbackSystem/SoundType.swift,
 				Production/Presentation/CharacterScene.swift,
 				Production/Presentation/DodgeGameView.swift,
 				Production/Presentation/FeedbackSettingView.swift,
@@ -42,8 +38,6 @@
 				Production/Presentation/StackGameView.swift,
 				Production/Presentation/TapGameView.swift,
 				Production/Presentation/WorkSelectedView.swift,
-				Resources/Audio/failure.wav,
-				Resources/Audio/success.wav,
 			);
 			target = 2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */;
 		};
@@ -421,7 +415,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = kr.codesquad.boostcamp10.SoloDeveloperTraining;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -463,7 +457,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = kr.codesquad.boostcamp10.SoloDeveloperTraining;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;

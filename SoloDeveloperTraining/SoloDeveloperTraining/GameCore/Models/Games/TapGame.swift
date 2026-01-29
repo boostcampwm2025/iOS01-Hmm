@@ -21,6 +21,8 @@ final class TapGame: Game {
     var animationSystem: CharacterAnimationSystem?
     /// 인벤토리
     let inventory: Inventory
+    /// 일시정지 여부 (일시정지 시 탭 사운드 미재생용)
+    private(set) var isPaused: Bool = false
 
     /// 탭 게임 초기화
     init(
@@ -52,12 +54,14 @@ final class TapGame: Game {
 
     /// 게임 일시정지 (피버, 버프 시스템 보존)
     func pauseGame() {
+        isPaused = true
         feverSystem.pause()
         buffSystem.pause()
     }
 
     /// 게임 재개
     func resumeGame() {
+        isPaused = false
         feverSystem.resume()
         buffSystem.resume()
     }

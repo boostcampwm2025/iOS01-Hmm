@@ -13,7 +13,7 @@ struct SkillTestView: View {
 
     init(user: User) {
         self.user = user
-        self.skillSystem = .init(user: user)
+        self.skillSystem = .init(user: user, careerSystem: nil)
     }
     var body: some View {
         VStack {

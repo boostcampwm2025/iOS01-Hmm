@@ -102,6 +102,14 @@ struct QuizGameView: View {
                 quizGame.startGame()
             }
         }
+        .onChange(of: state.remainingSeconds) { _, newValue in
+            if newValue == 3 {
+                SoundService.shared.trigger(.quizCountdown)
+            } else if newValue == 0 {
+                SoundService.shared.trigger(.quizTimeOver)
+            }
+        }
+        .onDisappear { SoundService.shared.stopAllSFX() }
         .overlay {
             if showRewardPopup {
                 ZStack {
@@ -151,6 +159,7 @@ private struct QuizHeaderView: View {
                             height: Constant.Size.closeButtonHeight
                         )
                 }
+                .buttonStyle(.soundTap)
             }
             .padding(.bottom, Constant.Padding.titleBottom)
 
@@ -164,7 +173,7 @@ private struct QuizHeaderView: View {
 
             // Progress
             ProgressBar(
-                maxValue: 60.0,
+                maxValue: Double(Policy.Game.Quiz.secondsPerQuestion),
                 currentValue: Double(remainingSeconds),
                 text: remainingSeconds > 0 ? "\(remainingSeconds)s" : "제한 시간 종료"
             )

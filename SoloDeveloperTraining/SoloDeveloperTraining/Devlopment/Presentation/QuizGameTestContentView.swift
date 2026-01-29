@@ -71,6 +71,7 @@ struct QuizGameTestContentView: View {
             Button("확인") {
                 isGameStarted = false
             }
+            .withTapSound()
         } message: {
             Text("정답: \(state.correctAnswersCount)/3개\n획득 다이아: \(state.totalDiamondsEarned)개")
         }
