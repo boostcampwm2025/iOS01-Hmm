@@ -161,7 +161,7 @@ struct MainView: View {
                                 )
                             }
                         case .skill:
-                            SkillView(user: user, popupContent: $popupContent)
+                            SkillView(user: user, careerSystem: careerSystem, popupContent: $popupContent)
                         case .shop:
                             ShopView(user: user, popupContent: $popupContent)
                         case .mission:
