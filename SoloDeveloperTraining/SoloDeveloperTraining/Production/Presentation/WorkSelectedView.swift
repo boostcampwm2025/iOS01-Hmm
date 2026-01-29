@@ -118,43 +118,33 @@ private extension WorkSelectedView {
 
     func createWorkItems(career: Career?) -> [WorkItem] {
         let currentCareer = career ?? .unemployed
+        let currentWealth = currentCareer.requiredWealth
 
-        let tapDisabled: Bool
-        let languageDisabled: Bool
-        let dodgeDisabled: Bool
-        let stackDisabled: Bool
-
-        switch currentCareer {
-        case .unemployed:
-            (tapDisabled, languageDisabled, dodgeDisabled, stackDisabled) = (false, true, true, true)
-        case .laptopOwner:
-            (tapDisabled, languageDisabled, dodgeDisabled, stackDisabled) = (false, false, true, true)
-        case .aspiringDeveloper:
-            (tapDisabled, languageDisabled, dodgeDisabled, stackDisabled) = (false, false, false, true)
-        default:
-            (tapDisabled, languageDisabled, dodgeDisabled, stackDisabled) = (false, false, false, false)
-        }
+        let tapUnlocked = currentWealth >= Policy.Career.GameUnlock.tap
+        let languageUnlocked = currentWealth >= Policy.Career.GameUnlock.language
+        let dodgeUnlocked = currentWealth >= Policy.Career.GameUnlock.dodge
+        let stackUnlocked = currentWealth >= Policy.Career.GameUnlock.stack
 
         return [
             .init(
                 title: "코드짜기",
                 imageName: GameType.tap.imageName,
-                isDisabled: tapDisabled
+                isDisabled: !tapUnlocked
             ),
             .init(
                 title: "언어 맞추기",
                 imageName: GameType.language.imageName,
-                isDisabled: languageDisabled
+                isDisabled: !languageUnlocked
             ),
             .init(
                 title: "버그 피하기",
                 imageName: GameType.dodge.imageName,
-                isDisabled: stackDisabled
+                isDisabled: !dodgeUnlocked
             ),
             .init(
                 title: "데이터 쌓기",
                 imageName: GameType.stack.imageName,
-                isDisabled: stackDisabled
+                isDisabled: !stackUnlocked
             )
         ]
     }

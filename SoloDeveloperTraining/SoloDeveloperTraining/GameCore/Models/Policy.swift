@@ -21,6 +21,14 @@ enum Policy {
         static let famousDeveloper = 5_000_000
         static let allRounderDeveloper = 20_000_000
         static let worldClassDeveloper = 100_000_000
+
+        /// 게임별 해금 조건
+        enum GameUnlock {
+            static let tap = unemployed
+            static let language = laptopOwner
+            static let dodge = aspiringDeveloper
+            static let stack = juniorDeveloper
+        }
     }
 
     // MARK: - 피버 시스템
