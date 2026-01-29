@@ -9,7 +9,7 @@ import SwiftUI
 import AVFoundation
 
 private enum Constant {
-    static let soundEnabledKey: String = "isSoundEnabled"
+    static let sfxEnabledKey: String = "isSFXEnabled"
     static let bgmEnabledKey: String = "isBGMEnabled"
     static let bgmVolumeKey: String = "bgmVolume"
     static let sfxVolumeKey: String = "sfxVolume"
@@ -28,9 +28,9 @@ final class SoundService {
     private let sfxDelegate = SoundPlayerDelegate()
     private let localStorage: KeyValueLocalStorage = UserDefaultsStorage()
 
-    var isEnabled: Bool {
+    var isSFXEnabled: Bool {
         didSet {
-            localStorage.set(isEnabled, forKey: Constant.soundEnabledKey)
+            localStorage.set(isSFXEnabled, forKey: Constant.sfxEnabledKey)
         }
     }
 
@@ -60,13 +60,13 @@ final class SoundService {
 
     private init() {
         localStorage.register(defaults: [
-            Constant.soundEnabledKey: true,
+            Constant.sfxEnabledKey: true,
             Constant.bgmEnabledKey: true,
             Constant.bgmVolumeKey: Constant.defaultVolume,
             Constant.sfxVolumeKey: Constant.defaultVolume
         ])
 
-        self.isEnabled = localStorage.bool(key: Constant.soundEnabledKey)
+        self.isSFXEnabled = localStorage.bool(key: Constant.sfxEnabledKey)
         self.isBGMEnabled = localStorage.bool(key: Constant.bgmEnabledKey)
         let storedBgm = localStorage.integer(key: Constant.bgmVolumeKey)
         let storedSfx = localStorage.integer(key: Constant.sfxVolumeKey)
@@ -87,15 +87,15 @@ final class SoundService {
     }
 
     func toggle() {
-        isEnabled.toggle()
+        isSFXEnabled.toggle()
         // 활성화 되었음을 알리기 위해 햅틱 트리거
-        if isEnabled {
+        if isSFXEnabled {
             HapticType.medium.trigger()
         }
     }
 
     func trigger(_ sound: SoundType) {
-        guard isEnabled else { return }
+        guard isSFXEnabled else { return }
         guard let url = sound.url else { return }
         if sfxPlayers.count >= Constant.maxConcurrentSFX { return }
         do {

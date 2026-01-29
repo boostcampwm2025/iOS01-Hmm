@@ -29,8 +29,8 @@ struct FeedbackSettingView: View {
                 )
                 soundSettingSection(
                     title: "효과음",
-                    isOn: SoundService.shared.isEnabled,
-                    setOn: { SoundService.shared.isEnabled = $0 },
+                    isOn: SoundService.shared.isSFXEnabled,
+                    setOn: { SoundService.shared.isSFXEnabled = $0 },
                     volume: sfxVolumeBinding
                 )
                 settingRow(
