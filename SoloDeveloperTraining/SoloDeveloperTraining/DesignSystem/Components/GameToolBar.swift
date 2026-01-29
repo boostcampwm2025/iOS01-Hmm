@@ -64,6 +64,8 @@ private extension GameToolBar {
     var closeButton: some View {
         Button {
             closeButtonDidTapHandler()
+            SoundService.shared.stopAllSFX()
+            SoundService.shared.trigger(.buttonTap)
         } label: {
             Image(.iconClose)
                 .resizable()

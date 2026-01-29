@@ -36,7 +36,7 @@ enum SoundType: String {
 
     // MARK: - 퀴즈
     /// 끝나기 3초 전 째깍
-    case countdownTick
+    case quizCountdown
     /// 퀴즈 시간 초과
     case quizTimeOver
     /// 퀴즈 정답

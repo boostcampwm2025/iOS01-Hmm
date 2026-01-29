@@ -103,10 +103,13 @@ struct QuizGameView: View {
             }
         }
         .onChange(of: state.remainingSeconds) { _, newValue in
-            if newValue == 2 {
-                SoundService.shared.trigger(.countdownTick)
+            if newValue == 3 {
+                SoundService.shared.trigger(.quizCountdown)
+            } else if newValue == 0 {
+                SoundService.shared.trigger(.quizTimeOver)
             }
         }
+        .onDisappear { SoundService.shared.stopAllSFX() }
         .overlay {
             if showRewardPopup {
                 ZStack {
@@ -156,6 +159,7 @@ private struct QuizHeaderView: View {
                             height: Constant.Size.closeButtonHeight
                         )
                 }
+                .buttonStyle(.soundTap)
             }
             .padding(.bottom, Constant.Padding.titleBottom)
 

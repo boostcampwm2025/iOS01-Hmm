@@ -66,7 +66,6 @@ struct TapGameView: View {
                 },
                 onResume: { tapGame.resumeGame() }
             )
-            .onDisappear { SoundService.shared.stopAllSFX() }
         }
     }
 }
