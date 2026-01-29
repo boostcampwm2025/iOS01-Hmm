@@ -86,14 +86,6 @@ final class SoundService {
         sfxPlayers.removeAll { $0 === player }
     }
 
-    func toggle() {
-        isSFXEnabled.toggle()
-        // 활성화 되었음을 알리기 위해 햅틱 트리거
-        if isSFXEnabled {
-            HapticType.medium.trigger()
-        }
-    }
-
     func trigger(_ sound: SoundType) {
         guard isSFXEnabled else { return }
         guard let url = sound.url else { return }
