@@ -241,18 +241,17 @@ enum Policy {
         }
     }
 
-    // MARK: - 장비 아이템 (가성비 개선)
-    // *전략: 장비 4종(키보드, 마우스, 모니터, 의자)을 다 맞추면 다음 부동산으로 가기 쉽도록 설계
+    // MARK: - 장비 아이템
     enum Equipment {
         // 업그레이드 비용 (진입 장벽 완화)
-        static let brokenUpgradeCost: Int = 3_000
-        static let cheapUpgradeCost: Int = 30_000
-        static let vintageUpgradeCost: Int = 300_000
-        static let decentUpgradeCost: Int = 500_000
-        static let premiumUpgradeCost: Int = 1_000_000
-        static let diamondUpgradeCost: Int = 2_000_000
-        static let limitedUpgradeCost: Int = 5_000_000
-        static let nationalTreasureUpgradeCost: Int = 999_999_999_999
+        static let brokenUpgradeCost: Int = 5_000
+        static let cheapUpgradeCost: Int = 100_000
+        static let vintageUpgradeCost: Int = 2_000_000
+        static let decentUpgradeCost: Int = 50_000_000
+        static let premiumUpgradeCost: Int = 1_000_000_000
+        static let diamondUpgradeCost: Int = 10_000_000_000
+        static let limitedUpgradeCost: Int = 50_000_000_000
+        static let nationalTreasureUpgradeCost: Int = 200_000_000_000
 
         // 업그레이드 성공 확률 (모든 장비 공통)
         static let brokenSuccessRate: Double = 1.0
@@ -265,53 +264,52 @@ enum Policy {
         static let nationalTreasureSuccessRate: Double = 0.05
 
         /// 초당 획득 골드량
-        /// 장비 하나당 '다음 등급 장비 비용'의 1/100 정도는 벌어줘야 방치형 요소가 성립됨
         /// 키보드
         enum Keyboard {
-            static let brokenGoldPerSecond: Int = 300
-            static let cheapGoldPerSecond: Int = 3_000
-            static let vintageGoldPerSecond: Int = 30_000
-            static let decentGoldPerSecond: Int = 1_000_000
-            static let premiumGoldPerSecond: Int = 20_000_000
-            static let diamondGoldPerSecond: Int = 500_000_000
-            static let limitedGoldPerSecond: Int = 8_000_000_000
-            static let nationalTreasureGoldPerSecond: Int = 100_000_000_000
+            static let brokenGoldPerSecond: Int = 10
+            static let cheapGoldPerSecond: Int = 250
+            static let vintageGoldPerSecond: Int = 6_000
+            static let decentGoldPerSecond: Int = 150_000
+            static let premiumGoldPerSecond: Int = 3_500_000
+            static let diamondGoldPerSecond: Int = 40_000_000
+            static let limitedGoldPerSecond: Int = 250_000_000
+            static let nationalTreasureGoldPerSecond: Int = 1_200_000_000
         }
 
         /// 마우스
         enum Mouse {
-            static let brokenGoldPerSecond: Int = 300
-            static let cheapGoldPerSecond: Int = 3_000
-            static let vintageGoldPerSecond: Int = 30_000
-            static let decentGoldPerSecond: Int = 1_000_000
-            static let premiumGoldPerSecond: Int = 20_000_000
-            static let diamondGoldPerSecond: Int = 500_000_000
-            static let limitedGoldPerSecond: Int = 8_000_000_000
-            static let nationalTreasureGoldPerSecond: Int = 100_000_000_000
+            static let brokenGoldPerSecond: Int = 10
+            static let cheapGoldPerSecond: Int = 250
+            static let vintageGoldPerSecond: Int = 6_000
+            static let decentGoldPerSecond: Int = 150_000
+            static let premiumGoldPerSecond: Int = 3_500_000
+            static let diamondGoldPerSecond: Int = 40_000_000
+            static let limitedGoldPerSecond: Int = 250_000_000
+            static let nationalTreasureGoldPerSecond: Int = 1_200_000_000
         }
 
         /// 모니터
         enum Monitor {
-            static let brokenGoldPerSecond: Int = 300
-            static let cheapGoldPerSecond: Int = 3_000
-            static let vintageGoldPerSecond: Int = 30_000
-            static let decentGoldPerSecond: Int = 1_000_000
-            static let premiumGoldPerSecond: Int = 20_000_000
-            static let diamondGoldPerSecond: Int = 500_000_000
-            static let limitedGoldPerSecond: Int = 8_000_000_000
-            static let nationalTreasureGoldPerSecond: Int = 100_000_000_000
+            static let brokenGoldPerSecond: Int = 10
+            static let cheapGoldPerSecond: Int = 250
+            static let vintageGoldPerSecond: Int = 6_000
+            static let decentGoldPerSecond: Int = 150_000
+            static let premiumGoldPerSecond: Int = 3_500_000
+            static let diamondGoldPerSecond: Int = 40_000_000
+            static let limitedGoldPerSecond: Int = 250_000_000
+            static let nationalTreasureGoldPerSecond: Int = 1_200_000_000
         }
 
         /// 의자
         enum Chair {
-            static let brokenGoldPerSecond: Int = 300
-            static let cheapGoldPerSecond: Int = 3_000
-            static let vintageGoldPerSecond: Int = 30_000
-            static let decentGoldPerSecond: Int = 1_000_000
-            static let premiumGoldPerSecond: Int = 20_000_000
-            static let diamondGoldPerSecond: Int = 500_000_000
-            static let limitedGoldPerSecond: Int = 8_000_000_000
-            static let nationalTreasureGoldPerSecond: Int = 100_000_000_000
+            static let brokenGoldPerSecond: Int = 10
+            static let cheapGoldPerSecond: Int = 250
+            static let vintageGoldPerSecond: Int = 6_000
+            static let decentGoldPerSecond: Int = 150_000
+            static let premiumGoldPerSecond: Int = 3_500_000
+            static let diamondGoldPerSecond: Int = 40_000_000
+            static let limitedGoldPerSecond: Int = 250_000_000
+            static let nationalTreasureGoldPerSecond: Int = 1_200_000_000
         }
     }
 
@@ -326,7 +324,7 @@ enum Policy {
         static let apartmentPurchaseCost: Int = 5_000_000_000
         static let housePurchaseCost: Int = 50_000_000_000
         static let pentHousePurchaseCost: Int = 200_000_000_000
-
+        
         // 초당 골드 획득
         static let streetGoldPerSecond: Int = 0
         static let semiBasementGoldPerSecond: Int = 500
