@@ -12,15 +12,15 @@ enum Policy {
     /// 단계별 필요 누적 재산
     enum Career {
         static let unemployed = 0
-        static let laptopOwner = 1_000 // 1천
-        static let aspiringDeveloper = 10_000 // 1만
-        static let juniorDeveloper = 100_000 // 10만
-        static let normalDeveloper = 1_000_000 // 100만
-        static let nightOwlDeveloper = 10_000_000 // 1,000만
-        static let skilledDeveloper = 100_000_000 // 1억
-        static let famousDeveloper = 2_000_000_000 // 20억
-        static let allRounderDeveloper = 50_000_000_000 // 500억
-        static let worldClassDeveloper = 1_000_000_000_000 // 1조
+        static let laptopOwner = 5_000
+        static let aspiringDeveloper = 50_000
+        static let juniorDeveloper = 1_000_000
+        static let normalDeveloper = 100_000_000
+        static let nightOwlDeveloper = 1_000_000_000
+        static let skilledDeveloper = 10_000_000_000
+        static let famousDeveloper = 100_000_000_000
+        static let allRounderDeveloper = 50_000_000_000_000
+        static let worldClassDeveloper = 1_000_000_000_000_000 // 1000조: 만렙
     }
 
     // MARK: - 피버 시스템 (쾌감 증대)
@@ -324,7 +324,7 @@ enum Policy {
         static let apartmentPurchaseCost: Int = 5_000_000_000
         static let housePurchaseCost: Int = 50_000_000_000
         static let pentHousePurchaseCost: Int = 200_000_000_000
-        
+
         // 초당 골드 획득
         static let streetGoldPerSecond: Int = 0
         static let semiBasementGoldPerSecond: Int = 500
