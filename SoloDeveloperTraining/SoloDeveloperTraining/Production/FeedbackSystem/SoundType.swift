@@ -37,6 +37,12 @@ enum SoundType: String {
     // MARK: - 퀴즈
     /// 끝나기 3초 전 째깍
     case countdownTick
+    /// 퀴즈 시간 초과
+    case quizTimeOver
+    /// 퀴즈 정답
+    case quizCorrect
+    /// 퀴즈 오답
+    case quizWrong
 
     // MARK: - 아이템 소비
     /// 커피/박하스 클릭 시
@@ -57,8 +63,6 @@ enum SoundType: String {
 
     /// wav 우선, 없으면 mp3 로드
     var url: URL? {
-        let wav = Bundle.main.url(forResource: rawValue, withExtension: "wav")
-        let mp3 = Bundle.main.url(forResource: rawValue, withExtension: "mp3")
-        return wav ?? mp3
+        Bundle.main.url(forResource: rawValue, withExtension: "wav")
     }
 }
