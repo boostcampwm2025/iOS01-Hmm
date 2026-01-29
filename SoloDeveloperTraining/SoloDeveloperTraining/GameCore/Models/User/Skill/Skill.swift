@@ -153,7 +153,7 @@ final class Skill: Hashable {
 
         return .init(
             gold: goldCostMultiplier * level,
-            diamond: ((level+1) % diamondCostDivider == 0) ? diamondCostMultiplier : 0
+            diamond: level == 0 || ((level+1) % diamondCostDivider == 0) ? diamondCostMultiplier : 0
         )
     }
 
