@@ -38,7 +38,7 @@ struct SkillView: View {
                 ForEach(skillSystem.skillList(), id: \.skill) { skillState in
                     ItemRow(
                         title: skillState.skill.title,
-                        description: "획득 골드 +\(Int(skillState.skill.gainGold).formatted())",
+                        description: "액션당 \(Int(skillState.skill.gainGold).formatted()) 골드 획득",
                         imageName: skillState.skill.imageName,
                         cost: skillState.skill.upgradeCost,
                         state: skillState.itemState
