@@ -122,6 +122,7 @@ private extension TapGameView {
     /// - Parameter location: 터치한 위치
     @MainActor
     func handleTap(at location: CGPoint) async {
+        SoundService.shared.trigger(.tapGameTyping)
         let gainGold = await tapGame.didPerformAction()
         showEffectLabel(at: location, value: gainGold)
     }

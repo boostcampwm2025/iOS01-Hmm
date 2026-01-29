@@ -178,8 +178,7 @@ private extension DodgeGameView {
     /// 소비 아이템 사용 처리
     func useConsumableItem(_ type: ConsumableType) {
         if game.user.inventory.drink(type) {
-            // 햅틱 재생
-            HapticService.shared.trigger(.success)
+            SoundService.shared.trigger(.itemConsume)
             game.buffSystem.useConsumableItem(type: type)
             game.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
         }
@@ -201,6 +200,7 @@ private extension DodgeGameView {
 
     /// 골드 변화 이펙트 표시
     func showGoldChangeEffect(_ goldDelta: Int) {
+        SoundService.shared.trigger(goldDelta > 0 ? .coinCollect : .bugHit)
         let effect = EffectLabelData(
             id: UUID(),
             position: CGPoint(

@@ -102,6 +102,11 @@ struct QuizGameView: View {
                 quizGame.startGame()
             }
         }
+        .onChange(of: state.remainingSeconds) { _, newValue in
+            if (1...3).contains(newValue) {
+                SoundService.shared.trigger(.countdownTick)
+            }
+        }
         .overlay {
             if showRewardPopup {
                 ZStack {

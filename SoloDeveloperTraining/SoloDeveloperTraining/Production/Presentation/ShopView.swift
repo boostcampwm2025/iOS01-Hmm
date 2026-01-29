@@ -155,6 +155,7 @@ private extension ShopView {
                 }
             }
             if item.category == .equipment {
+                SoundService.shared.trigger(isSuccess ? .upgradeSuccess : .upgradeFailure)
                 let title = isSuccess ? Constant.Text.enhanceSuccessTitle : Constant.Text.enhanceFailureTitle
                 let message = isSuccess ? Constant.Text.enhanceSuccessMessage : Constant.Text.enhanceFailureMessage
                 ShopPurchaseHelper.showAlert(popupContent: $popupContent, title: title, message: message)

@@ -58,9 +58,16 @@ enum SoundType: String {
     /// 미션 획득 시 짜잔
     case missionAcquired
 
+    /// 탭게임 탭 시
+    case tapGameTyping
+
     /// wav 우선, 없으면 mp3 로드 (AVAudioPlayer 모두 지원)
     var url: URL? {
-        Bundle.main.url(forResource: rawValue, withExtension: "wav")
-            ?? Bundle.main.url(forResource: rawValue, withExtension: "mp3")
+        let wav = Bundle.main.url(forResource: rawValue, withExtension: "wav")
+        let mp3 = Bundle.main.url(forResource: rawValue, withExtension: "mp3")
+        if case .bombDrop = self {
+            return wav ?? mp3 ?? SoundType.bombStack.url
+        }
+        return wav ?? mp3
     }
 }
