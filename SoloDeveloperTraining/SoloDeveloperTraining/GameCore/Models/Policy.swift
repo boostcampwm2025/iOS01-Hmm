@@ -12,15 +12,15 @@ enum Policy {
     /// 단계별 필요 누적 재산
     enum Career {
         static let unemployed = 0
-        static let laptopOwner = 1_000
-        static let aspiringDeveloper = 1_500
-        static let juniorDeveloper = 10_000
-        static let normalDeveloper = 50_000
-        static let nightOwlDeveloper = 200_000
-        static let skilledDeveloper = 1_000_000
-        static let famousDeveloper = 5_000_000
-        static let allRounderDeveloper = 20_000_000
-        static let worldClassDeveloper = 100_000_000
+        static let laptopOwner = 1_000             // 1천
+        static let aspiringDeveloper = 10_000      // 1만
+        static let juniorDeveloper = 100_000       // 10만
+        static let normalDeveloper = 1_000_000     // 100만
+        static let nightOwlDeveloper = 10_000_000   // 1,000만
+        static let skilledDeveloper = 100_000_000   // 1억
+        static let famousDeveloper = 2_000_000_000  // 20억
+        static let allRounderDeveloper = 50_000_000_000 // 500억
+        static let worldClassDeveloper = 1_000_000_000_000 // 1조
     }
 
     // MARK: - 피버 시스템
