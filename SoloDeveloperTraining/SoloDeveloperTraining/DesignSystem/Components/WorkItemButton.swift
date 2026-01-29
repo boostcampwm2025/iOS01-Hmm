@@ -34,7 +34,7 @@ struct WorkItemButton: View {
             .disabled(buttonState.isDisabled)
             .onTapGesture {
                 guard !buttonState.isDisabled else { return }
-                SoundService.shared.trigger(.tap)
+                SoundService.shared.trigger(.buttonTap)
                 if let onTap = onTap {
                     onTap()
                 } else {
