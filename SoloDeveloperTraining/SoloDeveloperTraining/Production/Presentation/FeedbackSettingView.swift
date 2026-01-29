@@ -7,7 +7,7 @@ import SwiftUI
 
 private enum Constant {
     static let title: String = "설정"
-    static let rowSpacing: CGFloat = 25
+    static let rowSpacing: CGFloat = 30
     static let horizontalPadding: CGFloat = 20
     static let volumeRange: ClosedRange<Double> = 0 ... 100
     static let volumeStep: Double = 1
@@ -17,7 +17,9 @@ struct FeedbackSettingView: View {
     let onClose: (() -> Void)?
 
     var body: some View {
-        Popup(title: Constant.title) {
+        Popup(title: "") {
+            Text("설정")
+                .textStyle(.largeTitle)
             VStack(alignment: .leading, spacing: Constant.rowSpacing) {
                 soundSettingSection(
                     title: "배경음",
@@ -75,16 +77,16 @@ private extension FeedbackSettingView {
         setOn: @escaping (Bool) -> Void,
         volume: Binding<Double>
     ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 15) {
             settingRow(title: title, isOn: isOn, setOn: setOn)
-            SettingSlider(value: volume, range: Constant.volumeRange, step: Constant.volumeStep)
+            SettingSlider(value: volume, range: Constant.volumeRange, step: Constant.volumeStep, isEnabled: isOn)
         }
     }
 
     func settingRow(title: String, isOn: Bool, setOn: @escaping (Bool) -> Void) -> some View {
         HStack {
             Text(title)
-                .textStyle(.body)
+                .textStyle(.title2)
             Spacer()
             MediumButton(title: isOn ? "ON" : "OFF", isFilled: isOn) {
                 setOn(!isOn)

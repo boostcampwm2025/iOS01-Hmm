@@ -15,6 +15,7 @@ struct SettingSlider: View {
     @Binding var value: Double
     var range: ClosedRange<Double> = 0 ... 100
     var step: Double = 1
+    var isEnabled: Bool = true
 
     private var progress: Double {
         let span = range.upperBound - range.lowerBound
@@ -28,40 +29,55 @@ struct SettingSlider: View {
             let thumbCenterX = width * progress
 
             ZStack(alignment: .leading) {
-                // 트랙 배경 (썸 세로의 절반)
+                // 트랙 배경
                 RoundedRectangle(cornerRadius: Constant.trackCornerRadius)
-                    .fill(AppColors.beige300)
+                    .fill(trackBackgroundColor)
                     .frame(height: Constant.trackHeight)
 
-                // 진행 채움 (썸 세로의 절반)
+                // 진행
                 RoundedRectangle(cornerRadius: Constant.trackCornerRadius)
-                    .fill(AppColors.orange300)
+                    .fill(fillColor)
                     .frame(width: max(0, thumbCenterX), height: Constant.trackHeight)
 
                 // 썸
-                Circle()
-                    .fill(AppColors.orange500)
+                RoundedRectangle(cornerRadius: Constant.trackCornerRadius)
+                    .fill(thumbColor)
                     .frame(width: Constant.thumbDiameter, height: Constant.thumbDiameter)
                     .overlay {
-                        Circle()
-                            .stroke(Color.black.opacity(0.15), lineWidth: 1)
+                        RoundedRectangle(cornerRadius: Constant.trackCornerRadius)
+                            .stroke(Color.black.opacity(isEnabled ? 0.15 : 0.08), lineWidth: 1)
                     }
                     .offset(x: thumbCenterX - Constant.thumbDiameter / 2)
             }
             .frame(height: Constant.thumbDiameter)
             .frame(maxWidth: .infinity)
             .contentShape(Rectangle())
+            .allowsHitTesting(isEnabled)
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { gesture in
+                        guard isEnabled else { return }
                         applyValue(from: gesture.location.x, trackWidth: width)
                     }
             )
             .onTapGesture { location in
+                guard isEnabled else { return }
                 applyValue(from: location.x, trackWidth: width)
             }
         }
         .frame(height: Constant.thumbDiameter)
+    }
+
+    private var trackBackgroundColor: Color {
+        AppColors.beige300
+    }
+
+    private var fillColor: Color {
+        isEnabled ? AppColors.orange300 : AppColors.gray300
+    }
+
+    private var thumbColor: Color {
+        isEnabled ? AppColors.orange500 : AppColors.gray400
     }
 
     private func applyValue(from locationX: CGFloat, trackWidth: CGFloat) {
