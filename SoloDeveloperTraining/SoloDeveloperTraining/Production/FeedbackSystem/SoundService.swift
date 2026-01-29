@@ -24,6 +24,7 @@ final class SoundService {
     static let shared = SoundService()
 
     private var sfxPlayers: [AVAudioPlayer] = []
+    private var bgmPlayer: AVAudioPlayer?
     private let sfxDelegate = SoundPlayerDelegate()
     private let localStorage: KeyValueLocalStorage = UserDefaultsStorage()
 
@@ -36,12 +37,18 @@ final class SoundService {
     var isBGMEnabled: Bool {
         didSet {
             localStorage.set(isBGMEnabled, forKey: Constant.bgmEnabledKey)
+            if isBGMEnabled {
+                playBGM()
+            } else {
+                stopBGM()
+            }
         }
     }
 
     var bgmVolume: Int {
         didSet {
             localStorage.set(bgmVolume, forKey: Constant.bgmVolumeKey)
+            bgmPlayer?.volume = Float(bgmVolume) / 100
         }
     }
 
@@ -101,6 +108,29 @@ final class SoundService {
         } catch {
             print("소리를 재생할 수 없음", error)
         }
+    }
+
+    // MARK: - BGM
+
+    func playBGM() {
+        guard isBGMEnabled else { return }
+        guard let url = SoundType.bgm.url else { return }
+        stopBGM()
+        do {
+            let player = try AVAudioPlayer(contentsOf: url)
+            player.numberOfLoops = -1
+            player.volume = Float(bgmVolume) / 100
+            player.prepareToPlay()
+            player.play()
+            bgmPlayer = player
+        } catch {
+            print("BGM 재생 실패", error)
+        }
+    }
+
+    func stopBGM() {
+        bgmPlayer?.stop()
+        bgmPlayer = nil
     }
 }
 

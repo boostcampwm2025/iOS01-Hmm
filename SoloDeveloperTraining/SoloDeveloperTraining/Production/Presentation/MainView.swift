@@ -81,6 +81,7 @@ struct MainView: View {
             .ignoresSafeArea(edges: [.top, .bottom])
             .background(AppTheme.backgroundColor)
             .onAppear(perform: setupOnAppear)
+            .onDisappear { SoundService.shared.stopBGM() }
             .onChange(of: scenePhase, handleScenePhaseChange)
             .task(id: user.record.totalEarnedMoney) {
                 await careerSystem?.updateCareer()
@@ -235,6 +236,7 @@ private extension MainView {
     }
 
     func setupOnAppear() {
+        SoundService.shared.playBGM()
         autoGainSystem.startSystem()
         Task {
             if careerSystem == nil {
