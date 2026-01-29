@@ -17,52 +17,51 @@ struct FeedbackSettingPopupView: View {
     var body: some View {
         Popup(title: Constant.title) {
             VStack(alignment: .leading, spacing: Constant.rowSpacing) {
-                soundSettingSection(title: "배경음", isOn: bgmBinding, volume: bgmVolumeBinding)
-                soundSettingSection(title: "효과음", isOn: sfxBinding, volume: sfxVolumeBinding)
-                settingRow(title: "햅틱", isOn: hapticBinding)
+                soundSettingSection(
+                    title: "배경음",
+                    isOn: SoundService.shared.isBGMEnabled,
+                    setOn: { SoundService.shared.isBGMEnabled = $0 },
+                    volume: bgmVolumeBinding
+                )
+                soundSettingSection(
+                    title: "효과음",
+                    isOn: SoundService.shared.isEnabled,
+                    setOn: { SoundService.shared.isEnabled = $0 },
+                    volume: sfxVolumeBinding
+                )
+                settingRow(
+                    title: "햅틱",
+                    isOn: HapticService.shared.isEnabled,
+                    setOn: { HapticService.shared.isEnabled = $0 }
+                )
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, Constant.horizontalPadding)
         }
     }
 
-    private func soundSettingSection(title: String, isOn: Binding<Bool>, volume: Binding<Double>) -> some View {
+    private func soundSettingSection(
+        title: String,
+        isOn: Bool,
+        setOn: @escaping (Bool) -> Void,
+        volume: Binding<Double>
+    ) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            settingRow(title: title, isOn: isOn)
+            settingRow(title: title, isOn: isOn, setOn: setOn)
             Slider(value: volume, in: Constant.volumeRange, step: Constant.volumeStep)
         }
     }
 
-    private func settingRow(title: String, isOn: Binding<Bool>) -> some View {
+    private func settingRow(title: String, isOn: Bool, setOn: @escaping (Bool) -> Void) -> some View {
         HStack {
             Text(title)
                 .textStyle(.body)
                 .foregroundColor(.black)
             Spacer()
-            Toggle("", isOn: isOn)
-                .labelsHidden()
+            MediumButton(title: isOn ? "ON" : "OFF", isFilled: isOn) {
+                setOn(!isOn)
+            }
         }
-    }
-
-    private var bgmBinding: Binding<Bool> {
-        Binding(
-            get: { SoundService.shared.isBGMEnabled },
-            set: { SoundService.shared.isBGMEnabled = $0 }
-        )
-    }
-
-    private var sfxBinding: Binding<Bool> {
-        Binding(
-            get: { SoundService.shared.isEnabled },
-            set: { SoundService.shared.isEnabled = $0 }
-        )
-    }
-
-    private var hapticBinding: Binding<Bool> {
-        Binding(
-            get: { HapticService.shared.isEnabled },
-            set: { HapticService.shared.isEnabled = $0 }
-        )
     }
 
     private var bgmVolumeBinding: Binding<Double> {
