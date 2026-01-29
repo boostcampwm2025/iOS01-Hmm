@@ -129,11 +129,11 @@ enum Policy {
     enum Skill {
         // 공통 레벨 범위 (모든 게임 통일)
         static let beginnerMinLevel: Int = 1
-        static let beginnerMaxLevel: Int = 9999
+        static let beginnerMaxLevel: Int = 999
         static let intermediateMinLevel: Int = 0
-        static let intermediateMaxLevel: Int = 9999
+        static let intermediateMaxLevel: Int = 999
         static let advancedMinLevel: Int = 0
-        static let advancedMaxLevel: Int = 9999
+        static let advancedMaxLevel: Int = 999
 
         /// 코드 짜기 (TapGame)
         enum Tap {
@@ -149,12 +149,12 @@ enum Policy {
             static let beginnerGoldCostMultiplier: Int = 5
             static let intermediateGoldCostMultiplier: Int = 15
             static let advancedGoldCostMultiplier: Int = 25
-            static let diamondCostDivider: Int = 1000
+            static let diamondCostDivider: Int = 100
             static let diamondCostMultiplier: Int = 10
 
             // 스킬 해금 조건
-            static let intermediateUnlockLevel: Int = 500
-            static let advancedUnlockLevel: Int = 500
+            static let intermediateUnlockLevel: Int = 200
+            static let advancedUnlockLevel: Int = 300
         }
 
         /// 언어 맞추기 (LanguageGame)
@@ -171,12 +171,12 @@ enum Policy {
             static let beginnerGoldCostMultiplier: Int = 5
             static let intermediateGoldCostMultiplier: Int = 15
             static let advancedGoldCostMultiplier: Int = 25
-            static let diamondCostDivider: Int = 1000
+            static let diamondCostDivider: Int = 100
             static let diamondCostMultiplier: Int = 10
 
             // 스킬 해금 조건
-            static let intermediateUnlockLevel: Int = 500
-            static let advancedUnlockLevel: Int = 500
+            static let intermediateUnlockLevel: Int = 200
+            static let advancedUnlockLevel: Int = 300
         }
 
         /// 버그 피하기 (DodgeGame)
@@ -193,12 +193,12 @@ enum Policy {
             static let beginnerGoldCostMultiplier: Int = 5
             static let intermediateGoldCostMultiplier: Int = 15
             static let advancedGoldCostMultiplier: Int = 25
-            static let diamondCostDivider: Int = 1000
+            static let diamondCostDivider: Int = 100
             static let diamondCostMultiplier: Int = 10
 
             // 스킬 해금 조건
-            static let intermediateUnlockLevel: Int = 500
-            static let advancedUnlockLevel: Int = 500
+            static let intermediateUnlockLevel: Int = 200
+            static let advancedUnlockLevel: Int = 300
         }
 
         /// 데이터 쌓기 (StackGame)
@@ -215,12 +215,12 @@ enum Policy {
             static let beginnerGoldCostMultiplier: Int = 5
             static let intermediateGoldCostMultiplier: Int = 15
             static let advancedGoldCostMultiplier: Int = 25
-            static let diamondCostDivider: Int = 1000
+            static let diamondCostDivider: Int = 100
             static let diamondCostMultiplier: Int = 10
 
             // 스킬 해금 조건
-            static let intermediateUnlockLevel: Int = 500
-            static let advancedUnlockLevel: Int = 500
+            static let intermediateUnlockLevel: Int = 200
+            static let advancedUnlockLevel: Int = 300
         }
     }
 
