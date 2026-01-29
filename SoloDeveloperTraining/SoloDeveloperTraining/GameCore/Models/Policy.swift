@@ -60,16 +60,16 @@ enum Policy {
 
         /// 버그 피하기 (DodgeGame)
         enum Dodge {
-            static let decreasePercent: Double = 1.5
+            static let decreasePercent: Double = 1.2
             static let gainPerSmallGold: Double = 33.0
-            static let gainPerLargeGold: Double = 33.0
-            static let gainPerBugDodge: Double = 10.0
-            static let lossPerBugHit: Double = -50.0
+            static let gainPerLargeGold: Double = 50.0
+            static let gainPerBugDodge: Double = 15.0
+            static let lossPerBugHit: Double = -20.0
         }
 
         /// 데이터 쌓기 (StackGame)
         enum Stack {
-            static let decreasePercent: Double = 0.5
+            static let decreasePercent: Double = 1.0
             static let gainPerSuccess: Double = 80.0
             static let lossPerFailure: Double = -40.0
         }
