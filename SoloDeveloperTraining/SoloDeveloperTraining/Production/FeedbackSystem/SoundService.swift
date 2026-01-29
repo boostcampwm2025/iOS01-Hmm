@@ -10,6 +10,11 @@ import AVFoundation
 
 private enum Constant {
     static let soundEnabledKey: String = "isSoundEnabled"
+    static let bgmEnabledKey: String = "isBGMEnabled"
+    static let bgmVolumeKey: String = "bgmVolume"
+    static let sfxVolumeKey: String = "sfxVolume"
+    static let volumeRange: ClosedRange<Int> = 0 ... 100
+    static let defaultVolume: Int = 100
 }
 
 @Observable
@@ -25,11 +30,38 @@ final class SoundService {
         }
     }
 
+    var isBGMEnabled: Bool {
+        didSet {
+            localStorage.set(isBGMEnabled, forKey: Constant.bgmEnabledKey)
+        }
+    }
+
+    var bgmVolume: Int {
+        didSet {
+            localStorage.set(bgmVolume, forKey: Constant.bgmVolumeKey)
+        }
+    }
+
+    var sfxVolume: Int {
+        didSet {
+            localStorage.set(sfxVolume, forKey: Constant.sfxVolumeKey)
+        }
+    }
+
     private init() {
-        // 저장된 키가 없을 경우 기본값 등록
-        localStorage.register(defaults: [Constant.soundEnabledKey: true])
+        localStorage.register(defaults: [
+            Constant.soundEnabledKey: true,
+            Constant.bgmEnabledKey: true,
+            Constant.bgmVolumeKey: Constant.defaultVolume,
+            Constant.sfxVolumeKey: Constant.defaultVolume
+        ])
 
         self.isEnabled = localStorage.bool(key: Constant.soundEnabledKey)
+        self.isBGMEnabled = localStorage.bool(key: Constant.bgmEnabledKey)
+        let storedBgm = localStorage.integer(key: Constant.bgmVolumeKey)
+        let storedSfx = localStorage.integer(key: Constant.sfxVolumeKey)
+        self.bgmVolume = Constant.volumeRange.contains(storedBgm) ? storedBgm : Constant.defaultVolume
+        self.sfxVolume = Constant.volumeRange.contains(storedSfx) ? storedSfx : Constant.defaultVolume
 
         try? AVAudioSession.sharedInstance().setCategory(
             .playback,    // 무음모드 무시
@@ -50,6 +82,7 @@ final class SoundService {
         guard let url = sound.url else { return }
         do {
             player = try AVAudioPlayer(contentsOf: url)
+            player?.volume = Float(sfxVolume) / 100
             player?.prepareToPlay()
             player?.play()
         } catch {
