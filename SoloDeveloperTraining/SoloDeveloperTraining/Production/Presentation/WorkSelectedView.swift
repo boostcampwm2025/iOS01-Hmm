@@ -34,6 +34,8 @@ struct WorkSelectedView: View {
     let animationSystem: CharacterAnimationSystem?
     @State var selectedIndex: Int = 0
     @State var workItems: [WorkItem] = []
+    @State private var showToast: Bool = false
+    @State private var toastMessage: String = ""
     @Binding var isGameStarted: Bool
     @Binding var isGameViewDisappeared: Bool
     @Binding var careerSystem: CareerSystem?
@@ -86,12 +88,17 @@ private extension WorkSelectedView {
             startButton
         }
         .padding(.horizontal, Constant.Padding.horizontal)
+        .toast(isShowing: $showToast, message: toastMessage)
     }
 
     var workSegmentControl: some View {
         WorkSegmentControl(
             items: workItems,
-            selectedIndex: $selectedIndex
+            onLockedTap: { requiredCareer in
+                toastMessage = "\(requiredCareer.rawValue)에 도달하면 열려요"
+                showToast = true
+            }
+            , selectedIndex: $selectedIndex
         )
     }
 
@@ -129,24 +136,32 @@ private extension WorkSelectedView {
             .init(
                 title: "코드짜기",
                 imageName: GameType.tap.imageName,
-                isDisabled: !tapUnlocked
+                isDisabled: !tapUnlocked,
+                requiredCareer: findCareer(for: Policy.Career.GameUnlock.tap)
             ),
             .init(
                 title: "언어 맞추기",
                 imageName: GameType.language.imageName,
-                isDisabled: !languageUnlocked
+                isDisabled: !languageUnlocked,
+                requiredCareer: findCareer(for: Policy.Career.GameUnlock.language)
             ),
             .init(
                 title: "버그 피하기",
                 imageName: GameType.dodge.imageName,
-                isDisabled: !dodgeUnlocked
+                isDisabled: !dodgeUnlocked,
+                requiredCareer: findCareer(for: Policy.Career.GameUnlock.dodge)
             ),
             .init(
                 title: "데이터 쌓기",
                 imageName: GameType.stack.imageName,
-                isDisabled: !stackUnlocked
+                isDisabled: !stackUnlocked,
+                requiredCareer: findCareer(for: Policy.Career.GameUnlock.stack)
             )
         ]
+    }
+
+    func findCareer(for requiredWealth: Int) -> Career? {
+        return Career.allCases.first { $0.requiredWealth == requiredWealth }
     }
 
     @ViewBuilder
