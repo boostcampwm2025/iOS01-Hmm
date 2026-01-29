@@ -69,7 +69,7 @@ private struct HousingCardContent: View {
                 .padding(.horizontal, Constant.Padding.horizontal)
                 .padding(.top, Constant.Padding.top)
 
-                Text("초당 재화 획득량 \(housing.goldPerSecond)")
+                Text("초당 골드 획득량 \(housing.goldPerSecond.formatted)")
                     .textStyle(.label)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, Constant.Padding.horizontal)
