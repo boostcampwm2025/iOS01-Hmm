@@ -59,9 +59,14 @@ struct TapGameView: View {
                 isGameViewDisappeared: $isGameViewDisappeared,
                 height: geometry.size.height,
                 onLeave: { handleCloseButton() },
-                onPause: { tapGame.pauseGame() },
+                onPause: {
+                    tapGame.pauseGame()
+                    SoundService.shared.stopAllSFX()
+                    lastTapSoundTime = .distantPast
+                },
                 onResume: { tapGame.resumeGame() }
             )
+            .onDisappear { SoundService.shared.stopAllSFX() }
         }
     }
 }

@@ -110,6 +110,12 @@ final class SoundService {
         }
     }
 
+    /// 재생 중인 효과음 전부 정지 (게임 일시정지·뷰 이탈 시 등)
+    func stopAllSFX() {
+        sfxPlayers.forEach { $0.stop() }
+        sfxPlayers.removeAll()
+    }
+
     // MARK: - BGM
 
     func playBGM() {
