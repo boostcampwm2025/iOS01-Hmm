@@ -26,7 +26,7 @@
 				Production/FeedbackSystem/SoundType.swift,
 				Production/Presentation/CharacterScene.swift,
 				Production/Presentation/DodgeGameView.swift,
-				Production/Presentation/FeedbackSettingPopupView.swift,
+				Production/Presentation/FeedbackSettingView.swift,
 				Production/Presentation/Intro/IntroView.swift,
 				Production/Presentation/Intro/NicknameSetupView.swift,
 				Production/Presentation/Intro/TutorialPageView.swift,
