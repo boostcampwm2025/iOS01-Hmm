@@ -10,6 +10,8 @@ import Foundation
 enum SoundType: String {
     case success
     case failure
+    /// 버튼 탭 시 재생
+    case tap
 
     var url: URL? {
         switch self {

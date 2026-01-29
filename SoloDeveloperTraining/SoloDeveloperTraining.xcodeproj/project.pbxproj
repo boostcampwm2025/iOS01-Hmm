@@ -44,6 +44,7 @@
 				Production/Presentation/WorkSelectedView.swift,
 				Resources/Audio/failure.wav,
 				Resources/Audio/success.wav,
+				Resources/Audio/tap.wav,
 			);
 			target = 2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */;
 		};
