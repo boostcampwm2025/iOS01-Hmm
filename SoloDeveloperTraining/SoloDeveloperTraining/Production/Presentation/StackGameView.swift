@@ -115,7 +115,7 @@ private extension StackGameView {
     /// 소비 아이템 사용 처리
     func useConsumableItem(_ type: ConsumableType) {
         if stackGame.user.inventory.drink(type) {
-            // 햅틱 재생
+            SoundService.shared.trigger(.itemConsume)
             HapticService.shared.trigger(.success)
             stackGame.buffSystem.useConsumableItem(type: type)
             stackGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)

@@ -78,7 +78,7 @@ private extension MissionView {
     func missionCardDidTapHandler(mission: Mission) {
         if mission.missionCardState == .claimable {
             missionSystem.claimMissionReward(mission: mission, wallet: user.wallet)
-
+            SoundService.shared.trigger(.missionAcquired)
             showToast = false
             let reward = mission.reward
             if reward.gold > 0 && reward.diamond > 0 {

@@ -97,6 +97,7 @@ private extension GamePauseWrapper {
                     .foregroundStyle(.black)
             }
         }
+        .buttonStyle(.soundTap)
     }
 }
 

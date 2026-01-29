@@ -68,7 +68,7 @@ private struct SegmentButton: View {
                 .background(backgroundColor)
                 .animation(.none, value: isSelected)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.soundTap)
     }
 
     var backgroundColor: SwiftUI.Color {

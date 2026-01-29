@@ -166,6 +166,10 @@ private extension LanguageGameView {
     func handleLanguageButtonTap(_ type: LanguageType) {
         Task {
             let gainedGold = await game.didPerformAction(type)
+            SoundService.shared.trigger(gainedGold > 0 ? .languageCorrect : .languageWrong)
+            if gainedGold <= 0 {
+                HapticService.shared.trigger(.error)
+            }
             showEffectLabel(gainedGold: gainedGold)
         }
     }
@@ -173,7 +177,7 @@ private extension LanguageGameView {
     /// 소비 아이템 사용 처리
     func useConsumableItem(_ type: ConsumableType) {
         if game.user.inventory.drink(type) {
-            // 햅틱 재생
+            SoundService.shared.trigger(.itemConsume)
             HapticService.shared.trigger(.success)
             game.buffSystem.useConsumableItem(type: type)
             game.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
