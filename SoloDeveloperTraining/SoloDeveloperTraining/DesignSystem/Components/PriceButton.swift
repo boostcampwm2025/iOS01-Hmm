@@ -122,25 +122,23 @@ struct PriceButton: View {
     @ViewBuilder
     var contentViews: some View {
         HStack {
-            if state != .locked {
-                if cost.gold > 0 {
-                    CurrencyLabel(
-                        axis: .horizontal,
-                        icon: .gold,
-                        textStyle: .caption,
-                        value: cost.gold
-                    )
-                    .foregroundStyle(.white)
-                }
-                if cost.diamond > 0 {
-                    CurrencyLabel(
-                        axis: .horizontal,
-                        icon: .diamond,
-                        textStyle: .caption,
-                        value: cost.diamond
-                    )
-                    .foregroundStyle(.white)
-                }
+            if cost.gold > 0 {
+                CurrencyLabel(
+                    axis: .horizontal,
+                    icon: .gold,
+                    textStyle: .caption,
+                    value: cost.gold
+                )
+                .foregroundStyle(.white)
+            }
+            if cost.diamond > 0 {
+                CurrencyLabel(
+                    axis: .horizontal,
+                    icon: .diamond,
+                    textStyle: .caption,
+                    value: cost.diamond
+                )
+                .foregroundStyle(.white)
             }
         }
     }
