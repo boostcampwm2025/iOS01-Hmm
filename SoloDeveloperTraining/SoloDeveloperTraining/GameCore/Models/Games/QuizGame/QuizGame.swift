@@ -198,6 +198,7 @@ private extension QuizGame {
             correctAnswersCount += 1
         }
 
+        SoundService.shared.trigger(isCorrect ? .languageCorrect : .languageWrong)
         phase = .showingExplanation
     }
 
