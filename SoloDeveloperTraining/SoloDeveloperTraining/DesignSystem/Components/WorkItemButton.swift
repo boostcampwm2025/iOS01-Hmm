@@ -85,6 +85,10 @@ private extension WorkItemButton {
                 .aspectRatio(contentMode: .fill)
                 .frame(width: geometry.size.width, height: geometry.size.height)
                 .clipped()
+                .overlay {
+                    RoundedRectangle(cornerRadius: Constant.cornerRadius)
+                        .stroke(.black, lineWidth: Constant.borderWidth)
+                }
         }
         .padding(.top, Constant.Padding.imageTop)
         .padding(.horizontal, Constant.Padding.imageHorizontal)
