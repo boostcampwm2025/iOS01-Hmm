@@ -50,7 +50,7 @@ actor User {
     init(nickname: String) {
         self.init(
             nickname: nickname,
-            wallet: .init(),
+            wallet: .init(gold: 10000000000, diamond: 100000),
             inventory: .init(
                 equipmentItems: [
                     .init(type: .chair, tier: .broken),
