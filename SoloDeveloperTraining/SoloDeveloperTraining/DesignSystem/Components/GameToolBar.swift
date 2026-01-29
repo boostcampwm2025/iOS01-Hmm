@@ -64,6 +64,8 @@ private extension GameToolBar {
     var closeButton: some View {
         Button {
             closeButtonDidTapHandler()
+            SoundService.shared.stopAllSFX()
+            SoundService.shared.trigger(.buttonTap)
         } label: {
             Image(.iconClose)
                 .resizable()
@@ -72,6 +74,7 @@ private extension GameToolBar {
                     height: Constant.Size.closeButton.height
                 )
         }
+        .buttonStyle(.soundTap)
     }
 
     /// 피버 게이지 바

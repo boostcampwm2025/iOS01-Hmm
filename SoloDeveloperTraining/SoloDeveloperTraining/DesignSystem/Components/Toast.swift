@@ -102,6 +102,7 @@ struct Toast: ViewModifier {
                     Button("짧은 메시지 표시") {
                         shortToast = true
                     }
+                    .withTapSound()
                     Text("짧은 메시지 테스트")
                         .toast(isShowing: $shortToast, message: "짧은 토스트 메시지입니다.")
                 }
@@ -110,6 +111,7 @@ struct Toast: ViewModifier {
                     Button("긴 메시지 표시") {
                         longToast = true
                     }
+                    .withTapSound()
                     Text("긴 메시지 테스트")
                         .toast(isShowing: $longToast, message: "긴 토스트 메시지입니다. 이 메시지는 길어서 줄바꿈과 최대 너비가 적용되는지 확인하는 테스트용입니다.")
                 }

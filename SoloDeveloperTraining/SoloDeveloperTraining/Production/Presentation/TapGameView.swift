@@ -12,6 +12,8 @@ private enum Constant {
         static let horizontal: CGFloat = 16
         static let toolBarBottom: CGFloat = 10
     }
+    /// 탭 사운드 최소 재생 간격 (초)
+    static let tapSoundThrottleInterval: TimeInterval = 15
 }
 
 struct TapGameView: View {
@@ -25,6 +27,8 @@ struct TapGameView: View {
     @State private var tapGame: TapGame
     /// 터치한 위치에 표시될 EffectLabel들의 위치와 값
     @State private var effectLabels: [EffectLabelData] = []
+    /// 탭 사운드 쓰로틀용 마지막 재생 시각
+    @State private var lastTapSoundTime: Date = .distantPast
 
     init(
         user: User,
@@ -55,7 +59,11 @@ struct TapGameView: View {
                 isGameViewDisappeared: $isGameViewDisappeared,
                 height: geometry.size.height,
                 onLeave: { handleCloseButton() },
-                onPause: { tapGame.pauseGame() },
+                onPause: {
+                    tapGame.pauseGame()
+                    SoundService.shared.stopAllSFX()
+                    lastTapSoundTime = .distantPast
+                },
                 onResume: { tapGame.resumeGame() }
             )
         }
@@ -122,6 +130,12 @@ private extension TapGameView {
     /// - Parameter location: 터치한 위치
     @MainActor
     func handleTap(at location: CGPoint) async {
+        let now = Date()
+        if !tapGame.isPaused,
+           now.timeIntervalSince(lastTapSoundTime) >= Constant.tapSoundThrottleInterval {
+            SoundService.shared.trigger(.tapGameTyping)
+            lastTapSoundTime = now
+        }
         let gainGold = await tapGame.didPerformAction()
         showEffectLabel(at: location, value: gainGold)
     }
@@ -129,7 +143,7 @@ private extension TapGameView {
     /// 소비 아이템 사용 처리
     func useConsumableItem(_ type: ConsumableType) {
         if tapGame.inventory.drink(type) {
-            // 햅틱 재생
+            SoundService.shared.trigger(.itemConsume)
             HapticService.shared.trigger(.success)
             tapGame.buffSystem.useConsumableItem(type: type)
             tapGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)

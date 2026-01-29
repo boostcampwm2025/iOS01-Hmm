@@ -8,6 +8,10 @@
 import SwiftUI
 
 extension View {
+    func withTapSound() -> some View {
+        buttonStyle(.soundTap)
+    }
+
     func toast(isShowing: Binding<Bool>, message: String, duration: Double = 1.5) -> some View {
         self.modifier(Toast(isShowing: isShowing, message: message, duration: duration))
     }

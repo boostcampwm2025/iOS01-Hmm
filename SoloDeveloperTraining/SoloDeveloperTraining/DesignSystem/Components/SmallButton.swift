@@ -36,6 +36,7 @@ struct SmallButton: View {
     @State private var isPressed: Bool = false
 
     let title: String
+    var image: Image?
     var hasBadge: Bool = false
     var isEnabled: Bool = true
     let action: () -> Void
@@ -43,37 +44,52 @@ struct SmallButton: View {
     var body: some View {
         Button(action: action) {
             ZStack {
-                Text(title)
-                    .textStyle(.body)
-                    .foregroundColor(.white)
+                buttonContent
+                    .opacity(isPressed ? Constant.Opacity.pressed : Constant.Opacity.unPressed)
                     .frame(width: Constant.Size.buttonWidth, height: Constant.Size.buttonHeight)
                     .background(backgroundColor)
                     .cornerRadius(Constant.radius)
-                    .opacity(isPressed ? Constant.Opacity.pressed : Constant.Opacity.unPressed)
                     .overlay(alignment: .topTrailing) {
                         if hasBadge { badge }
                     }
                     .offset(
-                        x: (hasBadge && isPressed) ? Constant.Offset.pressedX : 0,
-                        y: (hasBadge && isPressed) ? Constant.Offset.pressedY : 0
+                        x: isPressed ? Constant.Offset.pressedX : 0,
+                        y: isPressed ? Constant.Offset.pressedY : 0
                     )
                     .layoutPriority(1)
 
-                if hasBadge {
                     Rectangle()
                         .fill(Color.black)
                         .frame(width: Constant.Size.buttonWidth, height: Constant.Size.buttonHeight)
                         .cornerRadius(Constant.radius)
                         .offset(x: Constant.Offset.shadowX, y: Constant.Offset.shadowY)
                         .zIndex(-1)
-                }
             }
         }
         .disabled(!isEnabled)
         .buttonStyle(.pressable(isPressed: $isPressed))
+
+    }
+
+    @ViewBuilder
+    private var buttonContent: some View {
+        if let image {
+            image
+                .resizable()
+                .scaledToFill()
+                .frame(width: Constant.Size.buttonWidth, height: Constant.Size.buttonHeight)
+                .contentShape(Rectangle())
+        } else {
+            Text(title)
+                .textStyle(.body)
+                .foregroundColor(.white)
+        }
     }
 
     private var backgroundColor: Color {
+        if image != nil {
+            return .clear
+        }
         if !isEnabled {
             return .gray200
         }
@@ -103,6 +119,9 @@ struct SmallButton: View {
         }
 
         SmallButton(title: "버튼", hasBadge: true) {
+            print("버튼 클릭4")
+        }
+        SmallButton(title: "버튼", image: Image(.iconSetting)) {
             print("버튼 클릭4")
         }
     }

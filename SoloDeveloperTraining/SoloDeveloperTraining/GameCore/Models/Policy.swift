@@ -11,6 +11,7 @@ enum Policy {
     // MARK: - 커리어 시스템 (기준점)
     /// 단계별 필요 누적 재산
     enum Career {
+        static let unemployed = 0
         static let laptopOwner = 5_000
         static let aspiringDeveloper = 50_000
         static let juniorDeveloper = 1_000_000
