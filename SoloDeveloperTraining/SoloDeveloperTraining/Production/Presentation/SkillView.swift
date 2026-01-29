@@ -16,13 +16,19 @@ private enum Constant {
 
 struct SkillView: View {
     private let user: User
+    private let careerSystem: CareerSystem?
     private let skillSystem: SkillSystem
 
     @Binding var popupContent: PopupConfiguration?
 
-    init(user: User, popupContent: Binding<PopupConfiguration?>) {
+    init(
+        user: User,
+        careerSystem: CareerSystem?,
+        popupContent: Binding<PopupConfiguration?>
+    ) {
         self.user = user
-        self.skillSystem = SkillSystem(user: user)
+        self.careerSystem = careerSystem
+        self.skillSystem = SkillSystem(user: user, careerSystem: careerSystem)
         self._popupContent = popupContent
     }
 
@@ -109,5 +115,5 @@ private extension SkillView {
         ]
     )
 
-    SkillView(user: user, popupContent: .constant(nil))
+    SkillView(user: user, careerSystem: nil, popupContent: .constant(nil))
 }

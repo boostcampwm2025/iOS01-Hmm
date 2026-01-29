@@ -21,6 +21,14 @@ enum Policy {
         static let famousDeveloper = 100_000_000_000
         static let allRounderDeveloper = 50_000_000_000_000
         static let worldClassDeveloper = 1_000_000_000_000_000 // 1000조: 만렙
+      
+        /// 게임별 해금 조건
+        enum GameUnlock {
+            static let tap = unemployed
+            static let language = laptopOwner
+            static let dodge = aspiringDeveloper
+            static let stack = juniorDeveloper
+        }
     }
 
     // MARK: - 피버 시스템 (쾌감 증대)

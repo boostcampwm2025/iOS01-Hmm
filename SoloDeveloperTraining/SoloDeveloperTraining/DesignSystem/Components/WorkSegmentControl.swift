@@ -13,6 +13,7 @@ private enum Constant {
 
 struct WorkSegmentControl: View {
     let items: [WorkItem]
+    var onLockedTap: ((Career) -> Void)?
     @Binding var selectedIndex: Int
 
     var body: some View {
@@ -26,6 +27,15 @@ struct WorkSegmentControl: View {
                         handleTap(at: index)
                     }
                 )
+                .overlay {
+                    if items[index].isDisabled {
+                        Color.clear
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                handleLockedTap(at: index)
+                            }
+                    }
+                }
             }
         }
     }
@@ -35,6 +45,11 @@ private extension WorkSegmentControl {
     func handleTap(at index: Int) {
         guard !items[index].isDisabled else { return }
         selectedIndex = index
+    }
+
+    func handleLockedTap(at index: Int) {
+        guard let requiredCareer = items[index].requiredCareer else { return }
+        onLockedTap?(requiredCareer)
     }
 
     func buttonState(for index: Int) -> WorkItemButton.ButtonState {
@@ -52,15 +67,18 @@ struct WorkItem {
     let title: String
     let imageName: String
     let isDisabled: Bool
+    let requiredCareer: Career?
 
     init(
         title: String,
         imageName: String,
-        isDisabled: Bool = false
+        isDisabled: Bool = false,
+        requiredCareer: Career? = nil
     ) {
         self.title = title
         self.imageName = imageName
         self.isDisabled = isDisabled
+        self.requiredCareer = requiredCareer
     }
 }
 

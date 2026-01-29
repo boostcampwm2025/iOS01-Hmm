@@ -34,6 +34,8 @@ struct WorkSelectedView: View {
     let animationSystem: CharacterAnimationSystem?
     @State var selectedIndex: Int = 0
     @State var workItems: [WorkItem] = []
+    @State private var showToast: Bool = false
+    @State private var toastMessage: String = ""
     @Binding var isGameStarted: Bool
     @Binding var isGameViewDisappeared: Bool
     @Binding var careerSystem: CareerSystem?
@@ -86,12 +88,17 @@ private extension WorkSelectedView {
             startButton
         }
         .padding(.horizontal, Constant.Padding.horizontal)
+        .toast(isShowing: $showToast, message: toastMessage)
     }
 
     var workSegmentControl: some View {
         WorkSegmentControl(
             items: workItems,
-            selectedIndex: $selectedIndex
+            onLockedTap: { requiredCareer in
+                toastMessage = "\(requiredCareer.rawValue)부터 플레이할 수 있습니다."
+                showToast = true
+            }
+            , selectedIndex: $selectedIndex
         )
     }
 
@@ -118,45 +125,43 @@ private extension WorkSelectedView {
 
     func createWorkItems(career: Career?) -> [WorkItem] {
         let currentCareer = career ?? .unemployed
+        let currentWealth = currentCareer.requiredWealth
 
-        let tapDisabled: Bool
-        let languageDisabled: Bool
-        let dodgeDisabled: Bool
-        let stackDisabled: Bool
-
-        switch currentCareer {
-        case .unemployed:
-            (tapDisabled, languageDisabled, dodgeDisabled, stackDisabled) = (false, true, true, true)
-        case .laptopOwner:
-            (tapDisabled, languageDisabled, dodgeDisabled, stackDisabled) = (false, false, true, true)
-        case .aspiringDeveloper:
-            (tapDisabled, languageDisabled, dodgeDisabled, stackDisabled) = (false, false, false, true)
-        default:
-            (tapDisabled, languageDisabled, dodgeDisabled, stackDisabled) = (false, false, false, false)
-        }
+        let tapUnlocked = currentWealth >= Policy.Career.GameUnlock.tap
+        let languageUnlocked = currentWealth >= Policy.Career.GameUnlock.language
+        let dodgeUnlocked = currentWealth >= Policy.Career.GameUnlock.dodge
+        let stackUnlocked = currentWealth >= Policy.Career.GameUnlock.stack
 
         return [
             .init(
                 title: "코드짜기",
                 imageName: GameType.tap.imageName,
-                isDisabled: tapDisabled
+                isDisabled: !tapUnlocked,
+                requiredCareer: findCareer(for: Policy.Career.GameUnlock.tap)
             ),
             .init(
                 title: "언어 맞추기",
                 imageName: GameType.language.imageName,
-                isDisabled: languageDisabled
+                isDisabled: !languageUnlocked,
+                requiredCareer: findCareer(for: Policy.Career.GameUnlock.language)
             ),
             .init(
                 title: "버그 피하기",
                 imageName: GameType.dodge.imageName,
-                isDisabled: stackDisabled
+                isDisabled: !dodgeUnlocked,
+                requiredCareer: findCareer(for: Policy.Career.GameUnlock.dodge)
             ),
             .init(
                 title: "데이터 쌓기",
                 imageName: GameType.stack.imageName,
-                isDisabled: stackDisabled
+                isDisabled: !stackUnlocked,
+                requiredCareer: findCareer(for: Policy.Career.GameUnlock.stack)
             )
         ]
+    }
+
+    func findCareer(for requiredWealth: Int) -> Career? {
+        return Career.allCases.first { $0.requiredWealth == requiredWealth }
     }
 
     @ViewBuilder
