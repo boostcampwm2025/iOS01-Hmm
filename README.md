@@ -5,96 +5,122 @@
 | 이름 | Sophia 김선재 | Oliver 김성훈 | Raven 서준영 | Edward 최범수 |
 |:----:|:------:|:------:|:------:|:------:|
 | 캠퍼 ID | S004 | S005 | S016 | S037 |
-| 사진 | <img width="300" alt="image" src="https://github.com/user-attachments/assets/9ca66fb6-1a80-400f-b498-8e5c2537233d" /> | <img width="300" alt="image" src="https://github.com/user-attachments/assets/c471c0f9-ccf7-4d38-bf57-1e0ac79b2f0d" /> | <img width="300" alt="image" src="https://avatars.githubusercontent.com/u/112812473?v=4" /> | <img width="300" alt="image" src="https://github.com/user-attachments/assets/0102d543-0fdd-4041-a1a0-a1c309aed207" /> |
-| MBTI | ISTJ | ENFJ | ISTP | INTP |
+| 사진 | <img width="300" alt="image" src="https://github.com/user-attachments/assets/9befc1cc-6709-4e4e-bcde-3039314d8058" /> |<img width="300" alt="image" src="https://github.com/user-attachments/assets/91e8a868-17d3-426d-8e19-278c7dcad420" />| <img width="300" alt="image" src="https://github.com/user-attachments/assets/f39478c8-cd05-45b1-bb3b-b4d9541008bb" /> | <img width="300" alt="image" src="https://github.com/user-attachments/assets/8aa2758d-291c-48dc-b9ed-c4e00e14854d" />|
+| 역할 | 팀원 | 🤴🏻 팀장 | 팀원 | 팀원 |
 
-## Wiki
-- [Hmm wiki](https://github.com/boostcampwm2025/iOS01-Hmm/wiki)
+# 🎮 개발자 키우기
+<img width="2472" height="1078" alt="image" src="https://github.com/user-attachments/assets/2e432e68-49e6-41fd-96d8-ea18ad5b23dc" />
 
-## 그룹 프로젝트 목표
-- 일하지 않고 추억 만들기
-  - '놀이'처럼 생각하기
-  - 재미를 잃지 않기
-- 배포 가능한 수준의 기능 개발 완료하기
-  - App 다운로드 100회 달성하기
-  - 사용자 피드백 받아보기
-<img width="800" alt="스크린샷 2025-12-09 오전 1 23 31" src="https://github.com/user-attachments/assets/09983098-309c-402e-b3d0-b4bfd1b3efca" />
+# 📝 개요
 
+> `개발자 키우기`는 백수에서 시작해 월드클래스 iOS 개발자로 성장하는 시뮬레이션 게임입니다.
+> 
 
-## 주간 일정
-### 1주차 (기획 주간)
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/bfafeea7-3ff4-401e-a882-84eb7292c2be" />
+본 프로젝트는 단순한 탭 반복 위주의 방치형 게임에서 벗어나,
+iOS 기기 고유의 입력 방식과 물리 시스템을 적극 활용한 게임 경험을 목표로 기획되었습니다.
+사용자는 화면 터치뿐만 아니라 기기의 기울기를 직접 조작하며 다양한 미니게임을 플레이하게 됩니다.
 
-## 개발 규칙
-- PR 올리면 슬랙에 리마인드 하기 / 깃헙 웹훅 연결 (pr)
-- 리뷰 시간
-- 스크럼 전까지 최소한 읽거나 리뷰 완료하기
-- 브랜치 관리
-  - 마일스톤 단위로 main ← develop Merge
-  - main : 데모/배포용 브랜치
-  - dev: 개발 통합 브랜치
-  - 개인 작업 브랜치: [label-prefix]/#이슈번호-설명설명
-- Merge 규칙
-  - Main Branch Merge Ruleset
-    - 리뷰어 4명 중 2명 이상 Approve 시 머지 권한 활성화
-    - force push 제한 
-  - Dev Branch Merge Ruleset
-- Automatic Copilot code review 활용 시도
-- 리뷰 봇 추가 예정 
+게임의 핵심 루프는 **`미니게임 → 재산 획득 → 스킬/아이템/부동산 강화 → 커리어 성장 및 미션 보상`** 으로 구성되어 있으며,
+플레이가 누적될수록 더 효율적인 성장 전략을 설계할 수 있도록 설계되었습니다.
+이를 통해 단순한 반복이 아닌, 선택과 전략이 개입되는 성장 구조를 제공합니다.
 
-## 그라운드 룰
-### 🌈 생활 수칙
-- 연락이 1시간 이상 안될 경우 미리 공지하기(고정 일정 제외)
-- 문제를 겪고 있다면, 혼자 오래 고민하지 않고 공유하기
-  - 혼자 3시간정도는 고민해보기
-  - 고민 과정과, 질문을 미리 정리해서 공유하기
-  - 슬랙에서 가능한 사람과 바로바로 공유하고, 결정 사항은 문서화 해두고 모든 팀원과 공유하기
-  - 페어 프로그래밍 방식으로 해결
-- 마음이 미어지면 꼭 말하기 (이거 재밌어요)
-- 할 일 다 하고 놀기!
-- 5분 이상 지각하면 iOS 채널에 ‘저는 오늘 스크럼/회의에 지각했습니다. 다음부터는 팀원들과의 약속을 꼭 지키겠습니다.’ 올리기.
-- 팀원들의 실수도 내 실수처럼 생각하기
-- 내 코드는 PR을 올린 순간 내놓은 자식으로 생각하기
-- 질문을 어려워하지 않기
-- 영어이름 안부르면 “Slack에 저 @@@(본인 영어이름)은 팀원의 이름을 기억하지 못하고 다른 이름을 부른 바보입니다.” 일 경고 3경고 아웃
-- 칭찬 절~대 아끼지 않기
-- 싱크 맞추기
-- 담당한 역할 열심히 수행하기 
+기술적으로는 `CoreMotion`을 활용한 기기 기울기 입력 처리와
+`SpriteKit` 물리 엔진을 활용한 오브젝트 상호작용을 통해
+iOS 기기 특유의 ‘손맛’과 직관적인 조작감을 구현했습니다.
 
-### 💥 회의 규칙
-- 50분 진행 10분 휴식의 반복으로 회의를 진행합니다.
-- 회의는 Slack을 활용하여 진행합니다.
-- 1주차 최종 의사 결정권자 -> **Raven**
-- 매주 데모 발표자는 돌아가면서 진행
-- 최종 데모 발표자는 **투표**로 선정
-- 사회자) 주간 계획 수립 시간에 핀볼로 정하기
-- 본인이 그 날의 서기를 지정한다.
-- 서기는 화면 공유를 하며 회의록을 작성하고, 사회자는 네비게이터 역할을 맡는다.
+또한 `SwiftUI` 기반 UI 구성과 `Actor`를 활용한 동시성 제어를 통해
+게임 로직과 상태 관리를 명확히 분리하고, 안정적이고 부드러운 플레이 경험을 제공하는 것을 목표로 했습니다.
 
-## 기획 링크
-- [figjam](https://www.figma.com/board/Ekedk3nwZ508zvmKdvFu9e/%ED%85%8C%EC%98%A4%EC%9D%98-%EC%8A%A4%ED%94%84%EB%A6%B0%ED%8A%B8-%ED%85%9C%ED%94%8C%EB%A6%BF--Copy---Copy-?node-id=0-1&p=f&t=htJDoHWZurdaduXf-0)
-
-## PR 라벨 & 커밋 컨벤션
-- 커밋 메시지 명세: `Label: 설명설명설명`
-- PR 라벨
-<img width="324" height="437" alt="image" src="https://github.com/user-attachments/assets/6d11b52c-0feb-471d-ad1f-b19c59c354b3" />
-
-## 이슈, PR 템플릿
-- 이슈 템플릿
+# 🔨 실행 방법 / 최소 지원 버전
 ```
-# 인수조건
-- [ ] 조건
+타깃을 SoloDeveloperTraining으로 설정 후 빌드합니다.
+```
+```
+Minimum Deployment Target: iOS 17.0
 ```
 
-- PR 템플릿
+# ⚔️ 사용 기술 스택
 
+| 구분 | 스택 |
+|---|---|
+| **Language** | Swift 6.0 |
+| **UI** | SwiftUI, Observable |
+| **Framework** | CoreMotion, SpriteKit |
+| **Async** | Swift Concurrency |
+| **Tools** | SwiftLint |
+| **CI/CD** | Github Actions |
+
+# 🦿 프로젝트 구조
 ```
-## 연관된 이슈
-- closed #이슈번호
-
-## 작업 내용 및 고민 내용
-
-## 스크린샷
-
-## 리뷰 요구사항
+SoloDeveloperTraining/
+  ├── Prototype/                             # 프로토타입 프로젝트
+  └── SoloDeveloperTraining/                 # 메인 프로젝트
+      ├── SoloDeveloperTraining.xcodeproj
+      └── SoloDeveloperTraining/
+          │
+          ├── App/                           # 앱 진입점 (AppDelegate, SceneDelegate 등)
+          │
+          ├── DesignSystem/                  # 디자인 시스템
+          │
+          ├── Extensions/                    # Swift 확장 기능
+          │
+          ├── GameCore/                      # 게임 핵심 로직
+          │   └── Models/
+          │       ├── Games/                 # 미니게임
+          │       ├── Items/                 # 아이템 모델
+          │       ├── Storages/              # 저장소 모델
+          │       ├── Systems/               # 게임 시스템
+          │       └── User/                  # 유저 관련
+          │
+          ├── Production/                    # 프로덕션 코드
+          │   ├── Data/                      # 데이터 레이어
+          │   ├── Error/                     # 에러 처리
+          │   ├── FeedbackSystem/            # 피드백 시스템 (햅틱, 사운드 등)
+          │   ├── Presentation/              # UI 레이어
+          │   └── Utility/                   # 유틸리티 함수들
+          │
+          ├── Development/                    # 개발용 코드
+          │   └── Presentation/              # 개발용 UI
+          │
+          └── Resources/                     # 리소스 파일
+              ├── Assets.xcassets/           # 이미지, 컬러 에셋
+              ├── Audio/                     # 오디오 파일
+              └── Fonts/                     # 폰트 파일
 ```
+# 🚀 주요 기능
+
+## 1. 커리어 성장 시스템
+- **9단계 커리어 등급**
+    - **`백수 → 노트북 보유자 → 개발자 지망생 → ... → 월드클래스 개발자`**
+- **누적 재산 기반 자동 승급**: 플레이하며 자연스럽게 성장하는 시스템입니다.
+- **등급별 콘텐츠 해금**: 새로운 미니게임 모드와 강화 콘텐츠를 해금할 수 있습니다.
+
+## 2. 4가지 미니게임
+| 코드짜기 | 언어 맞추기 | 버그 피하기 | 데이터 쌓기 |
+| --- | --- | --- | --- |
+|<img width="990" height="1876" alt="image" src="https://github.com/user-attachments/assets/c602a5b0-56e0-44f9-8b7b-214323ff9999" />|<img width="990" height="1876" alt="image" src="https://github.com/user-attachments/assets/2f14181c-9752-4163-aee9-7ece3db4252d" />|<img width="990" height="1876" alt="image" src="https://github.com/user-attachments/assets/32034b4e-cee4-4355-a852-a2b8955adb59" />|<img width="990" height="1876" alt="image" src="https://github.com/user-attachments/assets/93f37522-6755-4a7e-8ebf-f5dfb522ff13" />|
+| 반복적인 화면 터치(탭)를 통해 재산을 획득할 수 있습니다. | 올바른 언어 아이콘을 매칭 터치하여 재산을 획득할 수 있습니다. | CoreMotion 자이로 센서를 활용하여 기기 기울여 재산을 획득할 수 있습니다. | SpriteKit 물리 엔진을 기반으로 타이밍에 맞춰 터치하여 재산을 획득할 수 있습니다. |
+
+## 3. 피버 시스템
+- **3단계 피버 게이지**: 0~300%까지 노란색 → 주황색 → 빨간색으로 시각화 했습니다.
+- **단계별 배율**: 100% 도달 시 x배, 200% 도달 시 y배, 300% 도달 시 z배 획득 할 수 있습니다.
+- **게이지 변화**: 액션 성공 시 증가하고, n초마다 자동 감소합니다.
+
+| 0단계 | 1단계 | 2단계 | 3단계 |
+| --- | --- | --- | --- |
+|<img width="990" height="1876" alt="image" src="https://github.com/user-attachments/assets/b009508b-03c1-4913-bb44-6a55fbb557a9" />|<img width="990" height="1876" alt="image" src="https://github.com/user-attachments/assets/e685c6d1-de79-432b-9120-1e9f91562baa" />|<img width="990" height="1876" alt="image" src="https://github.com/user-attachments/assets/ff7b6e20-7016-4862-852c-07b858f9adfc" />|<img width="990" height="1876" alt="image" src="https://github.com/user-attachments/assets/c502143d-bfb3-47eb-8b87-a30b74746812" />|
+
+
+## 4. 경제 시스템
+
+| 스킬| 아이템 | 부동산 |
+| --- | --- | --- |
+|<img width="990" height="1876" alt="image" src="https://github.com/user-attachments/assets/7c51045e-794a-40fa-a638-d20d79ca5e74" />|<img width="990" height="1876" alt="image" src="https://github.com/user-attachments/assets/f1e3c5fa-ed64-4219-b7ad-562a2d037d24" />|<img width="990" height="1876" alt="image" src="https://github.com/user-attachments/assets/27f2da30-19a9-4fef-8fa7-227c80cfa612" />|
+| - 업무 4개 모드마다 초급/중급/고급의 스킬이 존재합니다. <br>  - 레벨이 올라갈수록 각 업무의 액션 재산이 증가합니다. | - 커피, 박하스로 일시적 버프 효과를 획득합니다.<br> - 키보드, 마우스, 모니터, 의자 각각의 8등급의 강화 시스템이 존재합니다.<br> - 등급이 높아질수록 강화 성공 확률이 감소합니다. | - 길바닥 → 반지하 → … → 펜트하우스의 등급이 존재합니다.<br> - 배경을 변경할 수 있고, 부동산은 하나만 소유 가능합니다.|
+
+
+## 5. 부가 콘텐츠
+| 퀴즈 | 미션 | 튜토리얼 | 설정 |
+| --- | --- | --- | --- |
+| <img width="990" height="1876" alt="image" src="https://github.com/user-attachments/assets/edef116e-db41-480c-8fa5-f72c67152ef9" />| <img width="990" height="1876" alt="image" src="https://github.com/user-attachments/assets/b19e79dc-f7a0-4657-8061-294418b4fccb" />| <img width="990" height="1876" alt="image" src="https://github.com/user-attachments/assets/e11d25d6-92cd-49ca-a175-e099d72e9da5" />| <img width="990" height="1876" alt="image" src="https://github.com/user-attachments/assets/7c640b1c-95ad-4d69-8b81-19e81bda87b5" />|
+| 개발 밈과 관련된 퀴즈로 다이아 보상을 획득할 수 있습니다. | 다양한 목표 달성으로 지속적인 플레이를 보장하며 보상을 획득할 수 있습니다. | 게임 시스템의 기본적인 학습을 할 수 있습니다. | 사운드, 효과음, 햅틱에 대한 설정을 조절할 수 있습니다. |
