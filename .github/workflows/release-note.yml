@@ -29,7 +29,7 @@ jobs:
           MARKETING_VERSION=$(grep -m 1 "MARKETING_VERSION = " "${PROJECT_NAME}/${PROJECT_NAME}.xcodeproj/project.pbxproj" | sed 's/.*MARKETING_VERSION = \(.*\);/\1/' | tr -d ' ')
 
           # project.pbxproj에서 CURRENT_PROJECT_VERSION 추출 (빌드 번호, 예: 42)
-          BUILD_NUMBER=$(grep -m 1 "CURRENT_PROJECT_VERSION = " "${PROJECT_NAME}/${PROJECT_NAME}.xcodeproj/project.pbxproj" | sed 's/.*MARKETING_VERSION = \(.*\);/\1/' | tr -d ' ')
+          BUILD_NUMBER=$(grep -m 1 "CURRENT_PROJECT_VERSION = " "${PROJECT_NAME}/${PROJECT_NAME}.xcodeproj/project.pbxproj" | sed 's/.*CURRENT_PROJECT_VERSION = \(.*\);/\1/' | tr -d ' ')
           
           echo "marketing_version=$MARKETING_VERSION" >> $GITHUB_OUTPUT
           echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
