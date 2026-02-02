@@ -94,10 +94,8 @@ jobs:
                 });
               }
 
-              // 3. 만약 하위 PR이 없다면 (단일 커밋 머지 등), 현재 PR이라도 포함시킵니다.
-              if (prNumbers.size === 0) {
-                prNumbers.add(pull_number);
-              }
+              // 3. 현재 PR을 포함시킵니다.
+              prNumbers.add(pull_number);
 
               console.log(`✅ Found ${prNumbers.size} unique sub-PRs.`);
 
