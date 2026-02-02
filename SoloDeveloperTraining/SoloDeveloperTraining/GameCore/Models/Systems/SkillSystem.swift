@@ -63,6 +63,49 @@ final class SkillSystem {
         try skill.upgrade()
         pay(cost: costBeforeUpgrade)
     }
+
+    /// 게임의 현재 액션당 총 골드 획득량 계산
+    func calculateCurrentTotalGold(for game: GameType) -> Int {
+        return user.skills
+            .filter { $0.key.game == game }
+            .reduce(0) { $0 + Int($1.gainGold) }
+    }
+
+    /// 특정 스킬 업그레이드 후 해당 게임의 총 골드 획득량 계산
+    func calculateTotalGoldAfterUpgrade(skill: Skill) -> Int {
+        let currentTotal = calculateCurrentTotalGold(for: skill.key.game)
+
+        // 해당 스킬의 multiplier 계산
+        let multiplier: Int
+        switch skill.key.game {
+        case .tap:
+            switch skill.key.tier {
+            case .beginner: multiplier = Policy.Skill.Tap.beginnerGoldMultiplier
+            case .intermediate: multiplier = Policy.Skill.Tap.intermediateGoldMultiplier
+            case .advanced: multiplier = Policy.Skill.Tap.advancedGoldMultiplier
+            }
+        case .language:
+            switch skill.key.tier {
+            case .beginner: multiplier = Policy.Skill.Language.beginnerGoldMultiplier
+            case .intermediate: multiplier = Policy.Skill.Language.intermediateGoldMultiplier
+            case .advanced: multiplier = Policy.Skill.Language.advancedGoldMultiplier
+            }
+        case .dodge:
+            switch skill.key.tier {
+            case .beginner: multiplier = Policy.Skill.Dodge.beginnerGoldMultiplier
+            case .intermediate: multiplier = Policy.Skill.Dodge.intermediateGoldMultiplier
+            case .advanced: multiplier = Policy.Skill.Dodge.advancedGoldMultiplier
+            }
+        case .stack:
+            switch skill.key.tier {
+            case .beginner: multiplier = Policy.Skill.Stack.beginnerGoldMultiplier
+            case .intermediate: multiplier = Policy.Skill.Stack.intermediateGoldMultiplier
+            case .advanced: multiplier = Policy.Skill.Stack.advancedGoldMultiplier
+            }
+        }
+
+        return currentTotal + multiplier
+    }
 }
 
 private extension SkillSystem {
