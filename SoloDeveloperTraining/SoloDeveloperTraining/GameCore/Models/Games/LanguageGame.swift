@@ -107,6 +107,9 @@ final class LanguageGame: Game {
     }
 
     func didPerformAction(_ input: LanguageType) async -> Int {
+        // 게임 종료 후 버튼 탭 크래시 방지
+        guard itemList.count > leadingAndTrailingItemCount else { return 0 }
+
         let isSuccess = languageButtonTapHandler(tappedItemType: input)
         feverSystem
             .gainFever(
