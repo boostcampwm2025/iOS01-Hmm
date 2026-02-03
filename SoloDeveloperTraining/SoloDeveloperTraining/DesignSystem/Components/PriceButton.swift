@@ -32,7 +32,7 @@ private enum Constant {
 
 struct PriceButton: View {
 
-    @State private var isPressed: Bool = false
+    @GestureState private var isPressed: Bool = false
     let cost: Cost
     let state: ItemState
     let axis: Axis
@@ -83,13 +83,10 @@ struct PriceButton: View {
             }
             .simultaneousGesture(
                 DragGesture(minimumDistance: 0)
-                    .onChanged { _ in
-                        if !isDisabled && !isPressed {
-                            isPressed = true
+                    .updating($isPressed) { _, state, _ in
+                        if !isDisabled {
+                            state = true
                         }
-                    }
-                    .onEnded { _ in
-                        isPressed = false
                     }
             )
             .animation(.none, value: isPressed)
