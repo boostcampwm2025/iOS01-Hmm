@@ -24,7 +24,7 @@ final class FileManagerUserRepository: UserRepository {
     func save(_ user: User) async throws {
         let id = user.id
         let nickname = user.nickname
-        let career = await user.career
+        let career = user.career
         let wallet = user.wallet
         let inventory = user.inventory
         let record = user.record

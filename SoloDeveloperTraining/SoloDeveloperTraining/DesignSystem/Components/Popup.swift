@@ -10,6 +10,7 @@ import SwiftUI
 private enum Constant {
     static let cornerRadius: CGFloat = 8
     static let lineWidth: CGFloat = 2
+    static let contentVerticalSpacing: CGFloat = 11
 
     enum Padding {
         static let titleTop: CGFloat = 20
@@ -56,7 +57,7 @@ struct Popup<ContentView: View>: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: Constant.contentVerticalSpacing) {
             Text(title)
                 .textStyle(.title3)
                 .multilineTextAlignment(.center)
