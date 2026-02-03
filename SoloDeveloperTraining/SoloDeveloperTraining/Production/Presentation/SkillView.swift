@@ -41,10 +41,10 @@ struct SkillView: View {
                         description: "액션당 \(Int(skillState.skill.gainGold).formatted()) 골드 획득",
                         imageName: skillState.skill.imageName,
                         cost: skillState.skill.upgradeCost,
-                        state: skillState.itemState
-                    ) {
-                        upgrade(skill: skillState.skill)
-                    }
+                        state: skillState.itemState,
+                        action: { upgrade(skill: skillState.skill) },
+                        onLongPressAction: { upgradeRepeating(skill: skillState.skill) }
+                    )
                 }
             }
         }
@@ -85,6 +85,16 @@ private extension SkillView {
                     }
                 }
             }
+        }
+    }
+
+    /// 롱프레스 연속 구매용. 성공 시 `true`, 실패(재화 부족 등) 시 `false` 반환해 연속 호출 중단.
+    func upgradeRepeating(skill: Skill) -> Bool {
+        do {
+            try skillSystem.upgrade(skill: skill)
+            return true
+        } catch {
+            return false
         }
     }
 }
