@@ -11,6 +11,7 @@ enum ItemState {
     case available      // 구매 가능
     case locked         // 잠김
     case insufficient   // 비용 부족
+    case reachedMax     // 최고 레벨
 
     init(item: DisplayItem) {
         if item.isEquipped && item.category == .housing {
@@ -22,12 +23,15 @@ enum ItemState {
         }
     }
 
-    init(canUnlock: Bool, canAfford: Bool) {
-        if !canUnlock {
+    init(canUpgrade: Bool, canUnlock: Bool, canAfford: Bool) {
+        switch (canUpgrade, canUnlock, canAfford) {
+        case (false, _, _):
+            self = .reachedMax
+        case (true, false, _):
             self = .locked
-        } else if !canAfford {
+        case (true, true, false):
             self = .insufficient
-        } else {
+        case (true, true, true):
             self = .available
         }
     }
