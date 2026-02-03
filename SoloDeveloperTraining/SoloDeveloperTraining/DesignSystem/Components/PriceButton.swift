@@ -134,7 +134,12 @@ struct PriceButton: View {
     @ViewBuilder
     var contentViews: some View {
         HStack {
-            if cost.gold > 0 {
+            if state == .reachedMax {
+                Text("Max")
+                    .textStyle(.caption)
+                    .foregroundStyle(.white)
+            }
+            else if cost.gold > 0 {
                 CurrencyLabel(
                     axis: .horizontal,
                     icon: .gold,
@@ -144,7 +149,7 @@ struct PriceButton: View {
                 .foregroundStyle(.white)
                 .fixedSize()
             }
-            if cost.diamond > 0 {
+            else if cost.diamond > 0 {
                 CurrencyLabel(
                     axis: .horizontal,
                     icon: .diamond,

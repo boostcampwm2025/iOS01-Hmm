@@ -72,11 +72,12 @@ private extension SkillSystem {
     }
 
     func getItemState(for skill: Skill) -> ItemState {
+        let canUpgrade = skill.level < skill.key.tier.levelRange.maxValue
         let canUnlock = canUnlock(skill: skill)
         let cost = skill.upgradeCost
         let canAfford = cost.gold <= user.wallet.gold && cost.diamond <= user.wallet.diamond
 
-        return ItemState(canUnlock: canUnlock, canAfford: canAfford)
+        return ItemState(canUpgrade: canUpgrade, canUnlock: canUnlock, canAfford: canAfford)
     }
 
     func canUnlock(skill: Skill) -> Bool {
