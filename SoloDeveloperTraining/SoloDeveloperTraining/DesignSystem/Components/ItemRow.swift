@@ -11,7 +11,7 @@ private enum Constant {
 
     static let imageSize: CGSize = .init(width: 38, height: 38)
     static let cornerRadius: CGFloat = 4
-    static let priceButtonWidth: CGFloat = 89
+    static let priceButtonWidth: CGFloat = 95
 
     enum Spacing {
         static let horizontal: CGFloat = 8
@@ -89,7 +89,7 @@ struct ItemRow: View {
             title: "강화 / 아이템 이름 이름 이름",
             description: "항목 설명 설명 설명",
             imageName: "housing_street",
-            cost: .init(gold: 1_000_000),
+            cost: .init(gold: 1_000_0000000000, diamond: 99),
             state: .available
         ) {
             print("Tapped")

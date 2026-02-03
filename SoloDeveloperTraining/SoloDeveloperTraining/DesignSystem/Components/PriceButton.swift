@@ -32,7 +32,7 @@ private enum Constant {
 
 struct PriceButton: View {
 
-    @State private var isPressed: Bool = false
+    @GestureState private var isPressed: Bool = false
     @State private var isLongPressing: Bool = false
 
     let cost: Cost
@@ -95,20 +95,12 @@ struct PriceButton: View {
                     action()
                 }
             }
-            .onChange(of: isLongPressing) { _, newValue in
-                if !newValue {
-                    isPressed = false
-                }
-            }
             .simultaneousGesture(
                 DragGesture(minimumDistance: 0)
-                    .onChanged { _ in
-                        if !isDisabled && !isPressed {
-                            isPressed = true
+                    .updating($isPressed) { _, state, _ in
+                        if !isDisabled {
+                            state = true
                         }
-                    }
-                    .onEnded { _ in
-                        isPressed = false
                     }
             )
             .animation(.none, value: isPressed)
@@ -132,8 +124,8 @@ struct PriceButton: View {
         .background(isDisabled ? .gray300 : .orange500)
         .clipShape(RoundedRectangle(cornerRadius: Constant.Layout.cornerRadius))
         .offset(
-            x: isPressed ? Constant.Shadow.offsetX : 0,
-            y: isPressed ? Constant.Shadow.offsetY : 0
+            x: (isPressed && !isDisabled) ? Constant.Shadow.offsetX : 0,
+            y: (isPressed && !isDisabled) ? Constant.Shadow.offsetY : 0
         )
         .animation(.none, value: cost)
         .animation(.none, value: state)
@@ -150,6 +142,7 @@ struct PriceButton: View {
                     value: cost.gold
                 )
                 .foregroundStyle(.white)
+                .fixedSize()
             }
             if cost.diamond > 0 {
                 CurrencyLabel(
@@ -159,8 +152,13 @@ struct PriceButton: View {
                     value: cost.diamond
                 )
                 .foregroundStyle(.white)
+                .fixedSize()
             }
         }
+        .fixedSize()
+        .drawingGroup()
+        .minimumScaleFactor(0.7)
+        .lineLimit(1)
     }
 
     var disabledOverlay: some View {
