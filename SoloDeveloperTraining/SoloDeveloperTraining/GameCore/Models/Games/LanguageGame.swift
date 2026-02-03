@@ -86,6 +86,9 @@ final class LanguageGame: Game {
 
     func startGame() {
         feverSystem.start()
+        if itemList.isEmpty {
+            itemList = makeInitialItemList()
+        }
     }
 
     func stopGame() {
@@ -107,7 +110,17 @@ final class LanguageGame: Game {
     }
 
     func didPerformAction(_ input: LanguageType) async -> Int {
+        // Task가 취소되었으면 즉시 종료
+        guard !Task.isCancelled else { return 0 }
+
+        // 게임 종료 후 버튼 탭 크래시 방지
+        guard itemList.count > leadingAndTrailingItemCount else { return 0 }
+
         let isSuccess = languageButtonTapHandler(tappedItemType: input)
+
+        // 비즈니스 로직 실행 전 다시 한 번 취소 확인
+        guard !Task.isCancelled else { return 0 }
+
         feverSystem
             .gainFever(
                 isSuccess ? Policy.Fever.Language.gainPerCorrect : Policy.Fever.Language.lossPerIncorrect
@@ -119,7 +132,7 @@ final class LanguageGame: Game {
             buffMultiplier: buffSystem.multiplier
         )
         if isSuccess {
-            await user.wallet.addGold(gainGold)
+            user.wallet.addGold(gainGold)
             /// 정답 횟수 기록
             user.record.record(.languageCorrect)
             /// 누적 재산 업데이트
@@ -128,7 +141,7 @@ final class LanguageGame: Game {
             animationSystem?.playSmile()
             return gainGold
         }
-        await user.wallet.spendGold(Int(Double(gainGold) * Policy.Game.Language.incorrectGoldLossMultiplier))
+        user.wallet.spendGold(Int(Double(gainGold) * Policy.Game.Language.incorrectGoldLossMultiplier))
         /// 오답 횟수 기록
         user.record.record(.languageIncorrect)
         return Int(Double(gainGold) * Policy.Game.Language.incorrectGoldLossMultiplier) * -1

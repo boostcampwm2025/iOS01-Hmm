@@ -11,7 +11,7 @@ private enum Constant {
 
     static let imageSize: CGSize = .init(width: 38, height: 38)
     static let cornerRadius: CGFloat = 4
-    static let priceButtonWidth: CGFloat = 89
+    static let priceButtonWidth: CGFloat = 95
 
     enum Spacing {
         static let horizontal: CGFloat = 8
@@ -32,6 +32,7 @@ struct ItemRow: View {
     let cost: Cost
     let state: ItemState
     let action: () -> Void
+    let onLongPressAction: (() -> Bool)?
 
     init(
         title: String,
@@ -39,7 +40,8 @@ struct ItemRow: View {
         imageName: String,
         cost: Cost,
         state: ItemState,
-        action: @escaping () -> Void
+        action: @escaping () -> Void,
+        onLongPressAction: (() -> Bool)? = nil
     ) {
         self.title = title
         self.description = description
@@ -47,6 +49,7 @@ struct ItemRow: View {
         self.cost = cost
         self.state = state
         self.action = action
+        self.onLongPressAction = onLongPressAction
     }
 
     var body: some View {
@@ -69,9 +72,10 @@ struct ItemRow: View {
             PriceButton(
                 cost: cost,
                 state: state,
-                axis: .horizontal,
+                axis: .vertical,
                 width: Constant.priceButtonWidth,
-                action: action
+                action: action,
+                onLongPressRepeat: onLongPressAction
             )
         }
         .padding(.horizontal, Constant.Padding.horizontal)
@@ -85,7 +89,7 @@ struct ItemRow: View {
             title: "강화 / 아이템 이름 이름 이름",
             description: "항목 설명 설명 설명",
             imageName: "housing_street",
-            cost: .init(gold: 1_000_000),
+            cost: .init(gold: 1_000_0000000000, diamond: 99),
             state: .available
         ) {
             print("Tapped")

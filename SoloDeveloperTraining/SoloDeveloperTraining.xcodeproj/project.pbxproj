@@ -6,9 +6,20 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		BCFC853D2F31FED800447A9A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08267F232F0D06BC005A0066 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 08267F2A2F0D06BC005A0066;
+			remoteInfo = SoloDeveloperTraining;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoloDeveloperTraining.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2896AE422F100CD600D38732 /* SoloDeveloperTraining-Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SoloDeveloperTraining-Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCFC85392F31FED800447A9A /* SoloDeveloperTrainingTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SoloDeveloperTrainingTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -72,6 +83,11 @@
 			path = SoloDeveloperTraining;
 			sourceTree = "<group>";
 		};
+		BCFC853A2F31FED800447A9A /* SoloDeveloperTrainingTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SoloDeveloperTrainingTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +105,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BCFC85362F31FED800447A9A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -96,6 +119,7 @@
 			isa = PBXGroup;
 			children = (
 				08267F2D2F0D06BC005A0066 /* SoloDeveloperTraining */,
+				BCFC853A2F31FED800447A9A /* SoloDeveloperTrainingTests */,
 				08267F2C2F0D06BC005A0066 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -105,6 +129,7 @@
 			children = (
 				08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */,
 				2896AE422F100CD600D38732 /* SoloDeveloperTraining-Dev.app */,
+				BCFC85392F31FED800447A9A /* SoloDeveloperTrainingTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -158,6 +183,29 @@
 			productReference = 2896AE422F100CD600D38732 /* SoloDeveloperTraining-Dev.app */;
 			productType = "com.apple.product-type.application";
 		};
+		BCFC85382F31FED800447A9A /* SoloDeveloperTrainingTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BCFC853F2F31FED800447A9A /* Build configuration list for PBXNativeTarget "SoloDeveloperTrainingTests" */;
+			buildPhases = (
+				BCFC85352F31FED800447A9A /* Sources */,
+				BCFC85362F31FED800447A9A /* Frameworks */,
+				BCFC85372F31FED800447A9A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BCFC853E2F31FED800447A9A /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				BCFC853A2F31FED800447A9A /* SoloDeveloperTrainingTests */,
+			);
+			name = SoloDeveloperTrainingTests;
+			packageProductDependencies = (
+			);
+			productName = SoloDeveloperTrainingTests;
+			productReference = BCFC85392F31FED800447A9A /* SoloDeveloperTrainingTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -165,11 +213,15 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2610;
+				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2610;
 				TargetAttributes = {
 					08267F2A2F0D06BC005A0066 = {
 						CreatedOnToolsVersion = 26.1.1;
+					};
+					BCFC85382F31FED800447A9A = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 08267F2A2F0D06BC005A0066;
 					};
 				};
 			};
@@ -189,6 +241,7 @@
 			targets = (
 				08267F2A2F0D06BC005A0066 /* SoloDeveloperTraining */,
 				2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */,
+				BCFC85382F31FED800447A9A /* SoloDeveloperTrainingTests */,
 			);
 		};
 /* End PBXProject section */
@@ -202,6 +255,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		2896AE3D2F100CD600D38732 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BCFC85372F31FED800447A9A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -264,7 +324,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BCFC85352F31FED800447A9A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BCFC853E2F31FED800447A9A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 08267F2A2F0D06BC005A0066 /* SoloDeveloperTraining */;
+			targetProxy = BCFC853D2F31FED800447A9A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		08267F342F0D06BE005A0066 /* Debug */ = {
@@ -415,7 +490,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = kr.codesquad.boostcamp10.SoloDeveloperTraining;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -457,7 +532,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = kr.codesquad.boostcamp10.SoloDeveloperTraining;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -560,6 +635,50 @@
 			};
 			name = Release;
 		};
+		BCFC85402F31FED800447A9A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B3PWYBKFUK;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = sunghun.SoloDeveloperTrainingTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SoloDeveloperTraining.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SoloDeveloperTraining";
+			};
+			name = Debug;
+		};
+		BCFC85412F31FED800447A9A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B3PWYBKFUK;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = sunghun.SoloDeveloperTrainingTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SoloDeveloperTraining.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SoloDeveloperTraining";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -586,6 +705,15 @@
 			buildConfigurations = (
 				2896AE402F100CD600D38732 /* Debug */,
 				2896AE412F100CD600D38732 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BCFC853F2F31FED800447A9A /* Build configuration list for PBXNativeTarget "SoloDeveloperTrainingTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BCFC85402F31FED800447A9A /* Debug */,
+				BCFC85412F31FED800447A9A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

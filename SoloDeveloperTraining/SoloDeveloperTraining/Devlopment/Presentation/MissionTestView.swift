@@ -694,7 +694,7 @@ struct MissionTestView: View {
 
     private func addPlayTime(hours: Int) {
         let seconds = TimeInterval(hours * 3600)
-        record.record(.playTime(tapGame: seconds))
+        record.record(.playTime)
         missionSystem.updateCompletedMissions(record: record)
     }
 }
@@ -819,3 +819,4 @@ struct MissionCardTest: View {
 #Preview {
     MissionTestView()
 }
+

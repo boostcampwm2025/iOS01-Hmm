@@ -9,25 +9,25 @@ import Foundation
 
 enum Policy {
     // MARK: - 커리어 시스템 (기준점)
-    /// 단계별 필요 누적 재산
+    /// 단계별 필요 누적 재산 (밸런스에 맞춰 약 20× 상향)
     enum Career {
         static let unemployed = 0
-        static let laptopOwner = 5_000
-        static let aspiringDeveloper = 50_000
-        static let juniorDeveloper = 1_000_000
-        static let normalDeveloper = 100_000_000
-        static let nightOwlDeveloper = 1_000_000_000
-        static let skilledDeveloper = 10_000_000_000
-        static let famousDeveloper = 100_000_000_000
-        static let allRounderDeveloper = 50_000_000_000_000
-        static let worldClassDeveloper = 1_000_000_000_000_000 // 1000조: 만렙
-      
-        /// 게임별 해금 조건
+        static let laptopOwner = 100_000
+        static let aspiringDeveloper = 1_000_000
+        static let juniorDeveloper = 20_000_000
+        static let normalDeveloper = 2_000_000_000
+        static let nightOwlDeveloper = 20_000_000_000
+        static let skilledDeveloper = 200_000_000_000
+        static let famousDeveloper = 2_000_000_000_000
+        static let allRounderDeveloper = 100_000_000_000_000   // 100조
+        static let worldClassDeveloper = 2_000_000_000_000_000 // 2000조: 만렙
+
+        /// 게임별 해금 조건 (2단계씩: 탭 0 → 언어 2 → 버그 4 → 데이터 6)
         enum GameUnlock {
-            static let tap = unemployed
-            static let language = laptopOwner
-            static let dodge = aspiringDeveloper
-            static let stack = juniorDeveloper
+            static let tap = unemployed           // 0단계
+            static let language = aspiringDeveloper   // 2단계
+            static let dodge = normalDeveloper        // 4단계
+            static let stack = skilledDeveloper       // 6단계
         }
     }
 
@@ -53,10 +53,10 @@ enum Policy {
             static let stage3: Double = 5.0 // 2.0 -> 5.0
         }
 
-        /// 코드 짜기 (TapGame)
+        /// 코드 짜기 (TapGame) — 피버 상승량 대폭 하향
         enum Tap {
             static let decreasePercent: Double = 1.5
-            static let gainPerTap: Double = 10.0
+            static let gainPerTap: Double = 5.0 // 2.0 -> 5.0
         }
 
         /// 언어 맞추기 (LanguageGame)
@@ -166,19 +166,20 @@ enum Policy {
         }
 
         /// 언어 맞추기 (LanguageGame)
+        /// * 분당 골드 = 탭의 3배 (피버 2.5 기준): 40정답/분 → Lv1,0,0 합 180
         enum Language {
-            // 기본 골드 단위 (상향: 최소 1)
-            static let baseGold: Int = 1
+            // 기본 골드 단위
+            static let baseGold: Int = 45
 
             // 티어별 골드 획득 증가량
-            static let beginnerGoldMultiplier: Int = 1
-            static let intermediateGoldMultiplier: Int = 10
-            static let advancedGoldMultiplier: Int = 100
+            static let beginnerGoldMultiplier: Int = 45
+            static let intermediateGoldMultiplier: Int = 450
+            static let advancedGoldMultiplier: Int = 4500
 
-            // 업그레이드 비용 증가량
-            static let beginnerGoldCostMultiplier: Int = 10
-            static let intermediateGoldCostMultiplier: Int = 150
-            static let advancedGoldCostMultiplier: Int = 2500
+            // 업그레이드 비용 증가량 (Tap 대비 스킬 합 비율 45배)
+            static let beginnerGoldCostMultiplier: Int = 450
+            static let intermediateGoldCostMultiplier: Int = 6750
+            static let advancedGoldCostMultiplier: Int = 112_500
             static let diamondCostDivider: Int = 100
             static let diamondCostMultiplier: Int = 10
 
@@ -188,19 +189,20 @@ enum Policy {
         }
 
         /// 버그 피하기 (DodgeGame)
+        /// * 아무튼 개발자(20억) 해금 시 언어(초250·중300·고100) 분당 ~6천만 수준에 맞춤: Lv1,0,0 합 348,000
         enum Dodge {
-            // 기본 골드 단위 (상향: 최소 1)
-            static let baseGold: Int = 1
+            // 기본 골드 단위
+            static let baseGold: Int = 87_000
 
             // 티어별 골드 획득 증가량
-            static let beginnerGoldMultiplier: Int = 1
-            static let intermediateGoldMultiplier: Int = 10
-            static let advancedGoldMultiplier: Int = 100
+            static let beginnerGoldMultiplier: Int = 87_000
+            static let intermediateGoldMultiplier: Int = 870_000
+            static let advancedGoldMultiplier: Int = 8_700_000
 
-            // 업그레이드 비용 증가량
-            static let beginnerGoldCostMultiplier: Int = 10
-            static let intermediateGoldCostMultiplier: Int = 150
-            static let advancedGoldCostMultiplier: Int = 2500
+            // 업그레이드 비용 증가량 (스킬 합 비율에 맞춤)
+            static let beginnerGoldCostMultiplier: Int = 870_000
+            static let intermediateGoldCostMultiplier: Int = 13_050_000
+            static let advancedGoldCostMultiplier: Int = 217_500_000
             static let diamondCostDivider: Int = 100
             static let diamondCostMultiplier: Int = 10
 
@@ -210,19 +212,20 @@ enum Policy {
         }
 
         /// 데이터 쌓기 (StackGame)
+        /// * 유능한 개발자(2000억) 해금 시 버그 피하기 대비 보상 상향: Lv1,0,0 합 9,000,000 (순 8회/분 → 분당 ~1.8억)
         enum Stack {
-            // 기본 골드 단위 (상향: 최소 1)
-            static let baseGold: Int = 1
+            // 기본 골드 단위
+            static let baseGold: Int = 2_250_000
 
             // 티어별 골드 획득 증가량
-            static let beginnerGoldMultiplier: Int = 1
-            static let intermediateGoldMultiplier: Int = 10
-            static let advancedGoldMultiplier: Int = 100
+            static let beginnerGoldMultiplier: Int = 2_250_000
+            static let intermediateGoldMultiplier: Int = 22_500_000
+            static let advancedGoldMultiplier: Int = 225_000_000
 
-            // 업그레이드 비용 증가량
-            static let beginnerGoldCostMultiplier: Int = 10
-            static let intermediateGoldCostMultiplier: Int = 150
-            static let advancedGoldCostMultiplier: Int = 2500
+            // 업그레이드 비용 증가량 (스킬 합 비율에 맞춤)
+            static let beginnerGoldCostMultiplier: Int = 22_500_000
+            static let intermediateGoldCostMultiplier: Int = 3_375_000_000
+            static let advancedGoldCostMultiplier: Int = 56_250_000_000
             static let diamondCostDivider: Int = 100
             static let diamondCostMultiplier: Int = 10
 
@@ -250,16 +253,27 @@ enum Policy {
     }
 
     // MARK: - 장비 아이템
+    // *밸런스: 업그레이드 비용 20×, 초당 골드 5× (부동산과 동일 비율)
     enum Equipment {
-        // 업그레이드 비용 (진입 장벽 완화)
-        static let brokenUpgradeCost: Int = 5_000
-        static let cheapUpgradeCost: Int = 100_000
-        static let vintageUpgradeCost: Int = 2_000_000
-        static let decentUpgradeCost: Int = 50_000_000
-        static let premiumUpgradeCost: Int = 1_000_000_000
-        static let diamondUpgradeCost: Int = 10_000_000_000
-        static let limitedUpgradeCost: Int = 50_000_000_000
-        static let nationalTreasureUpgradeCost: Int = 200_000_000_000
+        // 업그레이드 비용 (골드)
+        static let brokenUpgradeCost: Int = 100_000
+        static let cheapUpgradeCost: Int = 2_000_000
+        static let vintageUpgradeCost: Int = 40_000_000
+        static let decentUpgradeCost: Int = 1_000_000_000
+        static let premiumUpgradeCost: Int = 20_000_000_000
+        static let diamondUpgradeCost: Int = 200_000_000_000
+        static let limitedUpgradeCost: Int = 1_000_000_000_000
+        static let nationalTreasureUpgradeCost: Int = 4_000_000_000_000
+
+        // 업그레이드 비용 (다이아몬드) — 강화 시 골드와 함께 소모
+        static let brokenUpgradeDiamond: Int = 5
+        static let cheapUpgradeDiamond: Int = 10
+        static let vintageUpgradeDiamond: Int = 20
+        static let decentUpgradeDiamond: Int = 35
+        static let premiumUpgradeDiamond: Int = 50
+        static let diamondUpgradeDiamond: Int = 80
+        static let limitedUpgradeDiamond: Int = 120
+        static let nationalTreasureUpgradeDiamond: Int = 0
 
         // 업그레이드 성공 확률 (모든 장비 공통)
         static let brokenSuccessRate: Double = 1.0
@@ -271,76 +285,75 @@ enum Policy {
         static let limitedSuccessRate: Double = 0.1
         static let nationalTreasureSuccessRate: Double = 0.05
 
-        /// 초당 획득 골드량
-        /// 키보드
+        /// 초당 획득 골드량 (키보드·마우스·모니터·의자 동일)
         enum Keyboard {
-            static let brokenGoldPerSecond: Int = 10
-            static let cheapGoldPerSecond: Int = 250
-            static let vintageGoldPerSecond: Int = 6_000
-            static let decentGoldPerSecond: Int = 150_000
-            static let premiumGoldPerSecond: Int = 3_500_000
-            static let diamondGoldPerSecond: Int = 40_000_000
-            static let limitedGoldPerSecond: Int = 250_000_000
-            static let nationalTreasureGoldPerSecond: Int = 1_200_000_000
+            static let brokenGoldPerSecond: Int = 0
+            static let cheapGoldPerSecond: Int = 1_250
+            static let vintageGoldPerSecond: Int = 30_000
+            static let decentGoldPerSecond: Int = 750_000
+            static let premiumGoldPerSecond: Int = 17_500_000
+            static let diamondGoldPerSecond: Int = 200_000_000
+            static let limitedGoldPerSecond: Int = 1_250_000_000
+            static let nationalTreasureGoldPerSecond: Int = 6_000_000_000
         }
 
         /// 마우스
         enum Mouse {
-            static let brokenGoldPerSecond: Int = 10
-            static let cheapGoldPerSecond: Int = 250
-            static let vintageGoldPerSecond: Int = 6_000
-            static let decentGoldPerSecond: Int = 150_000
-            static let premiumGoldPerSecond: Int = 3_500_000
-            static let diamondGoldPerSecond: Int = 40_000_000
-            static let limitedGoldPerSecond: Int = 250_000_000
-            static let nationalTreasureGoldPerSecond: Int = 1_200_000_000
+            static let brokenGoldPerSecond: Int = 0
+            static let cheapGoldPerSecond: Int = 1_250
+            static let vintageGoldPerSecond: Int = 30_000
+            static let decentGoldPerSecond: Int = 750_000
+            static let premiumGoldPerSecond: Int = 17_500_000
+            static let diamondGoldPerSecond: Int = 200_000_000
+            static let limitedGoldPerSecond: Int = 1_250_000_000
+            static let nationalTreasureGoldPerSecond: Int = 6_000_000_000
         }
 
         /// 모니터
         enum Monitor {
-            static let brokenGoldPerSecond: Int = 10
-            static let cheapGoldPerSecond: Int = 250
-            static let vintageGoldPerSecond: Int = 6_000
-            static let decentGoldPerSecond: Int = 150_000
-            static let premiumGoldPerSecond: Int = 3_500_000
-            static let diamondGoldPerSecond: Int = 40_000_000
-            static let limitedGoldPerSecond: Int = 250_000_000
-            static let nationalTreasureGoldPerSecond: Int = 1_200_000_000
+            static let brokenGoldPerSecond: Int = 0
+            static let cheapGoldPerSecond: Int = 1_250
+            static let vintageGoldPerSecond: Int = 30_000
+            static let decentGoldPerSecond: Int = 750_000
+            static let premiumGoldPerSecond: Int = 17_500_000
+            static let diamondGoldPerSecond: Int = 200_000_000
+            static let limitedGoldPerSecond: Int = 1_250_000_000
+            static let nationalTreasureGoldPerSecond: Int = 6_000_000_000
         }
 
         /// 의자
         enum Chair {
-            static let brokenGoldPerSecond: Int = 10
-            static let cheapGoldPerSecond: Int = 250
-            static let vintageGoldPerSecond: Int = 6_000
-            static let decentGoldPerSecond: Int = 150_000
-            static let premiumGoldPerSecond: Int = 3_500_000
-            static let diamondGoldPerSecond: Int = 40_000_000
-            static let limitedGoldPerSecond: Int = 250_000_000
-            static let nationalTreasureGoldPerSecond: Int = 1_200_000_000
+            static let brokenGoldPerSecond: Int = 0
+            static let cheapGoldPerSecond: Int = 1_250
+            static let vintageGoldPerSecond: Int = 30_000
+            static let decentGoldPerSecond: Int = 750_000
+            static let premiumGoldPerSecond: Int = 17_500_000
+            static let diamondGoldPerSecond: Int = 200_000_000
+            static let limitedGoldPerSecond: Int = 1_250_000_000
+            static let nationalTreasureGoldPerSecond: Int = 6_000_000_000
         }
     }
 
     // MARK: - 부동산 아이템 (로망 실현 및 자동 사냥 기지)
-    // *전략: 부동산 가격은 비싸지만, 이사 가면 기본 소득(Basic Income)이 확 늘어나도록 설정
+    // *밸런스: 가격·초당 골드를 분당 3배수 경제에 맞춤 (가격 20×, 초당 골드 5× → 회수 시간 약 4배)
     enum Housing {
         // 구입 비용
         static let streetPurchaseCost: Int = 0
-        static let semiBasementPurchaseCost: Int = 500_000
-        static let rooftopPurchaseCost: Int = 10_000_000
-        static let villaPurchaseCost: Int = 500_000_000
-        static let apartmentPurchaseCost: Int = 5_000_000_000
-        static let housePurchaseCost: Int = 50_000_000_000
-        static let pentHousePurchaseCost: Int = 200_000_000_000
+        static let semiBasementPurchaseCost: Int = 10_000_000
+        static let rooftopPurchaseCost: Int = 200_000_000
+        static let villaPurchaseCost: Int = 10_000_000_000
+        static let apartmentPurchaseCost: Int = 100_000_000_000
+        static let housePurchaseCost: Int = 1_000_000_000_000
+        static let pentHousePurchaseCost: Int = 4_000_000_000_000
 
-        // 초당 골드 획득
+        // 초당 골드 획득 (분당 = ×60)
         static let streetGoldPerSecond: Int = 0
-        static let semiBasementGoldPerSecond: Int = 500
-        static let rooftopGoldPerSecond: Int = 10_000
-        static let villaGoldPerSecond: Int = 500_000
-        static let apartmentGoldPerSecond: Int = 5_000_000
-        static let houseGoldPerSecond: Int = 50_000_000
-        static let pentHouseGoldPerSecond: Int = 200_000_000
+        static let semiBasementGoldPerSecond: Int = 2_500
+        static let rooftopGoldPerSecond: Int = 50_000
+        static let villaGoldPerSecond: Int = 2_500_000
+        static let apartmentGoldPerSecond: Int = 25_000_000
+        static let houseGoldPerSecond: Int = 250_000_000
+        static let pentHouseGoldPerSecond: Int = 1_000_000_000
     }
 
     // MARK: - 기타 시스템

@@ -17,7 +17,7 @@ private enum Constant {
     }
 
     enum Width {
-        static let maxRatio: CGFloat = 0.7
+        static let maxRatio: CGFloat = 0.9
     }
 
     enum Shadow {

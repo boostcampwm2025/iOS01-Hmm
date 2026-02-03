@@ -10,7 +10,7 @@ import SwiftUI
 private enum Constant {
     enum Layout {
         static let cornerRadius: CGFloat = 5
-        static let buttonHeight: CGFloat = 38
+        static let buttonHeight: CGFloat = 44
         static let contentSpacing: CGFloat = 3
         static let horizontalPadding: CGFloat = 8
     }
@@ -32,25 +32,30 @@ private enum Constant {
 
 struct PriceButton: View {
 
-    @State private var isPressed: Bool = false
+    @GestureState private var isPressed: Bool = false
+    @State private var isLongPressing: Bool = false
+
     let cost: Cost
     let state: ItemState
     let axis: Axis
     let width: CGFloat?
     let action: () -> Void
+    let onLongPressRepeat: (() -> Bool)?
 
     init(
         cost: Cost,
         state: ItemState,
         axis: Axis,
         width: CGFloat? = nil,
-        action: @escaping () -> Void
+        action: @escaping () -> Void,
+        onLongPressRepeat: (() -> Bool)? = nil
     ) {
         self.cost = cost
         self.state = state
         self.axis = axis
         self.width = width
         self.action = action
+        self.onLongPressRepeat = onLongPressRepeat
     }
 
     private var isDisabled: Bool {
@@ -75,7 +80,16 @@ struct PriceButton: View {
             )
             .animation(.none, value: isDisabled)
             .contentShape(Rectangle())
+            .longPressRepeat(
+                isLongPressing: $isLongPressing,
+                isDisabled: isDisabled,
+                onLongPressRepeat: onLongPressRepeat
+            )
             .onTapGesture {
+                if isLongPressing {
+                    isLongPressing = false
+                    return
+                }
                 if !isDisabled {
                     SoundService.shared.trigger(.buttonTap)
                     action()
@@ -83,13 +97,10 @@ struct PriceButton: View {
             }
             .simultaneousGesture(
                 DragGesture(minimumDistance: 0)
-                    .onChanged { _ in
-                        if !isDisabled && !isPressed {
-                            isPressed = true
+                    .updating($isPressed) { _, state, _ in
+                        if !isDisabled {
+                            state = true
                         }
-                    }
-                    .onEnded { _ in
-                        isPressed = false
                     }
             )
             .animation(.none, value: isPressed)
@@ -110,11 +121,11 @@ struct PriceButton: View {
         }
         .frame(width: width ?? .none, height: Constant.Layout.buttonHeight)
         .padding(.horizontal, Constant.Layout.horizontalPadding)
-        .background(state == .locked ? .gray300 : .orange500)
+        .background(isDisabled ? .gray300 : .orange500)
         .clipShape(RoundedRectangle(cornerRadius: Constant.Layout.cornerRadius))
         .offset(
-            x: isPressed ? Constant.Shadow.offsetX : 0,
-            y: isPressed ? Constant.Shadow.offsetY : 0
+            x: (isPressed && !isDisabled) ? Constant.Shadow.offsetX : 0,
+            y: (isPressed && !isDisabled) ? Constant.Shadow.offsetY : 0
         )
         .animation(.none, value: cost)
         .animation(.none, value: state)
@@ -122,26 +133,38 @@ struct PriceButton: View {
 
     @ViewBuilder
     var contentViews: some View {
-        HStack {
-            if cost.gold > 0 {
-                CurrencyLabel(
-                    axis: .horizontal,
-                    icon: .gold,
-                    textStyle: .caption,
-                    value: cost.gold
-                )
-                .foregroundStyle(.white)
-            }
-            if cost.diamond > 0 {
-                CurrencyLabel(
-                    axis: .horizontal,
-                    icon: .diamond,
-                    textStyle: .caption,
-                    value: cost.diamond
-                )
-                .foregroundStyle(.white)
+        Group {
+            if state == .reachedMax {
+                Text("Max")
+                    .textStyle(.caption)
+                    .foregroundStyle(.white)
+            } else {
+                if cost.gold > 0 {
+                    CurrencyLabel(
+                        axis: .horizontal,
+                        icon: .gold,
+                        textStyle: .caption,
+                        value: cost.gold
+                    )
+                    .foregroundStyle(.white)
+                    .fixedSize()
+                }
+                if cost.diamond > 0 {
+                    CurrencyLabel(
+                        axis: .horizontal,
+                        icon: .diamond,
+                        textStyle: .caption,
+                        value: cost.diamond
+                    )
+                    .foregroundStyle(.white)
+                    .fixedSize()
+                }
             }
         }
+        .fixedSize()
+        .drawingGroup()
+        .minimumScaleFactor(0.7)
+        .lineLimit(1)
     }
 
     var disabledOverlay: some View {

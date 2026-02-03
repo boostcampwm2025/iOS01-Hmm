@@ -44,5 +44,8 @@ final class AutoGainSystem {
         user.wallet.addGold(goldPerSecond)
         /// 누적 재산 업데이트
         user.record.record(.earnMoney(goldPerSecond))
+
+        // 플레이 타임 기록
+        user.record.record(.playTime)
     }
 }
