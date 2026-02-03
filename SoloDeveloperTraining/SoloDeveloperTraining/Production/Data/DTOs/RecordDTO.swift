@@ -39,10 +39,6 @@ struct RecordDTO: Codable {
 
     // Play Time Records
     let totalPlayTime: TimeInterval
-    let tapGamePlayTime: TimeInterval
-    let languageGamePlayTime: TimeInterval
-    let dodgeGamePlayTime: TimeInterval
-    let stackGamePlayTime: TimeInterval
 
     // Tutorial Records
     let tutorialCompleted: Bool
@@ -72,10 +68,6 @@ struct RecordDTO: Codable {
         self.coffeeUseCount = record.coffeeUseCount
         self.energyDrinkUseCount = record.energyDrinkUseCount
         self.totalPlayTime = record.totalPlayTime
-        self.tapGamePlayTime = record.tapGamePlayTime
-        self.languageGamePlayTime = record.languageGamePlayTime
-        self.dodgeGamePlayTime = record.dodgeGamePlayTime
-        self.stackGamePlayTime = record.stackGamePlayTime
         self.tutorialCompleted = record.tutorialCompleted
         self.hasAchievedJuniorDeveloper = record.hasAchievedJuniorDeveloper
         self.missionStates = record.missionSystem.missions.map { MissionStateDTO(from: $0) }
@@ -115,10 +107,6 @@ struct RecordDTO: Codable {
 
         // Play Time Records
         record.totalPlayTime = totalPlayTime
-        record.tapGamePlayTime = tapGamePlayTime
-        record.languageGamePlayTime = languageGamePlayTime
-        record.dodgeGamePlayTime = dodgeGamePlayTime
-        record.stackGamePlayTime = stackGamePlayTime
 
         // Tutorial Records
         record.tutorialCompleted = tutorialCompleted

@@ -66,14 +66,6 @@ final class Record {
     // MARK: - Play Time Records
     /// 총 플레이 시간
     var totalPlayTime: TimeInterval = 0
-    /// 탭 게임 플레이 시간
-    var tapGamePlayTime: TimeInterval = 0
-    /// 언어 맞추기 게임 플레이 시간
-    var languageGamePlayTime: TimeInterval = 0
-    /// 버그 피하기 게임 플레이 시간
-    var dodgeGamePlayTime: TimeInterval = 0
-    /// 데이터 쌓기 게임 플레이 시간
-    var stackGamePlayTime: TimeInterval = 0
 
     // MARK: - Tutorial Records
     /// 튜토리얼 클리어 여부
@@ -108,12 +100,7 @@ extension Record {
         case energyDrinkUse
 
         // Play Time
-        case playTime(
-            tapGame: TimeInterval = 0,
-            languageGame: TimeInterval = 0,
-            dodgeGame: TimeInterval = 0,
-            stackGame: TimeInterval = 0
-        )
+        case playTime
 
         // Financial
         case earnMoney(Int)
@@ -164,23 +151,8 @@ extension Record {
         case .energyDrinkUse:
             energyDrinkUseCount += 1
 
-        case .playTime(let tap, let language, let dodge, let stack):
-            if tap > 0 {
-                tapGamePlayTime += tap
-                totalPlayTime += tap
-            }
-            if language > 0 {
-                languageGamePlayTime += language
-                totalPlayTime += language
-            }
-            if dodge > 0 {
-                dodgeGamePlayTime += dodge
-                totalPlayTime += dodge
-            }
-            if stack > 0 {
-                stackGamePlayTime += stack
-                totalPlayTime += stack
-            }
+        case .playTime:
+            totalPlayTime += 1
 
         case .earnMoney(let amount):
             totalEarnedMoney += amount

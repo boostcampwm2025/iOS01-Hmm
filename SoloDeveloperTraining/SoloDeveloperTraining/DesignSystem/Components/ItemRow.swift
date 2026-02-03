@@ -32,6 +32,7 @@ struct ItemRow: View {
     let cost: Cost
     let state: ItemState
     let action: () -> Void
+    let onLongPressAction: (() -> Bool)?
 
     init(
         title: String,
@@ -39,7 +40,8 @@ struct ItemRow: View {
         imageName: String,
         cost: Cost,
         state: ItemState,
-        action: @escaping () -> Void
+        action: @escaping () -> Void,
+        onLongPressAction: (() -> Bool)? = nil
     ) {
         self.title = title
         self.description = description
@@ -47,6 +49,7 @@ struct ItemRow: View {
         self.cost = cost
         self.state = state
         self.action = action
+        self.onLongPressAction = onLongPressAction
     }
 
     var body: some View {
@@ -71,7 +74,8 @@ struct ItemRow: View {
                 state: state,
                 axis: .horizontal,
                 width: Constant.priceButtonWidth,
-                action: action
+                action: action,
+                onLongPressRepeat: onLongPressAction
             )
         }
         .padding(.horizontal, Constant.Padding.horizontal)
