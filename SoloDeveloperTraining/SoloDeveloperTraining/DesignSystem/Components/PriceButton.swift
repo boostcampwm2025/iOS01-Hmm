@@ -124,8 +124,8 @@ struct PriceButton: View {
         .background(isDisabled ? .gray300 : .orange500)
         .clipShape(RoundedRectangle(cornerRadius: Constant.Layout.cornerRadius))
         .offset(
-            x: isPressed ? Constant.Shadow.offsetX : 0,
-            y: isPressed ? Constant.Shadow.offsetY : 0
+            x: (isPressed && !isDisabled) ? Constant.Shadow.offsetX : 0,
+            y: (isPressed && !isDisabled) ? Constant.Shadow.offsetY : 0
         )
         .animation(.none, value: cost)
         .animation(.none, value: state)
