@@ -21,9 +21,12 @@ extension Int {
         case 1_000_000..<1_000_000_000:
             let value = Double(absValue) / 1_000_000.0
             return "\(sign)\(formatDecimal(value))M"
-        default:
+        case 1_000_000_000..<1_000_000_000_000:
             let value = Double(absValue) / 1_000_000_000.0
             return "\(sign)\(formatDecimal(value))B"
+        default:
+            let value = Double(absValue) / 1_000_000_000_000.0
+            return "\(sign)\(formatDecimal(value))T"
         }
     }
 
