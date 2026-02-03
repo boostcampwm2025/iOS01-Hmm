@@ -42,6 +42,7 @@ struct ShopView: View {
 
     @State private var selectedCategoryIndex: Int = 0
     @State private var selectedHousingTier: HousingTier?
+
     @Binding var popupContent: PopupConfiguration?
 
     init(user: User, popupContent: Binding<PopupConfiguration?>) {
