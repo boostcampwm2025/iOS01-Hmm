@@ -80,7 +80,8 @@ extension MissionCardButton {
             case .claimed:
                 return Constant.Title.claimed
             case .inProgress(let currentValue, let totalValue):
-                return "\((Double(currentValue) / Double(totalValue) * 100).formatted())%"
+                let percent = Double(currentValue) / Double(totalValue) * 100
+                return String(format: "%.2f%%", percent)
             }
         }
 

@@ -263,15 +263,15 @@ struct DodgeGameTestView: View {
     }
 
     private func updateGold() async {
-        let gold = await game.user.wallet.gold
+        let gold = game.user.wallet.gold
         await MainActor.run {
             currentGold = gold
         }
     }
 
     private func updateItemCounts() async {
-        let coffee = await game.user.inventory.count(.coffee) ?? 0
-        let energyDrink = await game.user.inventory.count(.energyDrink) ?? 0
+        let coffee = game.user.inventory.count(.coffee) ?? 0
+        let energyDrink = game.user.inventory.count(.energyDrink) ?? 0
         await MainActor.run {
             coffeeCount = coffee
             energyDrinkCount = energyDrink
@@ -280,7 +280,7 @@ struct DodgeGameTestView: View {
 
     private func useCoffee() {
         Task {
-            let success = await game.user.inventory.drink(.coffee)
+            let success = game.user.inventory.drink(.coffee)
             if success {
                 game.buffSystem.useConsumableItem(type: .coffee)
             }
@@ -289,7 +289,7 @@ struct DodgeGameTestView: View {
 
     private func useEnergyDrink() {
         Task {
-            let success = await game.user.inventory.drink(.energyDrink)
+            let success = game.user.inventory.drink(.energyDrink)
             if success {
                 game.buffSystem.useConsumableItem(type: .energyDrink)
             }

@@ -7,7 +7,14 @@
 	objects = {
 
 /* Begin PBXContainerItemProxy section */
-		28EF46202F31BAFF0033BD6C /* PBXContainerItemProxy */ = {
+		BCFC853D2F31FED800447A9A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08267F232F0D06BC005A0066 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 08267F2A2F0D06BC005A0066;
+			remoteInfo = SoloDeveloperTraining;
+		};
+		BCFC85502F32022C00447A9A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08267F232F0D06BC005A0066 /* Project object */;
 			proxyType = 1;
@@ -19,7 +26,8 @@
 /* Begin PBXFileReference section */
 		08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoloDeveloperTraining.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2896AE422F100CD600D38732 /* SoloDeveloperTraining-Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SoloDeveloperTraining-Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		28EF461A2F31BAFF0033BD6C /* SoloDeveloperTrainingTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SoloDeveloperTrainingTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCFC85392F31FED800447A9A /* SoloDeveloperTrainingTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SoloDeveloperTrainingTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BCFC854A2F32022C00447A9A /* SoloDeveloperTrainingUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SoloDeveloperTrainingUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -83,9 +91,14 @@
 			path = SoloDeveloperTraining;
 			sourceTree = "<group>";
 		};
-		28EF461B2F31BAFF0033BD6C /* SoloDeveloperTrainingTests */ = {
+		BCFC853A2F31FED800447A9A /* SoloDeveloperTrainingTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = SoloDeveloperTrainingTests;
+			sourceTree = "<group>";
+		};
+		BCFC854B2F32022C00447A9A /* SoloDeveloperTrainingUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SoloDeveloperTrainingUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -105,7 +118,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		28EF46172F31BAFF0033BD6C /* Frameworks */ = {
+		BCFC85362F31FED800447A9A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BCFC85472F32022C00447A9A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -119,7 +139,8 @@
 			isa = PBXGroup;
 			children = (
 				08267F2D2F0D06BC005A0066 /* SoloDeveloperTraining */,
-				28EF461B2F31BAFF0033BD6C /* SoloDeveloperTrainingTests */,
+				BCFC853A2F31FED800447A9A /* SoloDeveloperTrainingTests */,
+				BCFC854B2F32022C00447A9A /* SoloDeveloperTrainingUITests */,
 				08267F2C2F0D06BC005A0066 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -129,7 +150,8 @@
 			children = (
 				08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */,
 				2896AE422F100CD600D38732 /* SoloDeveloperTraining-Dev.app */,
-				28EF461A2F31BAFF0033BD6C /* SoloDeveloperTrainingTests.xctest */,
+				BCFC85392F31FED800447A9A /* SoloDeveloperTrainingTests.xctest */,
+				BCFC854A2F32022C00447A9A /* SoloDeveloperTrainingUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -183,27 +205,50 @@
 			productReference = 2896AE422F100CD600D38732 /* SoloDeveloperTraining-Dev.app */;
 			productType = "com.apple.product-type.application";
 		};
-		28EF46192F31BAFF0033BD6C /* SoloDeveloperTrainingTests */ = {
+		BCFC85382F31FED800447A9A /* SoloDeveloperTrainingTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 28EF46242F31BAFF0033BD6C /* Build configuration list for PBXNativeTarget "SoloDeveloperTrainingTests" */;
+			buildConfigurationList = BCFC853F2F31FED800447A9A /* Build configuration list for PBXNativeTarget "SoloDeveloperTrainingTests" */;
 			buildPhases = (
-				28EF46162F31BAFF0033BD6C /* Sources */,
-				28EF46172F31BAFF0033BD6C /* Frameworks */,
-				28EF46182F31BAFF0033BD6C /* Resources */,
+				BCFC85352F31FED800447A9A /* Sources */,
+				BCFC85362F31FED800447A9A /* Frameworks */,
+				BCFC85372F31FED800447A9A /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				28EF46212F31BAFF0033BD6C /* PBXTargetDependency */,
+				BCFC853E2F31FED800447A9A /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				28EF461B2F31BAFF0033BD6C /* SoloDeveloperTrainingTests */,
+				BCFC853A2F31FED800447A9A /* SoloDeveloperTrainingTests */,
 			);
 			name = SoloDeveloperTrainingTests;
 			packageProductDependencies = (
 			);
 			productName = SoloDeveloperTrainingTests;
-			productReference = 28EF461A2F31BAFF0033BD6C /* SoloDeveloperTrainingTests.xctest */;
+			productReference = BCFC85392F31FED800447A9A /* SoloDeveloperTrainingTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		BCFC85492F32022C00447A9A /* SoloDeveloperTrainingUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BCFC85522F32022C00447A9A /* Build configuration list for PBXNativeTarget "SoloDeveloperTrainingUITests" */;
+			buildPhases = (
+				BCFC85462F32022C00447A9A /* Sources */,
+				BCFC85472F32022C00447A9A /* Frameworks */,
+				BCFC85482F32022C00447A9A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BCFC85512F32022C00447A9A /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				BCFC854B2F32022C00447A9A /* SoloDeveloperTrainingUITests */,
+			);
+			name = SoloDeveloperTrainingUITests;
+			packageProductDependencies = (
+			);
+			productName = SoloDeveloperTrainingUITests;
+			productReference = BCFC854A2F32022C00447A9A /* SoloDeveloperTrainingUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -213,14 +258,18 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1640;
+				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2610;
 				TargetAttributes = {
 					08267F2A2F0D06BC005A0066 = {
 						CreatedOnToolsVersion = 26.1.1;
 					};
-					28EF46192F31BAFF0033BD6C = {
-						CreatedOnToolsVersion = 16.4;
+					BCFC85382F31FED800447A9A = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 08267F2A2F0D06BC005A0066;
+					};
+					BCFC85492F32022C00447A9A = {
+						CreatedOnToolsVersion = 26.2;
 						TestTargetID = 08267F2A2F0D06BC005A0066;
 					};
 				};
@@ -241,7 +290,8 @@
 			targets = (
 				08267F2A2F0D06BC005A0066 /* SoloDeveloperTraining */,
 				2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */,
-				28EF46192F31BAFF0033BD6C /* SoloDeveloperTrainingTests */,
+				BCFC85382F31FED800447A9A /* SoloDeveloperTrainingTests */,
+				BCFC85492F32022C00447A9A /* SoloDeveloperTrainingUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -261,7 +311,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		28EF46182F31BAFF0033BD6C /* Resources */ = {
+		BCFC85372F31FED800447A9A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BCFC85482F32022C00447A9A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -324,7 +381,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		28EF46162F31BAFF0033BD6C /* Sources */ = {
+		BCFC85352F31FED800447A9A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BCFC85462F32022C00447A9A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -334,10 +398,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		28EF46212F31BAFF0033BD6C /* PBXTargetDependency */ = {
+		BCFC853E2F31FED800447A9A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 08267F2A2F0D06BC005A0066 /* SoloDeveloperTraining */;
-			targetProxy = 28EF46202F31BAFF0033BD6C /* PBXContainerItemProxy */;
+			targetProxy = BCFC853D2F31FED800447A9A /* PBXContainerItemProxy */;
+		};
+		BCFC85512F32022C00447A9A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 08267F2A2F0D06BC005A0066 /* SoloDeveloperTraining */;
+			targetProxy = BCFC85502F32022C00447A9A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -635,36 +704,86 @@
 			};
 			name = Release;
 		};
-		28EF46222F31BAFF0033BD6C /* Debug */ = {
+		BCFC85402F31FED800447A9A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B3PWYBKFUK;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = sunghun.SoloDeveloperTrainingTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SoloDeveloperTraining.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SoloDeveloperTraining";
+			};
+			name = Debug;
+		};
+		BCFC85412F31FED800447A9A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B3PWYBKFUK;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = sunghun.SoloDeveloperTrainingTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SoloDeveloperTraining.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SoloDeveloperTraining";
+			};
+			name = Release;
+		};
+		BCFC85532F32022C00447A9A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = B3PWYBKFUK;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sunjae.SoloDeveloperTrainingTests;
+				PRODUCT_BUNDLE_IDENTIFIER = sunghun.SoloDeveloperTrainingUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = SoloDeveloperTraining;
 			};
 			name = Debug;
 		};
-		28EF46232F31BAFF0033BD6C /* Release */ = {
+		BCFC85542F32022C00447A9A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = B3PWYBKFUK;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sunjae.SoloDeveloperTrainingTests;
+				PRODUCT_BUNDLE_IDENTIFIER = sunghun.SoloDeveloperTrainingUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = SoloDeveloperTraining;
@@ -701,11 +820,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		28EF46242F31BAFF0033BD6C /* Build configuration list for PBXNativeTarget "SoloDeveloperTrainingTests" */ = {
+		BCFC853F2F31FED800447A9A /* Build configuration list for PBXNativeTarget "SoloDeveloperTrainingTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				28EF46222F31BAFF0033BD6C /* Debug */,
-				28EF46232F31BAFF0033BD6C /* Release */,
+				BCFC85402F31FED800447A9A /* Debug */,
+				BCFC85412F31FED800447A9A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BCFC85522F32022C00447A9A /* Build configuration list for PBXNativeTarget "SoloDeveloperTrainingUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BCFC85532F32022C00447A9A /* Debug */,
+				BCFC85542F32022C00447A9A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

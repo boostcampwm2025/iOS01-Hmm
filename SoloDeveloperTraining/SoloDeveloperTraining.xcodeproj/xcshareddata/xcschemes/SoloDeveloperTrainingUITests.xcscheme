@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1640"
+   LastUpgradeVersion = "2620"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,17 +14,6 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       shouldAutocreateTestPlan = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BCFC85382F31FED800447A9A"
-               BuildableName = "SoloDeveloperTrainingTests.xctest"
-               BlueprintName = "SoloDeveloperTrainingTests"
-               ReferencedContainer = "container:SoloDeveloperTraining.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
          <TestableReference
             skipped = "NO"
             parallelizable = "YES">

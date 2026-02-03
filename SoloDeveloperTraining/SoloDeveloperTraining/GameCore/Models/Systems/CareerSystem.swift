@@ -17,7 +17,7 @@ final class CareerSystem {
 
     init(user: User) async {
         self.user = user
-        self.currentCareer = await user.career
+        self.currentCareer = user.career
         await updateProgress()
     }
 
@@ -41,7 +41,7 @@ final class CareerSystem {
         let newCareer = await calculateCareer()
         if currentCareer != newCareer {
             currentCareer = newCareer
-            await user.updateCareer(to: newCareer)
+            user.updateCareer(to: newCareer)
             onCareerChanged?(newCareer)
 
             if newCareer == .juniorDeveloper {

@@ -13,7 +13,7 @@ private enum Constant {
         static let toolBarBottom: CGFloat = 10
     }
     /// 탭 사운드 최소 재생 간격 (초)
-    static let tapSoundThrottleInterval: TimeInterval = 15
+    static let tapSoundThrottleInterval: TimeInterval = 0.05
 }
 
 struct TapGameView: View {

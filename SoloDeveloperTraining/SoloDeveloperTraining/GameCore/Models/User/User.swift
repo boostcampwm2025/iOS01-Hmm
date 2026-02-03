@@ -7,7 +7,8 @@
 
 import Foundation
 
-actor User {
+@MainActor
+final class User {
     /// 유저 식별용 ID
     let id: UUID
     /// 유저 닉네임
@@ -46,8 +47,7 @@ actor User {
         career = newCareer
     }
 
-    @MainActor
-    init(nickname: String) {
+    convenience init(nickname: String) {
         self.init(
             nickname: nickname,
             wallet: .init(),

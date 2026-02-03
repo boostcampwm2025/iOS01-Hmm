@@ -16,6 +16,7 @@ final class SkillViewUITests: XCTestCase {
 
     @MainActor
     func test_스킬_최고레벨도달시_버튼상태가_올바른지() throws {
+        // TODO: 시나리오 수정
         let app = XCUIApplication()
         app.launch()
         app.tap()

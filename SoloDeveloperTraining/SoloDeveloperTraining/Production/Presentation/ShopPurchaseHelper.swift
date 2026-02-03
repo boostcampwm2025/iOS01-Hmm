@@ -29,6 +29,8 @@ enum ShopPurchaseHelper {
         confirmTitle: String,
         onConfirm: @escaping () -> Void
     ) {
+        var didPurchasingButtonTapped = false
+
         popupContent.wrappedValue = PopupConfiguration(
             title: title,
             maxHeight: nil
@@ -44,8 +46,10 @@ enum ShopPurchaseHelper {
                         popupContent.wrappedValue = nil
                     }
                     MediumButton(title: confirmTitle, isFilled: true) {
-                        popupContent.wrappedValue = nil
+                        guard !didPurchasingButtonTapped else { return }
+                        didPurchasingButtonTapped = true
                         onConfirm()
+                        popupContent.wrappedValue = nil
                     }
                 }
             }

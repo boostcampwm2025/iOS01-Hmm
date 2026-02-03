@@ -95,11 +95,9 @@ struct LanguageGameTestView: View {
 
 private extension LanguageGameTestView {
     func useConsumableItem(_ type: ConsumableType) {
-        Task {
-            let isSuccess = await user.inventory.drink(.coffee)
-            if isSuccess {
-                self.updateConsumableItems()
-            }
+        let isSuccess = user.inventory.drink(.coffee)
+        if isSuccess {
+            self.updateConsumableItems()
         }
     }
 
