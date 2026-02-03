@@ -32,7 +32,7 @@ private enum Constant {
 
 struct PriceButton: View {
 
-    @State private var isPressed: Bool = false
+    @GestureState private var isPressed: Bool = false
     @State private var isLongPressing: Bool = false
 
     let cost: Cost
@@ -93,11 +93,6 @@ struct PriceButton: View {
                 if !isDisabled {
                     SoundService.shared.trigger(.buttonTap)
                     action()
-                }
-            }
-            .onChange(of: isLongPressing) { _, newValue in
-                if !newValue {
-                    isPressed = false
                 }
             }
             .simultaneousGesture(
