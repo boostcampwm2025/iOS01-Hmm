@@ -6,8 +6,8 @@
 import SwiftUI
 
 private enum Constant {
-    static let minimumDuration: Double = 1
-    static let repeatInterval: TimeInterval = 0.2
+    static let minimumDuration: Double = 0.5
+    static let repeatInterval: TimeInterval = 0.1
 }
 
 struct LongPressRepeatModifier: ViewModifier {

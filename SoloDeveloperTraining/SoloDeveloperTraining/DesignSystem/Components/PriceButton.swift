@@ -10,7 +10,7 @@ import SwiftUI
 private enum Constant {
     enum Layout {
         static let cornerRadius: CGFloat = 5
-        static let buttonHeight: CGFloat = 38
+        static let buttonHeight: CGFloat = 44
         static let contentSpacing: CGFloat = 3
         static let horizontalPadding: CGFloat = 8
     }
@@ -133,31 +133,32 @@ struct PriceButton: View {
 
     @ViewBuilder
     var contentViews: some View {
-        HStack {
+        Group {
             if state == .reachedMax {
                 Text("Max")
                     .textStyle(.caption)
                     .foregroundStyle(.white)
-            }
-            else if cost.gold > 0 {
-                CurrencyLabel(
-                    axis: .horizontal,
-                    icon: .gold,
-                    textStyle: .caption,
-                    value: cost.gold
-                )
-                .foregroundStyle(.white)
-                .fixedSize()
-            }
-            else if cost.diamond > 0 {
-                CurrencyLabel(
-                    axis: .horizontal,
-                    icon: .diamond,
-                    textStyle: .caption,
-                    value: cost.diamond
-                )
-                .foregroundStyle(.white)
-                .fixedSize()
+            } else {
+                if cost.gold > 0 {
+                    CurrencyLabel(
+                        axis: .horizontal,
+                        icon: .gold,
+                        textStyle: .caption,
+                        value: cost.gold
+                    )
+                    .foregroundStyle(.white)
+                    .fixedSize()
+                }
+                if cost.diamond > 0 {
+                    CurrencyLabel(
+                        axis: .horizontal,
+                        icon: .diamond,
+                        textStyle: .caption,
+                        value: cost.diamond
+                    )
+                    .foregroundStyle(.white)
+                    .fixedSize()
+                }
             }
         }
         .fixedSize()
