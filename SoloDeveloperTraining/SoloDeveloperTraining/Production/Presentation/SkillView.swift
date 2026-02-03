@@ -41,7 +41,7 @@ struct SkillView: View {
                         description: {
                             let currentTotal = skillSystem.calculateCurrentTotalGold(for: skillState.skill.key.game)
                             let afterTotal = skillSystem.calculateTotalGoldAfterUpgrade(skill: skillState.skill)
-                            return "골드 획득: \(currentTotal.formatted()) -> \(afterTotal.formatted())"
+                            return "골드 획득: \(currentTotal.formatted) -> \(afterTotal.formatted)"
                         }(),
                         imageName: skillState.skill.imageName,
                         cost: skillState.skill.upgradeCost,
