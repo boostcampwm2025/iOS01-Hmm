@@ -152,7 +152,7 @@ extension Record {
             energyDrinkUseCount += 1
 
         case .playTime:
-            break
+            totalPlayTime += 1
 
         case .earnMoney(let amount):
             totalEarnedMoney += amount
