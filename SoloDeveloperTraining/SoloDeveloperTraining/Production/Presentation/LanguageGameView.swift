@@ -52,6 +52,9 @@ struct LanguageGameView: View {
     /// 획득한 골드를 표시하기 위한 효과 라벨 배열
     @State private var effectValues: [(id: UUID, value: Int)] = []
 
+    /// 현재 진행 중인 언어 버튼 탭 Task
+    @State private var currentActionTask: Task<Void, Never>?
+
     init(
         user: User,
         isGameStarted: Binding<Bool>,
@@ -158,14 +161,25 @@ private extension LanguageGameView {
 private extension LanguageGameView {
     /// 닫기 버튼 클릭 처리
     func handleCloseButton() {
+        // 진행 중인 액션 Task 취소
+        currentActionTask?.cancel()
+        currentActionTask = nil
+
         game.stopGame()
         isGameStarted = false
     }
 
     /// 언어 버튼 클릭 처리
     func handleLanguageButtonTap(_ type: LanguageType) {
-        Task {
+        // 이전 액션이 진행 중이면 취소
+        currentActionTask?.cancel()
+
+        currentActionTask = Task {
             let gainedGold = await game.didPerformAction(type)
+
+            // Task가 취소되었으면 UI 업데이트 생략
+            guard !Task.isCancelled else { return }
+
             SoundService.shared.trigger(gainedGold > 0 ? .languageCorrect : .languageWrong)
             if gainedGold <= 0 {
                 HapticService.shared.trigger(.error)
