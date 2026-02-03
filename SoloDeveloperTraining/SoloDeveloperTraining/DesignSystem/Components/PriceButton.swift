@@ -33,24 +33,29 @@ private enum Constant {
 struct PriceButton: View {
 
     @State private var isPressed: Bool = false
+    @State private var isLongPressing: Bool = false
+
     let cost: Cost
     let state: ItemState
     let axis: Axis
     let width: CGFloat?
     let action: () -> Void
+    let onLongPressRepeat: (() -> Bool)?
 
     init(
         cost: Cost,
         state: ItemState,
         axis: Axis,
         width: CGFloat? = nil,
-        action: @escaping () -> Void
+        action: @escaping () -> Void,
+        onLongPressRepeat: (() -> Bool)? = nil
     ) {
         self.cost = cost
         self.state = state
         self.axis = axis
         self.width = width
         self.action = action
+        self.onLongPressRepeat = onLongPressRepeat
     }
 
     private var isDisabled: Bool {
@@ -75,10 +80,24 @@ struct PriceButton: View {
             )
             .animation(.none, value: isDisabled)
             .contentShape(Rectangle())
+            .longPressRepeat(
+                isLongPressing: $isLongPressing,
+                isDisabled: isDisabled,
+                onLongPressRepeat: onLongPressRepeat
+            )
             .onTapGesture {
+                if isLongPressing {
+                    isLongPressing = false
+                    return
+                }
                 if !isDisabled {
                     SoundService.shared.trigger(.buttonTap)
                     action()
+                }
+            }
+            .onChange(of: isLongPressing) { _, newValue in
+                if !newValue {
+                    isPressed = false
                 }
             }
             .simultaneousGesture(
@@ -110,7 +129,7 @@ struct PriceButton: View {
         }
         .frame(width: width ?? .none, height: Constant.Layout.buttonHeight)
         .padding(.horizontal, Constant.Layout.horizontalPadding)
-        .background(state == .locked ? .gray300 : .orange500)
+        .background(isDisabled ? .gray300 : .orange500)
         .clipShape(RoundedRectangle(cornerRadius: Constant.Layout.cornerRadius))
         .offset(
             x: isPressed ? Constant.Shadow.offsetX : 0,
