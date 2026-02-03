@@ -131,6 +131,7 @@ struct PriceButton: View {
                     value: cost.gold
                 )
                 .foregroundStyle(.white)
+                .fixedSize()
             }
             if cost.diamond > 0 {
                 CurrencyLabel(
@@ -140,8 +141,13 @@ struct PriceButton: View {
                     value: cost.diamond
                 )
                 .foregroundStyle(.white)
+                .fixedSize()
             }
         }
+        .fixedSize()
+        .drawingGroup()
+        .minimumScaleFactor(0.7)
+        .lineLimit(1)
     }
 
     var disabledOverlay: some View {
