@@ -15,7 +15,7 @@ final class Equipment: Item {
     }
     var description: String {
         guard canUpgrade else {
-            return "최종 단계"
+            return "초당 골드 획득량 \(goldPerSecond.formatted)"
         }
         let nextTier = EquipmentTier(rawValue: tier.rawValue + 1) ?? .nationalTreasure
         let nextEquipment = Equipment(type: type, tier: nextTier)
