@@ -56,7 +56,7 @@ enum Policy {
         /// 코드 짜기 (TapGame) — 피버 상승량 대폭 하향
         enum Tap {
             static let decreasePercent: Double = 1.5
-            static let gainPerTap: Double = 2.0
+            static let gainPerTap: Double = 5.0 // 2.0 -> 5.0
         }
 
         /// 언어 맞추기 (LanguageGame)
