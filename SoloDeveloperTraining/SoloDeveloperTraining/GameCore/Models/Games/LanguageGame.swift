@@ -119,7 +119,7 @@ final class LanguageGame: Game {
             buffMultiplier: buffSystem.multiplier
         )
         if isSuccess {
-            await user.wallet.addGold(gainGold)
+            user.wallet.addGold(gainGold)
             /// 정답 횟수 기록
             user.record.record(.languageCorrect)
             /// 누적 재산 업데이트
@@ -128,7 +128,7 @@ final class LanguageGame: Game {
             animationSystem?.playSmile()
             return gainGold
         }
-        await user.wallet.spendGold(Int(Double(gainGold) * Policy.Game.Language.incorrectGoldLossMultiplier))
+        user.wallet.spendGold(Int(Double(gainGold) * Policy.Game.Language.incorrectGoldLossMultiplier))
         /// 오답 횟수 기록
         user.record.record(.languageIncorrect)
         return Int(Double(gainGold) * Policy.Game.Language.incorrectGoldLossMultiplier) * -1
