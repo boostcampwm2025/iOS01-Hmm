@@ -215,25 +215,25 @@ enum EquipmentTier: Int {
         }
     }
 
-    /// 업그레이드 비용
+    /// 업그레이드 비용 (골드 + 다이아몬드)
     var cost: Cost {
         switch self {
         case .broken:
-            return Cost(gold: Policy.Equipment.brokenUpgradeCost)
+            return Cost(gold: Policy.Equipment.brokenUpgradeCost, diamond: Policy.Equipment.brokenUpgradeDiamond)
         case .cheap:
-            return Cost(gold: Policy.Equipment.cheapUpgradeCost)
+            return Cost(gold: Policy.Equipment.cheapUpgradeCost, diamond: Policy.Equipment.cheapUpgradeDiamond)
         case .vintage:
-            return Cost(gold: Policy.Equipment.vintageUpgradeCost)
+            return Cost(gold: Policy.Equipment.vintageUpgradeCost, diamond: Policy.Equipment.vintageUpgradeDiamond)
         case .decent:
-            return Cost(gold: Policy.Equipment.decentUpgradeCost)
+            return Cost(gold: Policy.Equipment.decentUpgradeCost, diamond: Policy.Equipment.decentUpgradeDiamond)
         case .premium:
-            return Cost(gold: Policy.Equipment.premiumUpgradeCost)
+            return Cost(gold: Policy.Equipment.premiumUpgradeCost, diamond: Policy.Equipment.premiumUpgradeDiamond)
         case .diamond:
-            return Cost(gold: Policy.Equipment.diamondUpgradeCost)
+            return Cost(gold: Policy.Equipment.diamondUpgradeCost, diamond: Policy.Equipment.diamondUpgradeDiamond)
         case .limited:
-            return Cost(gold: Policy.Equipment.limitedUpgradeCost)
+            return Cost(gold: Policy.Equipment.limitedUpgradeCost, diamond: Policy.Equipment.limitedUpgradeDiamond)
         case .nationalTreasure:
-            return Cost(gold: Policy.Equipment.nationalTreasureUpgradeCost)
+            return Cost(gold: Policy.Equipment.nationalTreasureUpgradeCost, diamond: Policy.Equipment.nationalTreasureUpgradeDiamond)
         }
     }
 
