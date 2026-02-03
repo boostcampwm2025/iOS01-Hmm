@@ -8,6 +8,7 @@
 import Foundation
 import Observation
 
+@MainActor
 @Observable
 final class Record {
     /// 미션 시스템을 소유해서 기록을 반영합니다.

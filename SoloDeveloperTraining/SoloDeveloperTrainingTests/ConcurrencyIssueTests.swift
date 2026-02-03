@@ -35,7 +35,7 @@ struct ConcurrencyIssueTests {
             }
         }
 
-        let finalGold = wallet.gold
+        let finalGold = await wallet.gold
 
         #expect(finalGold == iterations)
     }
@@ -66,7 +66,7 @@ struct ConcurrencyIssueTests {
             }
         }
 
-        let finalGold = wallet.gold
+        let finalGold = await wallet.gold
 
         #expect(finalGold == iterations)
     }
@@ -82,13 +82,13 @@ struct ConcurrencyIssueTests {
                 group.addTask {
                     // Task.detached를 사용하여 actor isolation 우회
                     await Task.detached {
-                        wallet.addGold(1)
+                        await wallet.addGold(1)
                     }.value
                 }
             }
         }
 
-        let finalGold = wallet.gold
+        let finalGold = await wallet.gold
 
         #expect(finalGold == iterations)
     }

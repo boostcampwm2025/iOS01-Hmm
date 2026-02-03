@@ -34,6 +34,7 @@ enum MissionLevel {
     }
 }
 
+@MainActor
 @Observable
 final class Mission {
     enum State: Int {
