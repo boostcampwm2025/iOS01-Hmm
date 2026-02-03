@@ -72,7 +72,7 @@ struct ItemRow: View {
             PriceButton(
                 cost: cost,
                 state: state,
-                axis: .horizontal,
+                axis: .vertical,
                 width: Constant.priceButtonWidth,
                 action: action,
                 onLongPressRepeat: onLongPressAction
