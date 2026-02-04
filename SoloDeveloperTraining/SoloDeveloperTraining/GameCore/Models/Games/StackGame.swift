@@ -133,9 +133,11 @@ final class StackGame: Game {
         currentBlock = nil
         return applyReward()
     }
+}
 
+private extension StackGame {
     /// 보상을 적용합니다 (골드 획득, 피버 증가)
-    private func applyReward() -> Int {
+    func applyReward() -> Int {
         let goldEarned = calculateGold()
         user.wallet.addGold(goldEarned)
         /// 성공 수 기록
@@ -154,7 +156,7 @@ final class StackGame: Game {
     }
 
     /// 패널티를 적용합니다 (골드 손실, 피버 감소)
-    private func applyPenalty() -> Int {
+    func applyPenalty() -> Int {
         let goldLost = calculateGold()
         user.wallet.spendGold(goldLost)
         /// 실패 수 기록
@@ -167,7 +169,7 @@ final class StackGame: Game {
     }
 
     /// 현재 상태에 따른 골드 획득량을 계산합니다
-    private func calculateGold() -> Int {
+    func calculateGold() -> Int {
         return Calculator.calculateGoldPerAction(
             game: .stack,
             user: user,
