@@ -84,7 +84,7 @@ final class StackGameScene: SKScene {
 
         // 3. 목표 높이 도달 체크
         if block.position.y <= targetY {
-            // 다음 로직을 타기 전에 플래그로 막아, 다음 update 함수의 실행을 차단합니다.
+            // 다음 로직을 타기 전에 플래그로 막아, 다음 didSimulatePhysics 함수의 실행을 차단합니다.
             isCheckingFall = false
 
             // 정렬 및 배치 처리 실행
@@ -291,7 +291,8 @@ private extension StackGameScene {
             onBlockDropped(stackGame.placeBombSuccess())
             SoundService.shared.trigger(.bombStack)
             HapticService.shared.trigger(.error)
-            DispatchQueue.main.asyncAfter(deadline: .now() + Constant.Time.bombRemovalDelay) { [weak self] in
+
+            runAfterDelay(on: block, delay: Constant.Time.bombRemovalDelay) { [weak self] in
                 block.removeFromParent()
                 self?.spawnBlock()
             }
@@ -308,8 +309,7 @@ private extension StackGameScene {
                 camera.run(moveCamera)
             }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + Constant.Time.nextBlockSpawnDelay) { [weak self] in
-
+            runAfterDelay(on: block, delay: Constant.Time.nextBlockSpawnDelay) { [weak self] in
                 self?.spawnBlock()
             }
         }
@@ -337,11 +337,20 @@ private extension StackGameScene {
         }
 
         // 일정 시간 후 블록 제거 및 다음 블록 생성
-        DispatchQueue.main.asyncAfter(deadline: .now() + Constant.Time.failedBlockRemovalDelay) { [weak self] in
+        runAfterDelay(on: block, delay: Constant.Time.failedBlockRemovalDelay) { [weak self] in
             block.removeFromParent()
             self?.spawnBlock()
         }
 
         currentBlockView = nil
+    }
+
+    /// 일정 딜레이 이후 후속 작업 실행
+    func runAfterDelay(on block: SKNode, delay: TimeInterval, completion: @escaping () -> Void) {
+        let action = SKAction.sequence([
+            SKAction.wait(forDuration: delay),
+            SKAction.run(completion)
+        ])
+        block.run(action)
     }
 }
