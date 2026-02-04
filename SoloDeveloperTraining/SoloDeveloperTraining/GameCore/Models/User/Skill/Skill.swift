@@ -71,6 +71,57 @@ final class Skill: Hashable {
         return Double(baseGold + multiplier * level)
     }
 
+    /// 레벨업 시 획득 재화량 (스킬에 국한된 스탯)
+    var gainGoldAfterUpgrade: Double {
+        let baseGold: Int
+        let multiplier: Int
+
+        switch key.game {
+        case .tap:
+            baseGold = Policy.Skill.Tap.baseGold
+            switch key.tier {
+            case .beginner:
+                multiplier = Policy.Skill.Tap.beginnerGoldMultiplier
+            case .intermediate:
+                multiplier = Policy.Skill.Tap.intermediateGoldMultiplier
+            case .advanced:
+                multiplier = Policy.Skill.Tap.advancedGoldMultiplier
+            }
+        case .language:
+            baseGold = Policy.Skill.Language.baseGold
+            switch key.tier {
+            case .beginner:
+                multiplier = Policy.Skill.Language.beginnerGoldMultiplier
+            case .intermediate:
+                multiplier = Policy.Skill.Language.intermediateGoldMultiplier
+            case .advanced:
+                multiplier = Policy.Skill.Language.advancedGoldMultiplier
+            }
+        case .dodge:
+            baseGold = Policy.Skill.Dodge.baseGold
+            switch key.tier {
+            case .beginner:
+                multiplier = Policy.Skill.Dodge.beginnerGoldMultiplier
+            case .intermediate:
+                multiplier = Policy.Skill.Dodge.intermediateGoldMultiplier
+            case .advanced:
+                multiplier = Policy.Skill.Dodge.advancedGoldMultiplier
+            }
+        case .stack:
+            baseGold = Policy.Skill.Stack.baseGold
+            switch key.tier {
+            case .beginner:
+                multiplier = Policy.Skill.Stack.beginnerGoldMultiplier
+            case .intermediate:
+                multiplier = Policy.Skill.Stack.intermediateGoldMultiplier
+            case .advanced:
+                multiplier = Policy.Skill.Stack.advancedGoldMultiplier
+            }
+        }
+
+        return Double(baseGold + multiplier * (level + 1))
+    }
+
     /// 이미지 리소스
     var imageName: String {
         let gameName: String = {
