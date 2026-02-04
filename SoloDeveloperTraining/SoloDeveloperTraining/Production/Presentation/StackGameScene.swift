@@ -92,25 +92,6 @@ final class StackGameScene: SKScene {
         }
     }
 
-    /// 씬의 초기 설정을 수행합니다.
-    /// - 배경색을 앱 테마 배경색으로 설정
-    /// - 물리 엔진의 중력 설정
-    /// - 카메라 초기화
-    private func setupScene() {
-        backgroundColor = UIColor(AppTheme.backgroundColor)
-        physicsWorld.gravity = Constant.Physics.gravity
-
-        setupCamera()
-    }
-
-    /// 카메라 노드를 생성하고 초기 위치를 설정합니다.
-    private func setupCamera() {
-        let cameraNode = SKCameraNode()
-        cameraNode.position = CGPoint(x: size.width / 2, y: size.height / 2)
-        addChild(cameraNode)
-        camera = cameraNode
-    }
-
     /// 게임을 시작하고 초기 상태로 설정합니다.
     /// - 블록 배열 초기화
     /// - 게임 코어 시작 처리
@@ -176,11 +157,37 @@ final class StackGameScene: SKScene {
             spawnBlock()
         }
     }
+}
 
+// MARK: - 씬, 카메라 초기화 함수
+private extension StackGameScene {
+    /// 씬의 초기 설정을 수행합니다.
+    /// - 배경색을 앱 테마 배경색으로 설정
+    /// - 물리 엔진의 중력 설정
+    /// - 카메라 초기화
+    private func setupScene() {
+        backgroundColor = UIColor(AppTheme.backgroundColor)
+        physicsWorld.gravity = Constant.Physics.gravity
+
+        setupCamera()
+    }
+
+    /// 카메라 노드를 생성하고 초기 위치를 설정합니다.
+    private func setupCamera() {
+        let cameraNode = SKCameraNode()
+        cameraNode.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        addChild(cameraNode)
+        camera = cameraNode
+    }
+
+}
+
+// MARK: - 블록 처리 관련 함수
+private extension StackGameScene {
     /// 게임 시작 시 가장 아래에 배치되는 초기 블록을 생성합니다.
     /// - 고정된 물리 바디를 가진 파란색 블록 생성
     /// - 게임 코어에 초기 블록 등록
-    private func putInitialBlock() {
+    func putInitialBlock() {
         let firstBlockView = BlockItem(type: .blue)
         firstBlockView.setupPhysicsBody()
         firstBlockView.position = CGPoint(x: size.width / 2, y: currentHeight)
@@ -196,7 +203,7 @@ final class StackGameScene: SKScene {
     /// - 랜덤한 타입의 블록 생성
     /// - 카메라 기준 상단 위치에서 생성
     /// - 좌우 이동 애니메이션 시작
-    private func spawnBlock() {
+    func spawnBlock() {
         // 일시정지 상태에서는 동작을 막음
         guard !isGamePaused else { return }
 
@@ -224,7 +231,7 @@ final class StackGameScene: SKScene {
     /// - 블록의 좌우 이동 중지
     /// - 중력 활성화
     /// - 블록 평가 시작
-    private func dropBlock() {
+    func dropBlock() {
         guard let block = currentBlockView else { return }
 
         isInteractionLocked = true
@@ -238,7 +245,7 @@ final class StackGameScene: SKScene {
     /// 정렬을 체크하고 결과에 따라 물리 처리를 다르게 적용합니다.
     /// - 성공: 블록 고정 후 배치
     /// - 실패: 물리를 유지하여 자연스럽게 떨어지도록
-    private func checkAlignmentAndHandle(targetY: CGFloat) {
+    func checkAlignmentAndHandle(targetY: CGFloat) {
         guard let block = currentBlockView else { return }
 
         // 현재 블록 위치를 게임 모델에 업데이트
@@ -265,8 +272,7 @@ final class StackGameScene: SKScene {
     /// 블록이 성공적으로 배치되었을 때의 처리를 수행합니다.
     /// - 폭탄 블록: 패널티 적용 후 블록 제거
     /// - 일반 블록: 스택에 추가, 점수 증가, 보상 적용, 카메라 이동
-    private func placeBlockSuccess() {
-        print(blockViews.count)
+    func placeBlockSuccess() {
         guard
             let block = currentBlockView,
             let currentBlock = stackGame.currentBlock,
@@ -314,7 +320,7 @@ final class StackGameScene: SKScene {
     /// - 폭탄 블록: 실패시 오히려 보상 적용
     /// - 일반 블록: 패널티 적용
     /// - 물리 효과로 떨어지고 화면 밖으로 나가면 제거
-    private func placeBlockFail() {
+    func placeBlockFail() {
         guard
             let block = currentBlockView,
             let currentBlock = stackGame.currentBlock
