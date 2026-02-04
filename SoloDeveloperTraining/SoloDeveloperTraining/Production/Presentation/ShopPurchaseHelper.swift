@@ -107,12 +107,10 @@ enum ShopPurchaseHelper {
         var components: [String] = []
 
         if item.category == .housing {
-            // 업그레이드 시 원래 금액, 다운그레이드 시 0 표시
-            let cost = shopSystem.isHousingUpgrade(for: item) ? item.cost.gold : 0
-            components.append("\(cost.formatted) 골드")
-            if shopSystem.isHousingUpgrade(for: item) && item.cost.diamond > 0 {
-                components.append("\(item.cost.diamond.formatted) 다이아")
-            }
+            // 부동산은 원래 금액 전액 표시 (업그레이드만 가능)
+            if item.cost.gold > 0 { components.append("\(item.cost.gold.formatted) 골드") }
+            if item.cost.diamond > 0 { components.append("\(item.cost.diamond.formatted) 다이아") }
+            if components.isEmpty { components.append("0 골드") }
         } else {
             if item.cost.gold > 0 { components.append("\(item.cost.gold.formatted) 골드") }
             if item.cost.diamond > 0 { components.append("\(item.cost.diamond.formatted) 다이아") }

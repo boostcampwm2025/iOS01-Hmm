@@ -24,14 +24,6 @@ final class ShopSystem {
         return itemTypes.map { makeDisplayItems(for: $0) }.flatMap { $0 }
     }
 
-    /// 부동산 업그레이드 여부 확인
-    /// - Parameter item: 부동산 아이템
-    /// - Returns: 현재 보유 부동산보다 상위 티어인 경우 true
-    func isHousingUpgrade(for item: DisplayItem) -> Bool {
-        guard let housing = item.item as? Housing else { return false }
-        return housing.tier.rawValue > user.inventory.housing.tier.rawValue
-    }
-
     /// 아이템 구매
     /// - Parameter item: 구매할 아이템
     /// - Returns: 구매 성공 여부 (장비의 경우 강화 성공/실패, 다른 아이템은 항상 true)
@@ -40,15 +32,13 @@ final class ShopSystem {
     ///   - ShopSystemError.insufficientDiamond: 다이아몬드 부족
     ///   - ShopSystemError.purchaseFailed: 구매 처리 실패
     func buy(item: DisplayItem) throws -> Bool {
-        // 부동산의 경우 원래 금액으로 구매 가능 여부 확인 (업그레이드 시에만 비용 발생)
+        // 부동산의 경우 항상 원가를 기준으로 구매 가능 여부 확인
         if item.category == .housing {
-            if isHousingUpgrade(for: item) {
-                guard user.wallet.canAfford(item.cost) else {
-                    if item.cost.gold > 0 {
-                        throw PurchasingError.insufficientGold
-                    } else {
-                        throw PurchasingError.insufficientDiamond
-                    }
+            guard user.wallet.canAfford(item.cost) else {
+                if item.cost.gold > 0 {
+                    throw PurchasingError.insufficientGold
+                } else {
+                    throw PurchasingError.insufficientDiamond
                 }
             }
         } else {
@@ -107,11 +97,10 @@ private extension ShopSystem {
             let currentHousingTier = user.inventory.housing.tier.rawValue
             let allHousings = HousingTier.allCases.map { Housing(tier: $0) }
             return allHousings.map { housing in
-                let isUpgrade = housing.tier.rawValue > currentHousingTier
-                return DisplayItem(
+                DisplayItem(
                     item: housing,
                     isEquipped: housing.tier.rawValue == currentHousingTier,
-                    isPurchasable: isUpgrade ? user.wallet.canAfford(housing.cost) : true
+                    isPurchasable: user.wallet.canAfford(housing.cost)
                 )
             }
             .sorted { $0.isEquipped && !$1.isEquipped }
@@ -171,20 +160,17 @@ private extension ShopSystem {
     /// - Parameter displayItem: 구매할 부동산 아이템
     /// - Returns: 항상 true (구매 성공)
     /// - Throws: ShopSystemError.purchaseFailed - 아이템 타입 변환 실패
-    /// - Note: 업그레이드 시 원래 금액 지불, 다운그레이드 시 비용 없음 (환불 없음)
+    /// - Note: 구매 시 항상 원래 금액 전액 지불
     func buyHousing(displayItem: DisplayItem) throws -> Bool {
         guard let newHousing = displayItem.item as? Housing else {
             throw PurchasingError.purchaseFailed
         }
 
-        // 업그레이드 시에만 원래 금액 지불
-        if isHousingUpgrade(for: displayItem) {
-            if displayItem.cost.gold > 0 {
-                user.wallet.spendGold(displayItem.cost.gold)
-            }
-            if displayItem.cost.diamond > 0 {
-                user.wallet.spendDiamond(displayItem.cost.diamond)
-            }
+        if displayItem.cost.gold > 0 {
+            user.wallet.spendGold(displayItem.cost.gold)
+        }
+        if displayItem.cost.diamond > 0 {
+            user.wallet.spendDiamond(displayItem.cost.diamond)
         }
 
         user.inventory.housing = newHousing
