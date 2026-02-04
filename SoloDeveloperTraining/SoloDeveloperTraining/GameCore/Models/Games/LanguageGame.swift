@@ -109,25 +109,7 @@ final class LanguageGame: Game {
         buffSystem.resume()
     }
 
-    // ===== 📊 측정용 static 변수 =====
-    #if DEBUG
-    private static var callCount = 0
-    #endif
-
     func didPerformAction(_ input: LanguageType) async -> Int {
-        // ===== 📊 측정 코드 시작 =====
-        #if DEBUG
-        Self.callCount += 1
-        let currentCall = Self.callCount
-        let startTime = CFAbsoluteTimeGetCurrent()
-        var recordTime: Double = 0
-        defer {
-            let totalElapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
-            print("⏱️ [BEFORE #\(currentCall)] Total: \(String(format: "%.2f", totalElapsed))ms | Record: \(String(format: "%.2f", recordTime))ms")
-        }
-        #endif
-        // ===== 📊 측정 코드 끝 =====
-
         // Task가 취소되었으면 즉시 종료
         guard !Task.isCancelled else { return 0 }
 
@@ -152,20 +134,10 @@ final class LanguageGame: Game {
         if isSuccess {
             user.wallet.addGold(gainGold)
 
-            // ===== 📊 Record 시간 측정 시작 =====
-            #if DEBUG
-            let recordStart = CFAbsoluteTimeGetCurrent()
-            #endif
-
             /// 정답 횟수 기록
             user.record.record(.languageCorrect)
             /// 누적 재산 업데이트
             user.record.record(.earnMoney(gainGold))
-
-            #if DEBUG
-            recordTime = (CFAbsoluteTimeGetCurrent() - recordStart) * 1000
-            #endif
-            // ===== 📊 Record 시간 측정 끝 =====
 
             // 재화 획득 시 캐릭터 웃게 만들기
             animationSystem?.playSmile()
@@ -173,18 +145,8 @@ final class LanguageGame: Game {
         }
         user.wallet.spendGold(Int(Double(gainGold) * Policy.Game.Language.incorrectGoldLossMultiplier))
 
-        // ===== 📊 Record 시간 측정 시작 (오답 케이스) =====
-        #if DEBUG
-        let recordStart = CFAbsoluteTimeGetCurrent()
-        #endif
-
         /// 오답 횟수 기록
         user.record.record(.languageIncorrect)
-
-        #if DEBUG
-        recordTime = (CFAbsoluteTimeGetCurrent() - recordStart) * 1000
-        #endif
-        // ===== 📊 Record 시간 측정 끝 =====
 
         return Int(Double(gainGold) * Policy.Game.Language.incorrectGoldLossMultiplier) * -1
     }
