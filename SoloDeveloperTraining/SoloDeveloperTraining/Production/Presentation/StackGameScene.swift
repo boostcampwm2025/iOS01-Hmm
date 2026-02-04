@@ -40,8 +40,6 @@ final class StackGameScene: SKScene {
     private var currentHeight: CGFloat = 0
     /// 블록을 떨어트릴 수 있는지 (사용자 인터랙션 차단)
     private var isInteractionLocked = false
-    /// 떨어지는 블록을 확인하고 있는지 (update 메서드 제어용)
-    private var isCheckingFall = false
     /// 자체 게임 상태 관리 변수
     private var isGamePaused = false
 
@@ -74,7 +72,7 @@ final class StackGameScene: SKScene {
 
     /// 매 프레임마다 실행되며, 물리 계산이 끝난 이후 블록의 위치를 판단합니다.
     override func didSimulatePhysics() {
-        guard isCheckingFall, !isGamePaused else { return }
+        guard !isGamePaused else { return }
 
         guard let block = currentBlockView,
               let previousBlock = stackGame.previousBlock else { return }
@@ -84,10 +82,6 @@ final class StackGameScene: SKScene {
 
         // 3. 목표 높이 도달 체크
         if block.position.y <= targetY {
-            // 다음 로직을 타기 전에 플래그로 막아, 다음 didSimulatePhysics 함수의 실행을 차단합니다.
-            isCheckingFall = false
-
-            // 정렬 및 배치 처리 실행
             checkAlignmentAndHandle(targetY: targetY)
         }
     }
@@ -145,7 +139,6 @@ final class StackGameScene: SKScene {
         currentBlockView?.removeAllActions()
         currentBlockView?.removeFromParent()
         currentBlockView = nil
-        isCheckingFall = false
     }
 
     /// 게임 Scene 재개
@@ -237,9 +230,6 @@ private extension StackGameScene {
         isInteractionLocked = true
         block.stopMoving()
         block.enableGravity()
-
-        // 블록 위치 추적 시작
-        isCheckingFall = true
     }
 
     /// 정렬을 체크하고 결과에 따라 물리 처리를 다르게 적용합니다.
