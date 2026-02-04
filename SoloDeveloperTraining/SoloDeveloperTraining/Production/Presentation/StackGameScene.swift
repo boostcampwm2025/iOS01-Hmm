@@ -134,8 +134,25 @@ final class StackGameScene: SKScene {
     func stopGame() {
         stackGame.stopGame()
         isInteractionLocked = true
-        currentBlockView?.removeAllActions()
         physicsWorld.speed = 0
+
+        // 1. 현재 조작 중인 블록 정리
+        currentBlockView?.removeAllActions()
+        currentBlockView?.removeFromParent()
+        currentBlockView = nil
+
+        // 2. 쌓여있는 모든 블록들 정리
+        blockViews.forEach { block in
+            block.removeAllActions() // 액션 제거
+            block.physicsBody = nil // 물리 엔진 연결 끊기
+            block.removeFromParent() // 부모와의 연결 제거
+        }
+
+        blockViews.removeAll()
+
+        // 4. 카메라 액션 제거
+        camera?.removeAllActions()
+        camera?.removeFromParent()
     }
 
     /// 게임 Scene 일시정지
@@ -284,6 +301,7 @@ final class StackGameScene: SKScene {
             }
 
             DispatchQueue.main.asyncAfter(deadline: .now() + Constant.Time.nextBlockSpawnDelay) { [weak self] in
+
                 self?.spawnBlock()
             }
         }
