@@ -24,12 +24,12 @@ final class ShopSystem {
         return itemTypes.map { makeDisplayItems(for: $0) }.flatMap { $0 }
     }
 
-    /// 부동산 실제 비용 계산
+    /// 부동산 업그레이드 여부 확인
     /// - Parameter item: 부동산 아이템
-    /// - Returns: 실제 지불/환불 금액 (양수: 지불, 음수: 환불)
-    func calculateHousingNetCost(for item: DisplayItem) -> Int {
-        let refundAmount = user.inventory.housing.cost.gold / 2
-        return item.cost.gold - refundAmount
+    /// - Returns: 현재 보유 부동산보다 상위 티어인 경우 true
+    func isHousingUpgrade(for item: DisplayItem) -> Bool {
+        guard let housing = item.item as? Housing else { return false }
+        return housing.tier.rawValue > user.inventory.housing.tier.rawValue
     }
 
     /// 아이템 구매
@@ -40,21 +40,15 @@ final class ShopSystem {
     ///   - ShopSystemError.insufficientDiamond: 다이아몬드 부족
     ///   - ShopSystemError.purchaseFailed: 구매 처리 실패
     func buy(item: DisplayItem) throws -> Bool {
-        // 부동산의 경우 실제 지불 금액으로 구매 가능 여부 확인
+        // 부동산의 경우 원래 금액으로 구매 가능 여부 확인 (업그레이드 시에만 비용 발생)
         if item.category == .housing {
-            let netGoldCost = calculateHousingNetCost(for: item)
-
-            // 실제 지불 금액이 양수일 때만 구매 가능 여부 확인 (음수면 환불이므로 항상 가능)
-            if netGoldCost > 0 {
-                guard user.wallet.gold >= netGoldCost else {
-                    throw PurchasingError.insufficientGold
-                }
-            }
-
-            // 다이아몬드 비용 확인
-            if item.cost.diamond > 0 {
-                guard user.wallet.diamond >= item.cost.diamond else {
-                    throw PurchasingError.insufficientDiamond
+            if isHousingUpgrade(for: item) {
+                guard user.wallet.canAfford(item.cost) else {
+                    if item.cost.gold > 0 {
+                        throw PurchasingError.insufficientGold
+                    } else {
+                        throw PurchasingError.insufficientDiamond
+                    }
                 }
             }
         } else {
@@ -113,10 +107,11 @@ private extension ShopSystem {
             let currentHousingTier = user.inventory.housing.tier.rawValue
             let allHousings = HousingTier.allCases.map { Housing(tier: $0) }
             return allHousings.map { housing in
-                DisplayItem(
+                let isUpgrade = housing.tier.rawValue > currentHousingTier
+                return DisplayItem(
                     item: housing,
                     isEquipped: housing.tier.rawValue == currentHousingTier,
-                    isPurchasable: user.wallet.canAfford(housing.cost)
+                    isPurchasable: isUpgrade ? user.wallet.canAfford(housing.cost) : true
                 )
             }
             .sorted { $0.isEquipped && !$1.isEquipped }
@@ -172,34 +167,26 @@ private extension ShopSystem {
         return equipment.upgraded()
     }
 
-    /// 부동산 아이템 구매 (교체 및 환불)
+    /// 부동산 아이템 구매 (교체)
     /// - Parameter displayItem: 구매할 부동산 아이템
     /// - Returns: 항상 true (구매 성공)
     /// - Throws: ShopSystemError.purchaseFailed - 아이템 타입 변환 실패
-    /// - Note: 기존 부동산 구입 금액의 50%를 환불받고, 실제 비용만 지불함
+    /// - Note: 업그레이드 시 원래 금액 지불, 다운그레이드 시 비용 없음 (환불 없음)
     func buyHousing(displayItem: DisplayItem) throws -> Bool {
-        // DisplayItem을 Housing으로 변환
         guard let newHousing = displayItem.item as? Housing else {
             throw PurchasingError.purchaseFailed
         }
 
-        // 실제 지불 금액 계산
-        let netGoldCost = calculateHousingNetCost(for: displayItem)
-
-        // 골드 지불 또는 환불
-        if netGoldCost > 0 {
-            user.wallet.spendGold(netGoldCost)
-        } else {
-            // 환불액이 더 큰 경우 골드 추가 (다운그레이드 시)
-            user.wallet.addGold(-netGoldCost)
+        // 업그레이드 시에만 원래 금액 지불
+        if isHousingUpgrade(for: displayItem) {
+            if displayItem.cost.gold > 0 {
+                user.wallet.spendGold(displayItem.cost.gold)
+            }
+            if displayItem.cost.diamond > 0 {
+                user.wallet.spendDiamond(displayItem.cost.diamond)
+            }
         }
 
-        // 다이아몬드 비용 지불
-        if displayItem.cost.diamond > 0 {
-            user.wallet.spendDiamond(displayItem.cost.diamond)
-        }
-
-        // 인벤토리의 부동산을 새 부동산으로 교체
         user.inventory.housing = newHousing
 
         return true
