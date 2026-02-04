@@ -71,9 +71,8 @@ final class StackGameScene: SKScene {
         dropBlock()
     }
 
-    /// 떨어지는 블록의 위치를 프레임 단위로 업데이트합니다.
-    /// 매 프레임마다 실행됩니다.
-    override func update(_ currentTime: TimeInterval) {
+    /// 매 프레임마다 실행되며, 물리 계산이 끝난 이후 블록의 위치를 판단합니다.
+    override func didSimulatePhysics() {
         guard isCheckingFall, !isGamePaused else { return }
 
         guard let block = currentBlockView,
