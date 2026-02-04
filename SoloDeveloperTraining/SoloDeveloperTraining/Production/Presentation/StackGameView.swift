@@ -34,17 +34,16 @@ struct StackGameView: View {
         animationSystem: CharacterAnimationSystem? = nil
     ) {
         let stackGame = StackGame(user: user, animationSystem: animationSystem)
-        self._stackGame = State(initialValue: stackGame)
-        self._isGameStarted = isGameStarted
-        self._isGameViewDisappeared = isGameViewDisappeared
 
-        let initialScene = StackGameScene(
-            stackGame: stackGame,
-            onBlockDropped: { _ in }
-        )
-        self._isGameStarted = isGameStarted
         self._stackGame = State(initialValue: stackGame)
-        self._scene = State(initialValue: initialScene)
+        self._scene = State(
+             initialValue: StackGameScene(
+                 stackGame: stackGame,
+                 onBlockDropped: { _ in }
+             )
+         )
+        self._isGameViewDisappeared = isGameViewDisappeared
+        self._isGameStarted = isGameStarted
     }
 
     var body: some View {
