@@ -19,8 +19,6 @@ private enum Constant {
     }
 
     enum Time {
-        // 블록 평가 체크 간격 (초)
-        static let evaluationCheckInterval: TimeInterval = 0.05
         // 폭탄 블록 제거 딜레이 (초)
         static let bombRemovalDelay: TimeInterval = 0.8
         // 카메라 이동 애니메이션 시간 (초)
@@ -39,8 +37,10 @@ final class StackGameScene: SKScene {
     private var blockViews: [BlockItem] = []
     /// 첫 블록의 바닥 기준 높이
     private var currentHeight: CGFloat = 0
-    /// 블록 배치 처리 중 여부 (UI 인터랙션 차단용)
-    private var isProcessing = false
+    /// 블록을 떨어트릴 수 있는지 (사용자 인터랙션 차단)
+    private var isInteractionLocked = false
+    /// 떨어지는 블록을 확인하고 있는지 (update 메서드 제어용)
+    private var isCheckingFall = false
     /// 자체 게임 상태 관리 변수
     private var isGamePaused = false
 
@@ -65,8 +65,31 @@ final class StackGameScene: SKScene {
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard currentBlockView != nil, !isProcessing, !isGamePaused else { return }
+        guard currentBlockView != nil, !isInteractionLocked, !isGamePaused else {
+            return
+        }
         dropBlock()
+    }
+
+    /// 떨어지는 블록의 위치를 프레임 단위로 업데이트합니다.
+    /// 매 프레임마다 실행됩니다.
+    override func update(_ currentTime: TimeInterval) {
+        guard isCheckingFall, !isGamePaused else { return }
+
+        guard let block = currentBlockView,
+              let previousBlock = stackGame.previousBlock else { return }
+
+        // 목표 지점 Y 높이 계산
+        let targetY = previousBlock.positionY + previousBlock.height
+
+        // 3. 목표 높이 도달 체크
+        if block.position.y <= targetY {
+            // 다음 로직을 타기 전에 플래그로 막아, 다음 update 함수의 실행을 차단합니다.
+            isCheckingFall = false
+
+            // 정렬 및 배치 처리 실행
+            checkAlignmentAndHandle(targetY: targetY)
+        }
     }
 
     /// 씬의 초기 설정을 수행합니다.
@@ -96,7 +119,7 @@ final class StackGameScene: SKScene {
     func startGame() {
         blockViews = []
         currentHeight = 0
-        isProcessing = false
+        isInteractionLocked = false
 
         stackGame.startGame()
         camera?.position = CGPoint(x: size.width / 2, y: size.height / 2)
@@ -111,7 +134,7 @@ final class StackGameScene: SKScene {
     /// - 물리 엔진 정지
     func stopGame() {
         stackGame.stopGame()
-        isProcessing = true
+        isInteractionLocked = true
         currentBlockView?.removeAllActions()
         physicsWorld.speed = 0
     }
@@ -124,6 +147,7 @@ final class StackGameScene: SKScene {
         currentBlockView?.removeAllActions()
         currentBlockView?.removeFromParent()
         currentBlockView = nil
+        isCheckingFall = false
     }
 
     /// 게임 Scene 재개
@@ -159,7 +183,7 @@ final class StackGameScene: SKScene {
         // 일시정지 상태에서는 동작을 막음
         guard !isGamePaused else { return }
 
-        isProcessing = false
+        isInteractionLocked = false
 
         let blockType = BlockType.allCases.randomElement() ?? .blue
         let blockView = BlockItem(type: blockType)
@@ -186,37 +210,12 @@ final class StackGameScene: SKScene {
     private func dropBlock() {
         guard let block = currentBlockView else { return }
 
-        isProcessing = true
+        isInteractionLocked = true
         block.stopMoving()
         block.enableGravity()
 
-        // 블록 평가 시작
-        evaluateBlock()
-    }
-
-    /// 떨어지는 블록이 목표 위치에 도달했는지 재귀적으로 확인합니다.
-    /// - 목표 높이에 도달하면 정렬 체크 수행
-    /// - 아직 도달하지 않았으면 일정 시간 후 재확인
-    private func evaluateBlock() {
-        guard
-            let block = currentBlockView,
-            let previousBlock = stackGame.previousBlock,
-            !isPaused
-        else { return }
-
-        // StackGame의 previousBlock 정보를 사용해 목표 Y 계산
-        let targetY = previousBlock.positionY + previousBlock.height
-
-        if block.position.y <= targetY {
-            // 목표 위치에 도달했으므로 정렬 체크
-            // 정렬 성공/실패에 따라 물리 처리를 다르게 적용
-            checkAlignmentAndHandle(targetY: targetY)
-        } else {
-            // 아직 도달하지 않았으면 재확인
-            DispatchQueue.main.asyncAfter(deadline: .now() +  Constant.Time.evaluationCheckInterval) { [weak self] in
-                self?.evaluateBlock()
-            }
-        }
+        // 블록 위치 추적 시작
+        isCheckingFall = true
     }
 
     /// 정렬을 체크하고 결과에 따라 물리 처리를 다르게 적용합니다.
@@ -236,12 +235,12 @@ final class StackGameScene: SKScene {
             block.physicsBody?.velocity = CGVector.zero
             block.physicsBody?.angularVelocity = 0
             block.position = CGPoint(x: block.position.x, y: targetY)
-            isProcessing = false
+            isInteractionLocked = false
 
             placeBlockSuccess()
         } else {
             // 정렬 실패: 물리를 유지하여 계속 떨어지도록
-            isProcessing = false
+            isInteractionLocked = false
             placeBlockFail()
         }
     }
