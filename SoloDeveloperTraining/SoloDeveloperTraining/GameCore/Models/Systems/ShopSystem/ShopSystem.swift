@@ -24,14 +24,6 @@ final class ShopSystem {
         return itemTypes.map { makeDisplayItems(for: $0) }.flatMap { $0 }
     }
 
-    /// 부동산 실제 비용 계산
-    /// - Parameter item: 부동산 아이템
-    /// - Returns: 실제 지불/환불 금액 (양수: 지불, 음수: 환불)
-    func calculateHousingNetCost(for item: DisplayItem) -> Int {
-        let refundAmount = user.inventory.housing.cost.gold / 2
-        return item.cost.gold - refundAmount
-    }
-
     /// 아이템 구매
     /// - Parameter item: 구매할 아이템
     /// - Returns: 구매 성공 여부 (장비의 경우 강화 성공/실패, 다른 아이템은 항상 true)
@@ -40,20 +32,12 @@ final class ShopSystem {
     ///   - ShopSystemError.insufficientDiamond: 다이아몬드 부족
     ///   - ShopSystemError.purchaseFailed: 구매 처리 실패
     func buy(item: DisplayItem) throws -> Bool {
-        // 부동산의 경우 실제 지불 금액으로 구매 가능 여부 확인
+        // 부동산의 경우 항상 원가를 기준으로 구매 가능 여부 확인
         if item.category == .housing {
-            let netGoldCost = calculateHousingNetCost(for: item)
-
-            // 실제 지불 금액이 양수일 때만 구매 가능 여부 확인 (음수면 환불이므로 항상 가능)
-            if netGoldCost > 0 {
-                guard user.wallet.gold >= netGoldCost else {
+            guard user.wallet.canAfford(item.cost) else {
+                if item.cost.gold > 0 {
                     throw PurchasingError.insufficientGold
-                }
-            }
-
-            // 다이아몬드 비용 확인
-            if item.cost.diamond > 0 {
-                guard user.wallet.diamond >= item.cost.diamond else {
+                } else {
                     throw PurchasingError.insufficientDiamond
                 }
             }
@@ -172,34 +156,23 @@ private extension ShopSystem {
         return equipment.upgraded()
     }
 
-    /// 부동산 아이템 구매 (교체 및 환불)
+    /// 부동산 아이템 구매 (교체)
     /// - Parameter displayItem: 구매할 부동산 아이템
     /// - Returns: 항상 true (구매 성공)
     /// - Throws: ShopSystemError.purchaseFailed - 아이템 타입 변환 실패
-    /// - Note: 기존 부동산 구입 금액의 50%를 환불받고, 실제 비용만 지불함
+    /// - Note: 구매 시 항상 원래 금액 전액 지불
     func buyHousing(displayItem: DisplayItem) throws -> Bool {
-        // DisplayItem을 Housing으로 변환
         guard let newHousing = displayItem.item as? Housing else {
             throw PurchasingError.purchaseFailed
         }
 
-        // 실제 지불 금액 계산
-        let netGoldCost = calculateHousingNetCost(for: displayItem)
-
-        // 골드 지불 또는 환불
-        if netGoldCost > 0 {
-            user.wallet.spendGold(netGoldCost)
-        } else {
-            // 환불액이 더 큰 경우 골드 추가 (다운그레이드 시)
-            user.wallet.addGold(-netGoldCost)
+        if displayItem.cost.gold > 0 {
+            user.wallet.spendGold(displayItem.cost.gold)
         }
-
-        // 다이아몬드 비용 지불
         if displayItem.cost.diamond > 0 {
             user.wallet.spendDiamond(displayItem.cost.diamond)
         }
 
-        // 인벤토리의 부동산을 새 부동산으로 교체
         user.inventory.housing = newHousing
 
         return true

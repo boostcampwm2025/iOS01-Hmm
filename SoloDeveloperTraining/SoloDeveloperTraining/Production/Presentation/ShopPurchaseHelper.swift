@@ -98,7 +98,7 @@ enum ShopPurchaseHelper {
     /// 구매 메시지 생성
     static func createPurchaseMessage(item: DisplayItem, baseMessage: String, shopSystem: ShopSystem) -> String {
         let priceText = createPriceText(for: item, shopSystem: shopSystem)
-        let prefix = item.category == .housing && shopSystem.calculateHousingNetCost(for: item) < 0 ? "를 환불받고" : "를 사용하여"
+        let prefix = "를 사용하여"
         return "\(priceText)\(prefix)\n\(baseMessage)"
     }
 
@@ -107,8 +107,10 @@ enum ShopPurchaseHelper {
         var components: [String] = []
 
         if item.category == .housing {
-            let netCost = shopSystem.calculateHousingNetCost(for: item)
-            components.append("\(abs(netCost).formatted) 골드")
+            // 부동산은 원래 금액 전액 표시 (업그레이드만 가능)
+            if item.cost.gold > 0 { components.append("\(item.cost.gold.formatted) 골드") }
+            if item.cost.diamond > 0 { components.append("\(item.cost.diamond.formatted) 다이아") }
+            if components.isEmpty { components.append("0 골드") }
         } else {
             if item.cost.gold > 0 { components.append("\(item.cost.gold.formatted) 골드") }
             if item.cost.diamond > 0 { components.append("\(item.cost.diamond.formatted) 다이아") }
