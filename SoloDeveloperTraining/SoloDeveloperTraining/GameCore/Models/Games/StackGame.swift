@@ -28,7 +28,6 @@ final class StackGame: Game {
     var screenSize: CGSize = .init(width: 0, height: 0)
 
     private(set) var score: Int = 0
-    private(set) var blocks: [StackBlock] = []
     private(set) var currentBlock: StackBlock?
     private(set) var previousBlock: StackBlock?
 
@@ -40,7 +39,6 @@ final class StackGame: Game {
     func startGame() {
         feverSystem.start()
         score = 0
-        blocks = []
         currentBlock = nil
         previousBlock = nil
     }
@@ -75,8 +73,6 @@ final class StackGame: Game {
             positionX: screenSize.width / 2,
             positionY: Constant.Position.initialBlockYPosition
         )
-
-        blocks.append(initialBlock)
         previousBlock = initialBlock
     }
 
@@ -113,7 +109,6 @@ final class StackGame: Game {
     func placeBlockSuccess() -> Int {
         guard let block = currentBlock else { return 0 }
 
-        blocks.append(block)
         previousBlock = block
         currentBlock = nil
 
