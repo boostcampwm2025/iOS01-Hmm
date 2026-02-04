@@ -34,6 +34,7 @@ final class StackGameScene: SKScene {
     private let stackGame: StackGame
 
     private var currentBlockView: BlockItem?
+    /// 현재 고정된 블록 스택
     private var blockViews: [BlockItem] = []
     /// 첫 블록의 바닥 기준 높이
     private var currentHeight: CGFloat = 0
@@ -247,9 +248,9 @@ final class StackGameScene: SKScene {
 
         if isAligned {
             // 정렬 성공: 블록 고정
-            block.fixPosition()
-            block.physicsBody?.velocity = CGVector.zero
+            block.physicsBody?.velocity = .zero
             block.physicsBody?.angularVelocity = 0
+            block.fixPosition()
             block.position = CGPoint(x: block.position.x, y: targetY)
             isInteractionLocked = false
 
@@ -265,6 +266,7 @@ final class StackGameScene: SKScene {
     /// - 폭탄 블록: 패널티 적용 후 블록 제거
     /// - 일반 블록: 스택에 추가, 점수 증가, 보상 적용, 카메라 이동
     private func placeBlockSuccess() {
+        print(blockViews.count)
         guard
             let block = currentBlockView,
             let currentBlock = stackGame.currentBlock,
