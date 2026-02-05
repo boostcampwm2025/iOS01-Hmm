@@ -1,0 +1,8 @@
+disabled_rules:
+  - cyclomatic_complexity
+
+line_length:
+  warning: 150
+  error: 200
+  ignores_comments: true
+  ignores_urls: true

@@ -1,0 +1,199 @@
+name: Release Note Generator
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  create_release_note:
+    # PR이 실제로 merge되었을 때만 실행
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      # Xcode 프로젝트에서 버전 정보 추출
+      - name: Extract Xcode version info
+        id: xcode_version
+        run: |
+          # 프로젝트 이름
+          PROJECT_NAME="SoloDeveloperTraining"
+          
+          # MARKETING_VERSION 추출
+          MARKETING_VERSION=$(grep -m 1 "MARKETING_VERSION = " "${PROJECT_NAME}/${PROJECT_NAME}.xcodeproj/project.pbxproj" | sed 's/.*MARKETING_VERSION = \(.*\);/\1/' | tr -d ' ')
+          
+          # BUILD_NUMBER 추출
+          BUILD_NUMBER=$(grep -m 1 "CURRENT_PROJECT_VERSION = " "${PROJECT_NAME}/${PROJECT_NAME}.xcodeproj/project.pbxproj" | awk -F'[ ;]' '{print $3}')
+          
+          echo "marketing_version=$MARKETING_VERSION" >> $GITHUB_OUTPUT
+          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+          
+          echo "📱 Extracted Marketing Version: $MARKETING_VERSION"
+          echo "🔢 Extracted Build Number: $BUILD_NUMBER"
+      
+      # 버전이 변경되었는지 확인
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          if git rev-parse "v${{ steps.xcode_version.outputs.marketing_version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "⚠️ Tag v${{ steps.xcode_version.outputs.marketing_version }} already exists"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "✅ Tag v${{ steps.xcode_version.outputs.marketing_version }} does not exist"
+          fi
+
+      # main 브랜치에 포함된 커밋을 기준으로 PR 조회
+      - name: Get merged PRs in main branch
+      # 동일한 태그가 존재하지 않을 경우만 실행
+        if: steps.check_tag.outputs.exists == 'false'
+        id: get_prs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              const owner = context.repo.owner;
+              const repo  = context.repo.repo;
+              const pull_number = context.payload.pull_request.number;
+
+              const prNumbers = new Set();
+
+              console.log(`🔎 Analyzing commits from merged PR #${pull_number}...`);
+
+              // 1. 현재 main으로 머지된 PR에 포함된 모든 커밋 목록을 가져옵니다.
+              const commits = await github.paginate(
+                github.rest.pulls.listCommits,
+                {
+                  owner,
+                  repo,
+                  pull_number: pull_number
+                }
+              );
+
+              // 2. 각 커밋과 연결된 PR들을 역추적합니다.
+              for (const commit of commits) {
+                const linkedPRs = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                  owner,
+                  repo,
+                  commit_sha: commit.sha
+                });
+                
+                linkedPRs.data.forEach(pr => {
+                  // 머지된 PR이고, 현재 main으로 머지된 PR 자체가 아닌 경우(하위 PR인 경우) 추가
+                  if (pr.merged_at && pr.number !== pull_number) {
+                    prNumbers.add(pr.number);
+                  }
+                });
+              }
+
+              // 3. 현재 PR을 포함시킵니다.
+              prNumbers.add(pull_number);
+
+              console.log(`✅ Found ${prNumbers.size} unique sub-PRs.`);
+
+              const prDetails = [];
+              for (const number of Array.from(prNumbers)) {
+                const { data: pr } = await github.rest.pulls.get({
+                  owner,
+                  repo,
+                  pull_number: number
+                });
+                prDetails.push(pr);
+              }
+
+              prDetails.sort((a, b) => new Date(b.merged_at) - new Date(a.merged_at));
+
+              // 4. PR 라벨에 따라 카테고라이징 합니다.
+              const features = prDetails.filter(pr => pr.labels.some(l => ['Feature','UI','Design'].includes(l.name)));
+              const bugfixes = prDetails.filter(pr => pr.labels.some(l => ['Fix','Bug'].includes(l.name)));
+              const maintenance = prDetails.filter(pr => pr.labels.some(l => ['Chore','Refactor','Remove','Docs','Test'].includes(l.name)));
+              const others = prDetails.filter(pr => !pr.labels.some(l => ['Feature','UI','Design','Fix','Bug','Chore','Refactor','Remove','Docs','Test','Someday','Release'].includes(l.name)));
+
+              console.log(`📊 PR Breakdown - Features: ${features.length}, Fixes: ${bugfixes.length}, Maint: ${maintenance.length}, Others: ${others.length}`);
+              
+              // 5. 문서 내용을 추가합니다.
+              let releaseNotes = '## What\'s Changed\n\n';
+              const formatPR = (pr) => `- ${pr.title} @${pr.user.login} ([#${pr.number}](${pr.html_url}))\n`;
+
+              if (features.length) releaseNotes += `### 🚀 New Features\n${features.map(formatPR).join('')}\n`;
+              if (bugfixes.length) releaseNotes += `### 🐛 Bug Fixes\n${bugfixes.map(formatPR).join('')}\n`;
+              if (maintenance.length) releaseNotes += `### 🚩 Maintenance\n${maintenance.map(formatPR).join('')}\n`;
+              if (others.length) releaseNotes += `### 📝 Others\n${others.map(formatPR).join('')}\n`;
+
+              return releaseNotes;
+
+            } catch (error) {
+              console.error('❌ Error:', error.message);
+              core.setFailed(error.message);
+              throw error;
+            }
+
+      # 릴리즈 생성 및 업데이트
+      - name: Create or Update Release
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              const marketingVersion = '${{ steps.xcode_version.outputs.marketing_version }}';
+              const buildNumber = '${{ steps.xcode_version.outputs.build_number }}';
+              const tagName = `v${marketingVersion}`;
+              const releaseNotes = ${{ steps.get_prs.outputs.result }};
+              
+              if (!marketingVersion || marketingVersion === '') {
+                throw new Error('Marketing version is empty or invalid');
+              }
+              if (!buildNumber || buildNumber === '') {
+                throw new Error('Build number is empty or invalid');
+              }
+              
+              console.log(`📦 Creating/updating release: ${tagName}`);
+              console.log(`📱 Version: ${marketingVersion}`);
+              console.log(`🔢 Build: ${buildNumber}`);
+              
+              const fullReleaseNotes = `**Version**: ${marketingVersion}\n**Build**: ${buildNumber}\n\n${releaseNotes}`;
+              
+              const { data: releases } = await github.rest.repos.listReleases({
+                owner: context.repo.owner,
+                repo: context.repo.repo
+              });
+              
+              const existingRelease = releases.find(r => r.tag_name === tagName);
+              
+              if (existingRelease) {
+                console.log(`🔄 Updating existing release: ${tagName}`);
+                await github.rest.repos.updateRelease({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  release_id: existingRelease.id,
+                  body: fullReleaseNotes
+                });
+                console.log(`✅ Updated release: ${tagName} (Build: ${buildNumber})`);
+              } else {
+                console.log(`🆕 Creating new release: ${tagName}`);
+                const release = await github.rest.repos.createRelease({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  tag_name: tagName,
+                  name: `v${marketingVersion}`,
+                  body: fullReleaseNotes,
+                  draft: false,
+                  prerelease: false
+                });
+                console.log(`✅ Created release: ${tagName} (Build: ${buildNumber})`);
+                console.log(`🔗 Release URL: ${release.data.html_url}`);
+              }
+              
+            } catch (error) {
+              console.error('❌ Error creating/updating release:', error.message);
+              core.setFailed(`Failed to create/update release: ${error.message}`);
+              throw error;
+            }

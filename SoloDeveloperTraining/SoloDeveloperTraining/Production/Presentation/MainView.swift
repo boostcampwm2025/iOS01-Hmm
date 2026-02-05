@@ -1,0 +1,300 @@
+//
+//  MainView.swift
+//  SoloDeveloperTraining
+//
+//  Created by 김성훈 on 1/8/26.
+//
+
+import SwiftUI
+import SpriteKit
+
+enum AppTheme {
+    static let backgroundColor: Color = AppColors.beige200
+}
+
+private enum Constant {
+    static let characterSceneSize = CGSize(width: 100, height: 100)
+    static let spriteViewSize = CGSize(width: 200, height: 200)
+    static let topAreaHeightRatio: CGFloat = 0.5
+
+    enum Padding {
+        static let horizontalPadding: CGFloat = 25
+    }
+
+    enum Color {
+        static let overlay = SwiftUI.Color.black.opacity(0.3)
+    }
+
+    enum CareerPopup {
+        static let title: String = "커리어"
+        static let maxHeight: CGFloat = 650
+    }
+
+    enum TopButton {
+        static let top: CGFloat = 128
+        static let horizontal: CGFloat = 16
+    }
+}
+
+struct MainView: View {
+    @Environment(\.scenePhase) var scenePhase
+    @State private var selectedTab: TabItem = .work
+    @State private var popupContent: PopupConfiguration?
+    @State private var careerSystem: CareerSystem?
+    @State private var isWorkGameInProgress: Bool = false
+    @State private var showQuizView: Bool = false
+    @State private var showSettingsView: Bool = false
+
+    private var autoGainSystem: AutoGainSystem
+    private let user: User
+    private let scene: CharacterScene
+    private let animationSystem: CharacterAnimationSystem
+
+    init(user: User) {
+        self.autoGainSystem = AutoGainSystem(user: user)
+        self.user = user
+
+        self.scene = CharacterScene(size: Constant.characterSceneSize, user: user)
+        self.scene.scaleMode = .aspectFit
+        self.scene.playIdle()
+
+        // 애니메이션 시스템 생성 및 클로저 연결
+        self.animationSystem = CharacterAnimationSystem()
+        self.animationSystem.onSmile = { [weak scene] in
+            scene?.playSmile()
+        }
+        self.animationSystem.onIdle = { [weak scene] in
+            scene?.playIdle()
+        }
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                topAreaContent
+                    .frame(height: geometry.size.height * Constant.topAreaHeightRatio)
+                    .background(housingBackgroundView)
+                tabBar
+                tabContentView
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            }
+            .ignoresSafeArea(edges: [.top, .bottom])
+            .background(AppTheme.backgroundColor)
+            .onAppear(perform: setupOnAppear)
+            .onDisappear { SoundService.shared.stopBGM() }
+            .onChange(of: scenePhase, handleScenePhaseChange)
+            .task(id: user.record.totalEarnedMoney) {
+                await careerSystem?.updateCareer()
+            }
+            .overlay { popupOverlayView }
+            .overlay { settingsOverlayView }
+            .fullScreenCover(isPresented: $showQuizView) {
+                QuizGameView(user: user)
+            }
+        }
+    }
+}
+
+private extension MainView {
+    var topAreaContent: some View {
+        ZStack(alignment: .top) {
+            topAreaMainContent
+            topButtonOverlay
+        }
+    }
+
+    var topAreaMainContent: some View {
+        VStack(spacing: 0) {
+            StatusBar(
+                career: careerSystem?.currentCareer ?? .unemployed,
+                nickname: user.nickname,
+                careerProgress: careerSystem?.careerProgress ?? 0.0,
+                gold: user.wallet.gold,
+                diamond: user.wallet.diamond
+            )
+            .onTapGesture { showCareerPopup() }
+            Spacer()
+            characterSceneView
+        }
+    }
+
+    var tabBar: some View {
+        TabBar(
+            selectedTab: $selectedTab,
+            hasCompletedMisson: user.record
+                .missionSystem.hasCompletedMission
+        )
+    }
+
+    var characterSceneView: some View {
+        SpriteView(scene: scene, options: [.allowsTransparency])
+            .frame(width: Constant.spriteViewSize.width, height: Constant.spriteViewSize.height)
+            .background(Color.clear)
+    }
+
+    var housingBackgroundView: some View {
+        Image(user.inventory.housing.imageName)
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+    }
+
+    var topButtonOverlay: some View {
+        VStack {
+            HStack {
+                SmallButton(title: "설정", image: Image(.iconSetting)) {
+                    showSettingsView = true
+                }
+                Spacer()
+                SmallButton(title: "퀴즈", hasBadge: true) {
+                    showQuizView = true
+                }
+            }
+            .padding(.top, Constant.TopButton.top)
+            .padding(.horizontal, Constant.TopButton.horizontal)
+            Spacer()
+        }
+    }
+
+    var tabContentView: some View {
+        ZStack {
+            if isWorkGameInProgress {
+                workGameOverlayView
+            }
+            if !isWorkGameInProgress || selectedTab != .work {
+                tabContentSwitchView
+            }
+        }
+    }
+
+    var workGameOverlayView: some View {
+        WorkSelectedView(
+            user: user,
+            animationSystem: animationSystem,
+            isGameStarted: $isWorkGameInProgress,
+            isGameViewDisappeared: Binding(
+                get: { selectedTab != .work || showQuizView },
+                set: { _ in }
+            ),
+            careerSystem: $careerSystem
+        )
+        .opacity(selectedTab == .work ? 1 : 0)
+        .allowsHitTesting(selectedTab == .work)
+    }
+
+    @ViewBuilder
+    var tabContentSwitchView: some View {
+        switch selectedTab {
+        case .work:
+            if !isWorkGameInProgress {
+                WorkSelectedView(
+                    user: user,
+                    animationSystem: animationSystem,
+                    isGameStarted: $isWorkGameInProgress,
+                    isGameViewDisappeared: Binding(
+                        get: { selectedTab != .work || showQuizView },
+                        set: { _ in }
+                    ),
+                    careerSystem: $careerSystem
+                )
+            }
+        case .skill:
+            SkillView(user: user, careerSystem: careerSystem, popupContent: $popupContent)
+        case .shop:
+            ShopView(user: user, popupContent: $popupContent)
+        case .mission:
+            MissionView(user: user)
+        }
+    }
+
+    @ViewBuilder
+    var popupOverlayView: some View {
+        if let popupContent {
+            ZStack {
+                Constant.Color.overlay
+                    .ignoresSafeArea()
+                    .onTapGesture { self.popupContent = nil }
+
+                Popup(title: popupContent.title, contentView: popupContent.content)
+                    .frame(maxHeight: popupContent.maxHeight)
+                    .padding(.horizontal, Constant.Padding.horizontalPadding)
+            }
+        }
+    }
+
+    @ViewBuilder
+    var settingsOverlayView: some View {
+        if showSettingsView {
+            ZStack {
+                Constant.Color.overlay
+                    .ignoresSafeArea()
+                    .onTapGesture { showSettingsView = false }
+
+                FeedbackSettingView(onClose: { showSettingsView = false })
+                    .padding(.horizontal, Constant.Padding.horizontalPadding)
+            }
+        }
+    }
+
+    func setupOnAppear() {
+        SoundService.shared.playBGM()
+        autoGainSystem.startSystem()
+        Task {
+            if careerSystem == nil {
+                careerSystem = await CareerSystem(user: user)
+                careerSystem?.onCareerChanged = { [weak scene] newCareer in
+                    scene?.updateCareerAppearance(to: newCareer)
+                }
+            }
+        }
+    }
+
+    func handleScenePhaseChange(_ oldValue: ScenePhase, _ newValue: ScenePhase) {
+        if newValue == .active {
+            autoGainSystem.startSystem()
+        } else if newValue == .inactive || newValue == .background {
+            autoGainSystem.stopSystem()
+        }
+    }
+
+    func showCareerPopup() {
+        guard let careerSystem else { return }
+
+        popupContent = PopupConfiguration(
+            title: Constant.CareerPopup.title,
+            maxHeight: Constant.CareerPopup.maxHeight
+        ) {
+            CareerPopupView(
+                careerSystem: careerSystem,
+                user: user,
+                onClose: {
+                    popupContent = nil
+                }
+            )
+        }
+    }
+}
+
+#Preview {
+    let user = User(
+        nickname: "소피아",
+        career: .unemployed,
+        wallet: .init(),
+        inventory: Inventory(
+            equipmentItems: [
+                .init(type: .chair, tier: .broken),
+                .init(type: .keyboard, tier: .broken),
+                .init(type: .monitor, tier: .broken),
+                .init(type: .mouse, tier: .broken)
+            ],
+            housing: .init(tier: .street)
+        ),
+        record: .init(),
+        skills: [
+            .init(key: SkillKey(game: .tap, tier: .beginner), level: 10),
+            .init(key: SkillKey(game: .language, tier: .beginner), level: 1),
+            .init(key: SkillKey(game: .dodge, tier: .beginner), level: 1),
+            .init(key: SkillKey(game: .stack, tier: .beginner), level: 1)
+        ]
+    )
+    MainView(user: user)
+}
