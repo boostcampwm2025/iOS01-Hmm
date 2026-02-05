@@ -28,7 +28,6 @@ final class StackGame: Game {
     var screenSize: CGSize = .init(width: 0, height: 0)
 
     private(set) var score: Int = 0
-    private(set) var blocks: [StackBlock] = []
     private(set) var currentBlock: StackBlock?
     private(set) var previousBlock: StackBlock?
 
@@ -40,7 +39,6 @@ final class StackGame: Game {
     func startGame() {
         feverSystem.start()
         score = 0
-        blocks = []
         currentBlock = nil
         previousBlock = nil
     }
@@ -75,8 +73,6 @@ final class StackGame: Game {
             positionX: screenSize.width / 2,
             positionY: Constant.Position.initialBlockYPosition
         )
-
-        blocks.append(initialBlock)
         previousBlock = initialBlock
     }
 
@@ -113,7 +109,6 @@ final class StackGame: Game {
     func placeBlockSuccess() -> Int {
         guard let block = currentBlock else { return 0 }
 
-        blocks.append(block)
         previousBlock = block
         currentBlock = nil
 
@@ -138,9 +133,11 @@ final class StackGame: Game {
         currentBlock = nil
         return applyReward()
     }
+}
 
+private extension StackGame {
     /// 보상을 적용합니다 (골드 획득, 피버 증가)
-    private func applyReward() -> Int {
+    func applyReward() -> Int {
         let goldEarned = calculateGold()
         user.wallet.addGold(goldEarned)
         /// 성공 수 기록
@@ -159,7 +156,7 @@ final class StackGame: Game {
     }
 
     /// 패널티를 적용합니다 (골드 손실, 피버 감소)
-    private func applyPenalty() -> Int {
+    func applyPenalty() -> Int {
         let goldLost = calculateGold()
         user.wallet.spendGold(goldLost)
         /// 실패 수 기록
@@ -172,7 +169,7 @@ final class StackGame: Game {
     }
 
     /// 현재 상태에 따른 골드 획득량을 계산합니다
-    private func calculateGold() -> Int {
+    func calculateGold() -> Int {
         return Calculator.calculateGoldPerAction(
             game: .stack,
             user: user,
