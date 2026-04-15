@@ -236,6 +236,7 @@ private extension MainView {
     }
 
     func setupOnAppear() {
+        AnalyticsService.shared.logScreenView(screenName: "main")
         SoundService.shared.playBGM()
         autoGainSystem.startSystem()
         Task {

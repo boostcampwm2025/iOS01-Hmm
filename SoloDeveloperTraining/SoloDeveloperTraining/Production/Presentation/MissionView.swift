@@ -59,7 +59,9 @@ struct MissionView: View {
         }
         .padding(.horizontal)
         .toast(isShowing: $showToast, message: toastMessage)
-
+        .onAppear {
+            AnalyticsService.shared.logScreenView(screenName: "mission")
+        }
     }
 }
 

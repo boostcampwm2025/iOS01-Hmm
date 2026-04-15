@@ -65,6 +65,9 @@ struct ShopView: View {
                 housingView
             }
         }
+        .onAppear {
+            AnalyticsService.shared.logScreenView(screenName: "shop")
+        }
     }
 }
 

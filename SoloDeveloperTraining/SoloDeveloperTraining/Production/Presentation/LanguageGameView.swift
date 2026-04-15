@@ -93,6 +93,9 @@ struct LanguageGameView: View {
                 languageButtonsSection
                 Spacer()
             }
+            .onAppear {
+                AnalyticsService.shared.logGameStart(gameType: .language)
+            }
             .pauseGameStyle(
                 isGameViewDisappeared: $isGameViewDisappeared,
                 height: geometry.size.height,

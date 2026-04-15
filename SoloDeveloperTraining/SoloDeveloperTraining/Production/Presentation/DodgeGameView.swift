@@ -68,6 +68,7 @@ struct DodgeGameView: View {
                 gameAreaSection
             }
             .onAppear {
+                AnalyticsService.shared.logGameStart(gameType: .dodge)
                 setupGame(with: geometry.size)
             }
             .onDisappear {
