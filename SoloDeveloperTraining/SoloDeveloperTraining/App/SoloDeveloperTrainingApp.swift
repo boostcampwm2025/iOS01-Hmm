@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseCore
 
 private enum Constant {
     enum Animation {
@@ -25,6 +26,12 @@ private enum Constant {
 
 @main
 struct SoloDeveloperTrainingApp: App {
+
+    // Firebase 초기화
+    init() {
+        FirebaseApp.configure()
+    }
+
     @State private var hasSeenIntro = false
     @State private var showNicknameSetup = false
     @State private var showTutorial = false
