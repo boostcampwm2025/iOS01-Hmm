@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		28FB12B02F9B5EA8004FCBB3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */; };
+		28FB12B22F9B5EB1004FCBB3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 28FB12B12F9B5EB1004FCBB3 /* FirebaseFirestore */; };
 		BC19336F2F8FC7110033A27E /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BC19336E2F8FC7110033A27E /* FirebaseAnalytics */; };
 		BC1933712F8FC7110033A27E /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = BC1933702F8FC7110033A27E /* FirebaseCore */; };
 		BCC0EACE2F8FE90700D7A84A /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BCC0EACD2F8FE90700D7A84A /* FirebaseAnalytics */; };
@@ -105,6 +107,7 @@
 			files = (
 				BC1933712F8FC7110033A27E /* FirebaseCore in Frameworks */,
 				BC19336F2F8FC7110033A27E /* FirebaseAnalytics in Frameworks */,
+				28FB12B02F9B5EA8004FCBB3 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,6 +117,7 @@
 			files = (
 				BCC0EAD02F8FE90D00D7A84A /* FirebaseCore in Frameworks */,
 				BCC0EACE2F8FE90700D7A84A /* FirebaseAnalytics in Frameworks */,
+				28FB12B22F9B5EB1004FCBB3 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,6 +181,7 @@
 			packageProductDependencies = (
 				BC19336E2F8FC7110033A27E /* FirebaseAnalytics */,
 				BC1933702F8FC7110033A27E /* FirebaseCore */,
+				28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */,
 			);
 			productName = SoloDeveloperTraining;
 			productReference = 08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */;
@@ -202,6 +207,7 @@
 			packageProductDependencies = (
 				BCC0EACD2F8FE90700D7A84A /* FirebaseAnalytics */,
 				BCC0EACF2F8FE90D00D7A84A /* FirebaseCore */,
+				28FB12B12F9B5EB1004FCBB3 /* FirebaseFirestore */,
 			);
 			productName = SoloDeveloperTraining;
 			productReference = 2896AE422F100CD600D38732 /* SoloDeveloperTraining-Dev.app */;
@@ -759,6 +765,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		28FB12B12F9B5EB1004FCBB3 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
 		BC19336E2F8FC7110033A27E /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
