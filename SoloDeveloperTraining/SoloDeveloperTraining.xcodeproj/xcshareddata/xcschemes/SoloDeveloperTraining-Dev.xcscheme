@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "2620"
+   LastUpgradeVersion = "2630"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -15,9 +15,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "08267F2A2F0D06BC005A0066"
-               BuildableName = "SoloDeveloperTraining.app"
-               BlueprintName = "SoloDeveloperTraining"
+               BlueprintIdentifier = "2896AE3A2F100CD600D38732"
+               BuildableName = "SoloDeveloperTraining-Dev.app"
+               BlueprintName = "SoloDeveloperTraining-Dev"
                ReferencedContainer = "container:SoloDeveloperTraining.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -29,19 +29,6 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
       shouldAutocreateTestPlan = "YES">
-      <Testables>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BCFC85492F32022C00447A9A"
-               BuildableName = "SoloDeveloperTrainingUITests.xctest"
-               BlueprintName = "SoloDeveloperTrainingUITests"
-               ReferencedContainer = "container:SoloDeveloperTraining.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-      </Testables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -63,21 +50,6 @@
             ReferencedContainer = "container:SoloDeveloperTraining.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "08267F2A2F0D06BC005A0066"
-            BuildableName = "SoloDeveloperTraining.app"
-            BlueprintName = "SoloDeveloperTraining"
-            ReferencedContainer = "container:SoloDeveloperTraining.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
-      <CommandLineArguments>
-         <CommandLineArgument
-            argument = "-FIRAnalyticsDebugEnabled"
-            isEnabled = "YES">
-         </CommandLineArgument>
-      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -89,9 +61,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "08267F2A2F0D06BC005A0066"
-            BuildableName = "SoloDeveloperTraining.app"
-            BlueprintName = "SoloDeveloperTraining"
+            BlueprintIdentifier = "2896AE3A2F100CD600D38732"
+            BuildableName = "SoloDeveloperTraining-Dev.app"
+            BlueprintName = "SoloDeveloperTraining-Dev"
             ReferencedContainer = "container:SoloDeveloperTraining.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

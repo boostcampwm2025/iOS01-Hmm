@@ -55,6 +55,9 @@ struct TapGameView: View {
                 // 터치 가능한 게임 영역
                 tapAreaSection(geometry: geometry)
             }
+            .onAppear {
+                AnalyticsService.shared.logGameStart(gameType: .tap)
+            }
             .pauseGameStyle(
                 isGameViewDisappeared: $isGameViewDisappeared,
                 height: geometry.size.height,
