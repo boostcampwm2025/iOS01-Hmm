@@ -8,7 +8,7 @@ import FirebaseFirestore
 
 final class DevBalanceRepository: BalanceRepository {
     private let dataBase = Firestore.firestore()
-
+    private let dataCollectionName = "Data"
     init() {}
 
     func fetchPolicy(tab: PolicyTab, version: String) async throws -> PolicyDTO {
@@ -90,12 +90,10 @@ final class DevBalanceRepository: BalanceRepository {
             )
 
         try await batch.commit()
-        print("✅ [Dev] Policy \(data.version) 업로드 완료 (PolicyTab: \(tab))")
     }
 
     func fetchVersionList(tab: PolicyTab) async throws -> [String] {
         let snapshot = try await dataBase.collection(tab.firestoreCollectionName).getDocuments()
-        // 문서 ID(버전 이름)들을 추출하여 반환합니다.
         return snapshot.documents.map { $0.documentID }.sorted(by: >) // 최신 버전이 위로 오도록 정렬
     }
 
@@ -115,52 +113,52 @@ final class DevBalanceRepository: BalanceRepository {
     }
 }
 
-extension DevBalanceRepository {
-    private func fetchCareer(tab: PolicyTab, version: String) async throws -> CareerPolicyDTO {
+private extension DevBalanceRepository {
+    func fetchCareer(tab: PolicyTab, version: String) async throws -> CareerPolicyDTO {
         let dataCollection = dataBase.collection(tab.firestoreCollectionName).document(version).collection(
-            "Data"
+            dataCollectionName
         )
         return try await dataCollection.document(PolicyDataField.career.rawValue).getDocument(as: CareerPolicyDTO.self)
     }
 
-    private func fetchFever(tab: PolicyTab, version: String) async throws -> FeverPolicyDTO {
+    func fetchFever(tab: PolicyTab, version: String) async throws -> FeverPolicyDTO {
         let dataCollection = dataBase.collection(tab.firestoreCollectionName).document(version).collection(
-            "Data"
+            dataCollectionName
         )
         return try await dataCollection.document(PolicyDataField.fever.rawValue).getDocument(as: FeverPolicyDTO.self)
     }
 
-    private func fetchGame(tab: PolicyTab, version: String) async throws -> GamePolicyDTO {
+    func fetchGame(tab: PolicyTab, version: String) async throws -> GamePolicyDTO {
         let dataCollection = dataBase.collection(tab.firestoreCollectionName).document(version).collection(
-            "Data"
+            dataCollectionName
         )
         return try await dataCollection.document(PolicyDataField.game.rawValue).getDocument(as: GamePolicyDTO.self)
     }
 
-    private func fetchSkill(tab: PolicyTab, version: String) async throws -> SkillPolicyDTO {
+    func fetchSkill(tab: PolicyTab, version: String) async throws -> SkillPolicyDTO {
         let dataCollection = dataBase.collection(tab.firestoreCollectionName).document(version).collection(
-            "Data"
+            dataCollectionName
         )
         return try await dataCollection.document(PolicyDataField.skill.rawValue).getDocument(as: SkillPolicyDTO.self)
     }
 
-    private func fetchConsumable(tab: PolicyTab, version: String) async throws -> ConsumablePolicyDTO {
-        let dataCollection = dataBase.collection(tab.firestoreCollectionName).document(version).collection("Data")
+    func fetchConsumable(tab: PolicyTab, version: String) async throws -> ConsumablePolicyDTO {
+        let dataCollection = dataBase.collection(tab.firestoreCollectionName).document(version).collection(dataCollectionName)
         return try await dataCollection.document(PolicyDataField.consumable.rawValue).getDocument(as: ConsumablePolicyDTO.self)
     }
 
-    private func fetchEquipment(tab: PolicyTab, version: String) async throws -> EquipmentPolicyDTO {
-        let dataCollection = dataBase.collection(tab.firestoreCollectionName).document(version).collection("Data")
+    func fetchEquipment(tab: PolicyTab, version: String) async throws -> EquipmentPolicyDTO {
+        let dataCollection = dataBase.collection(tab.firestoreCollectionName).document(version).collection(dataCollectionName)
         return try await dataCollection.document(PolicyDataField.equipment.rawValue).getDocument(as: EquipmentPolicyDTO.self)
     }
 
-    private func fetchHousing(tab: PolicyTab, version: String) async throws -> HousingPolicyDTO {
-        let dataCollection = dataBase.collection(tab.firestoreCollectionName).document(version).collection("Data")
+    func fetchHousing(tab: PolicyTab, version: String) async throws -> HousingPolicyDTO {
+        let dataCollection = dataBase.collection(tab.firestoreCollectionName).document(version).collection(dataCollectionName)
         return try await dataCollection.document(PolicyDataField.housing.rawValue).getDocument(as: HousingPolicyDTO.self)
     }
 
-    private func fetchSystem(tab: PolicyTab, version: String) async throws -> SystemPolicyDTO {
-        let dataCollection = dataBase.collection(tab.firestoreCollectionName).document(version).collection("Data")
+    func fetchSystem(tab: PolicyTab, version: String) async throws -> SystemPolicyDTO {
+        let dataCollection = dataBase.collection(tab.firestoreCollectionName).document(version).collection(dataCollectionName)
         return try await dataCollection.document(PolicyDataField.system.rawValue).getDocument(as: SystemPolicyDTO.self)
     }
 }

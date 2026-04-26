@@ -60,7 +60,7 @@ struct AdminView: View {
                     }
                 }
             }
-            .navigationTitle("어드민 설정")
+            .navigationTitle("밸런스 업데이트")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
@@ -79,12 +79,13 @@ struct AdminView: View {
             }
         }
     }
+}
 
-    @ViewBuilder
-    private func versionRow(tab: PolicyTab, version: String) -> some View {
+private extension AdminView {
+    func versionRow(tab: PolicyTab, version: String) -> some View {
         let isActive = activeVersions[tab] == version
 
-        VStack(alignment: .leading, spacing: 8) {
+        return VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text(version)
                     .font(.system(.body, design: .monospaced))
@@ -113,7 +114,7 @@ struct AdminView: View {
                         copyVersion(from: .edit, to: .test, version: version)
                     }
                 } else if tab == .test {
-                    deployButton(title: "Prod로 배포", icon: "bolt.fill", color: .red) {
+                    deployButton(title: "Live로 배포", icon: "bolt.fill", color: .red) {
                         copyVersion(from: .test, to: .live, version: version)
                     }
                 }
@@ -122,8 +123,7 @@ struct AdminView: View {
         .padding(.vertical, 4)
     }
 
-    @ViewBuilder
-    private func deployButton(title: String, icon: String, color: Color, action: @escaping () -> Void) -> some View {
+    func deployButton(title: String, icon: String, color: Color, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: 4) {
                 Image(systemName: icon)
