@@ -5,8 +5,6 @@
 //  Created by sunjae on 4/24/26.
 //
 
-import Foundation
-
 struct GameUnlockPolicyDTO: Codable {
     let tap: Int
     let language: Int

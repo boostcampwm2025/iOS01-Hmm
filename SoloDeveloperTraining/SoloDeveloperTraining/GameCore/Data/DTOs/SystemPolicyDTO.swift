@@ -5,7 +5,6 @@
 //  Created by sunjae on 4/25/26.
 //
 
-
 struct SystemPolicyDTO: Codable {
     let autoGain: AutoGainDTO
     let buff: BuffDTO

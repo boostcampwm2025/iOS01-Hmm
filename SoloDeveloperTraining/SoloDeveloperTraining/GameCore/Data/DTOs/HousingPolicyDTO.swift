@@ -5,7 +5,6 @@
 //  Created by sunjae on 4/25/26.
 //
 
-
 struct HousingPolicyDTO: Codable {
     let streetPurchaseCost: Int
     let semiBasementPurchaseCost: Int

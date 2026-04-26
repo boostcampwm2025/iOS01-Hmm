@@ -5,7 +5,6 @@
 //  Created by sunjae on 4/25/26.
 //
 
-
 struct EquipmentPolicyDTO: Codable {
     let brokenUpgradeCost: Int
     let cheapUpgradeCost: Int

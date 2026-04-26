@@ -37,6 +37,7 @@
 			membershipExceptions = (
 				App/Info.plist,
 				Devlopment/CheatSystem/CheatManager.swift,
+				Devlopment/Data/Repository/DevBalanceRepository.swift,
 				Devlopment/Presentation/ContentView.swift,
 				Devlopment/Presentation/DodgeGameTestView.swift,
 				Devlopment/Presentation/LanguageGameTestView.swift,
@@ -54,7 +55,6 @@
 		28FB16642F9B6E3C004FCBB3 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"App/GoogleService-Info.plist",
 				"App/Info-Dev.plist",
 				App/Info.plist,
 				"Production/Error/PurchasingError+UserReadableError.swift",

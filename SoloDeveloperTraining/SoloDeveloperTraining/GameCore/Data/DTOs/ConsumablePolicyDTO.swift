@@ -5,7 +5,6 @@
 //  Created by sunjae on 4/25/26.
 //
 
-
 struct ConsumablePolicyDTO: Codable {
     let coffee: CoffeeDTO
     let energyDrink: EnergyDrinkDTO

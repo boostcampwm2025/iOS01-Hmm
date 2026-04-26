@@ -3,8 +3,6 @@
 //  SoloDeveloperTraining
 //
 
-import Foundation
-
 struct CareerPolicyDTO: Codable {
     let unemployed: Int
     let laptopOwner: Int

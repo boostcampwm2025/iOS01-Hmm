@@ -5,7 +5,6 @@
 //  Created by sunjae on 4/25/26.
 //
 
-
 struct SkillPolicyDTO: Codable {
     let beginnerMinLevel: Int
     let beginnerMaxLevel: Int
