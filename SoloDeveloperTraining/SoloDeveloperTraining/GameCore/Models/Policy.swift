@@ -21,14 +21,6 @@ enum Policy {
         static let famousDeveloper = 2_000_000_000_000
         static let allRounderDeveloper = 100_000_000_000_000   // 100조
         static let worldClassDeveloper = 2_000_000_000_000_000 // 2000조: 만렙
-
-        /// 게임별 해금 조건 (2단계씩: 탭 0 → 언어 2 → 버그 4 → 데이터 6)
-        enum GameUnlock {
-            static let tap = unemployed           // 0단계
-            static let language = aspiringDeveloper   // 2단계
-            static let dodge = normalDeveloper        // 4단계
-            static let stack = skilledDeveloper       // 6단계
-        }
     }
 
     // MARK: - 피버 시스템 (쾌감 증대)
@@ -85,6 +77,14 @@ enum Policy {
 
     // MARK: - 게임별 상수
     enum Game {
+        /// 게임별 해금 조건 (2단계씩: 탭 0 → 언어 2 → 버그 4 → 데이터 6)
+        enum GameUnlock {
+            static let tap = Policy.Career.unemployed          // 0단계
+            static let language = Policy.Career.aspiringDeveloper   // 2단계
+            static let dodge = Policy.Career.normalDeveloper        // 4단계
+            static let stack = Policy.Career.skilledDeveloper       // 6단계
+        }
+
         /// 코드 짜기 (TapGame)
         enum Tap {}  // 특수 상수 없음
 
