@@ -10,8 +10,8 @@ import SwiftUI
 struct AdminView: View {
     private let repository: BalanceRepository = DevBalanceRepository()
 
-    @State private var versionLists: [Tab: [String]] = [:]
-    @State private var activeVersions: [Tab: String] = [:]
+    @State private var versionLists: [PolicyTab: [String]] = [:]
+    @State private var activeVersions: [PolicyTab: String] = [:]
     @State private var isLoading = false
     @State private var statusMessage: String?
 
@@ -32,7 +32,7 @@ struct AdminView: View {
                     }
                 }
 
-                ForEach([Tab.edit, .test, .prod], id: \.self) { tab in
+                ForEach([PolicyTab.edit, .test, .live], id: \.self) { tab in
                     Section {
                         if let versions = versionLists[tab], !versions.isEmpty {
                             ForEach(versions, id: \.self) { version in
@@ -81,7 +81,7 @@ struct AdminView: View {
     }
 
     @ViewBuilder
-    private func versionRow(tab: Tab, version: String) -> some View {
+    private func versionRow(tab: PolicyTab, version: String) -> some View {
         let isActive = activeVersions[tab] == version
 
         VStack(alignment: .leading, spacing: 8) {
@@ -114,13 +114,7 @@ struct AdminView: View {
                     }
                 } else if tab == .test {
                     deployButton(title: "Prod로 배포", icon: "bolt.fill", color: .red) {
-                        copyVersion(from: .test, to: .prod, version: version)
-                    }
-                }
-
-                if tab != .edit {
-                    deployButton(title: "Edit으로 복사", icon: "arrow.uturn.backward", color: .blue) {
-                        copyVersion(from: tab, to: .edit, version: version)
+                        copyVersion(from: .test, to: .live, version: version)
                     }
                 }
             }
@@ -167,7 +161,7 @@ private extension AdminView {
         }
     }
 
-    func copyVersion(from sourceTab: Tab, to targetTab: Tab, version: String) {
+    func copyVersion(from sourceTab: PolicyTab, to targetTab: PolicyTab, version: String) {
         statusMessage = "\(sourceTab.rawValue) -> \(targetTab.rawValue) 배포 중..."
         Task {
             do {
@@ -183,7 +177,7 @@ private extension AdminView {
         }
     }
 
-    func updateActiveVersion(tab: Tab, version: String) {
+    func updateActiveVersion(tab: PolicyTab, version: String) {
         statusMessage = "\(tab.rawValue) 활성 버전 변경 중..."
         Task {
             do {
@@ -199,10 +193,10 @@ private extension AdminView {
     func refreshAll() {
         isLoading = true
         Task {
-            var updatedLists: [Tab: [String]] = [:]
-            var updatedActives: [Tab: String] = [:]
+            var updatedLists: [PolicyTab: [String]] = [:]
+            var updatedActives: [PolicyTab: String] = [:]
 
-            for tab in [Tab.edit, .test, .prod] {
+            for tab in [PolicyTab.edit, .test, .live] {
                 // 버전 목록 가져오기
                 if let versions = try? await repository.fetchVersionList(tab: tab) {
                     updatedLists[tab] = versions
