@@ -152,7 +152,7 @@ private extension AdminView {
                 let data = PolicyDTO.defaultValues
                 try await repository.uploadPolicy(tab: .edit, data: data)
                 // 업로드 성공 시 자동으로 해당 버전을 Active로 설정
-                try await repository.setActiveVersion(for: .edit, version: data.version)
+                try await repository.setActiveVersion(tab: .edit, version: data.version)
                 statusMessage = "✅ 업로드 및 활성화 성공 (Edit/\(data.version))"
                 refreshAll()
             } catch {
@@ -168,7 +168,8 @@ private extension AdminView {
                 let data = try await repository.fetchPolicy(tab: sourceTab, version: version)
                 try await repository.uploadPolicy(tab: targetTab, data: data)
                 // 배포 성공 시 자동으로 타겟 탭의 Active 버전 업데이트
-                try await repository.setActiveVersion(for: targetTab, version: version)
+                try await repository
+                    .setActiveVersion(tab: targetTab, version: version)
                 statusMessage = "✅ \(targetTab.rawValue) 배포 및 활성화 완료 (\(version))"
                 refreshAll()
             } catch {
@@ -181,7 +182,8 @@ private extension AdminView {
         statusMessage = "\(tab.rawValue) 활성 버전 변경 중..."
         Task {
             do {
-                try await repository.setActiveVersion(for: tab, version: version)
+                try await repository
+                    .setActiveVersion(tab: tab, version: version)
                 statusMessage = "✅ \(tab.rawValue) 활성 버전 변경 완료: \(version)"
                 refreshAll()
             } catch {
@@ -202,7 +204,9 @@ private extension AdminView {
                     updatedLists[tab] = versions
                 }
                 // 활성 버전 가져오기
-                if let active = try? await repository.fetchActiveVersion(for: tab) {
+                if let active = try? await repository.fetchActiveVersion(
+                    tab: tab
+                ) {
                     updatedActives[tab] = active
                 }
             }

@@ -31,8 +31,8 @@ protocol BalanceRepository {
     func fetchVersionList(tab: PolicyTab) async throws -> [String]
 
     /// 특정 탭의 활성화된(현재 앱이 사용하는) 버전을 가져옵니다.
-    func fetchActiveVersion(for tab: PolicyTab) async throws -> String?
+    func fetchActiveVersion(tab: PolicyTab) async throws -> String?
 
     /// 특정 탭의 활성화된 버전을 설정합니다.
-    func setActiveVersion(for tab: PolicyTab, version: String) async throws
+    func setActiveVersion(tab: PolicyTab, version: String) async throws
 }

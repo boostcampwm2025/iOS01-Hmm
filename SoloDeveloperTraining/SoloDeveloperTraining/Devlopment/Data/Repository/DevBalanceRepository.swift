@@ -12,7 +12,6 @@ final class DevBalanceRepository: BalanceRepository {
     init() {}
 
     func fetchPolicy(tab: PolicyTab, version: String) async throws -> PolicyDTO {
-        let start = Date()
         async let careerDoc = fetchCareer(tab: tab, version: version)
         async let feverDoc = fetchFever(tab: tab, version: version)
         async let gameDoc = fetchGame(tab: tab, version: version)
@@ -22,9 +21,7 @@ final class DevBalanceRepository: BalanceRepository {
         async let housingDoc = fetchHousing(tab: tab, version: version)
         async let systemDoc = fetchSystem(tab: tab, version: version)
 
-        let elapsed = Date().timeIntervalSince(start)
-        print("⏱️ fetchPolicy 완료: \(String(format: "%.3f", elapsed))초")
-        return try await PolicyDTO(
+        let result = try await PolicyDTO(
             version: version,
             career: careerDoc,
             fever: feverDoc,
@@ -35,6 +32,7 @@ final class DevBalanceRepository: BalanceRepository {
             housing: housingDoc,
             system: systemDoc
         )
+        return result
     }
 
     func uploadPolicy(tab: PolicyTab, data: PolicyDTO) async throws {
@@ -101,12 +99,12 @@ final class DevBalanceRepository: BalanceRepository {
         return snapshot.documents.map { $0.documentID }.sorted(by: >) // 최신 버전이 위로 오도록 정렬
     }
 
-    func fetchActiveVersion(for tab: PolicyTab) async throws -> String? {
+    func fetchActiveVersion(tab: PolicyTab) async throws -> String? {
         let doc = try await dataBase.collection(PolicyTab.version.firestoreCollectionName).document(tab.firestoreCollectionName).getDocument()
         return doc.data()?["version"] as? String
     }
 
-    func setActiveVersion(for tab: PolicyTab, version: String) async throws {
+    func setActiveVersion(tab: PolicyTab, version: String) async throws {
         try await dataBase
             .collection(PolicyTab.version.firestoreCollectionName)
             .document(tab.firestoreCollectionName)
