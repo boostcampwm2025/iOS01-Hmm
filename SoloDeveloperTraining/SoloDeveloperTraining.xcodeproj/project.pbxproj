@@ -37,7 +37,7 @@
 			membershipExceptions = (
 				App/Info.plist,
 				Devlopment/CheatSystem/CheatManager.swift,
-				Devlopment/Data/Repository/DevBalanceRepository.swift,
+				Devlopment/Data/Repository/DefaultAdminBalanceRepository.swift,
 				Devlopment/Presentation/AdminView.swift,
 				Devlopment/Presentation/ContentView.swift,
 				Devlopment/Presentation/DodgeGameTestView.swift,

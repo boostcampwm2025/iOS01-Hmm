@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AdminView: View {
-    private let repository: BalanceRepository = DevBalanceRepository()
+    private let repository = DefaultAdminBalanceRepository()
 
     @State private var activeVersions: [PolicyTab: String] = [:]
     @State private var versionLists: [PolicyTab: [String]] = [:]

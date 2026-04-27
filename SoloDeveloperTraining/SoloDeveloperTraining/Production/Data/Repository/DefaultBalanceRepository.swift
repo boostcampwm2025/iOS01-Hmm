@@ -1,6 +1,8 @@
 //
-//  DevBalanceRepository.swift
+//  DefaultBalanceRepository.swift
 //  SoloDeveloperTraining
+//
+//  Created by sunjae on 4/28/26.
 //
 
 import Foundation
@@ -12,10 +14,8 @@ private enum Constant {
     static let versionFieldName = "version"
 }
 
-final class DevBalanceRepository: BalanceRepository {
+class DefaultBalanceRepository: BalanceRepository {
     private let dataBase = Firestore.firestore()
-
-    init() {}
 
     func fetchPolicy(tab: PolicyTab, version: String) async throws -> PolicyDTO {
         let docID = (tab == .edit) ? Constant.latestDocID : version
@@ -36,30 +36,6 @@ final class DevBalanceRepository: BalanceRepository {
         )
     }
 
-    func uploadPolicy(tab: PolicyTab, data: PolicyDTO) async throws {
-        let batch = dataBase.batch()
-        let targetDocID = (tab == .edit) ? Constant.latestDocID : data.version
-        let versionDoc = dataBase.collection(tab.firestoreCollectionName).document(targetDocID)
-        let dataCollection = versionDoc.collection(Constant.dataCollectionName)
-
-        batch
-            .setData(
-                [Constant.versionFieldName: data.version],
-                forDocument: versionDoc
-            )
-
-        try batch.setData(from: data.career, forDocument: dataCollection.document(PolicyDataField.career.rawValue))
-        try batch.setData(from: data.fever, forDocument: dataCollection.document(PolicyDataField.fever.rawValue))
-        try batch.setData(from: data.game, forDocument: dataCollection.document(PolicyDataField.game.rawValue))
-        try batch.setData(from: data.skill, forDocument: dataCollection.document(PolicyDataField.skill.rawValue))
-        try batch.setData(from: data.consumable, forDocument: dataCollection.document(PolicyDataField.consumable.rawValue))
-        try batch.setData(from: data.equipment, forDocument: dataCollection.document(PolicyDataField.equipment.rawValue))
-        try batch.setData(from: data.housing, forDocument: dataCollection.document(PolicyDataField.housing.rawValue))
-        try batch.setData(from: data.system, forDocument: dataCollection.document(PolicyDataField.system.rawValue))
-
-        try await batch.commit()
-    }
-
     func fetchActiveVersion(tab: PolicyTab) async throws -> String? {
         if tab == .edit {
             // Edit/Latest의 version 필드를 읽어서 반환
@@ -73,12 +49,6 @@ final class DevBalanceRepository: BalanceRepository {
         }
     }
 
-    func setActiveVersion(tab: PolicyTab, version: String) async throws {
-        try await dataBase.collection(PolicyTab.version.firestoreCollectionName)
-            .document(tab.firestoreCollectionName)
-            .setData([Constant.versionFieldName: version])
-    }
-
     func fetchVersionList(tab: PolicyTab) async throws -> [String] {
         let snapshot = try await dataBase.collection(tab.firestoreCollectionName).getDocuments()
         return snapshot.documents.map { $0.documentID }.sorted(by: >)
@@ -86,7 +56,7 @@ final class DevBalanceRepository: BalanceRepository {
 }
 
 // MARK: - Private Document Fetchers (No Generic)
-private extension DevBalanceRepository {
+private extension DefaultBalanceRepository {
     func fetchCareer(tab: PolicyTab, docID: String) async throws -> CareerPolicyDTO {
         try await dataBase.collection(tab.firestoreCollectionName).document(docID)
             .collection(Constant.dataCollectionName).document(PolicyDataField.career.rawValue).getDocument(as: CareerPolicyDTO.self)
