@@ -109,13 +109,11 @@ private extension AdminView {
 private extension AdminView {
     // 초기 데이터 입력
     func handleInitializeLatest() {
-        isLoading = true
         Task {
             do {
                 let defaultData = PolicyDTO.defaultValues
                 try await repository.uploadPolicy(tab: .edit, data: defaultData)
                 refresh()
-                await MainActor.run { isLoading = false }
             } catch {
                 print("❌ 초기화 실패: \(error)")
                 await MainActor.run { isLoading = false }
@@ -124,6 +122,7 @@ private extension AdminView {
     }
 
     func refresh() {
+        isLoading = true
         Task {
             var actives: [PolicyTab: String] = [:]
             var lists: [PolicyTab: [String]] = [:]
@@ -136,20 +135,19 @@ private extension AdminView {
             await MainActor.run {
                 self.activeVersions = actives
                 self.versionLists = lists
+                self.isLoading = false
             }
         }
     }
 
     func deployToTest() {
         guard let currentVer = activeVersions[.edit] else { return }
-        isLoading = true
         Task {
             do {
                 let data = try await repository.fetchPolicy(tab: .edit, version: currentVer)
                 try await repository.uploadPolicy(tab: .test, data: data)
                 try await repository.setActiveVersion(tab: .test, version: currentVer)
                 refresh()
-                await MainActor.run { isLoading = false }
             } catch {
                 await MainActor.run { isLoading = false }
             }
@@ -157,14 +155,12 @@ private extension AdminView {
     }
 
     func deployToLive(version: String) {
-        isLoading = true
         Task {
             do {
                 let data = try await repository.fetchPolicy(tab: .test, version: version)
                 try await repository.uploadPolicy(tab: .live, data: data)
                 try await repository.setActiveVersion(tab: .live, version: version)
                 refresh()
-                await MainActor.run { isLoading = false }
             } catch {
                 await MainActor.run { isLoading = false }
             }
