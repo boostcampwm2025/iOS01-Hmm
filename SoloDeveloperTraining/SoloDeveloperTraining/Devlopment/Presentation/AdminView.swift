@@ -75,7 +75,7 @@ struct AdminView: View {
                     .disabled(isLoading)
                 }
             }
-            .onAppear { refresh() }
+            .task { refresh() }
         }
     }
 }
