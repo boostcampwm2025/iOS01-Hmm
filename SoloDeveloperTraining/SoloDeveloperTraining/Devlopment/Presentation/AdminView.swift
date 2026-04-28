@@ -127,9 +127,21 @@ private extension AdminView {
             var actives: [PolicyTab: String] = [:]
             var lists: [PolicyTab: [String]] = [:]
 
-            for tab in [PolicyTab.edit, .test, .live] {
-                actives[tab] = try? await repository.fetchActiveVersion(tab: tab)
-                lists[tab] = try? await repository.fetchVersionList(tab: tab)
+            await withTaskGroup(of: (PolicyTab, String?, [String]?).self) { group in
+                for tab in [PolicyTab.edit, .test, .live] {
+                    group.addTask {
+                        async let active = try? repository.fetchActiveVersion(tab: tab)
+                        async let list = try? repository.fetchVersionList(tab: tab)
+                        return await (tab, active, list)
+                    }
+                }
+
+                for await (tab, active, list) in group {
+                    if let active {
+                        actives[tab] = active
+                    }
+                    lists[tab] = list ?? []
+                }
             }
 
             await MainActor.run {
