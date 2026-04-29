@@ -57,21 +57,12 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2896AE3A2F100CD600D38732"
-            BuildableName = "SoloDeveloperTraining-Dev.app"
-            BlueprintName = "SoloDeveloperTraining-Dev"
-            ReferencedContainer = "container:SoloDeveloperTraining.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
             BlueprintIdentifier = "08267F2A2F0D06BC005A0066"
             BuildableName = "SoloDeveloperTraining.app"
             BlueprintName = "SoloDeveloperTraining"
             ReferencedContainer = "container:SoloDeveloperTraining.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-FIRAnalyticsDebugEnabled"

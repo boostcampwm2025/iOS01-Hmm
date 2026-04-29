@@ -103,6 +103,12 @@ struct ContentView: View {
                     Image(systemName: "plus")
                     Text("스킬")
                 }
+            AdminView()
+                .tag(8)
+                .tabItem {
+                    Image(systemName: "gearshape.fill")
+                    Text("어드민")
+                }
         }
     }
 }

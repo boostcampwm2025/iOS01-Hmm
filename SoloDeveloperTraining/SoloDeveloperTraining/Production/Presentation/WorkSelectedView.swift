@@ -127,35 +127,35 @@ private extension WorkSelectedView {
         let currentCareer = career ?? .unemployed
         let currentWealth = currentCareer.requiredWealth
 
-        let tapUnlocked = currentWealth >= Policy.Career.GameUnlock.tap
-        let languageUnlocked = currentWealth >= Policy.Career.GameUnlock.language
-        let dodgeUnlocked = currentWealth >= Policy.Career.GameUnlock.dodge
-        let stackUnlocked = currentWealth >= Policy.Career.GameUnlock.stack
+        let tapUnlocked = currentWealth >= Policy.Game.GameUnlock.tap
+        let languageUnlocked = currentWealth >= Policy.Game.GameUnlock.language
+        let dodgeUnlocked = currentWealth >= Policy.Game.GameUnlock.dodge
+        let stackUnlocked = currentWealth >= Policy.Game.GameUnlock.stack
 
         return [
             .init(
                 title: "코드짜기",
                 imageName: GameType.tap.imageName,
                 isDisabled: !tapUnlocked,
-                requiredCareer: findCareer(for: Policy.Career.GameUnlock.tap)
+                requiredCareer: findCareer(for: Policy.Game.GameUnlock.tap)
             ),
             .init(
                 title: "언어 맞추기",
                 imageName: GameType.language.imageName,
                 isDisabled: !languageUnlocked,
-                requiredCareer: findCareer(for: Policy.Career.GameUnlock.language)
+                requiredCareer: findCareer(for: Policy.Game.GameUnlock.language)
             ),
             .init(
                 title: "버그 피하기",
                 imageName: GameType.dodge.imageName,
                 isDisabled: !dodgeUnlocked,
-                requiredCareer: findCareer(for: Policy.Career.GameUnlock.dodge)
+                requiredCareer: findCareer(for: Policy.Game.GameUnlock.dodge)
             ),
             .init(
                 title: "데이터 쌓기",
                 imageName: GameType.stack.imageName,
                 isDisabled: !stackUnlocked,
-                requiredCareer: findCareer(for: Policy.Career.GameUnlock.stack)
+                requiredCareer: findCareer(for: Policy.Game.GameUnlock.stack)
             )
         ]
     }

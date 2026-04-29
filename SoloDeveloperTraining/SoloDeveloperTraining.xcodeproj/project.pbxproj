@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		28FB12B02F9B5EA8004FCBB3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */; };
+		28FB12B22F9B5EB1004FCBB3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 28FB12B12F9B5EB1004FCBB3 /* FirebaseFirestore */; };
 		BC19336F2F8FC7110033A27E /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BC19336E2F8FC7110033A27E /* FirebaseAnalytics */; };
 		BC1933712F8FC7110033A27E /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = BC1933702F8FC7110033A27E /* FirebaseCore */; };
 		BCC0EACE2F8FE90700D7A84A /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BCC0EACD2F8FE90700D7A84A /* FirebaseAnalytics */; };
@@ -30,10 +32,30 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		2896AE432F100CD600D38732 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */ = {
+		28FB16632F9B6E3C004FCBB3 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"App/GoogleService-Info.plist",
+				App/Info.plist,
+				Devlopment/CheatSystem/CheatManager.swift,
+				Devlopment/Data/Repository/DefaultAdminBalanceRepository.swift,
+				Devlopment/Presentation/AdminView.swift,
+				Devlopment/Presentation/ContentView.swift,
+				Devlopment/Presentation/DodgeGameTestView.swift,
+				Devlopment/Presentation/LanguageGameTestView.swift,
+				Devlopment/Presentation/MissionTestView.swift,
+				Devlopment/Presentation/QuizGameTestContentView.swift,
+				Devlopment/Presentation/QuizGameTestView.swift,
+				Devlopment/Presentation/ShopTestView.swift,
+				Devlopment/Presentation/SkillTestView.swift,
+				Devlopment/Presentation/StackGameScene.swift,
+				Devlopment/Presentation/StackGameTestView.swift,
+				Devlopment/Presentation/TabGameView.swift,
+			);
+			target = 08267F2A2F0D06BC005A0066 /* SoloDeveloperTraining */;
+		};
+		28FB16642F9B6E3C004FCBB3 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
 				"App/Info-Dev.plist",
 				App/Info.plist,
 				"Production/Error/PurchasingError+UserReadableError.swift",
@@ -60,33 +82,14 @@
 			);
 			target = 2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */;
 		};
-		BC6322A72F0F41BB00EAD3F7 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				App/Info.plist,
-				Devlopment/CheatSystem/CheatManager.swift,
-				Devlopment/Presentation/ContentView.swift,
-				Devlopment/Presentation/DodgeGameTestView.swift,
-				Devlopment/Presentation/LanguageGameTestView.swift,
-				Devlopment/Presentation/MissionTestView.swift,
-				Devlopment/Presentation/QuizGameTestContentView.swift,
-				Devlopment/Presentation/QuizGameTestView.swift,
-				Devlopment/Presentation/ShopTestView.swift,
-				Devlopment/Presentation/SkillTestView.swift,
-				Devlopment/Presentation/StackGameScene.swift,
-				Devlopment/Presentation/StackGameTestView.swift,
-				Devlopment/Presentation/TabGameView.swift,
-			);
-			target = 08267F2A2F0D06BC005A0066 /* SoloDeveloperTraining */;
-		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		08267F2D2F0D06BC005A0066 /* SoloDeveloperTraining */ = {
+		28FB154B2F9B6E3B004FCBB3 /* SoloDeveloperTraining */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				BC6322A72F0F41BB00EAD3F7 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */,
-				2896AE432F100CD600D38732 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */,
+				28FB16632F9B6E3C004FCBB3 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */,
+				28FB16642F9B6E3C004FCBB3 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */,
 			);
 			path = SoloDeveloperTraining;
 			sourceTree = "<group>";
@@ -105,6 +108,7 @@
 			files = (
 				BC1933712F8FC7110033A27E /* FirebaseCore in Frameworks */,
 				BC19336F2F8FC7110033A27E /* FirebaseAnalytics in Frameworks */,
+				28FB12B02F9B5EA8004FCBB3 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,6 +118,7 @@
 			files = (
 				BCC0EAD02F8FE90D00D7A84A /* FirebaseCore in Frameworks */,
 				BCC0EACE2F8FE90700D7A84A /* FirebaseAnalytics in Frameworks */,
+				28FB12B22F9B5EB1004FCBB3 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,10 +135,10 @@
 		08267F222F0D06BC005A0066 = {
 			isa = PBXGroup;
 			children = (
-				08267F2D2F0D06BC005A0066 /* SoloDeveloperTraining */,
 				BCFC853A2F31FED800447A9A /* SoloDeveloperTrainingTests */,
 				BCC0EACC2F8FE90700D7A84A /* Frameworks */,
 				08267F2C2F0D06BC005A0066 /* Products */,
+				28FB154B2F9B6E3B004FCBB3 /* SoloDeveloperTraining */,
 			);
 			sourceTree = "<group>";
 		};
@@ -171,12 +176,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				08267F2D2F0D06BC005A0066 /* SoloDeveloperTraining */,
+				28FB154B2F9B6E3B004FCBB3 /* SoloDeveloperTraining */,
 			);
 			name = SoloDeveloperTraining;
 			packageProductDependencies = (
 				BC19336E2F8FC7110033A27E /* FirebaseAnalytics */,
 				BC1933702F8FC7110033A27E /* FirebaseCore */,
+				28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */,
 			);
 			productName = SoloDeveloperTraining;
 			productReference = 08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */;
@@ -196,12 +202,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				08267F2D2F0D06BC005A0066 /* SoloDeveloperTraining */,
+				28FB154B2F9B6E3B004FCBB3 /* SoloDeveloperTraining */,
 			);
 			name = "SoloDeveloperTraining-Dev";
 			packageProductDependencies = (
 				BCC0EACD2F8FE90700D7A84A /* FirebaseAnalytics */,
 				BCC0EACF2F8FE90D00D7A84A /* FirebaseCore */,
+				28FB12B12F9B5EB1004FCBB3 /* FirebaseFirestore */,
 			);
 			productName = SoloDeveloperTraining;
 			productReference = 2896AE422F100CD600D38732 /* SoloDeveloperTraining-Dev.app */;
@@ -759,6 +766,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		28FB12B12F9B5EB1004FCBB3 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
 		BC19336E2F8FC7110033A27E /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

@@ -88,7 +88,7 @@ private extension SkillSystem {
             switch skill.key.tier {
             case .beginner:
                 guard let careerSystem = careerSystem else { return false }
-                return careerSystem.currentCareer.requiredWealth >= Policy.Career.GameUnlock.tap
+                return careerSystem.currentCareer.requiredWealth >= Policy.Game.GameUnlock.tap
             case .intermediate:
                 unlockLevel = Policy.Skill.Tap.intermediateUnlockLevel
             case .advanced:
@@ -98,7 +98,7 @@ private extension SkillSystem {
             switch skill.key.tier {
             case .beginner:
                 guard let careerSystem = careerSystem else { return false }
-                return careerSystem.currentCareer.requiredWealth >= Policy.Career.GameUnlock.language
+                return careerSystem.currentCareer.requiredWealth >= Policy.Game.GameUnlock.language
             case .intermediate:
                 unlockLevel = Policy.Skill.Language.intermediateUnlockLevel
             case .advanced:
@@ -108,7 +108,7 @@ private extension SkillSystem {
             switch skill.key.tier {
             case .beginner:
                 guard let careerSystem = careerSystem else { return false }
-                return careerSystem.currentCareer.requiredWealth >= Policy.Career.GameUnlock.dodge
+                return careerSystem.currentCareer.requiredWealth >= Policy.Game.GameUnlock.dodge
             case .intermediate:
                 unlockLevel = Policy.Skill.Dodge.intermediateUnlockLevel
             case .advanced:
@@ -118,7 +118,7 @@ private extension SkillSystem {
             switch skill.key.tier {
             case .beginner:
                 guard let careerSystem = careerSystem else { return false }
-                return careerSystem.currentCareer.requiredWealth >= Policy.Career.GameUnlock.stack
+                return careerSystem.currentCareer.requiredWealth >= Policy.Game.GameUnlock.stack
             case .intermediate:
                 unlockLevel = Policy.Skill.Stack.intermediateUnlockLevel
             case .advanced:
