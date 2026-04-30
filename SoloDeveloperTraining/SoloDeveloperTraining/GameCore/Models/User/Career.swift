@@ -116,3 +116,18 @@ enum Career: String, CaseIterable {
         return currentWealth >= next.requiredWealth
     }
 }
+
+// MARK: - Scenario
+extension Career {
+    /// 이 커리어의 시나리오 타입
+    var scenarioType: ScenarioType {
+        switch self {
+        case .worldClassDeveloper:
+            return .final
+        case .juniorDeveloper, .nightOwlDeveloper, .famousDeveloper:
+            return .event
+        default:
+            return .normal
+        }
+    }
+}
