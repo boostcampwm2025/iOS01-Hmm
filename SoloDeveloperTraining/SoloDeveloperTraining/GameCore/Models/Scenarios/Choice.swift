@@ -6,7 +6,7 @@
 //
 
 /// 시나리오 선택지
-struct Choice {
+struct Choice: Equatable {
     /// 옵션 A 텍스트
     let optionA: String
     /// 옵션 B 텍스트

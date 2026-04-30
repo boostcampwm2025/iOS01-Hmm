@@ -12,4 +12,12 @@ protocol ScenarioRepository {
 
     /// 모든 시나리오 목록 가져오기
     func fetchAllScenario() async throws -> [Scenario]
+
+    /// 선택 조합으로 최종 엔딩 계산
+    func calculateEnding(
+        evt01: ChoiceResult,
+        evt02: ChoiceResult,
+        evt03: ChoiceResult,
+        evt04: ChoiceResult
+    ) -> Ending
 }

@@ -109,6 +109,12 @@ struct ContentView: View {
                     Image(systemName: "gearshape.fill")
                     Text("어드민")
                 }
+            ScenarioTestView()
+                .tag(9)
+                .tabItem {
+                    Image(systemName: "book.pages")
+                    Text("선택형 구조")
+                }
         }
     }
 }

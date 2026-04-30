@@ -75,8 +75,8 @@ final class ScenarioManager {
 
         // 현재 시나리오 타입과 선택에 맞는 결과 페이지 찾기
         if let index = scenario.pages.firstIndex(where: { page in
-            if case .result(let scenarioType, let choiceResult) = page.pageType {
-                return scenarioType == scenario.scenarioType && choiceResult == choice
+            if case .result(let choiceResult) = page.pageType {
+                return choiceResult == choice
             }
             return false
         }) {

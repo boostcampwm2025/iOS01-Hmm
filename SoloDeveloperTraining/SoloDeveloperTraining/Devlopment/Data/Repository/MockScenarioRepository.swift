@@ -7,6 +7,9 @@
 
 import Foundation
 
+// swiftlint:disable function_body_length
+// swiftlint:disable type_body_length
+
 /// Mock 시나리오 저장소 (하드코딩된 데이터)
 final class MockScenarioRepository: ScenarioRepository {
 
@@ -16,6 +19,130 @@ final class MockScenarioRepository: ScenarioRepository {
 
     func fetchAllScenario() async throws -> [Scenario] {
         return allScenarios
+    }
+
+    // MARK: - Ending Calculation
+
+    func calculateEnding(
+        evt01: ChoiceResult,
+        evt02: ChoiceResult,
+        evt03: ChoiceResult,
+        evt04: ChoiceResult
+    ) -> Ending {
+        switch (evt01, evt02, evt03, evt04) {
+        case (.optionA, .optionA, .optionA, .optionA):
+            return Ending(
+                id: "END-01",
+                title: "유니콘 에이스",
+                career: "에이스 개발자",
+                description: "연봉 100억. 스톡옵션. 야근도 행복하다."
+            )
+        case (.optionA, .optionA, .optionA, .optionB):
+            return Ending(
+                id: "END-02",
+                title: "Series A 대표",
+                career: "스타트업 대표",
+                description: "엑싯이 목표! 인생은 한방이다."
+            )
+        case (.optionA, .optionA, .optionB, .optionA):
+            return Ending(
+                id: "END-03",
+                title: "개발 유튜버",
+                career: "테크 인플루언서",
+                description: "유튜브 구독자 100만. 강의 매출 연 10억."
+            )
+        case (.optionA, .optionB, .optionA, .optionA):
+            return Ending(
+                id: "END-04",
+                title: "전설의 해커",
+                career: "천재 해커",
+                description: "이름 없이, 흔적 없이. 그러나 전설로 남다."
+            )
+        case (.optionA, .optionB, .optionA, .optionB):
+            return Ending(
+                id: "END-05",
+                title: "Series A 대표",
+                career: "스타트업 대표",
+                description: "엑싯이 목표! 인생은 한방이다."
+            )
+        case (.optionA, .optionB, .optionB, .optionA):
+            return Ending(
+                id: "END-06",
+                title: "개발 유튜버",
+                career: "테크 인플루언서",
+                description: "유튜브 구독자 100만. 강의 매출 연 10억."
+            )
+        case (.optionA, .optionA, .optionB, .optionB):
+            return Ending(
+                id: "END-07",
+                title: "Series A 대표",
+                career: "스타트업 대표",
+                description: "엑싯이 목표! 인생은 한방이다."
+            )
+        case (.optionA, .optionB, .optionB, .optionB):
+            return Ending(
+                id: "END-08",
+                title: "디지털 노마드",
+                career: "디지털 노마드",
+                description: "전 세계 해변이 나의 사무실, 코드와 자유뿐."
+            )
+        case (.optionB, .optionA, .optionA, .optionA):
+            return Ending(
+                id: "END-09",
+                title: "전설의 해커",
+                career: "천재 해커",
+                description: "이름 없이, 흔적 없이. 그러나 전설로 남다."
+            )
+        case (.optionB, .optionA, .optionA, .optionB):
+            return Ending(
+                id: "END-10",
+                title: "다크웹 블랙 요원",
+                career: "다크웹 요원",
+                description: "내 기록은 삭제됐다. 이 게임도 기억하지 마라"
+            )
+        case (.optionB, .optionA, .optionB, .optionA):
+            return Ending(
+                id: "END-11",
+                title: "디지털 노마드",
+                career: "디지털 노마드",
+                description: "전 세계 해변이 나의 사무실, 코드와 자유뿐."
+            )
+        case (.optionB, .optionA, .optionB, .optionB):
+            return Ending(
+                id: "END-12",
+                title: "다크웹 블랙 요원",
+                career: "다크웹 요원",
+                description: "내 기록은 삭제됐다. 이 게임도 기억하지 마라"
+            )
+        case (.optionB, .optionB, .optionA, .optionA):
+            return Ending(
+                id: "END-13",
+                title: "유니콘 에이스",
+                career: "에이스 개발자",
+                description: "연봉 100억. 스톡옵션. 야근도 행복하다."
+            )
+        case (.optionB, .optionB, .optionA, .optionB):
+            return Ending(
+                id: "END-14",
+                title: "전설의 해커",
+                career: "천재 해커",
+                description: "이름 없이, 흔적 없이. 그러나 전설로 남다."
+            )
+        case (.optionB, .optionB, .optionB, .optionA):
+            return Ending(
+                id: "END-15",
+                title: "개발 유튜버",
+                career: "테크 인플루언서",
+                description: "유튜브 구독자 100만. 강의 매출 연 10억."
+            )
+        case (.optionB, .optionB, .optionB, .optionB):
+            return Ending(
+                id: "END-16",
+                title: "디지털 노마드",
+                career: "디지털 노마드",
+                description: "전 세계 해변이 나의 사무실, 코드와 자유뿐."
+            )
+        }
     }
 
     // MARK: - Hardcoded Data
@@ -113,14 +240,14 @@ final class MockScenarioRepository: ScenarioRepository {
                 ),
                 ScenarioPage(
                     text: "드디어 나도 진짜 개발자구나",
-                    pageType: .result(.event, .optionA)
+                    pageType: .result(.optionA)
                 ),
                 ScenarioPage(
                     text: """
                     (메일에 개발 의뢰 비용 100억)
                     오... 이거 돈이 되는데?
                     """,
-                    pageType: .result(.event, .optionB)
+                    pageType: .result(.optionB)
                 )
             ]
         ),
@@ -183,7 +310,7 @@ final class MockScenarioRepository: ScenarioRepository {
                     (3시간 뒤, 동료 출근)
                     하 거지 같은 세미콜론...
                     """,
-                    pageType: .result(.event, .optionA)
+                    pageType: .result(.optionA)
                 ),
                 ScenarioPage(
                     text: """
@@ -192,7 +319,7 @@ final class MockScenarioRepository: ScenarioRepository {
                     지금은 뭘하시는 분일려나...
                     (치킨집 사장님 프로필)
                     """,
-                    pageType: .result(.event, .optionB)
+                    pageType: .result(.optionB)
                 )
             ]
         ),
@@ -246,11 +373,11 @@ final class MockScenarioRepository: ScenarioRepository {
                 ),
                 ScenarioPage(
                     text: "연봉은 올랐다. 퇴근은 사라졌다.",
-                    pageType: .result(.event, .optionA)
+                    pageType: .result(.optionA)
                 ),
                 ScenarioPage(
                     text: "구독자 12명. 하지만 '형님 덕분에 해결했습니다'라는 첫 댓글이 달렸다.",
-                    pageType: .result(.event, .optionB)
+                    pageType: .result(.optionB)
                 )
             ]
         ),
@@ -303,17 +430,6 @@ final class MockScenarioRepository: ScenarioRepository {
                             optionB: "인생은 모험과 도전!"
                         )
                     )
-                ),
-                ScenarioPage(
-                    text: "수조 원의 자본이 움직이는 거대 시스템의 설계자가 된다.",
-                    pageType: .result(.final, .optionA)
-                ),
-                ScenarioPage(
-                    text: """
-                    노트북 하나, 여권 하나.
-                    오늘 사무실은 발리 카페.
-                    """,
-                    pageType: .result(.final, .optionB)
                 )
             ]
         )

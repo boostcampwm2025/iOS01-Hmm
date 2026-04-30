@@ -6,11 +6,11 @@
 //
 
 /// 시나리오 페이지 타입
-enum PageType {
+enum PageType: Equatable {
     /// 일반 스토리 페이지
     case story
     /// 선택지 페이지
     case choice(Choice)
     /// 결과 페이지
-    case result(ScenarioType, ChoiceResult)
+    case result(ChoiceResult)
 }
