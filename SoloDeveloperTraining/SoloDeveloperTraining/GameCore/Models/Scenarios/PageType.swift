@@ -11,6 +11,6 @@ enum PageType {
     case story
     /// 선택지 페이지
     case choice(Choice)
-    /// 결과 페이지 (최종 레벨)
-    case result
+    /// 결과 페이지
+    case result(ScenarioType, ChoiceResult)
 }

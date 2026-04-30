@@ -63,6 +63,27 @@ final class ScenarioManager {
         currentScenario = nil
     }
 
+    // MARK: - Choice Handling
+
+    /// 선택 후 적절한 결과 페이지로 이동
+    func selectChoice(_ choice: ChoiceResult) {
+        guard let scenario = currentScenario,
+              let page = currentPage,
+              case .choice = page.pageType else {
+            return
+        }
+
+        // 현재 시나리오 타입과 선택에 맞는 결과 페이지 찾기
+        if let index = scenario.pages.firstIndex(where: { page in
+            if case .result(let scenarioType, let choiceResult) = page.pageType {
+                return scenarioType == scenario.scenarioType && choiceResult == choice
+            }
+            return false
+        }) {
+            progress.currentPageIndex = index
+        }
+    }
+
     // MARK: - Progress Query
 
     /// 특정 커리어 완료 여부
