@@ -1,0 +1,323 @@
+import Foundation
+
+// MARK: - PolicyField
+
+struct PolicyField: Identifiable {
+    let id: String          // Firestore 경로 (예: "fever.tap.gainPerTap")
+    let category: String    // 사이드바 그룹 이름 (예: "피버 - 탭")
+    let name: String        // 한글 항목명 (예: "탭당 획득량")
+    let isDouble: Bool      // false = Int 타입
+    var rawInput: String    // 사용자 입력 (숫자 또는 "=..." 수식)
+    var resolvedValue: Double
+
+    var hasFormula: Bool { rawInput.trimmingCharacters(in: .whitespaces).hasPrefix("=") }
+
+    var displayValue: String {
+        if isDouble {
+            let rounded = (resolvedValue * 10000).rounded() / 10000
+            return String(rounded)
+        } else {
+            return String(Int(resolvedValue.rounded()))
+        }
+    }
+}
+
+// MARK: - PolicyFieldMeta
+
+struct PolicyFieldMeta {
+    let id: String
+    let category: String
+    let name: String
+    let isDouble: Bool
+}
+
+// MARK: - 전체 필드 목록
+
+extension PolicyFieldMeta {
+
+    static let all: [PolicyFieldMeta] = career + fever + game + skill + equipment + housing + consumable + system
+
+    // MARK: 커리어
+
+    private static let career: [PolicyFieldMeta] = [
+        .init(id: "career.unemployed",          category: "커리어", name: "무직",             isDouble: false),
+        .init(id: "career.laptopOwner",         category: "커리어", name: "노트북 보유자",     isDouble: false),
+        .init(id: "career.aspiringDeveloper",   category: "커리어", name: "개발자 지망생",     isDouble: false),
+        .init(id: "career.juniorDeveloper",     category: "커리어", name: "주니어 개발자",     isDouble: false),
+        .init(id: "career.normalDeveloper",     category: "커리어", name: "일반 개발자",       isDouble: false),
+        .init(id: "career.nightOwlDeveloper",   category: "커리어", name: "야행성 개발자",     isDouble: false),
+        .init(id: "career.skilledDeveloper",    category: "커리어", name: "숙련 개발자",       isDouble: false),
+        .init(id: "career.famousDeveloper",     category: "커리어", name: "유명 개발자",       isDouble: false),
+        .init(id: "career.allRounderDeveloper", category: "커리어", name: "올라운더 개발자",   isDouble: false),
+        .init(id: "career.worldClassDeveloper", category: "커리어", name: "세계 최고 개발자",  isDouble: false),
+    ]
+
+    // MARK: 피버
+
+    private static let fever: [PolicyFieldMeta] = [
+        // 기본
+        .init(id: "fever.maxPercent",       category: "피버 - 기본", name: "최대 퍼센트",    isDouble: true),
+        .init(id: "fever.decreaseInterval", category: "피버 - 기본", name: "감소 간격(초)",   isDouble: true),
+        // 단계 임계값
+        .init(id: "fever.stageThreshold.stage0", category: "피버 - 단계 임계값", name: "0단계 임계값", isDouble: true),
+        .init(id: "fever.stageThreshold.stage1", category: "피버 - 단계 임계값", name: "1단계 임계값", isDouble: true),
+        .init(id: "fever.stageThreshold.stage2", category: "피버 - 단계 임계값", name: "2단계 임계값", isDouble: true),
+        .init(id: "fever.stageThreshold.stage3", category: "피버 - 단계 임계값", name: "3단계 임계값", isDouble: true),
+        // 배율
+        .init(id: "fever.multiplier.stage0", category: "피버 - 배율", name: "0단계 배율", isDouble: true),
+        .init(id: "fever.multiplier.stage1", category: "피버 - 배율", name: "1단계 배율", isDouble: true),
+        .init(id: "fever.multiplier.stage2", category: "피버 - 배율", name: "2단계 배율", isDouble: true),
+        .init(id: "fever.multiplier.stage3", category: "피버 - 배율", name: "3단계 배율", isDouble: true),
+        // 탭
+        .init(id: "fever.tap.decreasePercent", category: "피버 - 탭", name: "감소 퍼센트",  isDouble: true),
+        .init(id: "fever.tap.gainPerTap",      category: "피버 - 탭", name: "탭당 획득량",  isDouble: true),
+        // 언어
+        .init(id: "fever.language.decreasePercent",  category: "피버 - 언어", name: "감소 퍼센트",    isDouble: true),
+        .init(id: "fever.language.gainPerCorrect",   category: "피버 - 언어", name: "정답당 획득량",  isDouble: true),
+        .init(id: "fever.language.lossPerIncorrect", category: "피버 - 언어", name: "오답당 손실량",  isDouble: true),
+        // 닷지
+        .init(id: "fever.dodge.decreasePercent",  category: "피버 - 닷지", name: "감소 퍼센트",          isDouble: true),
+        .init(id: "fever.dodge.gainPerSmallGold", category: "피버 - 닷지", name: "소형 골드당 획득량",   isDouble: true),
+        .init(id: "fever.dodge.gainPerLargeGold", category: "피버 - 닷지", name: "대형 골드당 획득량",   isDouble: true),
+        .init(id: "fever.dodge.gainPerBugDodge",  category: "피버 - 닷지", name: "버그 회피당 획득량",   isDouble: true),
+        .init(id: "fever.dodge.lossPerBugHit",    category: "피버 - 닷지", name: "버그 피격당 손실량",   isDouble: true),
+        // 스택
+        .init(id: "fever.stack.decreasePercent", category: "피버 - 스택", name: "감소 퍼센트",   isDouble: true),
+        .init(id: "fever.stack.gainPerSuccess",  category: "피버 - 스택", name: "성공당 획득량", isDouble: true),
+        .init(id: "fever.stack.lossPerFailure",  category: "피버 - 스택", name: "실패당 손실량", isDouble: true),
+    ]
+
+    // MARK: 게임
+
+    private static let game: [PolicyFieldMeta] = [
+        // 언어
+        .init(id: "game.language.incorrectGoldLossMultiplier", category: "게임 - 언어", name: "오답 골드 손실 배율", isDouble: true),
+        // 닷지
+        .init(id: "game.dodge.smallGoldMultiplier",     category: "게임 - 닷지", name: "소형 골드 배율",       isDouble: true),
+        .init(id: "game.dodge.largeGoldMultiplier",     category: "게임 - 닷지", name: "대형 골드 배율",       isDouble: true),
+        .init(id: "game.dodge.bugHitLossGoldMultiplier",category: "게임 - 닷지", name: "버그 피격 손실 배율",  isDouble: true),
+        .init(id: "game.dodge.bugDodgeGoldMultiplier",  category: "게임 - 닷지", name: "버그 회피 골드 배율",  isDouble: true),
+        .init(id: "game.dodge.updateFPS",               category: "게임 - 닷지", name: "업데이트 FPS",         isDouble: true),
+        .init(id: "game.dodge.spawnInterval",           category: "게임 - 닷지", name: "오브젝트 생성 간격",   isDouble: true),
+        .init(id: "game.dodge.fallSpeed",               category: "게임 - 닷지", name: "낙하 속도",            isDouble: true),
+        .init(id: "game.dodge.smallGoldSpawnRate",      category: "게임 - 닷지", name: "소형 골드 생성률",     isDouble: false),
+        .init(id: "game.dodge.largeGoldSpawnRate",      category: "게임 - 닷지", name: "대형 골드 생성률",     isDouble: false),
+        .init(id: "game.dodge.bugSpawnRate",            category: "게임 - 닷지", name: "버그 생성률",          isDouble: false),
+        // 닷지 모션
+        .init(id: "game.dodge.motion.deadZoneThreshold", category: "게임 - 닷지 모션", name: "데드존 임계값", isDouble: true),
+        .init(id: "game.dodge.motion.maxSpeed",          category: "게임 - 닷지 모션", name: "최대 속도",     isDouble: true),
+        .init(id: "game.dodge.motion.minSpeed",          category: "게임 - 닷지 모션", name: "최소 속도",     isDouble: true),
+        // 스택
+        .init(id: "game.stack.failureGoldLossMultiplier", category: "게임 - 스택", name: "실패 골드 손실 배율", isDouble: true),
+        // 퀴즈
+        .init(id: "game.quiz.questionsPerGame",   category: "게임 - 퀴즈", name: "게임당 문제 수",        isDouble: false),
+        .init(id: "game.quiz.secondsPerQuestion", category: "게임 - 퀴즈", name: "문제당 시간(초)",       isDouble: false),
+        .init(id: "game.quiz.diamondsPerCorrect", category: "게임 - 퀴즈", name: "정답당 다이아몬드",     isDouble: false),
+    ]
+
+    // MARK: 스킬
+
+    private static let skillLevelRange: [PolicyFieldMeta] = [
+        .init(id: "skill.beginnerMinLevel",      category: "스킬 - 레벨 범위", name: "초급 최소 레벨", isDouble: false),
+        .init(id: "skill.beginnerMaxLevel",      category: "스킬 - 레벨 범위", name: "초급 최대 레벨", isDouble: false),
+        .init(id: "skill.intermediateMinLevel",  category: "스킬 - 레벨 범위", name: "중급 최소 레벨", isDouble: false),
+        .init(id: "skill.intermediateMaxLevel",  category: "스킬 - 레벨 범위", name: "중급 최대 레벨", isDouble: false),
+        .init(id: "skill.advancedMinLevel",      category: "스킬 - 레벨 범위", name: "고급 최소 레벨", isDouble: false),
+        .init(id: "skill.advancedMaxLevel",      category: "스킬 - 레벨 범위", name: "고급 최대 레벨", isDouble: false),
+    ]
+
+    private static func skillFields(prefix: String, category: String) -> [PolicyFieldMeta] {
+        [
+            .init(id: "\(prefix).baseGold",                      category: category, name: "기본 골드",         isDouble: false),
+            .init(id: "\(prefix).beginnerGoldMultiplier",        category: category, name: "초급 골드 배율",     isDouble: false),
+            .init(id: "\(prefix).intermediateGoldMultiplier",    category: category, name: "중급 골드 배율",     isDouble: false),
+            .init(id: "\(prefix).advancedGoldMultiplier",        category: category, name: "고급 골드 배율",     isDouble: false),
+            .init(id: "\(prefix).beginnerGoldCostMultiplier",    category: category, name: "초급 골드 비용 배율",isDouble: false),
+            .init(id: "\(prefix).intermediateGoldCostMultiplier",category: category, name: "중급 골드 비용 배율",isDouble: false),
+            .init(id: "\(prefix).advancedGoldCostMultiplier",    category: category, name: "고급 골드 비용 배율",isDouble: false),
+            .init(id: "\(prefix).diamondCostDivider",            category: category, name: "다이아 비용 분배",   isDouble: false),
+            .init(id: "\(prefix).diamondCostMultiplier",         category: category, name: "다이아 비용 배율",   isDouble: false),
+            .init(id: "\(prefix).intermediateUnlockLevel",       category: category, name: "중급 해금 레벨",     isDouble: false),
+            .init(id: "\(prefix).advancedUnlockLevel",           category: category, name: "고급 해금 레벨",     isDouble: false),
+        ]
+    }
+
+    private static let skill: [PolicyFieldMeta] = skillLevelRange
+        + skillFields(prefix: "skill.tap",      category: "스킬 - 탭")
+        + skillFields(prefix: "skill.language", category: "스킬 - 언어")
+        + skillFields(prefix: "skill.dodge",    category: "스킬 - 닷지")
+        + skillFields(prefix: "skill.stack",    category: "스킬 - 스택")
+
+    // MARK: 장비
+
+    private static let rarities: [(key: String, name: String)] = [
+        ("broken",          "망가진"),
+        ("cheap",           "싸구려"),
+        ("vintage",         "빈티지"),
+        ("decent",          "보통"),
+        ("premium",         "프리미엄"),
+        ("diamond",         "다이아"),
+        ("limited",         "한정"),
+        ("nationalTreasure","국보"),
+    ]
+
+    private static let equipment: [PolicyFieldMeta] = {
+        var fields: [PolicyFieldMeta] = []
+        for r in rarities {
+            fields.append(.init(id: "equipment.\(r.key)UpgradeCost",    category: "장비 - 업그레이드 골드 비용",  name: "\(r.name)", isDouble: false))
+        }
+        for r in rarities {
+            fields.append(.init(id: "equipment.\(r.key)UpgradeDiamond", category: "장비 - 업그레이드 다이아 비용", name: "\(r.name)", isDouble: false))
+        }
+        for r in rarities {
+            fields.append(.init(id: "equipment.\(r.key)SuccessRate",    category: "장비 - 업그레이드 성공률",     name: "\(r.name)", isDouble: true))
+        }
+        let items: [(key: String, name: String)] = [
+            ("keyboard", "키보드"), ("mouse", "마우스"), ("monitor", "모니터"), ("chair", "의자")
+        ]
+        for item in items {
+            for r in rarities {
+                fields.append(.init(
+                    id: "equipment.\(item.key).\(r.key)GoldPerSecond",
+                    category: "장비 - \(item.name) 초당 골드",
+                    name: "\(r.name)",
+                    isDouble: false
+                ))
+            }
+        }
+        return fields
+    }()
+
+    // MARK: 주거
+
+    private static let housings: [(key: String, name: String)] = [
+        ("street",       "길거리"),
+        ("semiBasement", "반지하"),
+        ("rooftop",      "옥탑방"),
+        ("villa",        "빌라"),
+        ("apartment",    "아파트"),
+        ("house",        "주택"),
+        ("pentHouse",    "펜트하우스"),
+    ]
+
+    private static let housing: [PolicyFieldMeta] = {
+        var fields: [PolicyFieldMeta] = []
+        for h in housings {
+            fields.append(.init(id: "housing.\(h.key)PurchaseCost",   category: "주거 - 구매 비용", name: h.name, isDouble: false))
+        }
+        for h in housings {
+            fields.append(.init(id: "housing.\(h.key)GoldPerSecond",  category: "주거 - 초당 골드", name: h.name, isDouble: false))
+        }
+        return fields
+    }()
+
+    // MARK: 소비아이템
+
+    private static let consumable: [PolicyFieldMeta] = [
+        .init(id: "consumable.coffee.duration",       category: "소비 - 커피",          name: "지속 시간(초)", isDouble: false),
+        .init(id: "consumable.coffee.buffMultiplier", category: "소비 - 커피",          name: "버프 배율",     isDouble: true),
+        .init(id: "consumable.coffee.priceDiamond",   category: "소비 - 커피",          name: "다이아 가격",   isDouble: false),
+        .init(id: "consumable.energyDrink.duration",       category: "소비 - 에너지 드링크", name: "지속 시간(초)", isDouble: false),
+        .init(id: "consumable.energyDrink.buffMultiplier", category: "소비 - 에너지 드링크", name: "버프 배율",     isDouble: true),
+        .init(id: "consumable.energyDrink.priceDiamond",   category: "소비 - 에너지 드링크", name: "다이아 가격",   isDouble: false),
+    ]
+
+    // MARK: 시스템
+
+    private static let system: [PolicyFieldMeta] = [
+        .init(id: "system.autoGain.interval",      category: "시스템", name: "자동 획득 간격(초)", isDouble: true),
+        .init(id: "system.buff.decreaseInterval",  category: "시스템", name: "버프 감소 간격(초)", isDouble: true),
+    ]
+}
+
+// MARK: - PolicyDTO ↔ [PolicyField] 변환
+
+extension PolicyFieldMeta {
+
+    /// PolicyDTO를 PolicyField 배열로 변환합니다.
+    static func makeFields(from policy: PolicyDTO) throws -> [PolicyField] {
+        let values = try policy.toValueDictionary()
+        return all.compactMap { meta in
+            guard let value = values[meta.id] else { return nil }
+            let input = meta.isDouble
+                ? String(value)
+                : String(Int(value.rounded()))
+            return PolicyField(
+                id: meta.id,
+                category: meta.category,
+                name: meta.name,
+                isDouble: meta.isDouble,
+                rawInput: input,
+                resolvedValue: value
+            )
+        }
+    }
+
+    /// PolicyField 배열을 PolicyDTO로 재구성합니다.
+    static func makePolicy(from fields: [PolicyField]) throws -> PolicyDTO {
+        let metaMap = Dictionary(uniqueKeysWithValues: all.map { ($0.id, $0) })
+        var dict: [String: Double] = [:]
+        for field in fields {
+            dict[field.id] = field.resolvedValue
+        }
+        return try PolicyDTO.from(dictionary: dict, fieldMetas: metaMap)
+    }
+}
+
+// MARK: - PolicyDTO 직렬화 확장
+
+extension PolicyDTO {
+
+    /// PolicyDTO를 플랫 [String: Double] 딕셔너리로 변환합니다.
+    func toValueDictionary() throws -> [String: Double] {
+        let data = try JSONEncoder().encode(self)
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            throw SerializationError.invalidFormat
+        }
+        var result: [String: Double] = [:]
+        flattenJSON(json, prefix: "", into: &result)
+        result.removeValue(forKey: "version")
+        return result
+    }
+
+    private func flattenJSON(_ json: [String: Any], prefix: String, into result: inout [String: Double]) {
+        for (key, value) in json {
+            let fullKey = prefix.isEmpty ? key : "\(prefix).\(key)"
+            switch value {
+            case let nested as [String: Any]:
+                flattenJSON(nested, prefix: fullKey, into: &result)
+            case let num as NSNumber:
+                result[fullKey] = num.doubleValue
+            default:
+                break
+            }
+        }
+    }
+
+    /// 플랫 딕셔너리와 필드 메타 정보를 이용해 PolicyDTO를 재구성합니다.
+    static func from(dictionary: [String: Double], fieldMetas: [String: PolicyFieldMeta]) throws -> PolicyDTO {
+        var nested: [String: Any] = ["version": ""]
+        for (key, value) in dictionary {
+            let isDouble = fieldMetas[key]?.isDouble ?? true
+            let jsonValue: Any = isDouble ? value : Int(value.rounded())
+            setNestedValue(jsonValue, for: key.split(separator: ".").map(String.init), in: &nested)
+        }
+        let data = try JSONSerialization.data(withJSONObject: nested)
+        return try JSONDecoder().decode(PolicyDTO.self, from: data)
+    }
+
+    private static func setNestedValue(_ value: Any, for keys: [String], in dict: inout [String: Any]) {
+        guard !keys.isEmpty else { return }
+        if keys.count == 1 {
+            dict[keys[0]] = value
+        } else {
+            var child = (dict[keys[0]] as? [String: Any]) ?? [:]
+            setNestedValue(value, for: Array(keys.dropFirst()), in: &child)
+            dict[keys[0]] = child
+        }
+    }
+
+    enum SerializationError: Error {
+        case invalidFormat
+    }
+}
