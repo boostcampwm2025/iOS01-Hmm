@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>kr.codesquad.boostcamp10.SoloDeveloperTraining</string>
+	<string>com.SDT.Admin</string>
 	<key>PROJECT_ID</key>
 	<string>solodevelopertraining</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:801381804189:ios:7c826286ecd78f65e74c74</string>
+	<string>1:801381804189:ios:da972d47b0dcb0fae74c74</string>
 </dict>
 </plist>

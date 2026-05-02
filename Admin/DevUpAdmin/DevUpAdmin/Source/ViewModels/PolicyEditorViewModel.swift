@@ -4,19 +4,12 @@ import Combine
 @MainActor
 final class PolicyEditorViewModel: ObservableObject {
 
-    @Published var environment: PolicyEnvironment = .test {
-        didSet {
-            guard oldValue != environment else { return }
-            Task { await loadLatest() }
-        }
-    }
-
     @Published var fields: [PolicyField] = []
     @Published var currentVersionMeta: PolicyVersionMeta?
     @Published var versionHistory: [PolicyVersionMeta] = []
-    @Published var selectedCategory: String?
     @Published var isLoading = false
     @Published var isSaving = false
+    @Published var isDeploying = false
     @Published var errorMessage: String?
     @Published var hasUnsavedChanges = false
 
@@ -26,18 +19,20 @@ final class PolicyEditorViewModel: ObservableObject {
         self.repository = repository
     }
 
-    // MARK: - 카테고리
+    // MARK: - 그룹
 
-    var categories: [String] {
+    var groups: [String] {
         var seen = Set<String>()
-        return PolicyFieldMeta.all
-            .map(\.category)
-            .filter { seen.insert($0).inserted }
+        return PolicyFieldMeta.all.map(\.group).filter { seen.insert($0).inserted }
     }
 
-    var fieldsForSelectedCategory: [PolicyField] {
-        guard let cat = selectedCategory else { return [] }
-        return fields.filter { $0.category == cat }
+    func groupedFields(for group: String) -> [(section: String, fields: [PolicyField])] {
+        let filtered = fields.filter { $0.group == group }
+        var seen = Set<String>()
+        let sections = filtered.map(\.section).filter { seen.insert($0).inserted }
+        return sections.map { section in
+            (section, filtered.filter { $0.section == section })
+        }
     }
 
     // MARK: - 데이터 로드
@@ -46,7 +41,7 @@ final class PolicyEditorViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         do {
-            if let result = try await repository.fetchLatest(env: environment) {
+            if let result = try await repository.fetchLatestVersion() {
                 currentVersionMeta = result.meta
                 fields = try PolicyFieldMeta.makeFields(from: result.policy)
             } else {
@@ -54,7 +49,8 @@ final class PolicyEditorViewModel: ObservableObject {
                 fields = PolicyFieldMeta.all.map { meta in
                     PolicyField(
                         id: meta.id,
-                        category: meta.category,
+                        group: meta.group,
+                        section: meta.section,
                         name: meta.name,
                         isDouble: meta.isDouble,
                         rawInput: "0",
@@ -63,7 +59,7 @@ final class PolicyEditorViewModel: ObservableObject {
                 }
             }
             evaluateAllFormulas()
-            versionHistory = try await repository.fetchVersionList(env: environment)
+            versionHistory = try await repository.fetchVersionList()
         } catch {
             errorMessage = "불러오기 실패: \(error.localizedDescription)"
         }
@@ -74,9 +70,11 @@ final class PolicyEditorViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         do {
-            let policy = try await repository.fetchPolicy(env: environment, version: version)
+            let policy = try await repository.fetchVersion(version)
             fields = try PolicyFieldMeta.makeFields(from: policy)
             evaluateAllFormulas()
+            currentVersionMeta = versionHistory.first { $0.version == version }
+            hasUnsavedChanges = false
         } catch {
             errorMessage = "버전 불러오기 실패: \(error.localizedDescription)"
         }
@@ -90,16 +88,31 @@ final class PolicyEditorViewModel: ObservableObject {
         errorMessage = nil
         do {
             let policy = try PolicyFieldMeta.makePolicy(from: fields)
-            try await repository.savePolicy(env: environment, policy: policy, modifiedBy: modifiedBy)
-            versionHistory = try await repository.fetchVersionList(env: environment)
-            if let latest = try await repository.fetchLatest(env: environment) {
-                currentVersionMeta = latest.meta
-            }
+            let newVersion = try await repository.saveVersion(policy: policy, modifiedBy: modifiedBy)
+            versionHistory = try await repository.fetchVersionList()
+            currentVersionMeta = versionHistory.first { $0.version == newVersion }
             hasUnsavedChanges = false
         } catch {
             errorMessage = "저장 실패: \(error.localizedDescription)"
         }
         isSaving = false
+    }
+
+    // MARK: - 배포
+
+    func deploy(version: Int, to env: PolicyEnvironment) async {
+        isDeploying = true
+        errorMessage = nil
+        do {
+            try await repository.deploy(version: version, to: env)
+            versionHistory = try await repository.fetchVersionList()
+            if let current = currentVersionMeta {
+                currentVersionMeta = versionHistory.first { $0.version == current.version }
+            }
+        } catch {
+            errorMessage = "배포 실패: \(error.localizedDescription)"
+        }
+        isDeploying = false
     }
 
     // MARK: - 필드 수정
