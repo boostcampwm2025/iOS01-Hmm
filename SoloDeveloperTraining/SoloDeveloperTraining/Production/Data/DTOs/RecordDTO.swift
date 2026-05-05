@@ -48,7 +48,7 @@ struct RecordDTO: Codable {
 
     // Scenario Records
     let scenarioProgress: ScenarioProgressDTO
-    let choiceHistory: [String: String]
+    let choiceHistory: [Career: ChoiceResult]
 
     // Mission States
     let missionStates: [MissionStateDTO]
@@ -75,11 +75,7 @@ struct RecordDTO: Codable {
         self.tutorialCompleted = record.tutorialCompleted
         self.hasAchievedJuniorDeveloper = record.hasAchievedJuniorDeveloper
         self.scenarioProgress = ScenarioProgressDTO(from: record.scenarioProgress)
-        var history: [String: String] = [:]
-        for (career, choice) in record.choiceHistory {
-            history[career.rawValue] = choice.rawValue
-        }
-        self.choiceHistory = history
+        self.choiceHistory = record.choiceHistory
         self.missionStates = record.missionSystem.missions.map { MissionStateDTO(from: $0) }
     }
 
@@ -126,14 +122,7 @@ struct RecordDTO: Codable {
 
         // Scenario Records
         record.scenarioProgress = scenarioProgress.toScenarioProgress()
-        var history: [Career: ChoiceResult] = [:]
-        for (careerString, choiceString) in choiceHistory {
-            if let career = Career(rawValue: careerString),
-               let choice = ChoiceResult(rawValue: choiceString) {
-                history[career] = choice
-            }
-        }
-        record.choiceHistory = history
+        record.choiceHistory = choiceHistory
 
         // Mission States 복원
         for missionState in missionStates {

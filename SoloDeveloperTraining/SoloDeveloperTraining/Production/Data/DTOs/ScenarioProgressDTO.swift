@@ -6,28 +6,24 @@
 //
 
 struct ScenarioProgressDTO: Codable {
-    let currentCareer: String?
+    let currentCareer: Career?
     let currentPageIndex: Int
-    let completedCareers: [String]
-    let levelupQueue: [String]
+    let completedCareers: Set<Career>
+    let levelupQueue: [Career]
 
     init(from progress: ScenarioProgress) {
-        self.currentCareer = progress.currentCareer?.rawValue
+        self.currentCareer = progress.currentCareer
         self.currentPageIndex = progress.currentPageIndex
-        self.completedCareers = progress.completedCareers.map { $0.rawValue }
-        self.levelupQueue = progress.levelupQueue.map { $0.rawValue }
+        self.completedCareers = progress.completedCareers
+        self.levelupQueue = progress.levelupQueue
     }
 
     func toScenarioProgress() -> ScenarioProgress {
-        let career = currentCareer.flatMap { Career(rawValue: $0) }
-        let completed = Set(completedCareers.compactMap { Career(rawValue: $0) })
-        let queue = levelupQueue.compactMap { Career(rawValue: $0) }
-
         return ScenarioProgress(
-            currentCareer: career,
+            currentCareer: currentCareer,
             currentPageIndex: currentPageIndex,
-            completedCareers: completed,
-            levelupQueue: queue
+            completedCareers: completedCareers,
+            levelupQueue: levelupQueue
         )
     }
 }

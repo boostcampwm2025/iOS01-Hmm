@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Career: String, CaseIterable {
+enum Career: String, CaseIterable, Codable {
     case unemployed = "백수"
     case laptopOwner = "노트북 보유자"
     case aspiringDeveloper = "개발자 지망생"

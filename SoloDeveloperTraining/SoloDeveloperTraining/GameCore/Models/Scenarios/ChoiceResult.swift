@@ -6,7 +6,7 @@
 //
 
 /// 사용자 선택 결과
-enum ChoiceResult: String {
+enum ChoiceResult: String, Codable {
     case optionA
     case optionB
 }
