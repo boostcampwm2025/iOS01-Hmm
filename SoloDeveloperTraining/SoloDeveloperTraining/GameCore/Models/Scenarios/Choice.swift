@@ -12,3 +12,9 @@ struct Choice: Equatable {
     /// 옵션 B 텍스트
     let optionB: String
 }
+
+/// 사용자 선택 결과
+enum ChoiceResult: String, Codable {
+    case optionA
+    case optionB
+}
