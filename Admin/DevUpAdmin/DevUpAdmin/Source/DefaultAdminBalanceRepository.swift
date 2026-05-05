@@ -10,6 +10,7 @@ private enum Constant {
     static let versionField = "version"
     static let modifiedByField = "modifiedBy"
     static let modifiedAtField = "modifiedAt"
+    static let formulasField = "formulas"
 }
 
 enum RepositoryError: LocalizedError {
@@ -26,7 +27,7 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
 
     // MARK: - 최신 버전 조회
 
-    func fetchLatestVersion() async throws -> (meta: PolicyVersionMeta, policy: PolicyDTO)? {
+    func fetchLatestVersion() async throws -> (meta: PolicyVersionMeta, policy: PolicyDTO, formulas: [String: String])? {
         let snapshot = try await db.collection(Constant.versionsCollection)
             .order(by: Constant.versionField, descending: true)
             .limit(to: 1)
@@ -36,8 +37,9 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
 
         let deployed = try await fetchDeployedVersionNumbers()
         let meta = try parseMeta(from: doc, deployedTest: deployed.test, deployedLive: deployed.live)
+        let formulas = extractFormulas(from: doc.data())
         let policy = try await fetchPolicyData(from: doc.reference.collection(Constant.dataCollection))
-        return (meta, policy)
+        return (meta, policy, formulas)
     }
 
     // MARK: - 버전 목록 조회
@@ -57,14 +59,19 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
 
     // MARK: - 특정 버전 조회
 
-    func fetchVersion(_ version: Int) async throws -> PolicyDTO {
+    func fetchVersion(_ version: Int) async throws -> (policy: PolicyDTO, formulas: [String: String]) {
         let ref = db.collection(Constant.versionsCollection).document("v\(version)")
-        return try await fetchPolicyData(from: ref.collection(Constant.dataCollection))
+        async let policyTask = fetchPolicyData(from: ref.collection(Constant.dataCollection))
+        async let docTask = ref.getDocument()
+
+        let (policy, doc) = try await (policyTask, docTask)
+        let formulas = extractFormulas(from: doc.data() ?? [:])
+        return (policy, formulas)
     }
 
     // MARK: - 버전 저장
 
-    func saveVersion(policy: PolicyDTO, modifiedBy: String) async throws -> Int {
+    func saveVersion(fields: [PolicyField], modifiedBy: String) async throws -> Int {
         let snapshot = try await db.collection(Constant.versionsCollection)
             .order(by: Constant.versionField, descending: true)
             .limit(to: 1)
@@ -72,11 +79,17 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
 
         let nextVersion = (snapshot.documents.first.flatMap { $0.data()[Constant.versionField] as? Int } ?? 0) + 1
 
-        let metadata: [String: Any] = [
+        let policy = try PolicyFieldMeta.makePolicy(from: fields)
+        let formulas = buildFormulasMap(from: fields)
+
+        var metadata: [String: Any] = [
             Constant.versionField: nextVersion,
             Constant.modifiedByField: modifiedBy,
             Constant.modifiedAtField: Timestamp(date: Date())
         ]
+        if !formulas.isEmpty {
+            metadata[Constant.formulasField] = formulas
+        }
 
         let batch = db.batch()
         let versionRef = db.collection(Constant.versionsCollection).document("v\(nextVersion)")
@@ -125,6 +138,18 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
             isDeployedToTest: deployedTest == version,
             isDeployedToLive: deployedLive == version
         )
+    }
+
+    /// Firestore 문서 data()에서 formulas 맵을 추출합니다. 없으면 빈 맵 반환.
+    private func extractFormulas(from data: [String: Any]) -> [String: String] {
+        data[Constant.formulasField] as? [String: String] ?? [:]
+    }
+
+    /// PolicyField 배열에서 수식 필드만 [id: rawInput] 맵으로 추출합니다.
+    private func buildFormulasMap(from fields: [PolicyField]) -> [String: String] {
+        fields
+            .filter { $0.hasFormula }
+            .reduce(into: [String: String]()) { $0[$1.id] = $1.rawInput }
     }
 
     private func fetchPolicyData(from collection: CollectionReference) async throws -> PolicyDTO {

@@ -58,15 +58,27 @@ struct AppSidebarView: View {
 
     var body: some View {
         List(selection: $selection) {
-            // 현재 버전 상태 카드
             Section {
                 versionCard
             }
 
             Section("밸런스 편집") {
                 ForEach(vm.groups, id: \.self) { group in
-                    Label(group, systemImage: iconFor(group))
-                        .tag(SidebarItem.editor(group))
+                    HStack {
+                        Label(group, systemImage: iconFor(group))
+                        Spacer()
+                        let count = vm.errorCount(for: group)
+                        if count > 0 {
+                            Text("\(count)")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.red)
+                                .clipShape(Capsule())
+                        }
+                    }
+                    .tag(SidebarItem.editor(group))
                 }
             }
 
@@ -112,6 +124,17 @@ struct AppSidebarView: View {
                     .foregroundStyle(.secondary)
             }
 
+            if vm.hasValidationErrors {
+                HStack(spacing: 4) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.orange)
+                        .font(.caption)
+                    Text("유효성 오류가 있어 저장할 수 없습니다.")
+                        .font(.caption)
+                        .foregroundStyle(.orange)
+                }
+            }
+
             Button {
                 showSaveConfirm = true
             } label: {
@@ -129,7 +152,7 @@ struct AppSidebarView: View {
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.small)
-            .disabled(vm.isSaving)
+            .disabled(vm.isSaving || vm.hasValidationErrors)
             .confirmationDialog("현재 편집 내용을 새 버전으로 저장합니다.", isPresented: $showSaveConfirm, titleVisibility: .visible) {
                 Button("저장") { Task { await vm.save(modifiedBy: username) } }
                 Button("취소", role: .cancel) {}
@@ -235,66 +258,55 @@ struct ProfilePageView: View {
             pageHeader("프로필", subtitle: "수정 이력에 기록되는 이름을 관리합니다.")
             Divider()
 
-            ScrollView {
-                VStack(spacing: 0) {
-                    // 프로필 카드
-                    VStack(spacing: 20) {
-                        // 아바타
-                        ZStack {
-                            Circle()
-                                .fill(Color.blue.opacity(0.12))
-                                .frame(width: 72, height: 72)
-                            Text(String(username.prefix(1)).uppercased())
-                                .font(.system(size: 28, weight: .bold))
-                                .foregroundStyle(.blue)
-                        }
+            VStack(spacing: 24) {
+                // 아바타
+                ZStack {
+                    Circle()
+                        .fill(Color.blue.opacity(0.12))
+                        .frame(width: 80, height: 80)
+                    Text(String(username.prefix(1)).uppercased())
+                        .font(.system(size: 32, weight: .bold))
+                        .foregroundStyle(.blue)
+                }
+                .padding(.top, 16)
 
-                        if isEditing {
-                            VStack(spacing: 12) {
-                                TextField("이름", text: $editingName)
-                                    .textFieldStyle(.plain)
-                                    .font(.body)
-                                    .multilineTextAlignment(.center)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 10)
-                                    .background(Color(.controlBackgroundColor))
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                                    .frame(maxWidth: 240)
-                                    .onSubmit { saveName() }
+                if isEditing {
+                    VStack(spacing: 12) {
+                        TextField("이름", text: $editingName)
+                            .textFieldStyle(.roundedBorder)
+                            .font(.body)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: 240)
+                            .onSubmit { saveName() }
 
-                                HStack(spacing: 8) {
-                                    Button("저장") { saveName() }
-                                        .buttonStyle(.borderedProminent)
-                                        .disabled(editingName.trimmingCharacters(in: .whitespaces).isEmpty)
-                                    Button("취소") {
-                                        isEditing = false
-                                        editingName = username
-                                    }
-                                    .buttonStyle(.borderless)
-                                    .foregroundStyle(.secondary)
-                                }
+                        HStack(spacing: 8) {
+                            Button("저장") { saveName() }
+                                .buttonStyle(.borderedProminent)
+                                .disabled(editingName.trimmingCharacters(in: .whitespaces).isEmpty)
+                            Button("취소") {
+                                isEditing = false
+                                editingName = username
                             }
-                        } else {
-                            VStack(spacing: 8) {
-                                Text(username)
-                                    .font(.title3.bold())
-                                Button("이름 수정") {
-                                    editingName = username
-                                    isEditing = true
-                                }
-                                .buttonStyle(.bordered)
-                                .controlSize(.small)
-                            }
+                            .buttonStyle(.bordered)
                         }
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(28)
-                    .background(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
-                    .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 2)
-                    .padding(24)
+                } else {
+                    VStack(spacing: 10) {
+                        Text(username)
+                            .font(.title3.bold())
+                            .foregroundStyle(.primary)
+                        Button("이름 수정") {
+                            editingName = username
+                            isEditing = true
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.regular)
+                    }
                 }
+
+                Spacer()
             }
+            .frame(maxWidth: .infinity)
         }
         .background(Color(.windowBackgroundColor))
         .onAppear { editingName = username }
@@ -331,7 +343,10 @@ struct PolicyGroupView: View {
                         ForEach(sectioned, id: \.section) { item in
                             SwiftUI.Section {
                                 ForEach(item.fields) { field in
-                                    PolicyFieldRow(field: field) { id, raw in
+                                    PolicyFieldRow(
+                                        field: field,
+                                        errorMessage: vm.validationError(for: field.id)
+                                    ) { id, raw in
                                         vm.updateField(id: id, rawInput: raw)
                                     }
                                     Divider().padding(.leading, 216)
@@ -385,61 +400,97 @@ struct PolicyGroupView: View {
     }
 }
 
-// MARK: - 필드 행
+// MARK: - 필드 행 (유효성 포함)
 
-private struct PolicyFieldRow: View {
+struct PolicyFieldRow: View {
     let field: PolicyField
+    let errorMessage: String?
     let onUpdate: (String, String) -> Void
     @State private var localInput: String
 
-    init(field: PolicyField, onUpdate: @escaping (String, String) -> Void) {
+    init(field: PolicyField, errorMessage: String?, onUpdate: @escaping (String, String) -> Void) {
         self.field = field
+        self.errorMessage = errorMessage
         self.onUpdate = onUpdate
         self._localInput = State(initialValue: field.rawInput)
     }
 
+    var hasError: Bool { errorMessage != nil }
+
     var body: some View {
-        HStack(spacing: 0) {
-            Text(field.name)
-                .font(.callout)
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                // 항목명
+                HStack(spacing: 6) {
+                    Text(field.name)
+                        .font(.callout)
+                    if hasError {
+                        Image(systemName: "exclamationmark.circle.fill")
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
+                }
                 .frame(width: 208, alignment: .leading)
                 .padding(.horizontal, 16)
 
-            Divider().frame(height: 28)
+                Divider().frame(height: hasError ? 40 : 28)
 
-            TextField("숫자 또는 =수식", text: $localInput)
-                .textFieldStyle(.plain)
-                .font(.callout)
-                .frame(minWidth: 200, alignment: .leading)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(field.hasFormula ? Color.blue.opacity(0.05) : Color.clear)
-                .onSubmit { onUpdate(field.id, localInput) }
-                .onChange(of: localInput) { _, new in
-                    if new.trimmingCharacters(in: .whitespaces).hasPrefix("=") {
+                // 입력 필드
+                TextField(field.validationHint ?? "값 입력", text: $localInput)
+                    .textFieldStyle(.plain)
+                    .font(.callout)
+                    .frame(minWidth: 200, alignment: .leading)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(backgroundFor(hasFormula: field.hasFormula, hasError: hasError))
+                    .onSubmit { onUpdate(field.id, localInput) }
+                    .onChange(of: localInput) { _, new in
+                        // 항상 VM에 즉시 전달 → 실시간 유효성 반응
                         onUpdate(field.id, new)
                     }
-                }
 
-            Divider().frame(height: 28)
+                Divider().frame(height: hasError ? 40 : 28)
 
-            Group {
-                if field.hasFormula {
-                    Text("→ \(field.displayValue)")
-                        .foregroundStyle(.blue.opacity(0.8))
-                } else {
-                    Text(field.displayValue)
-                        .foregroundStyle(Color(.tertiaryLabelColor))
+                // 결과값
+                Group {
+                    if field.hasFormula {
+                        Text("→ \(field.displayValue)")
+                            .foregroundStyle(hasError ? .red : .blue.opacity(0.8))
+                    } else {
+                        Text(field.displayValue)
+                            .foregroundStyle(hasError ? .red : Color(.tertiaryLabelColor))
+                    }
                 }
+                .font(.callout)
+                .frame(width: 140, alignment: .leading)
+                .padding(.horizontal, 16)
             }
-            .font(.callout)
-            .frame(width: 140, alignment: .leading)
-            .padding(.horizontal, 16)
+
+            // 오류 메시지 인라인
+            if let msg = errorMessage {
+                HStack(spacing: 4) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.system(size: 10))
+                    Text(msg)
+                        .font(.caption)
+                }
+                .foregroundStyle(.red)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 224)
+                .padding(.bottom, 5)
+            }
         }
-        .padding(.vertical, 4)
+        .padding(.top, 4)
+        .background(hasError ? Color.red.opacity(0.03) : Color.clear)
         .onChange(of: field.rawInput) { _, new in
             if new != localInput { localInput = new }
         }
+    }
+
+    private func backgroundFor(hasFormula: Bool, hasError: Bool) -> Color {
+        if hasError    { return Color.red.opacity(0.06) }
+        if hasFormula  { return Color.blue.opacity(0.05) }
+        return .clear
     }
 }
 

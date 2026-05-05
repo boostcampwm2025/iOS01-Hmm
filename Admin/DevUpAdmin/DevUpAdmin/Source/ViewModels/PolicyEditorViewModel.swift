@@ -7,6 +7,7 @@ final class PolicyEditorViewModel: ObservableObject {
     @Published var fields: [PolicyField] = []
     @Published var currentVersionMeta: PolicyVersionMeta?
     @Published var versionHistory: [PolicyVersionMeta] = []
+    @Published var crossFieldErrors: [String: String] = [:]
     @Published var isLoading = false
     @Published var isSaving = false
     @Published var isDeploying = false
@@ -35,6 +36,35 @@ final class PolicyEditorViewModel: ObservableObject {
         }
     }
 
+    // MARK: - 유효성
+
+    /// 특정 필드의 최종 오류 메시지 (포맷 → 단일 규칙 → 크로스필드 순 우선순위)
+    func validationError(for fieldID: String) -> String? {
+        guard let field = fields.first(where: { $0.id == fieldID }) else { return nil }
+        if let formatError = field.inputFormatError { return formatError }
+        if let singleError = field.singleFieldError { return singleError }
+        return crossFieldErrors[fieldID]
+    }
+
+    /// 그룹 전체의 오류 수
+    func errorCount(for group: String) -> Int {
+        let groupFields = fields.filter { $0.group == group }
+        let errorIDs = Set(
+            groupFields
+                .filter { $0.inputFormatError != nil || $0.singleFieldError != nil || crossFieldErrors[$0.id] != nil }
+                .map(\.id)
+        )
+        return errorIDs.count
+    }
+
+    /// 전체 오류가 있으면 저장 불가
+    var hasValidationErrors: Bool {
+        let hasFieldError = fields.contains { field in
+            field.inputFormatError != nil || field.singleFieldError != nil
+        }
+        return hasFieldError || !crossFieldErrors.isEmpty
+    }
+
     // MARK: - 데이터 로드
 
     func loadLatest() async {
@@ -43,7 +73,7 @@ final class PolicyEditorViewModel: ObservableObject {
         do {
             if let result = try await repository.fetchLatestVersion() {
                 currentVersionMeta = result.meta
-                fields = try PolicyFieldMeta.makeFields(from: result.policy)
+                fields = try PolicyFieldMeta.makeFields(from: result.policy, formulas: result.formulas)
             } else {
                 currentVersionMeta = nil
                 fields = PolicyFieldMeta.all.map { meta in
@@ -70,8 +100,8 @@ final class PolicyEditorViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         do {
-            let policy = try await repository.fetchVersion(version)
-            fields = try PolicyFieldMeta.makeFields(from: policy)
+            let result = try await repository.fetchVersion(version)
+            fields = try PolicyFieldMeta.makeFields(from: result.policy, formulas: result.formulas)
             evaluateAllFormulas()
             currentVersionMeta = versionHistory.first { $0.version == version }
             hasUnsavedChanges = false
@@ -84,11 +114,14 @@ final class PolicyEditorViewModel: ObservableObject {
     // MARK: - 저장
 
     func save(modifiedBy: String) async {
+        guard !hasValidationErrors else {
+            errorMessage = "유효성 오류가 있는 필드가 있습니다. 오류를 먼저 수정해주세요."
+            return
+        }
         isSaving = true
         errorMessage = nil
         do {
-            let policy = try PolicyFieldMeta.makePolicy(from: fields)
-            let newVersion = try await repository.saveVersion(policy: policy, modifiedBy: modifiedBy)
+            let newVersion = try await repository.saveVersion(fields: fields, modifiedBy: modifiedBy)
             versionHistory = try await repository.fetchVersionList()
             currentVersionMeta = versionHistory.first { $0.version == newVersion }
             hasUnsavedChanges = false
@@ -124,21 +157,44 @@ final class PolicyEditorViewModel: ObservableObject {
         evaluateAllFormulas()
     }
 
-    // MARK: - 수식 평가
+    // MARK: - 수식 평가 + 유효성 갱신
 
     func evaluateAllFormulas() {
+        // 1차: 수식이 아닌 필드 먼저 확정
         for i in fields.indices {
             if !fields[i].hasFormula {
                 fields[i].resolvedValue = Double(fields[i].rawInput.trimmingCharacters(in: .whitespaces)) ?? 0
             }
         }
+
+        // ID → resolvedValue 컨텍스트
         var context = fields.reduce(into: [String: Double]()) { $0[$1.id] = $1.resolvedValue }
+
+        // 한글 이름 → resolvedValue 컨텍스트 (중복 이름은 제거)
+        var nameContext: [String: Double] = [:]
+        var ambiguousNames = Set<String>()
+        for field in fields {
+            if nameContext[field.name] != nil {
+                ambiguousNames.insert(field.name)
+            }
+            nameContext[field.name] = field.resolvedValue
+        }
+        for name in ambiguousNames { nameContext.removeValue(forKey: name) }
+
+        // 2차: 수식 필드 평가
         for i in fields.indices {
             guard fields[i].hasFormula else { continue }
-            let evaluated = FormulaEvaluator.evaluate(fields[i].rawInput, context: context) ?? 0
+            let evaluated = FormulaEvaluator.evaluate(
+                fields[i].rawInput,
+                context: context,
+                nameContext: nameContext
+            ) ?? 0
             fields[i].resolvedValue = evaluated
             context[fields[i].id] = evaluated
+            nameContext[fields[i].name] = evaluated
         }
+
+        crossFieldErrors = CrossFieldValidation.validate(fields: fields)
     }
 
     func clearError() {

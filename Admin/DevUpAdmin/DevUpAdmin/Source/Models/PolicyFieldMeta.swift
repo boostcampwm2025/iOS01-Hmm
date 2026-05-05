@@ -21,6 +21,26 @@ struct PolicyField: Identifiable {
             return String(Int(resolvedValue.rounded()))
         }
     }
+
+    /// 입력값 자체가 숫자/수식이 아닌 경우의 포맷 오류 (최우선 검사)
+    var inputFormatError: String? {
+        let trimmed = rawInput.trimmingCharacters(in: .whitespaces)
+        if trimmed.isEmpty { return "값을 입력하세요." }
+        if trimmed.hasPrefix("=") { return nil } // 수식은 별도 평가
+        if Double(trimmed) == nil { return "숫자를 입력하세요." }
+        return nil
+    }
+
+    /// 단일 필드 규칙 위반 메시지 (nil = 유효)
+    var singleFieldError: String? {
+        if inputFormatError != nil { return nil } // 포맷 오류가 있으면 중복 표시 안 함
+        return PolicyFieldMeta.validationRules[id]?.validate(resolvedValue)
+    }
+
+    /// 규칙 힌트 텍스트
+    var validationHint: String? {
+        PolicyFieldMeta.validationRules[id]?.hint
+    }
 }
 
 // MARK: - PolicyFieldMeta
@@ -225,20 +245,23 @@ extension PolicyFieldMeta {
 
 extension PolicyFieldMeta {
 
-    static func makeFields(from policy: PolicyDTO) throws -> [PolicyField] {
+    static func makeFields(from policy: PolicyDTO, formulas: [String: String] = [:]) throws -> [PolicyField] {
         let values = try policy.toValueDictionary()
         return all.compactMap { meta in
             guard let value = values[meta.id] else { return nil }
-            let input = meta.isDouble
-                ? String(value)
-                : String(Int(value.rounded()))
+            // 저장된 수식이 있으면 복원, 없으면 숫자 문자열로 재구성
+            let rawInput = formulas[meta.id] ?? (
+                meta.isDouble
+                    ? String(value)
+                    : String(Int(value.rounded()))
+            )
             return PolicyField(
                 id: meta.id,
                 group: meta.group,
                 section: meta.section,
                 name: meta.name,
                 isDouble: meta.isDouble,
-                rawInput: input,
+                rawInput: rawInput,
                 resolvedValue: value
             )
         }

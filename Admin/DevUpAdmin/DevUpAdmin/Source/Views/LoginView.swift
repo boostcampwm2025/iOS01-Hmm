@@ -55,7 +55,7 @@ struct LoginView: View {
                         .keyboardShortcut(.defaultAction)
                     }
                     .padding(24)
-                    .background(Color.white)
+                    .background(Color(.controlBackgroundColor))
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .shadow(color: .black.opacity(0.08), radius: 20, x: 0, y: 6)
                 }

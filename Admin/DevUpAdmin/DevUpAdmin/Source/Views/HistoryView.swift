@@ -201,9 +201,9 @@ struct VersionCardView: View {
             }
         }
         .padding(18)
-        .background(Color.white)
+        .background(Color(.controlBackgroundColor))
         .clipShape(RoundedRectangle(cornerRadius: 14))
-        .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 2)
+        .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 2)
         .overlay(
             RoundedRectangle(cornerRadius: 14)
                 .strokeBorder(isCurrentlyLoaded ? Color.blue.opacity(0.3) : Color.clear, lineWidth: 1.5)
