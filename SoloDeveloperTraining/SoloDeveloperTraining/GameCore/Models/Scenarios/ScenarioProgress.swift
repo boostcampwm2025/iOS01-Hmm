@@ -55,7 +55,7 @@ struct ScenarioProgress {
     /// 레벨업 큐에 추가
     mutating func enqueueLevelUp(_ career: Career) {
         levelupQueue.append(career)
-        if levelupQueue.count > 3 {
+        if levelupQueue.count > Policy.Scenario.maxLevelupQueueSize {
             levelupQueue = [levelupQueue.last!]
         }
     }
