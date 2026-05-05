@@ -9,7 +9,6 @@ struct VersionHistoryPageView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // 페이지 헤더
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("버전 이력")
@@ -26,7 +25,7 @@ struct VersionHistoryPageView: View {
                         .font(.callout.bold())
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(vm.isSaving)
+                .disabled(vm.isSaving || vm.hasValidationErrors)
                 .confirmationDialog(
                     "현재 편집 내용을 새 버전으로 저장합니다.",
                     isPresented: $showSaveConfirm,
@@ -51,7 +50,7 @@ struct VersionHistoryPageView: View {
                 ScrollView {
                     LazyVStack(spacing: 12) {
                         ForEach(vm.versionHistory) { meta in
-                            VersionCardView(meta: meta, vm: vm)
+                            VersionCardView(meta: meta, vm: vm, username: username)
                         }
                     }
                     .padding(24)
@@ -60,8 +59,6 @@ struct VersionHistoryPageView: View {
         }
         .background(Color(.windowBackgroundColor))
     }
-
-    // MARK: - 빈 상태
 
     private var emptyStateView: some View {
         VStack(spacing: 16) {
@@ -73,7 +70,6 @@ struct VersionHistoryPageView: View {
                     .font(.system(size: 28))
                     .foregroundStyle(Color(.tertiaryLabelColor))
             }
-
             VStack(spacing: 6) {
                 Text("저장된 버전이 없습니다")
                     .font(.headline)
@@ -82,7 +78,6 @@ struct VersionHistoryPageView: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }
-
             Button {
                 showSaveConfirm = true
             } label: {
@@ -101,6 +96,7 @@ struct VersionHistoryPageView: View {
 struct VersionCardView: View {
     let meta: PolicyVersionMeta
     @ObservedObject var vm: PolicyEditorViewModel
+    let username: String
     @State private var showDeployTestConfirm = false
     @State private var showDeployLiveConfirm = false
 
@@ -109,7 +105,8 @@ struct VersionCardView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 0) {
+
             // 상단: 버전 정보
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 6) {
@@ -144,12 +141,35 @@ struct VersionCardView: View {
                 .font(.callout)
                 .disabled(isCurrentlyLoaded)
             }
+            .padding(18)
 
-            Divider()
+            // 배포 기록 영역
+            if !meta.testDeployments.isEmpty || !meta.liveDeployments.isEmpty {
+                Divider().padding(.horizontal, 18)
 
-            // 하단: 배포 버튼
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("배포 기록")
+                        .font(.caption.bold())
+                        .foregroundStyle(.secondary)
+
+                    // test + live 합쳐서 최신순 정렬
+                    let allRecords: [(env: PolicyEnvironment, record: DeployRecord)] =
+                        meta.testDeployments.map { (.test, $0) } +
+                        meta.liveDeployments.map { (.live, $0) }
+                    let sorted = allRecords.sorted { $0.record.deployedAt > $1.record.deployedAt }
+
+                    ForEach(sorted, id: \.record.id) { item in
+                        deployRecord(env: item.env, record: item.record)
+                    }
+                }
+                .padding(.horizontal, 18)
+                .padding(.vertical, 12)
+            }
+
+            Divider().padding(.horizontal, 18)
+
+            // 배포 버튼
             HStack(spacing: 10) {
-                // 테스트 배포
                 Button {
                     showDeployTestConfirm = true
                 } label: {
@@ -169,11 +189,12 @@ struct VersionCardView: View {
                     isPresented: $showDeployTestConfirm,
                     titleVisibility: .visible
                 ) {
-                    Button("배포") { Task { await vm.deploy(version: meta.version, to: .test) } }
+                    Button("배포") {
+                        Task { await vm.deploy(version: meta.version, to: .test, deployedBy: username) }
+                    }
                     Button("취소", role: .cancel) {}
                 }
 
-                // 라이브 배포
                 Button {
                     showDeployLiveConfirm = true
                 } label: {
@@ -193,14 +214,17 @@ struct VersionCardView: View {
                     isPresented: $showDeployLiveConfirm,
                     titleVisibility: .visible
                 ) {
-                    Button("배포", role: .destructive) { Task { await vm.deploy(version: meta.version, to: .live) } }
+                    Button("배포", role: .destructive) {
+                        Task { await vm.deploy(version: meta.version, to: .live, deployedBy: username) }
+                    }
                     Button("취소", role: .cancel) {}
                 } message: {
                     Text("실제 서비스에 즉시 반영됩니다.")
                 }
             }
+            .padding(.horizontal, 18)
+            .padding(.vertical, 12)
         }
-        .padding(18)
         .background(Color(.controlBackgroundColor))
         .clipShape(RoundedRectangle(cornerRadius: 14))
         .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 2)
@@ -208,5 +232,15 @@ struct VersionCardView: View {
             RoundedRectangle(cornerRadius: 14)
                 .strokeBorder(isCurrentlyLoaded ? Color.blue.opacity(0.3) : Color.clear, lineWidth: 1.5)
         )
+    }
+
+    private func deployRecord(env: PolicyEnvironment, record: DeployRecord) -> some View {
+        HStack(spacing: 6) {
+            DeployBadge(env: env)
+            Label(record.deployedBy, systemImage: "person.fill")
+            Label(record.deployedAtFormatted, systemImage: "clock")
+        }
+        .font(.caption)
+        .foregroundStyle(.secondary)
     }
 }

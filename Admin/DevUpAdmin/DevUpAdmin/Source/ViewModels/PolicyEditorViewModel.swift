@@ -133,11 +133,11 @@ final class PolicyEditorViewModel: ObservableObject {
 
     // MARK: - 배포
 
-    func deploy(version: Int, to env: PolicyEnvironment) async {
+    func deploy(version: Int, to env: PolicyEnvironment, deployedBy: String) async {
         isDeploying = true
         errorMessage = nil
         do {
-            try await repository.deploy(version: version, to: env)
+            try await repository.deploy(version: version, to: env, deployedBy: deployedBy)
             versionHistory = try await repository.fetchVersionList()
             if let current = currentVersionMeta {
                 currentVersionMeta = versionHistory.first { $0.version == current.version }

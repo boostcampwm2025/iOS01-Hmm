@@ -5,6 +5,7 @@ import SwiftUI
 enum SidebarItem: Hashable {
     case editor(String)
     case versionHistory
+    case deploymentStatus
     case profile
 }
 
@@ -85,6 +86,8 @@ struct AppSidebarView: View {
             Section("관리") {
                 Label("버전 이력", systemImage: "clock.arrow.circlepath")
                     .tag(SidebarItem.versionHistory)
+                Label("배포 현황", systemImage: "antenna.radiowaves.left.and.right")
+                    .tag(SidebarItem.deploymentStatus)
                 Label("프로필", systemImage: "person.circle")
                     .tag(SidebarItem.profile)
             }
@@ -189,6 +192,8 @@ struct DetailRouterView: View {
             PolicyGroupView(group: group, vm: vm)
         case .versionHistory:
             VersionHistoryPageView(vm: vm, username: username)
+        case .deploymentStatus:
+            DeploymentStatusPageView(vm: vm)
         case .profile:
             ProfilePageView(username: $username)
         case nil:

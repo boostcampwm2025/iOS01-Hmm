@@ -16,6 +16,6 @@ protocol AdminPolicyRepository {
     /// test/live 에 현재 배포 중인 버전 번호를 가져옵니다.
     func fetchDeployedVersionNumbers() async throws -> (test: Int?, live: Int?)
 
-    /// 특정 버전을 test 또는 live 환경에 배포합니다.
-    func deploy(version: Int, to env: PolicyEnvironment) async throws
+    /// 특정 버전을 test 또는 live 환경에 배포하고 배포 기록을 남깁니다.
+    func deploy(version: Int, to env: PolicyEnvironment, deployedBy: String) async throws
 }

@@ -11,6 +11,10 @@ private enum Constant {
     static let modifiedByField = "modifiedBy"
     static let modifiedAtField = "modifiedAt"
     static let formulasField = "formulas"
+    static let testDeploymentsField = "testDeployments"
+    static let liveDeploymentsField = "liveDeployments"
+    static let deployedByKey = "deployedBy"
+    static let deployedAtKey = "deployedAt"
 }
 
 enum RepositoryError: LocalizedError {
@@ -115,10 +119,24 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
 
     // MARK: - 배포
 
-    func deploy(version: Int, to env: PolicyEnvironment) async throws {
-        try await db.collection(env.rawValue)
-            .document(Constant.currentDocID)
-            .setData([Constant.versionField: version])
+    func deploy(version: Int, to env: PolicyEnvironment, deployedBy: String) async throws {
+        let now = Timestamp(date: Date())
+        let envRef = db.collection(env.rawValue).document(Constant.currentDocID)
+        let versionRef = db.collection(Constant.versionsCollection).document("v\(version)")
+        let deploymentsField = env == .test ? Constant.testDeploymentsField : Constant.liveDeploymentsField
+
+        let newRecord: [String: Any] = [
+            Constant.deployedByKey: deployedBy,
+            Constant.deployedAtKey: now
+        ]
+
+        let batch = db.batch()
+        batch.setData([Constant.versionField: version], forDocument: envRef)
+        batch.updateData([
+            deploymentsField: FieldValue.arrayUnion([newRecord])
+        ], forDocument: versionRef)
+
+        try await batch.commit()
     }
 
     // MARK: - Private
@@ -136,8 +154,21 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
             modifiedBy: modifiedBy,
             modifiedAt: modifiedAt,
             isDeployedToTest: deployedTest == version,
-            isDeployedToLive: deployedLive == version
+            isDeployedToLive: deployedLive == version,
+            testDeployments: parseDeployRecords(from: data[Constant.testDeploymentsField]),
+            liveDeployments: parseDeployRecords(from: data[Constant.liveDeploymentsField])
         )
+    }
+
+    /// Firestore 배열 필드를 DeployRecord 배열로 파싱합니다.
+    private func parseDeployRecords(from value: Any?) -> [DeployRecord] {
+        guard let arr = value as? [[String: Any]] else { return [] }
+        return arr.compactMap { dict in
+            guard let by = dict[Constant.deployedByKey] as? String,
+                  let at = (dict[Constant.deployedAtKey] as? Timestamp)?.dateValue()
+            else { return nil }
+            return DeployRecord(deployedBy: by, deployedAt: at)
+        }
     }
 
     /// Firestore 문서 data()에서 formulas 맵을 추출합니다. 없으면 빈 맵 반환.
