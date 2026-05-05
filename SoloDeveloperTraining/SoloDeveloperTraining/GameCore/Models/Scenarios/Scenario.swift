@@ -42,4 +42,14 @@ struct Scenario {
     var pageCount: Int {
         pages.count
     }
+
+    /// 선택 결과에 해당하는 결과 페이지 인덱스 찾기
+    func findResultPageIndex(for choice: ChoiceResult) -> Int? {
+        pages.firstIndex(where: { page in
+            if case .result(let choiceResult) = page.pageType {
+                return choiceResult == choice
+            }
+            return false
+        })
+    }
 }
