@@ -267,6 +267,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				283B95DB2FA9D44B0033B924 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 08267F2C2F0D06BC005A0066 /* Products */;
@@ -755,6 +756,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		283B95DB2FA9D44B0033B924 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 13.3.0;
+			};
+		};
 		BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
