@@ -9,8 +9,8 @@ import GoogleMobileAds
 
 final class InterstitialAdUnit: NSObject, AdUnit {
     private var interstitialAd: InterstitialAd?
-
-    var adUnitID: String = "ca-app-pub-3940256099942544/4411468910"
+    private var adUnitID: String = "ca-app-pub-3940256099942544/4411468910"
+    private var continuation: CheckedContinuation<Void, Never>?
 
     var isReady: Bool {
         return interstitialAd != nil
@@ -24,12 +24,20 @@ final class InterstitialAdUnit: NSObject, AdUnit {
         interstitialAd?.fullScreenContentDelegate = self
     }
 
-    func show() {
+    func show() async {
         guard let interstitialAd else {
             print("❌ Ad not ready")
             return
         }
-        interstitialAd.present(from: nil)
+        guard continuation == nil else {
+            print("⚠️ Ad is already showing")
+            return
+        }
+
+        await withCheckedContinuation { continuation in
+            self.continuation = continuation
+            interstitialAd.present(from: nil)
+        }
     }
 }
 
@@ -41,12 +49,16 @@ extension InterstitialAdUnit: FullScreenContentDelegate {
         didFailToPresentFullScreenContentWithError error: Error
     ) {
         print("\(#function) called")
+        continuation?.resume()
+        continuation = nil
         interstitialAd = nil
     }
 
     // 광고 화면이 닫혔을 경우
     func adDidDismissFullScreenContent(_ ads: FullScreenPresentingAd) {
         print("\(#function) called")
+        continuation?.resume()
+        continuation = nil
         interstitialAd = nil
     }
 }

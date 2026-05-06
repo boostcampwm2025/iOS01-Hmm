@@ -41,7 +41,7 @@ final class AdService {
             return
         }
 
-        ads.show()
+        await ads.show()
         loadedAds.removeValue(forKey: type)
 
         // 다음 광고 preload
