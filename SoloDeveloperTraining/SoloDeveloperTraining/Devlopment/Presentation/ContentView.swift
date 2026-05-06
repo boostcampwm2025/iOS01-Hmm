@@ -109,16 +109,21 @@ struct ContentView: View {
                     Image(systemName: "gearshape.fill")
                     Text("어드민")
                 }
-            AdView()
+            ScenarioTestView()
                 .tag(9)
+                .tabItem {
+                    Image(systemName: "book.pages")
+                    Text("선택형 구조")
+                }
+            AdView()
+                .tag(10)
                 .tabItem {
                     Image(systemName: "storefront.fill")
                     Text("광고")
                 }
         }
     }
-}
 
-#Preview {
-    ContentView()
-}
+    #Preview {
+        ContentView()
+    }

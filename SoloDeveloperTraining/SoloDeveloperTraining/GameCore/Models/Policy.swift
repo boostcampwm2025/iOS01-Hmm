@@ -368,4 +368,9 @@ enum Policy {
             static let decreaseInterval: TimeInterval = 1.0  // 버프 감소 주기 (초)
         }
     }
+
+    // MARK: - 시나리오 시스템
+    enum Scenario {
+        static let maxLevelupQueueSize: Int = 3
+    }
 }

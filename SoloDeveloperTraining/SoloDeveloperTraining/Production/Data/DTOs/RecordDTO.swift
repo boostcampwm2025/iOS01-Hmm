@@ -46,6 +46,10 @@ struct RecordDTO: Codable {
     // Career Records
     let hasAchievedJuniorDeveloper: Bool
 
+    // Scenario Records
+    let scenarioProgress: ScenarioProgressDTO
+    let choiceHistory: [Career: ChoiceResult]
+
     // Mission States
     let missionStates: [MissionStateDTO]
 
@@ -70,6 +74,8 @@ struct RecordDTO: Codable {
         self.totalPlayTime = record.totalPlayTime
         self.tutorialCompleted = record.tutorialCompleted
         self.hasAchievedJuniorDeveloper = record.hasAchievedJuniorDeveloper
+        self.scenarioProgress = ScenarioProgressDTO(from: record.scenarioProgress)
+        self.choiceHistory = record.choiceHistory
         self.missionStates = record.missionSystem.missions.map { MissionStateDTO(from: $0) }
     }
 
@@ -113,6 +119,10 @@ struct RecordDTO: Codable {
 
         // Career Records
         record.hasAchievedJuniorDeveloper = hasAchievedJuniorDeveloper
+
+        // Scenario Records
+        record.scenarioProgress = scenarioProgress.toScenarioProgress()
+        record.choiceHistory = choiceHistory
 
         // Mission States 복원
         for missionState in missionStates {
