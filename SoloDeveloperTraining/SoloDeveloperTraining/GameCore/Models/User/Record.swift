@@ -75,6 +75,12 @@ final class Record {
     // MARK: - Career Records
     /// 하찮은 개발자 달성 여부
     var hasAchievedJuniorDeveloper: Bool = false
+
+    // MARK: - Scenario Records
+    /// 시나리오 진행 상태
+    var scenarioProgress: ScenarioProgress = ScenarioProgress()
+    /// 선택 기록 (커리어별)
+    var choiceHistory: [Career: ChoiceResult] = [:]
 }
 
 // MARK: - Record Event

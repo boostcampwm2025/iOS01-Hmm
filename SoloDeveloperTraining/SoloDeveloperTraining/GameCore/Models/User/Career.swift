@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Career: String, CaseIterable {
+enum Career: String, CaseIterable, Codable {
     case unemployed = "백수"
     case laptopOwner = "노트북 보유자"
     case aspiringDeveloper = "개발자 지망생"
@@ -114,5 +114,20 @@ enum Career: String, CaseIterable {
     func canUpgrade(currentWealth: Int) -> Bool {
         guard let next = nextCareer else { return false }
         return currentWealth >= next.requiredWealth
+    }
+}
+
+// MARK: - Scenario
+extension Career {
+    /// 이 커리어의 시나리오 타입
+    var scenarioType: ScenarioType {
+        switch self {
+        case .worldClassDeveloper:
+            return .final
+        case .juniorDeveloper, .nightOwlDeveloper, .famousDeveloper:
+            return .event
+        default:
+            return .normal
+        }
     }
 }
