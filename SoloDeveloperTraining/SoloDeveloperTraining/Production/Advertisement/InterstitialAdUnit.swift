@@ -7,7 +7,6 @@
 
 import GoogleMobileAds
 
-@MainActor
 final class InterstitialAdUnit: NSObject, AdUnit {
 
     private var interstitialAd: InterstitialAd?

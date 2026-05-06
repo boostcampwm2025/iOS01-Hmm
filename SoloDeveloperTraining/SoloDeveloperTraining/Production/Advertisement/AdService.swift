@@ -16,19 +16,16 @@ enum AdType {
 final class AdService {
     static let shared = AdService()
 
+    private let factory: AdFactory
     private var loadedAds: [AdType: AdUnit] = [:]
 
-    private init() {}
+    init(factory: AdFactory = DefaultAdFactory()) {
+        self.factory = factory
+    }
 
     // 광고 로드
     func loadAd(_ type: AdType) async {
-        let ads: AdUnit
-
-        switch type {
-        case .interstitial:
-            ads = InterstitialAdUnit()
-        }
-
+        let ads = factory.makeAdUnit(for: type)
         do {
             try await ads.load()
             loadedAds[type] = ads

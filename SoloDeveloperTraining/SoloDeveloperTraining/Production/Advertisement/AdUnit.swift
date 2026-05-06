@@ -8,6 +8,7 @@
 import UIKit
 import GoogleMobileAds
 
+@MainActor
 protocol AdUnit {
     var adUnitID: String { get }
     var isReady: Bool { get }
