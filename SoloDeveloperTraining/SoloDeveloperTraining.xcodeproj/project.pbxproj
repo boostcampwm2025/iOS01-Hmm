@@ -59,6 +59,7 @@
 			membershipExceptions = (
 				"App/Info-Dev.plist",
 				App/Info.plist,
+				Production/Advertisement/AdService.swift,
 				"Production/Error/PurchasingError+UserReadableError.swift",
 				"Production/Error/SkillError+UserReadableError.swift",
 				Production/Error/UserReadableError.swift,
