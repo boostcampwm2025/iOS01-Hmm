@@ -12,7 +12,9 @@ struct AdView: View {
         List {
             Section(header: Text("광고 테스트")) {
                 Button("전면 광고 노출") {
-                    AdService.shared.showAd(.interstitial)
+                    Task {
+                        await AdService.shared.showAd(.interstitial)
+                    }
                 }
             }
         }

@@ -14,7 +14,6 @@ enum AdType {
 }
 
 final class AdService {
-
     static let shared = AdService()
 
     private var loadedAds: [AdType: AdUnit] = [:]
@@ -39,8 +38,8 @@ final class AdService {
     }
 
     // 광고 표시
-    func showAd(_ type: AdType) {
-        requestTrackingAuthorizationIfNeeded()
+    func showAd(_ type: AdType) async {
+        await requestTrackingAuthorizationIfNeeded()
 
         guard let ads = loadedAds[type], ads.isReady else {
             print("⚠️ Ad not ready")
@@ -58,24 +57,23 @@ final class AdService {
 }
 
 private extension AdService {
-    func requestTrackingAuthorizationIfNeeded() {
+    func requestTrackingAuthorizationIfNeeded() async {
         // 이미 ATT 요청했거나, iOS 14.5 미만이면 무시
         guard #available(iOS 14.5, *), ATTrackingManager.trackingAuthorizationStatus == .notDetermined else {
             return
         }
 
-        Task {
-            await MainActor.run {
-                ATTrackingManager.requestTrackingAuthorization { status in
-                    switch status {
-                    case .authorized:
-                        print("정보 추적 허용됨")
-                    case .denied, .restricted, .notDetermined:
-                        print("정보 추적 거부됨")
-                    @unknown default:
-                        break
-                    }
+        await withCheckedContinuation { continuation in
+            ATTrackingManager.requestTrackingAuthorization { status in
+                switch status {
+                case .authorized:
+                    print("정보 추적 허용됨")
+                case .denied, .restricted, .notDetermined:
+                    print("정보 추적 거부됨")
+                @unknown default:
+                    break
                 }
+                continuation.resume()
             }
         }
     }
