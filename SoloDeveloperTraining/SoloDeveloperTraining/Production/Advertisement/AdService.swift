@@ -11,13 +11,17 @@ enum AdType {
     case interstitial
 }
 
+@MainActor
 final class AdService {
-    static let shared = AdService()
+    static let shared: AdService = {
+        AdService(factory: DefaultAdFactory())
+    }()
 
     private let factory: AdFactory
     private var loadedAds: [AdType: AdUnit] = [:]
+    private var isShowing = false
 
-    init(factory: AdFactory = DefaultAdFactory()) {
+    init(factory: AdFactory) {
         self.factory = factory
     }
 
@@ -34,6 +38,10 @@ final class AdService {
 
     // 광고 표시
     func showAd(_ type: AdType) async {
+        guard !isShowing else { return }
+        isShowing = true
+        defer { isShowing = false }
+
         await requestTrackingAuthorizationIfNeeded()
 
         guard let ads = await getOrLoadAd(type) else {
@@ -69,12 +77,10 @@ private extension AdService {
     }
 
     func getOrLoadAd(_ type: AdType) async -> AdUnit? {
-        if let ad = loadedAds[type], ad.isReady {
-            return ad
+        if let ads = loadedAds[type], ads.isReady {
+            return ads
         }
-
         await loadAd(type)
-
         return loadedAds[type]
     }
 }
