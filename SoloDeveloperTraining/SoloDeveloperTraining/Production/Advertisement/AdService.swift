@@ -62,19 +62,14 @@ private extension AdService {
         guard #available(iOS 14.5, *), ATTrackingManager.trackingAuthorizationStatus == .notDetermined else {
             return
         }
-
-        await withCheckedContinuation { continuation in
-            ATTrackingManager.requestTrackingAuthorization { status in
-                switch status {
-                case .authorized:
-                    print("정보 추적 허용됨")
-                case .denied, .restricted, .notDetermined:
-                    print("정보 추적 거부됨")
-                @unknown default:
-                    break
-                }
-                continuation.resume()
-            }
+        let status = await ATTrackingManager.requestTrackingAuthorization()
+        switch status {
+        case .authorized:
+            print("정보 추적 허용됨")
+        case .denied, .restricted, .notDetermined:
+            print("정보 추적 거부됨")
+        @unknown default:
+            break
         }
     }
 }
