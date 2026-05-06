@@ -41,6 +41,7 @@
 				Devlopment/CheatSystem/CheatManager.swift,
 				Devlopment/Data/Repository/DefaultAdminBalanceRepository.swift,
 				Devlopment/Presentation/AdminView.swift,
+				Devlopment/Presentation/AdView.swift,
 				Devlopment/Presentation/ContentView.swift,
 				Devlopment/Presentation/DodgeGameTestView.swift,
 				Devlopment/Presentation/LanguageGameTestView.swift,
@@ -60,7 +61,6 @@
 			membershipExceptions = (
 				"App/Info-Dev.plist",
 				App/Info.plist,
-				Production/Advertisement/AdService.swift,
 				"Production/Error/PurchasingError+UserReadableError.swift",
 				"Production/Error/SkillError+UserReadableError.swift",
 				Production/Error/UserReadableError.swift,

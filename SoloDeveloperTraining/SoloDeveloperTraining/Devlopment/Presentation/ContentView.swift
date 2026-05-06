@@ -109,6 +109,12 @@ struct ContentView: View {
                     Image(systemName: "gearshape.fill")
                     Text("어드민")
                 }
+            AdView()
+                .tag(9)
+                .tabItem {
+                    Image(systemName: "storefront.fill")
+                    Text("광고")
+                }
         }
     }
 }
