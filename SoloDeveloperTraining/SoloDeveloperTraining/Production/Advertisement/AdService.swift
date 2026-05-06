@@ -17,13 +17,6 @@ final class AdService {
 
     static let shared = AdService()
 
-    private let hasATTRequestedKey = "AdService.hasATTRequested"
-
-    private var hasATTRequested: Bool {
-        get { UserDefaults.standard.bool(forKey: hasATTRequestedKey) }
-        set { UserDefaults.standard.set(newValue, forKey: hasATTRequestedKey) }
-    }
-
     private var loadedAds: [AdType: AdUnit] = [:]
 
     private init() {}
@@ -66,18 +59,18 @@ final class AdService {
 
 private extension AdService {
     func requestTrackingAuthorizationIfNeeded() {
-        // 이미 ATT 요청했거나, iOS 14 미만이면 무시
-        guard #available(iOS 14.5, *), !hasATTRequested else { return }
+        // 이미 ATT 요청했거나, iOS 14.5 미만이면 무시
+        guard #available(iOS 14.5, *), ATTrackingManager.trackingAuthorizationStatus == .notDetermined else {
+            return
+        }
 
         Task {
             await MainActor.run {
                 ATTrackingManager.requestTrackingAuthorization { status in
                     switch status {
                     case .authorized:
-                        self.hasATTRequested = true
                         print("정보 추적 허용됨")
                     case .denied, .restricted, .notDetermined:
-                        self.hasATTRequested = true
                         print("정보 추적 거부됨")
                     @unknown default:
                         break
