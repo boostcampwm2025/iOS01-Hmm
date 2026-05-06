@@ -17,22 +17,29 @@ final class AdService {
 
     static let shared = AdService()
 
+    private let hasATTRequestedKey = "AdService.hasATTRequested"
+
+    private var hasATTRequested: Bool {
+        get { UserDefaults.standard.bool(forKey: hasATTRequestedKey) }
+        set { UserDefaults.standard.set(newValue, forKey: hasATTRequestedKey) }
+    }
+
     private var loadedAds: [AdType: AdUnit] = [:]
 
     private init() {}
 
     // 광고 로드
     func loadAd(_ type: AdType) async {
-        let ad: AdUnit
+        let ads: AdUnit
 
         switch type {
         case .interstitial:
-            ad = InterstitialAdUnit()
+            ads = InterstitialAdUnit()
         }
 
         do {
-            try await ad.load()
-            loadedAds[type] = ad
+            try await ads.load()
+            loadedAds[type] = ads
         } catch {
             print("❌ Ad load failed: \(error.localizedDescription)")
         }
@@ -40,17 +47,43 @@ final class AdService {
 
     // 광고 표시
     func showAd(_ type: AdType) {
-        guard let ad = loadedAds[type], ad.isReady else {
+        requestTrackingAuthorizationIfNeeded()
+
+        guard let ads = loadedAds[type], ads.isReady else {
             print("⚠️ Ad not ready")
             return
         }
 
-        ad.show()
+        ads.show()
         loadedAds.removeValue(forKey: type)
 
         // 다음 광고 preload
         Task {
             await loadAd(type)
+        }
+    }
+}
+
+private extension AdService {
+    func requestTrackingAuthorizationIfNeeded() {
+        // 이미 ATT 요청했거나, iOS 14 미만이면 무시
+        guard #available(iOS 14.5, *), !hasATTRequested else { return }
+
+        Task {
+            await MainActor.run {
+                ATTrackingManager.requestTrackingAuthorization { status in
+                    switch status {
+                    case .authorized:
+                        self.hasATTRequested = true
+                        print("정보 추적 허용됨")
+                    case .denied, .restricted, .notDetermined:
+                        self.hasATTRequested = true
+                        print("정보 추적 거부됨")
+                    @unknown default:
+                        break
+                    }
+                }
+            }
         }
     }
 }
