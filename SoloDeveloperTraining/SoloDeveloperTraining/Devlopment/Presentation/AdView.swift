@@ -18,8 +18,5 @@ struct AdView: View {
                 }
             }
         }
-        .task {
-            await AdService.shared.loadAd(.interstitial)
-        }
     }
 }

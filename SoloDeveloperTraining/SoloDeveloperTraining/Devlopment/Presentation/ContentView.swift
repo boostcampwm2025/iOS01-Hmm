@@ -122,6 +122,9 @@ struct ContentView: View {
                     Text("광고")
                 }
         }
+        .task {
+            await AdService.shared.loadAd(.interstitial)
+        }
     }
 }
 
