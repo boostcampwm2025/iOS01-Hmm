@@ -7,6 +7,7 @@
 
 import SwiftUI
 import FirebaseCore
+import GoogleMobileAds
 
 private enum Constant {
     enum Animation {
@@ -30,6 +31,7 @@ struct SoloDeveloperTrainingApp: App {
     // Firebase 초기화
     init() {
         FirebaseApp.configure()
+        MobileAds.shared.start()
     }
 
     @State private var hasSeenIntro = false

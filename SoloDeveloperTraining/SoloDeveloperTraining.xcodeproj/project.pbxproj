@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		283B980E2FAB24750033B924 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 283B980D2FAB24750033B924 /* GoogleMobileAds */; };
 		28FB12B02F9B5EA8004FCBB3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */; };
 		28FB12B22F9B5EB1004FCBB3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 28FB12B12F9B5EB1004FCBB3 /* FirebaseFirestore */; };
 		BC19336F2F8FC7110033A27E /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BC19336E2F8FC7110033A27E /* FirebaseAnalytics */; };
@@ -106,6 +107,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				283B980E2FAB24750033B924 /* GoogleMobileAds in Frameworks */,
 				BC1933712F8FC7110033A27E /* FirebaseCore in Frameworks */,
 				BC19336F2F8FC7110033A27E /* FirebaseAnalytics in Frameworks */,
 				28FB12B02F9B5EA8004FCBB3 /* FirebaseFirestore in Frameworks */,
@@ -183,6 +185,7 @@
 				BC19336E2F8FC7110033A27E /* FirebaseAnalytics */,
 				BC1933702F8FC7110033A27E /* FirebaseCore */,
 				28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */,
+				283B980D2FAB24750033B924 /* GoogleMobileAds */,
 			);
 			productName = SoloDeveloperTraining;
 			productReference = 08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */;
@@ -775,6 +778,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		283B980D2FAB24750033B924 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 283B95DB2FA9D44B0033B924 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
 		28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
