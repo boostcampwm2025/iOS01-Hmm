@@ -5,60 +5,52 @@
 //  Created by sunjae on 5/6/26.
 //
 
-import Foundation
+import UIKit
+import GoogleMobileAds
 import AppTrackingTransparency
 
 enum AdType {
-    case interstitial // 추가 ..
+    case interstitial
 }
 
 final class AdService {
+
     static let shared = AdService()
 
-    private let hasATTRequestedKey = "AdService.hasATTRequested"
-    private var hasATTRequested: Bool {
-        get {
-            UserDefaults.standard.bool(forKey: hasATTRequestedKey)
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: hasATTRequestedKey)
-        }
-    }
+    private var loadedAds: [AdType: AdUnit] = [:]
 
-    func showAd(of type: AdType) {
-        requestTrackingAuthorizationIfNeeded()
+    private init() {}
+
+    // 광고 로드
+    func loadAd(_ type: AdType) async {
+        let ad: AdUnit
 
         switch type {
         case .interstitial:
-            loadInterstitialAd()
+            ad = InterstitialAdUnit()
+        }
+
+        do {
+            try await ad.load()
+            loadedAds[type] = ad
+        } catch {
+            print("❌ Ad load failed: \(error.localizedDescription)")
         }
     }
-}
 
-private extension AdService {
-    func requestTrackingAuthorizationIfNeeded() {
-        // 이미 ATT 요청했거나, iOS 14 미만이면 무시
-        guard #available(iOS 14.5, *), !hasATTRequested else { return }
+    // 광고 표시
+    func showAd(_ type: AdType) {
+        guard let ad = loadedAds[type], ad.isReady else {
+            print("⚠️ Ad not ready")
+            return
+        }
 
+        ad.show()
+        loadedAds.removeValue(forKey: type)
+
+        // 다음 광고 preload
         Task {
-            await MainActor.run {
-                ATTrackingManager.requestTrackingAuthorization { status in
-                    switch status {
-                    case .authorized:
-                        self.hasATTRequested = true
-                        print("정보 추적 허용됨")
-                    case .denied, .restricted, .notDetermined:
-                        self.hasATTRequested = true
-                        print("정보 추적 거부됨")
-                    @unknown default:
-                        break
-                    }
-                }
-            }
+            await loadAd(type)
         }
-    }
-
-    private func loadInterstitialAd() {
-        print("전면 광고 로드")
     }
 }
