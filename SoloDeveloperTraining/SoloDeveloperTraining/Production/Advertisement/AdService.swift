@@ -5,8 +5,6 @@
 //  Created by sunjae on 5/6/26.
 //
 
-import UIKit
-import GoogleMobileAds
 import AppTrackingTransparency
 
 enum AdType {

@@ -5,7 +5,6 @@
 //  Created by sunjae on 5/6/26.
 //
 
-
 protocol AdFactory {
     func makeAdUnit(for type: AdType) -> AdUnit
 }

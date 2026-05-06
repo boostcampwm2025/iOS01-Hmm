@@ -8,7 +8,6 @@
 import GoogleMobileAds
 
 final class InterstitialAdUnit: NSObject, AdUnit {
-
     private var interstitialAd: InterstitialAd?
 
     var adUnitID: String = "ca-app-pub-3940256099942544/4411468910"
