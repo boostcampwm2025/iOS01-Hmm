@@ -57,4 +57,16 @@ final class Inventory {
     func gain(consumable: ConsumableType) {
         consumableItems.filter { $0.type == consumable }.first?.addItem()
     }
+
+    /// 환생 시 인벤토리 초기화
+    func resetToIntial() {
+        // 모든 장비를 broken tier로 초기화
+        equipmentItems.forEach { $0.reset() }
+
+        // 모든 소비 아이템 개수를 0으로 초기화
+        consumableItems.forEach { $0.reset() }
+
+        // 부동산을 street로 초기화
+        housing = .initial
+    }
 }

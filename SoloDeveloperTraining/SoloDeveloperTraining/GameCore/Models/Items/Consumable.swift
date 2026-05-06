@@ -46,6 +46,11 @@ final class Consumable: Item {
     func spendItem() {
         count -= 1
     }
+
+    /// 환생 시 소비 아이템 개수 초기화
+    func reset() {
+        count = 0
+    }
 }
 
 /// 소비 아이템 종류
