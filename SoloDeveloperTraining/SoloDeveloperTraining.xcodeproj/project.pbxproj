@@ -46,6 +46,7 @@
 				Devlopment/Presentation/MissionTestView.swift,
 				Devlopment/Presentation/QuizGameTestContentView.swift,
 				Devlopment/Presentation/QuizGameTestView.swift,
+				Devlopment/Presentation/RebirthTestView.swift,
 				Devlopment/Presentation/ScenarioTestView.swift,
 				Devlopment/Presentation/ShopTestView.swift,
 				Devlopment/Presentation/SkillTestView.swift,

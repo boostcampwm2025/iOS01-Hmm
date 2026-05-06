@@ -115,6 +115,12 @@ struct ContentView: View {
                     Image(systemName: "book.pages")
                     Text("선택형 구조")
                 }
+            RebirthTestView()
+                .tag(10)
+                .tabItem {
+                    Image(systemName: "arrow.clockwise.circle")
+                    Text("환생")
+                }
         }
     }
 }
