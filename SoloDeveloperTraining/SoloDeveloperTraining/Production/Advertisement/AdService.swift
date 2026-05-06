@@ -36,7 +36,7 @@ final class AdService {
     func showAd(_ type: AdType) async {
         await requestTrackingAuthorizationIfNeeded()
 
-        guard let ads = loadedAds[type], ads.isReady else {
+        guard let ads = await getOrLoadAd(type) else {
             print("⚠️ Ad not ready")
             return
         }
@@ -66,5 +66,15 @@ private extension AdService {
         @unknown default:
             break
         }
+    }
+
+    func getOrLoadAd(_ type: AdType) async -> AdUnit? {
+        if let ad = loadedAds[type], ad.isReady {
+            return ad
+        }
+
+        await loadAd(type)
+
+        return loadedAds[type]
     }
 }
