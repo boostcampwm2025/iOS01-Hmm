@@ -39,7 +39,7 @@ final class InterstitialAdUnit: NSObject, AdUnit {
 extension InterstitialAdUnit: FullScreenContentDelegate {
     // 광고 표시에 실패한 경우
     func ad(
-        _ ad: FullScreenPresentingAd,
+        _ ads: FullScreenPresentingAd,
         didFailToPresentFullScreenContentWithError error: Error
     ) {
         print("\(#function) called")
@@ -47,7 +47,7 @@ extension InterstitialAdUnit: FullScreenContentDelegate {
     }
 
     // 광고 화면이 닫혔을 경우
-    func adDidDismissFullScreenContent(_ ad: FullScreenPresentingAd) {
+    func adDidDismissFullScreenContent(_ ads: FullScreenPresentingAd) {
         print("\(#function) called")
         interstitialAd = nil
     }
