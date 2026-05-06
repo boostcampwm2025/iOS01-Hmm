@@ -59,7 +59,7 @@ final class Inventory {
     }
 
     /// 환생 시 인벤토리 초기화
-    func resetToIntial() {
+    func resetToInitial() {
         // 모든 장비를 broken tier로 초기화
         equipmentItems.forEach { $0.reset() }
 
