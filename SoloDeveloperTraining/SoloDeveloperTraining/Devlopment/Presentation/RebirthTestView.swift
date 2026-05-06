@@ -69,74 +69,80 @@ final class RebirthTestViewModel {
 
     // MARK: - Cheat Functions
 
-    func injectGameStats() {
-        testUser.record.totalTapCount = 15000
-        testUser.record.totalEarnedMoney = 10000000
-        testUser.record.totalSpentMoney = 5000000
-        testUser.record.languageCorrectCount = 800
-        testUser.record.languageConsecutiveCorrect = 25
-        testUser.record.dodgeGoldCollectedCount = 300
-        testUser.record.dodgeMaxCombo = 150
-        testUser.record.dodgeBugAvoidedCount = 1000
-        testUser.record.stackingSuccessCount = 500
-        testUser.record.coffeeUseCount = 50
-        testUser.record.energyDrinkUseCount = 30
-
-        print("✅ 게임 통계 주입 완료")
-    }
-
-    func addCurrency(gold: Int = 999999, diamond: Int = 500) {
-        testUser.wallet.addGold(gold)
-        testUser.wallet.addDiamond(diamond)
-        print("✅ 재화 추가: 골드 +\(gold), 다이아 +\(diamond)")
-    }
-
-    func levelUpSkills(to level: Int = 10) {
-        for skill in testUser.skills {
-            for _ in 0..<level {
-                try? skill.upgrade()
-            }
-        }
-        print("✅ 모든 스킬 Lv.\(level)로 설정")
-    }
-
-    func setCareer(_ career: Career) {
-        testUser.updateCareer(to: career)
-        print("✅ 커리어 변경: \(career.rawValue)")
-    }
-
-    func addPlayTime(hours: Int) {
-        testUser.record.totalPlayTime += TimeInterval(hours * 3600)
-        print("✅ 플레이타임 추가: +\(hours)시간")
-    }
-
-    func completeAchievements() {
-        testUser.record.tutorialCompleted = true
-        testUser.record.hasAchievedJuniorDeveloper = true
-        print("✅ 튜토리얼 및 업적 완료")
-    }
-
     func setChoice(for career: Career, choice: ChoiceResult) {
         selectedChoices[career] = choice
         testUser.record.choiceHistory[career] = choice
-        print("✅ \(career.rawValue) 선택: \(choice.rawValue)")
     }
 
     func injectAllTestData() {
-        injectGameStats()
-        addCurrency()
-        levelUpSkills()
-        setCareer(.worldClassDeveloper)
-        addPlayTime(hours: 5)
-        completeAchievements()
+        // [커리어 & 재화]
+        testUser.updateCareer(to: .worldClassDeveloper)
+        testUser.wallet.addGold(9_999_999)
+        testUser.wallet.addDiamond(999)
 
-        // 4개 이벤트 선택 (기본값)
+        // [재무 기록]
+        testUser.record.totalEarnedMoney = 50_000_000
+        testUser.record.totalSpentMoney = 30_000_000
+        testUser.record.totalSkillUpgradeCost = 5_000_000
+        testUser.record.totalEquipmentEnhancementCost = 8_000_000
+        testUser.record.totalConsumablePurchaseCost = 500_000
+        testUser.record.totalHousingMoveCost = 2_000_000
+
+        // [게임 통계]
+        testUser.record.totalTapCount = 25_000
+        testUser.record.languageCorrectCount = 1_500
+        testUser.record.languageConsecutiveCorrect = 50
+        testUser.record.dodgeGoldCollectedCount = 800
+        testUser.record.dodgeMaxCombo = 250
+        testUser.record.dodgeBugAvoidedCount = 2_000
+        testUser.record.dodgeBugCollectCount = 500
+        testUser.record.stackingSuccessCount = 1_200
+        testUser.record.stackConsecutiveSuccess = 30
+
+        // [소모품 사용]
+        testUser.record.coffeeUseCount = 100
+        testUser.record.energyDrinkUseCount = 80
+
+        // [업적]
+        testUser.record.tutorialCompleted = true
+        testUser.record.hasAchievedJuniorDeveloper = true
+
+        // [시나리오 - 4개 이벤트 선택]
         setChoice(for: .juniorDeveloper, choice: .optionA)
         setChoice(for: .nightOwlDeveloper, choice: .optionB)
         setChoice(for: .famousDeveloper, choice: .optionA)
         setChoice(for: .worldClassDeveloper, choice: .optionB)
 
-        print("🎉 모든 테스트 데이터 주입 완료")
+        // [스킬 - 모든 스킬 Lv.10]
+        for skill in testUser.skills {
+            for _ in 0..<10 {
+                try? skill.upgrade()
+            }
+        }
+
+        // [인벤토리 - 장비 업그레이드]
+        for equipment in testUser.inventory.equipmentItems {
+            for _ in 0..<5 {  // 5번 정도 업그레이드 시도
+                _ = equipment.upgraded()
+            }
+        }
+
+        // [인벤토리 - 부동산]
+        testUser.inventory.housing = Housing(tier: .pentHouse)
+
+        // [누적 플레이타임]
+        testUser.record.totalPlayTime += TimeInterval(10 * 3600)  // 10시간 추가
+
+        // [미션 - 통계 반영 후 상태 업데이트 및 일부 수령 완료 처리]
+        testUser.record.missionSystem.updateCompletedMissions(record: testUser.record)
+
+        // 완료 가능한 미션 중 절반 정도를 수령 완료 상태로 변경
+        let claimableMissions = testUser.record.missionSystem.missions.filter { $0.state == .claimable }
+        for (index, mission) in claimableMissions.enumerated() {
+            if index % 2 == 0 {  // 절반만 claimed 처리
+                _ = mission.claim()
+            }
+        }
     }
 
     func resetTestUser() {
@@ -144,16 +150,12 @@ final class RebirthTestViewModel {
         selectedChoices.removeAll()
         currentRebirthPageIndex = 0
         isShowingRebirthStory = false
-        print("🔄 테스트 유저 완전 리셋")
     }
 
     // MARK: - Rebirth Flow
 
     func startRebirth() {
         guard canRebirth else { return }
-
-        // 환생 전 스냅샷 출력
-        print("\n" + captureState(label: "환생 전"))
 
         // 환생 스토리 시작
         currentRebirthPageIndex = 0
@@ -171,69 +173,12 @@ final class RebirthTestViewModel {
         // 환생 실행
         testUser.resetForRebirth(ending: ending)
 
-        // 환생 후 스냅샷 출력
-        print("\n" + captureState(label: "환생 후"))
-
         // UI 초기화
         isShowingRebirthStory = false
         currentRebirthPageIndex = 0
         selectedChoices.removeAll()
-
-        print("\n🎉 환생 완료! 환생 횟수: \(testUser.record.rebirthCount)")
     }
 
-    // MARK: - State Capture
-
-    private func captureState(label: String) -> String {
-        """
-        [\(label) 상태]
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-        ✅ 유지될 데이터
-        - 닉네임: \(testUser.nickname)
-        - 환생 횟수: \(testUser.record.rebirthCount)
-        - 달성 엔딩 수: \(testUser.record.allEndingsAchieved.count)
-        - 누적 플레이타임: \(formatTime(testUser.record.totalPlayTime))
-
-        🔄 초기화될 데이터
-        [커리어 & 재화]
-        - 커리어: \(testUser.career.rawValue)
-        - 골드: \(testUser.wallet.gold)
-        - 다이아: \(testUser.wallet.diamond)
-
-        [게임 통계]
-        - 총 탭: \(testUser.record.totalTapCount)
-        - 누적 획득: \(testUser.record.totalEarnedMoney)
-        - 언어 맞춤: \(testUser.record.languageCorrectCount)
-        - 최고 콤보: \(testUser.record.dodgeMaxCombo)
-
-        [업적]
-        - 튜토리얼: \(testUser.record.tutorialCompleted ? "✅" : "❌")
-        - 하찮은개발자: \(testUser.record.hasAchievedJuniorDeveloper ? "✅" : "❌")
-
-        [시나리오]
-        - 선택 기록: \(testUser.record.choiceHistory.count)개
-
-        [미션]
-        - 총 미션: \(testUser.record.missionSystem.allCount)개
-        - 달성: \(testUser.record.missionSystem.claimedCount)개
-
-        [스킬]
-        - 평균 레벨: \(String(format: "%.1f", averageSkillLevel()))
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        """
-    }
-
-    private func formatTime(_ seconds: TimeInterval) -> String {
-        let hours = Int(seconds) / 3600
-        let minutes = (Int(seconds) % 3600) / 60
-        return "\(hours)시간 \(minutes)분"
-    }
-
-    private func averageSkillLevel() -> Double {
-        let totalLevel = testUser.skills.reduce(0) { $0 + $1.level }
-        return Double(totalLevel) / Double(testUser.skills.count)
-    }
 }
 
 // MARK: - View
@@ -276,35 +221,7 @@ struct RebirthTestView: View {
                 .font(.headline)
 
             VStack(spacing: 8) {
-                HStack(spacing: 8) {
-                    Button("게임통계 주입") {
-                        viewModel.injectGameStats()
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(.blue)
-
-                    Button("재화 추가") {
-                        viewModel.addCurrency()
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(.yellow)
-                }
-
-                HStack(spacing: 8) {
-                    Button("스킬 Lv.10") {
-                        viewModel.levelUpSkills(to: 10)
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(.purple)
-
-                    Button("업적 완료") {
-                        viewModel.completeAchievements()
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(.green)
-                }
-
-                Button("✨ 모든 데이터 주입 (한번에)") {
+                Button("✨ 모든 데이터 주입") {
                     viewModel.injectAllTestData()
                 }
                 .buttonStyle(.borderedProminent)
@@ -370,30 +287,74 @@ struct RebirthTestView: View {
                         .font(.subheadline)
                         .foregroundColor(.red)
 
-                    VStack(spacing: 4) {
-                        HStack {
-                            Text("커리어:")
-                            Spacer()
-                            Text(viewModel.testUser.career.rawValue)
-                                .bold()
+                    VStack(spacing: 8) {
+                        // 커리어 & 재화
+                        dataGroup(title: "[커리어 & 재화]") {
+                            dataRow("커리어", viewModel.testUser.career.rawValue)
+                            dataRow("골드", "\(viewModel.testUser.wallet.gold)")
+                            dataRow("다이아", "\(viewModel.testUser.wallet.diamond)")
                         }
-                        HStack {
-                            Text("골드:")
-                            Spacer()
-                            Text("\(viewModel.testUser.wallet.gold)")
-                                .bold()
+
+                        // 재무 기록
+                        dataGroup(title: "[재무 기록]") {
+                            dataRow("누적 획득", "\(viewModel.testUser.record.totalEarnedMoney)")
+                            dataRow("누적 소비", "\(viewModel.testUser.record.totalSpentMoney)")
+                            dataRow("스킬 업그레이드 비용", "\(viewModel.testUser.record.totalSkillUpgradeCost)")
+                            dataRow("장비 강화 비용", "\(viewModel.testUser.record.totalEquipmentEnhancementCost)")
+                            dataRow("소모품 구매 비용", "\(viewModel.testUser.record.totalConsumablePurchaseCost)")
+                            dataRow("부동산 이사 비용", "\(viewModel.testUser.record.totalHousingMoveCost)")
                         }
-                        HStack {
-                            Text("총 탭:")
-                            Spacer()
-                            Text("\(viewModel.testUser.record.totalTapCount)")
-                                .bold()
+
+                        // 게임 통계
+                        dataGroup(title: "[게임 통계]") {
+                            dataRow("총 탭 횟수", "\(viewModel.testUser.record.totalTapCount)")
+                            dataRow("언어 정답 수", "\(viewModel.testUser.record.languageCorrectCount)")
+                            dataRow("언어 연속 정답", "\(viewModel.testUser.record.languageConsecutiveCorrect)")
+                            dataRow("회피 골드 획득", "\(viewModel.testUser.record.dodgeGoldCollectedCount)")
+                            dataRow("회피 최고 콤보", "\(viewModel.testUser.record.dodgeMaxCombo)")
+                            dataRow("회피 버그 회피", "\(viewModel.testUser.record.dodgeBugAvoidedCount)")
+                            dataRow("회피 버그 수집", "\(viewModel.testUser.record.dodgeBugCollectCount)")
+                            dataRow("스택 성공", "\(viewModel.testUser.record.stackingSuccessCount)")
+                            dataRow("스택 연속 성공", "\(viewModel.testUser.record.stackConsecutiveSuccess)")
                         }
-                        HStack {
-                            Text("선택 기록:")
-                            Spacer()
-                            Text("\(viewModel.testUser.record.choiceHistory.count)개")
-                                .bold()
+
+                        // 소모품 사용
+                        dataGroup(title: "[소모품 사용]") {
+                            dataRow("커피", "\(viewModel.testUser.record.coffeeUseCount)회")
+                            dataRow("에너지드링크", "\(viewModel.testUser.record.energyDrinkUseCount)회")
+                        }
+
+                        // 업적
+                        dataGroup(title: "[업적]") {
+                            dataRow("튜토리얼", viewModel.testUser.record.tutorialCompleted ? "✅" : "❌")
+                            dataRow("하찮은개발자 달성", viewModel.testUser.record.hasAchievedJuniorDeveloper ? "✅" : "❌")
+                        }
+
+                        // 시나리오
+                        dataGroup(title: "[시나리오]") {
+                            dataRow("선택 기록", "\(viewModel.testUser.record.choiceHistory.count)개")
+                            dataRow("진행도 (현재 커리어)", viewModel.testUser.record.scenarioProgress.currentCareer?.rawValue ?? "없음")
+                        }
+
+                        // 스킬
+                        dataGroup(title: "[스킬]") {
+                            dataRow("총 스킬 수", "\(viewModel.testUser.skills.count)개")
+                            dataRow("평균 레벨", String(format: "%.1f", averageSkillLevel(viewModel.testUser.skills)))
+                        }
+
+                        // 미션
+                        dataGroup(title: "[미션]") {
+                            dataRow("총 미션", "\(viewModel.testUser.record.missionSystem.allCount)개")
+                            dataRow("달성", "\(viewModel.testUser.record.missionSystem.claimedCount)개")
+                        }
+
+                        // 인벤토리
+                        dataGroup(title: "[인벤토리]") {
+                            dataRow("부동산", viewModel.testUser.inventory.housing.displayTitle)
+                            dataRow("장비 (키보드)", viewModel.testUser.inventory.equipmentItems.first { $0.type == .keyboard }?.displayTitle ?? "없음")
+                            dataRow("장비 (마우스)", viewModel.testUser.inventory.equipmentItems.first { $0.type == .mouse }?.displayTitle ?? "없음")
+                            dataRow("장비 (모니터)", viewModel.testUser.inventory.equipmentItems.first { $0.type == .monitor }?.displayTitle ?? "없음")
+                            dataRow("장비 (의자)", viewModel.testUser.inventory.equipmentItems.first { $0.type == .chair }?.displayTitle ?? "없음")
                         }
                     }
                     .font(.caption)
@@ -574,6 +535,35 @@ struct RebirthTestView: View {
         .padding()
         .background(Color.red.opacity(0.05))
         .cornerRadius(12)
+    }
+
+    // MARK: - Helper View Builders
+
+    @ViewBuilder
+    private func dataGroup<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption2)
+                .foregroundColor(.secondary)
+                .bold()
+            content()
+        }
+    }
+
+    private func dataRow(_ label: String, _ value: String) -> some View {
+        HStack {
+            Text(label + ":")
+                .foregroundColor(.primary.opacity(0.8))
+            Spacer()
+            Text(value)
+                .bold()
+        }
+    }
+
+    private func averageSkillLevel(_ skills: Set<Skill>) -> Double {
+        guard !skills.isEmpty else { return 0.0 }
+        let totalLevel = skills.reduce(0) { $0 + $1.level }
+        return Double(totalLevel) / Double(skills.count)
     }
 }
 
