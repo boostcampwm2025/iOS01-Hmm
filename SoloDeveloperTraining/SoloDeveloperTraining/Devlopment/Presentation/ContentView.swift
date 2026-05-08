@@ -115,12 +115,21 @@ struct ContentView: View {
                     Image(systemName: "book.pages")
                     Text("선택형 구조")
                 }
-            RebirthTestView()
+            AdView()
                 .tag(10)
+                .tabItem {
+                    Image(systemName: "storefront.fill")
+                    Text("광고")
+                }
+            RebirthTestView()
+                .tag(11)
                 .tabItem {
                     Image(systemName: "arrow.clockwise.circle")
                     Text("환생")
                 }
+        }
+        .task {
+            await AdService.shared.loadAd(.interstitial)
         }
     }
 }
