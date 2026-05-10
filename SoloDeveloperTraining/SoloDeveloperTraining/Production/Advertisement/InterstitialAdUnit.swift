@@ -11,6 +11,7 @@ final class InterstitialAdUnit: NSObject, AdUnit {
     private var interstitialAd: InterstitialAd?
     private var adUnitID: String = "ca-app-pub-3940256099942544/4411468910"
     private var continuation: CheckedContinuation<Void, Never>?
+    private var resultContinuation: CheckedContinuation<Bool, Never>?
 
     var isReady: Bool {
         return interstitialAd != nil
@@ -39,6 +40,22 @@ final class InterstitialAdUnit: NSObject, AdUnit {
             interstitialAd.present(from: nil)
         }
     }
+
+    func showWithResult() async -> Bool {
+        guard let interstitialAd else {
+            print("❌ Ad not ready")
+            return false
+        }
+        guard continuation == nil, resultContinuation == nil else {
+            print("⚠️ Ad is already showing")
+            return false
+        }
+
+        return await withCheckedContinuation { con in
+            self.resultContinuation = con
+            interstitialAd.present(from: nil)
+        }
+    }
 }
 
 // MARK: - 광고 표시/진행/노출 콜백 메서드
@@ -51,6 +68,8 @@ extension InterstitialAdUnit: FullScreenContentDelegate {
         print("\(#function) called")
         continuation?.resume()
         continuation = nil
+        resultContinuation?.resume(returning: false)
+        resultContinuation = nil
         interstitialAd = nil
     }
 
@@ -59,6 +78,8 @@ extension InterstitialAdUnit: FullScreenContentDelegate {
         print("\(#function) called")
         continuation?.resume()
         continuation = nil
+        resultContinuation?.resume(returning: true)
+        resultContinuation = nil
         interstitialAd = nil
     }
 }

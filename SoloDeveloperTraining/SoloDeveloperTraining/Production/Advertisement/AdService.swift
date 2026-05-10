@@ -36,6 +36,29 @@ final class AdService {
         }
     }
 
+    // 광고 표시 후 결과 반환 (true: 정상 시청 완료, false: 실패)
+    func showAdWithResult(_ type: AdType) async -> Bool {
+        guard !isShowing else { return false }
+        isShowing = true
+        defer { isShowing = false }
+
+        await requestTrackingAuthorizationIfNeeded()
+
+        guard let ads = await getOrLoadAd(type) else {
+            print("⚠️ Ad not ready")
+            return false
+        }
+
+        let result = await ads.showWithResult()
+        loadedAds.removeValue(forKey: type)
+
+        Task {
+            await loadAd(type)
+        }
+
+        return result
+    }
+
     // 광고 표시
     func showAd(_ type: AdType) async {
         guard !isShowing else { return }
