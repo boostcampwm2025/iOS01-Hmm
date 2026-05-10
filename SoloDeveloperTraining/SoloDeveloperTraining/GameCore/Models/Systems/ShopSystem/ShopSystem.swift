@@ -24,6 +24,24 @@ final class ShopSystem {
         return itemTypes.map { makeDisplayItems(for: $0) }.flatMap { $0 }
     }
 
+    /// 광고 보너스 확률이 적용된 장비 강화 구매
+    func buyEquipmentWithBonus(item: DisplayItem, bonusRate: Double) throws -> Bool {
+        guard user.wallet.canAfford(item.cost) else {
+            if item.cost.gold > 0 {
+                throw PurchasingError.insufficientGold
+            } else {
+                throw PurchasingError.insufficientDiamond
+            }
+        }
+        guard let equipment = item.item as? Equipment else {
+            throw PurchasingError.purchaseFailed
+        }
+        let cost = item.cost
+        if cost.gold > 0 { user.wallet.spendGold(cost.gold) }
+        if cost.diamond > 0 { user.wallet.spendDiamond(cost.diamond) }
+        return equipment.upgraded(bonusRate: bonusRate)
+    }
+
     /// 아이템 구매
     /// - Parameter item: 구매할 아이템
     /// - Returns: 구매 성공 여부 (장비의 경우 강화 성공/실패, 다른 아이템은 항상 true)
