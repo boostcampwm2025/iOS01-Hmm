@@ -16,6 +16,10 @@ extension View {
         self.modifier(Toast(isShowing: isShowing, message: message, duration: duration))
     }
 
+    func enhanceAdToast(isShowing: Binding<Bool>, duration: Double = 2.0) -> some View {
+        self.modifier(EnhanceAdToast(isShowing: isShowing, duration: duration))
+    }
+
     func pauseGameStyle(
         isGameViewDisappeared: Binding<Bool>,
         height: CGFloat,

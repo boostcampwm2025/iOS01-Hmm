@@ -84,6 +84,7 @@ struct SoloDeveloperTrainingApp: App {
                 }
             }
             .onAppear {
+                guard user == nil else { return }
                 loadUser()
             }
             .onChange(of: scenePhase) { _, newPhase in

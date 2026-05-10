@@ -30,6 +30,19 @@ private enum Constant {
         static let showDuration: CGFloat = 0.3
         static let hideDuration: CGFloat = 0.3
     }
+
+    enum EnhanceAd {
+        static let cornerRadius: CGFloat = 21.5
+        static let height: CGFloat = 43
+        static let backgroundColor: Color = Color(red: 39 / 255.0, green: 39 / 255.0, blue: 39 / 255.0, opacity: 0.82)
+        static let fontSize: CGFloat = 12
+        static let message: String = "강화 확률이 높아졌습니다!"
+
+        enum Padding {
+            static let horizontal: CGFloat = 16
+            static let bottom: CGFloat = 13
+        }
+    }
 }
 
 struct Toast: ViewModifier {
@@ -82,6 +95,55 @@ struct Toast: ViewModifier {
 
                     // 애니메이션 완료 후 뷰 제거 및 바인딩 리셋
                     DispatchQueue.main.asyncAfter(deadline: .now() + Constant.Animation.hideDuration) {
+                        showContent = false
+                        isShowing = false
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct EnhanceAdToast: ViewModifier {
+    @Binding var isShowing: Bool
+    let duration: Double
+
+    @State private var showContent: Bool = false
+    @State private var backgroundOpacity: Double = 0
+
+    func body(content: Content) -> some View {
+        ZStack {
+            content
+
+            if showContent {
+                VStack {
+                    Spacer()
+                    ZStack {
+                        RoundedRectangle(cornerRadius: Constant.EnhanceAd.cornerRadius)
+                            .fill(Constant.EnhanceAd.backgroundColor)
+                            .opacity(backgroundOpacity)
+                        Text(Constant.EnhanceAd.message)
+                            .font(.system(size: Constant.EnhanceAd.fontSize, weight: .regular))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, Constant.EnhanceAd.Padding.horizontal)
+                    }
+                    .frame(height: Constant.EnhanceAd.height)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .padding(.bottom, Constant.EnhanceAd.Padding.bottom)
+                }
+            }
+        }
+        .onChange(of: isShowing) { _, newValue in
+            if newValue {
+                showContent = true
+                withAnimation(.easeOut(duration: 0.3)) {
+                    backgroundOpacity = 1
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+                    withAnimation(.easeIn(duration: 0.3)) {
+                        backgroundOpacity = 0
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         showContent = false
                         isShowing = false
                     }
