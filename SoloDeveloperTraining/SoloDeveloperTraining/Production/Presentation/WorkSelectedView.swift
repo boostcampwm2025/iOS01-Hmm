@@ -197,21 +197,33 @@ private extension WorkSelectedView {
                 user: user,
                 isGameStarted: $isGameStarted,
                 isGameViewDisappeared: $isGameViewDisappeared,
-                animationSystem: animationSystem
+                animationSystem: animationSystem,
+                showDrinkAdPopup: $showDrinkAdPopup,
+                showRewardPopup: $showRewardPopup,
+                selectedDrinkType: $selectedDrinkType,
+                resumeGameCallback: $resumeGameCallback
             )
         case 2:
             DodgeGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
                 isGameViewDisappeared: $isGameViewDisappeared,
-                animationSystem: animationSystem
+                animationSystem: animationSystem,
+                showDrinkAdPopup: $showDrinkAdPopup,
+                showRewardPopup: $showRewardPopup,
+                selectedDrinkType: $selectedDrinkType,
+                resumeGameCallback: $resumeGameCallback
             )
         case 3:
             StackGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
                 isGameViewDisappeared: $isGameViewDisappeared,
-                animationSystem: animationSystem
+                animationSystem: animationSystem,
+                showDrinkAdPopup: $showDrinkAdPopup,
+                showRewardPopup: $showRewardPopup,
+                selectedDrinkType: $selectedDrinkType,
+                resumeGameCallback: $resumeGameCallback
             )
         default:
             EmptyView()
