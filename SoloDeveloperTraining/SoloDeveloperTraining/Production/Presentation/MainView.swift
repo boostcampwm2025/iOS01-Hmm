@@ -45,6 +45,12 @@ struct MainView: View {
     @State private var showQuizView: Bool = false
     @State private var showSettingsView: Bool = false
 
+    // 음료 광고 팝업 관련
+    @State private var showDrinkAdPopup: Bool = false
+    @State private var showRewardPopup: Bool = false
+    @State private var selectedDrinkType: ConsumableType?
+    @State private var resumeGameCallback: (() -> Void)?
+
     private var autoGainSystem: AutoGainSystem
     private let user: User
     private let scene: CharacterScene
@@ -88,6 +94,8 @@ struct MainView: View {
             }
             .overlay { popupOverlayView }
             .overlay { settingsOverlayView }
+            .overlay { drinkAdPopupOverlayView }
+            .overlay { drinkRewardPopupOverlayView }
             .fullScreenCover(isPresented: $showQuizView) {
                 QuizGameView(user: user)
             }
@@ -175,7 +183,11 @@ private extension MainView {
                 get: { selectedTab != .work || showQuizView },
                 set: { _ in }
             ),
-            careerSystem: $careerSystem
+            careerSystem: $careerSystem,
+            showDrinkAdPopup: $showDrinkAdPopup,
+            showRewardPopup: $showRewardPopup,
+            selectedDrinkType: $selectedDrinkType,
+            resumeGameCallback: $resumeGameCallback
         )
         .opacity(selectedTab == .work ? 1 : 0)
         .allowsHitTesting(selectedTab == .work)
@@ -194,7 +206,11 @@ private extension MainView {
                         get: { selectedTab != .work || showQuizView },
                         set: { _ in }
                     ),
-                    careerSystem: $careerSystem
+                    careerSystem: $careerSystem,
+                    showDrinkAdPopup: $showDrinkAdPopup,
+                    showRewardPopup: $showRewardPopup,
+                    selectedDrinkType: $selectedDrinkType,
+                    resumeGameCallback: $resumeGameCallback
                 )
             }
         case .skill:
@@ -272,6 +288,71 @@ private extension MainView {
                 }
             )
         }
+    }
+
+    @ViewBuilder
+    var drinkAdPopupOverlayView: some View {
+        if showDrinkAdPopup, let drinkType = selectedDrinkType {
+            ZStack {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+
+                DrinkAdPopupView(
+                    drinkType: drinkType,
+                    onWatchAd: { Task { await handleWatchAdInMainView() } },
+                    onSkip: handleSkipAdInMainView
+                )
+                .padding(.horizontal, Constant.Padding.horizontalPadding)
+            }
+        }
+    }
+
+    @ViewBuilder
+    var drinkRewardPopupOverlayView: some View {
+        if showRewardPopup, let drinkType = selectedDrinkType {
+            ZStack {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+
+                DrinkRewardPopupView(
+                    drinkType: drinkType,
+                    onConfirm: handleRewardConfirmInMainView
+                )
+                .padding(.horizontal, Constant.Padding.horizontalPadding)
+            }
+        }
+    }
+
+    func handleWatchAdInMainView() async {
+        showDrinkAdPopup = false
+
+        guard let drinkType = selectedDrinkType else { return }
+
+        // 광고 시청
+        let success = await AdService.shared.showAdWithResult(.interstitial)
+
+        if success {
+            // 보상 지급
+            user.inventory.gain(consumable: drinkType)
+
+            // 보상 팝업 표시
+            showRewardPopup = true
+        } else {
+            // 광고 실패 시 초기화
+            selectedDrinkType = nil
+        }
+    }
+
+    func handleSkipAdInMainView() {
+        showDrinkAdPopup = false
+        selectedDrinkType = nil
+        resumeGameCallback?()
+    }
+
+    func handleRewardConfirmInMainView() {
+        showRewardPopup = false
+        selectedDrinkType = nil
+        resumeGameCallback?()
     }
 }
 
