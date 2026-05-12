@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		283B980E2FAB24750033B924 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 283B980D2FAB24750033B924 /* GoogleMobileAds */; };
 		283B9A432FAB36020033B924 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 283B9A422FAB36020033B924 /* GoogleMobileAds */; };
+		28F3C5052FB37EC70077B77A /* KakaoSDKShare in Frameworks */ = {isa = PBXBuildFile; productRef = 28F3C5042FB37EC70077B77A /* KakaoSDKShare */; };
+		28F3C5072FB37EDA0077B77A /* KakaoSDKShare in Frameworks */ = {isa = PBXBuildFile; productRef = 28F3C5062FB37EDA0077B77A /* KakaoSDKShare */; };
 		28FB12B02F9B5EA8004FCBB3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */; };
 		28FB12B22F9B5EB1004FCBB3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 28FB12B12F9B5EB1004FCBB3 /* FirebaseFirestore */; };
 		BC19336F2F8FC7110033A27E /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BC19336E2F8FC7110033A27E /* FirebaseAnalytics */; };
@@ -114,6 +116,7 @@
 			files = (
 				283B980E2FAB24750033B924 /* GoogleMobileAds in Frameworks */,
 				BC1933712F8FC7110033A27E /* FirebaseCore in Frameworks */,
+				28F3C5052FB37EC70077B77A /* KakaoSDKShare in Frameworks */,
 				BC19336F2F8FC7110033A27E /* FirebaseAnalytics in Frameworks */,
 				28FB12B02F9B5EA8004FCBB3 /* FirebaseFirestore in Frameworks */,
 			);
@@ -125,6 +128,7 @@
 			files = (
 				283B9A432FAB36020033B924 /* GoogleMobileAds in Frameworks */,
 				BCC0EAD02F8FE90D00D7A84A /* FirebaseCore in Frameworks */,
+				28F3C5072FB37EDA0077B77A /* KakaoSDKShare in Frameworks */,
 				BCC0EACE2F8FE90700D7A84A /* FirebaseAnalytics in Frameworks */,
 				28FB12B22F9B5EB1004FCBB3 /* FirebaseFirestore in Frameworks */,
 			);
@@ -192,6 +196,7 @@
 				BC1933702F8FC7110033A27E /* FirebaseCore */,
 				28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */,
 				283B980D2FAB24750033B924 /* GoogleMobileAds */,
+				28F3C5042FB37EC70077B77A /* KakaoSDKShare */,
 			);
 			productName = SoloDeveloperTraining;
 			productReference = 08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */;
@@ -219,6 +224,7 @@
 				BCC0EACF2F8FE90D00D7A84A /* FirebaseCore */,
 				28FB12B12F9B5EB1004FCBB3 /* FirebaseFirestore */,
 				283B9A422FAB36020033B924 /* GoogleMobileAds */,
+				28F3C5062FB37EDA0077B77A /* KakaoSDKShare */,
 			);
 			productName = SoloDeveloperTraining;
 			productReference = 2896AE422F100CD600D38732 /* SoloDeveloperTraining-Dev.app */;
@@ -278,6 +284,7 @@
 			packageReferences = (
 				BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				283B95DB2FA9D44B0033B924 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+				28F3C5032FB37EA70077B77A /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 08267F2C2F0D06BC005A0066 /* Products */;
@@ -774,6 +781,14 @@
 				minimumVersion = 13.3.0;
 			};
 		};
+		28F3C5032FB37EA70077B77A /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -794,6 +809,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 283B95DB2FA9D44B0033B924 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
 			productName = GoogleMobileAds;
+		};
+		28F3C5042FB37EC70077B77A /* KakaoSDKShare */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28F3C5032FB37EA70077B77A /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKShare;
+		};
+		28F3C5062FB37EDA0077B77A /* KakaoSDKShare */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28F3C5032FB37EA70077B77A /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKShare;
 		};
 		28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;
