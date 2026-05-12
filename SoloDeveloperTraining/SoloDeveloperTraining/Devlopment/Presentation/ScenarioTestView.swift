@@ -250,11 +250,7 @@ struct ScenarioTestView: View {
             Color.black.opacity(0.3)
                 .ignoresSafeArea()
                 .onTapGesture { isShareSheetPresented = false }
-            ShareSheetView(
-                onClose: {
-                    isShareSheetPresented = false
-                }
-            )
+            ShareSheetView(isPresented: $isShareSheetPresented)
         }
     }
 

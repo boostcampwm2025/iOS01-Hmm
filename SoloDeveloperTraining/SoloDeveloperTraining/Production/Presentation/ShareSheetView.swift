@@ -19,7 +19,8 @@ private enum Constant {
 }
 
 struct ShareSheetView: View {
-    let onClose: () -> Void
+    @Binding var isPresented: Bool
+    @State private var isCopied = false
 
     var body: some View {
         Popup(title: "SNS 공유") {
@@ -30,6 +31,7 @@ struct ShareSheetView: View {
                         title: "링크 복사",
                         action: {
                             ShareService.copyLink(urlString: Constant.urlStirng)
+                            isCopied = true
                         }
                     )
 
@@ -55,6 +57,7 @@ struct ShareSheetView: View {
             closeButton
         }
         .padding(.horizontal, Constant.horizontalPadding)
+        .toast(isShowing: $isCopied, message: "링크가 복사되었습니다.")
     }
 }
 
@@ -63,7 +66,7 @@ private extension ShareSheetView {
         HStack {
             Spacer()
             MediumButton(title: "닫기", isFilled: true) {
-                onClose()
+                isPresented = false
             }
             Spacer()
         }
@@ -96,5 +99,5 @@ private extension ShareSheetView {
 }
 
 #Preview {
-    ShareSheetView(onClose: {})
+    ShareSheetView(isPresented: .constant(true))
 }
