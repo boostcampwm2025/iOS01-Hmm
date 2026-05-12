@@ -120,6 +120,11 @@ final class ScenarioTestViewModel {
         )
     }
 
+    var endingTitle: String {
+        guard let ending = finalEnding else { return "" }
+        return ending.title
+    }
+
     // MARK: - Actions
 
     func startScenario() {
@@ -238,6 +243,20 @@ final class ScenarioTestViewModel {
 
 struct ScenarioTestView: View {
     @State private var viewModel = ScenarioTestViewModel()
+    @State private var isShareSheetPresented = false
+
+    var shareSheetOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.3)
+                .ignoresSafeArea()
+                .onTapGesture { isShareSheetPresented = false }
+            ShareSheetView(
+                onClose: {
+                    isShareSheetPresented = false
+                }
+            )
+        }
+    }
 
     var body: some View {
         ScrollView {
@@ -443,7 +462,9 @@ struct ScenarioTestView: View {
                         // Final 엔딩 버튼
                         if viewModel.isFinalChoiceComplete {
                             VStack(spacing: 8) {
-                                Button(action: {}) {
+                                Button {
+                                    isShareSheetPresented = true
+                                } label: {
                                     HStack {
                                         Image(systemName: "square.and.arrow.up")
                                         Text("공유하기")
@@ -521,10 +542,16 @@ struct ScenarioTestView: View {
             }
             .padding(.top)
         }
+        .overlay {
+            if isShareSheetPresented {
+                shareSheetOverlay
+            }
+        }
         .navigationTitle("시나리오 테스트")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
+
 
 // ScenarioType description extension
 extension ScenarioType {
