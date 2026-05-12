@@ -191,12 +191,7 @@ private extension ShopView {
     /// 실제 구매 실행
     func executePurchase(item: DisplayItem, bonusRate: Double = 0.0, scrollProxy: ScrollViewProxy? = nil) {
         do {
-            let isSuccess: Bool
-            if item.category == .equipment && bonusRate > 0 {
-                isSuccess = try shopSystem.buyEquipmentWithBonus(item: item, bonusRate: bonusRate)
-            } else {
-                isSuccess = try shopSystem.buy(item: item)
-            }
+            let isSuccess = try shopSystem.buy(item: item, bonusRate: bonusRate)
 
             if item.category == .equipment {
                 // 강화 시도 후 보너스 상태 초기화

@@ -128,26 +128,12 @@ final class Equipment: Item {
         }
     }
 
-    /// 보너스 확률이 적용된 강화 업그레이드 (최대 100%)
-    func upgraded(bonusRate: Double) -> Bool {
+    /// 강화 확률에 따라 업그레이드 (bonusRate 기본값 0.0, 최대 100%)
+    func upgraded(bonusRate: Double = 0.0) -> Bool {
         guard canUpgrade else { return false }
         let randomValue = Double.random(in: 0...1)
         let effectiveRate = min(tier.upgradeSuccessRate + bonusRate, 1.0)
         if randomValue <= effectiveRate {
-            self.tier = EquipmentTier(rawValue: tier.rawValue + 1) ?? .nationalTreasure
-            return true
-        } else {
-            return false
-        }
-    }
-
-    /// 강화 확률에 따라 업그레이드
-    func upgraded() -> Bool {
-        guard canUpgrade else { return false }
-
-        let randomValue = Double.random(in: 0...1)
-
-        if randomValue <= tier.upgradeSuccessRate {
             self.tier = EquipmentTier(rawValue: tier.rawValue + 1) ?? .nationalTreasure
             return true
         } else {
