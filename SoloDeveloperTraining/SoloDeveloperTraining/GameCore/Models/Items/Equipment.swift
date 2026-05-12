@@ -141,6 +141,11 @@ final class Equipment: Item {
             return false
         }
     }
+
+    /// 환생 시 장비를 초기 상태로 되돌림
+    func reset() {
+        tier = .broken
+    }
 }
 
 /// 장비 종류

@@ -221,6 +221,11 @@ final class Skill: Hashable {
         level += 1
     }
 
+    /// 환생 시 스킬 레벨 초기화
+    func resetLevel() {
+        level = 0
+    }
+
     static func == (lhs: Skill, rhs: Skill) -> Bool {
         lhs.key == rhs.key
     }

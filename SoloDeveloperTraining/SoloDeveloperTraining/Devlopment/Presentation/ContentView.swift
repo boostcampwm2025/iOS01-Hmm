@@ -121,6 +121,12 @@ struct ContentView: View {
                     Image(systemName: "storefront.fill")
                     Text("광고")
                 }
+            RebirthTestView()
+                .tag(11)
+                .tabItem {
+                    Image(systemName: "arrow.clockwise.circle")
+                    Text("환생")
+                }
         }
         .task {
             await AdService.shared.loadAd(.interstitial)
