@@ -1,0 +1,14 @@
+# Firebase
+.firebase/
+hosting.cHVibGlj.cache
+
+# MacOS
+.DS_Store
+
+# Xcode
+build/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.moved-aside
+*.xcuserstate
