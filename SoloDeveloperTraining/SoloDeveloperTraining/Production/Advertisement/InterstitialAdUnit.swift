@@ -46,13 +46,13 @@ final class InterstitialAdUnit: NSObject, AdUnit {
             print("❌ Ad not ready")
             return false
         }
-        guard resultContinuation == nil else {
+        guard continuation == nil, resultContinuation == nil else {
             print("⚠️ Ad is already showing")
             return false
         }
 
-        return await withCheckedContinuation { continuation in
-            self.resultContinuation = continuation
+        return await withCheckedContinuation { con in
+            self.resultContinuation = con
             interstitialAd.present(from: nil)
         }
     }

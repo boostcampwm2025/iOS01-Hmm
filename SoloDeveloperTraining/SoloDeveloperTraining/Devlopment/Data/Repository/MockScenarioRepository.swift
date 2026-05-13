@@ -434,4 +434,39 @@ final class MockScenarioRepository: ScenarioRepository {
             ]
         )
     ]
+
+    // MARK: - Rebirth Story
+
+    /// 환생 스토리 3장 반환
+    func fetchRebirthStory() -> [ScenarioPage] {
+        return [
+            ScenarioPage(
+                text: """
+                스토리 page1:
+                당신의 개발자 여정이 끝났습니다.
+
+                하지만 끝은 또 다른 시작입니다.
+                """,
+                pageType: .story
+            ),
+            ScenarioPage(
+                text: """
+                스토리 page2:
+                모든 경험과 기억을 간직한 채,
+
+                새로운 도전을 시작할 수 있습니다.
+                """,
+                pageType: .story
+            ),
+            ScenarioPage(
+                text: """
+                스토리 page3
+                환생을 통해 더 나은 개발자로
+
+                다시 태어나세요!
+                """,
+                pageType: .story
+            )
+        ]
+    }
 }

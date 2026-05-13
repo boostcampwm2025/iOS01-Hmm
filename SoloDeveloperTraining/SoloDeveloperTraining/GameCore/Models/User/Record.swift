@@ -64,10 +64,6 @@ final class Record {
     /// 에너지 드링크 사용 횟수
     var energyDrinkUseCount: Int = 0
 
-    // MARK: - Play Time Records
-    /// 총 플레이 시간
-    var totalPlayTime: TimeInterval = 0
-
     // MARK: - Tutorial Records
     /// 튜토리얼 클리어 여부
     var tutorialCompleted: Bool = false
@@ -81,6 +77,16 @@ final class Record {
     var scenarioProgress: ScenarioProgress = ScenarioProgress()
     /// 선택 기록 (커리어별)
     var choiceHistory: [Career: ChoiceResult] = [:]
+
+    // MARK: - Play Time Records
+    /// 총 플레이 시간
+    var totalPlayTime: TimeInterval = 0
+
+    // MARK: - Rebirth Records
+    /// 환생 횟수
+    var rebirthCount: Int = 0
+    /// 달성한 엔딩 목록
+    var allEndingsAchieved: Set<Ending> = []
 }
 
 // MARK: - Record Event
@@ -187,5 +193,57 @@ extension Record {
         }
         /// 미션 상태 업데이트
         missionSystem.updateCompletedMissions(record: self)
+    }
+}
+
+// MARK: - Rebirth
+extension Record {
+    /// 환생 시 초기화 (환생 기록 제외)
+    func resetForRebirth() {
+        // Financial Records 초기화
+        totalEarnedMoney = 0
+        totalSpentMoney = 0
+        totalSkillUpgradeCost = 0
+        totalEquipmentEnhancementCost = 0
+        totalConsumablePurchaseCost = 0
+        totalHousingMoveCost = 0
+
+        // Tap Records 초기화
+        totalTapCount = 0
+
+        // Language Game Records 초기화
+        languageCorrectCount = 0
+        languageConsecutiveCorrect = 0
+
+        // Bug Dodging Records 초기화
+        dodgeGoldCollectedCount = 0
+        dodgeMaxCombo = 0
+        dodgeBugAvoidedCount = 0
+        dodgeBugCollectCount = 0
+
+        // Stacking Game Records 초기화
+        stackingSuccessCount = 0
+        stackConsecutiveSuccess = 0
+
+        // Consumable Usage Records 초기화
+        coffeeUseCount = 0
+        energyDrinkUseCount = 0
+
+        // totalPlayTime은 유지 (누적 플레이 시간)
+
+        // Tutorial Records 초기화
+        tutorialCompleted = false
+
+        // Career Records 초기화
+        hasAchievedJuniorDeveloper = false
+
+        // Scenario Records 초기화
+        scenarioProgress = ScenarioProgress()
+        choiceHistory.removeAll()
+
+        // Mission System 초기화
+        missionSystem.reset()
+
+        // 유지: rebirthCount, allEndingsAchieved, totalPlayTime
     }
 }

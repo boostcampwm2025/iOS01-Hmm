@@ -6,7 +6,7 @@
 //
 
 /// 최종 엔딩 정보
-struct Ending: Equatable {
+struct Ending: Codable, Hashable {
     let id: String
     let title: String
     let career: String

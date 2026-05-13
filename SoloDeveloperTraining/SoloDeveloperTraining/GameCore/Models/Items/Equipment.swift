@@ -128,18 +128,22 @@ final class Equipment: Item {
         }
     }
 
-    /// 강화 확률에 따라 업그레이드
-    func upgraded() -> Bool {
+    /// 강화 확률에 따라 업그레이드 (bonusRate 기본값 0.0, 최대 100%)
+    func upgraded(bonusRate: Double = 0.0) -> Bool {
         guard canUpgrade else { return false }
-
         let randomValue = Double.random(in: 0...1)
-
-        if randomValue <= tier.upgradeSuccessRate {
+        let effectiveRate = min(tier.upgradeSuccessRate + bonusRate, 1.0)
+        if randomValue <= effectiveRate {
             self.tier = EquipmentTier(rawValue: tier.rawValue + 1) ?? .nationalTreasure
             return true
         } else {
             return false
         }
+    }
+
+    /// 환생 시 장비를 초기 상태로 되돌림
+    func reset() {
+        tier = .broken
     }
 }
 

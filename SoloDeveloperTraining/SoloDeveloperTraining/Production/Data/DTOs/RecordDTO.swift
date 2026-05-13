@@ -50,6 +50,10 @@ struct RecordDTO: Codable {
     let scenarioProgress: ScenarioProgressDTO
     let choiceHistory: [Career: ChoiceResult]
 
+    // Rebirth Records
+    let rebirthCount: Int
+    let allEndingsAchieved: [Ending]
+
     // Mission States
     let missionStates: [MissionStateDTO]
 
@@ -77,6 +81,8 @@ struct RecordDTO: Codable {
         self.scenarioProgress = ScenarioProgressDTO(from: record.scenarioProgress)
         self.choiceHistory = record.choiceHistory
         self.missionStates = record.missionSystem.missions.map { MissionStateDTO(from: $0) }
+        self.rebirthCount = record.rebirthCount
+        self.allEndingsAchieved = Array(record.allEndingsAchieved)
     }
 
     func toRecord() -> Record {
@@ -131,6 +137,10 @@ struct RecordDTO: Codable {
                 mission.state = missionState.state.toMissionState()
             }
         }
+
+        // Rebirth Records 복원
+        record.rebirthCount = rebirthCount
+        record.allEndingsAchieved = Set(allEndingsAchieved)
 
         return record
     }

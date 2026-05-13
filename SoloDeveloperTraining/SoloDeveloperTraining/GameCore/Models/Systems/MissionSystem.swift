@@ -47,6 +47,12 @@ final class MissionSystem {
         checkHasCompletedMission()
     }
 
+    /// 환생 시 미션 시스템 초기화
+    func reset() {
+        missions = MissionFactory.createAllMissions()
+        hasCompletedMission = false
+    }
+
     private func checkHasCompletedMission() {
         hasCompletedMission = missions.contains { $0.state == .claimable }
     }

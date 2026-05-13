@@ -77,4 +77,31 @@ final class User {
             ]
         )
     }
+
+    // MARK: - Rebirth
+
+    /// 환생: 게임 상태를 초기화하고 환생 기록을 업데이트
+    /// - Parameter ending: 달성한 최종 엔딩
+    func resetForRebirth(ending: Ending) {
+        // 환생 기록 업데이트 (초기화 전에 먼저 기록)
+        record.rebirthCount += 1
+        record.allEndingsAchieved.insert(ending)
+
+        // 커리어 초기화
+        career = .unemployed
+
+        // 재화 초기화
+        wallet.reset()
+
+        // 인벤토리 초기화
+        inventory.resetToInitial()
+
+        // 스킬 초기화
+        for skill in skills {
+            skill.resetLevel()
+        }
+
+        // 게임 기록 초기화 (환생 기록 제외)
+        record.resetForRebirth()
+    }
 }

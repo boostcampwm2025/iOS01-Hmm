@@ -8,6 +8,10 @@
 import SwiftUI
 
 private enum Constant {
+    enum UserDefaultsKey {
+        static let equipmentAdBonus = "equipmentAdBonusTypes"
+    }
+
     enum Text {
         static let itemSegment = "아이템"
         static let housingSegment = "부동산"
@@ -42,6 +46,11 @@ struct ShopView: View {
 
     @State private var selectedCategoryIndex: Int = 0
     @State private var selectedHousingTier: HousingTier?
+    @State private var showAdBonusToast: Bool = false
+    @State private var adBonusAppliedTypes: Set<String> = {
+        let saved = UserDefaults.standard.stringArray(forKey: Constant.UserDefaultsKey.equipmentAdBonus) ?? []
+        return Set(saved)
+    }()
 
     @Binding var popupContent: PopupConfiguration?
 
@@ -68,6 +77,7 @@ struct ShopView: View {
         .onAppear {
             AnalyticsService.shared.logScreenView(screenName: "shop")
         }
+        .enhanceAdToast(isShowing: $showAdBonusToast)
     }
 }
 
@@ -133,23 +143,65 @@ private extension ShopView {
 
     /// 아이템 구매 확인 팝업 표시
     func purchase(item: DisplayItem, scrollProxy: ScrollViewProxy? = nil) {
-        let (title, message, buttonTitle) = ShopPurchaseHelper.purchaseInfo(for: item)
-        let fullMessage = ShopPurchaseHelper.createPurchaseMessage(item: item, baseMessage: message, shopSystem: shopSystem)
-
-        ShopPurchaseHelper.showConfirm(
-            popupContent: $popupContent,
-            title: title,
-            message: fullMessage,
-            confirmTitle: buttonTitle
-        ) {
-            executePurchase(item: item, scrollProxy: scrollProxy)
+        if item.category == .equipment, let equipment = item.item as? Equipment {
+            showEquipmentEnhancePopup(item: item, equipment: equipment, scrollProxy: scrollProxy)
+        } else {
+            let (title, message, buttonTitle) = ShopPurchaseHelper.purchaseInfo(for: item)
+            let fullMessage = ShopPurchaseHelper.createPurchaseMessage(item: item, baseMessage: message, shopSystem: shopSystem)
+            ShopPurchaseHelper.showConfirm(
+                popupContent: $popupContent,
+                title: title,
+                message: fullMessage,
+                confirmTitle: buttonTitle
+            ) {
+                executePurchase(item: item, scrollProxy: scrollProxy)
+            }
         }
     }
 
+    /// 장비 강화 팝업 표시
+    func showEquipmentEnhancePopup(item: DisplayItem, equipment: Equipment, scrollProxy: ScrollViewProxy?) {
+        let typeKey = String(describing: equipment.type)
+        let hasBonus = adBonusAppliedTypes.contains(typeKey)
+        let baseRate = Int(equipment.tier.upgradeSuccessRate * 100)
+        let displayRate = hasBonus ? min(baseRate + 10, 100) : baseRate
+        let priceText = ShopPurchaseHelper.createPriceText(for: item, shopSystem: shopSystem)
+
+        ShopPurchaseHelper.showEquipmentEnhanceConfirm(
+            popupContent: $popupContent,
+            priceText: priceText,
+            displayRate: displayRate,
+            hasAdBonus: hasBonus,
+            onWatchAd: {
+                Task {
+                    let watched = await AdService.shared.showAdWithResult(.interstitial)
+                    guard watched else { return }
+                    adBonusAppliedTypes.insert(typeKey)
+                    UserDefaults.standard.set(Array(adBonusAppliedTypes), forKey: Constant.UserDefaultsKey.equipmentAdBonus)
+                    showAdBonusToast = true
+                    showEquipmentEnhancePopup(item: item, equipment: equipment, scrollProxy: scrollProxy)
+                }
+            },
+            onConfirm: {
+                executePurchase(item: item, bonusRate: hasBonus ? 0.1 : 0.0, scrollProxy: scrollProxy)
+            }
+        )
+    }
+
     /// 실제 구매 실행
-    func executePurchase(item: DisplayItem, scrollProxy: ScrollViewProxy? = nil) {
+    func executePurchase(item: DisplayItem, bonusRate: Double = 0.0, scrollProxy: ScrollViewProxy? = nil) {
         do {
-            let isSuccess = try shopSystem.buy(item: item)
+            let isSuccess = try shopSystem.buy(item: item, bonusRate: bonusRate)
+
+            if item.category == .equipment {
+                // 강화 시도 후 보너스 상태 초기화
+                if let equipment = item.item as? Equipment {
+                    let typeKey = String(describing: equipment.type)
+                    adBonusAppliedTypes.remove(typeKey)
+                    UserDefaults.standard.set(Array(adBonusAppliedTypes), forKey: Constant.UserDefaultsKey.equipmentAdBonus)
+                }
+            }
+
             if isSuccess {
                 // 성공 시 가로 스크롤을 맨 처음으로 이동
                 if let proxy = scrollProxy, selectedCategoryIndex == 1 {

@@ -20,4 +20,7 @@ protocol ScenarioRepository {
         evt03: ChoiceResult,
         evt04: ChoiceResult
     ) -> Ending
+
+    /// 환생 스토리 3장 가져오기
+    func fetchRebirthStory() -> [ScenarioPage]
 }
