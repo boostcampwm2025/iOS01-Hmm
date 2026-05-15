@@ -120,6 +120,8 @@ final class ScenarioTestViewModel {
         )
     }
 
+    var kakaoMessageTemplateID: String { "133210" }
+
     // MARK: - Actions
 
     func startScenario() {
@@ -247,7 +249,7 @@ struct ScenarioTestView: View {
                 .onTapGesture { isShareSheetPresented = false }
             ShareSheetView(
                 isPresented: $isShareSheetPresented,
-                kakaoMessageTemplateID: viewModel.finalEnding?.kakaoMessageTemplateID ?? ""
+                kakaoMessageTemplateID: viewModel.kakaoMessageTemplateID
             )
         }
     }

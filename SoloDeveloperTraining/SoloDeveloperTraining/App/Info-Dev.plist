@@ -5,22 +5,24 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>kakaofb587f972d89b4cb6b50d06d9e92c03d</string>
+				<string>kakaod6f5c0d68a627d57b63e11bb0fd21cc8</string>
 			</array>
 		</dict>
 	</array>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-5929488905880864~1052005631</string>
 	<key>KAKAO_APP_KEY</key>
-	<string>fb587f972d89b4cb6b50d06d9e92c03d</string>
+	<string>d6f5c0d68a627d57b63e11bb0fd21cc8</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>kakaokompassauth</string>
 		<string>kakaotalk</string>
 		<string>kakaolink</string>
 	</array>
-	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-5929488905880864~1052005631</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
