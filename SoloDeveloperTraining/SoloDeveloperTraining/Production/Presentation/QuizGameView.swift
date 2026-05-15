@@ -37,7 +37,9 @@ private enum Constant {
 struct QuizGameView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var quizGame: QuizGame
-    @State private var showRewardPopup: Bool = false
+    @State private var showQuizAdPopup: Bool = false
+    @State private var showQuizRewardPopup: Bool = false
+    @State private var finalDiamondsEarned: Int = 0
 
     init(user: User) {
         _quizGame = State(initialValue: QuizGame(user: user))
@@ -84,7 +86,7 @@ struct QuizGameView: View {
                 onSubmit: {
                     if state.phase == .showingExplanation {
                         if state.nextButtonTitle == "보상받기" {
-                            showRewardPopup = true
+                            showQuizAdPopup = true
                         } else {
                             quizGame.proceedToNextQuestion()
                         }
@@ -112,22 +114,82 @@ struct QuizGameView: View {
         }
         .onDisappear { SoundService.shared.stopAllSFX() }
         .overlay {
-            if showRewardPopup {
+            if showQuizAdPopup {
                 ZStack {
                     Color.black.opacity(0.4)
                         .ignoresSafeArea()
 
-                    RewardPopupView(
+                    QuizAdPopupView(
                         totalDiamondsEarned: state.totalDiamondsEarned,
-                        onClose: {
-                            quizGame.proceedToNextQuestion()
-                            showRewardPopup = false
-                            dismiss()
+                        onReceiveReward: {
+                            handleReceiveReward()
+                        },
+                        onWatchAd: {
+                            Task {
+                                await handleWatchAd()
+                            }
                         }
                     )
                 }
             }
         }
+        .overlay {
+            if showQuizRewardPopup {
+                ZStack {
+                    Color.black.opacity(0.4)
+                        .ignoresSafeArea()
+
+                    QuizRewardPopupView(
+                        totalDiamondsEarned: finalDiamondsEarned,
+                        onConfirm: {
+                            handleRewardConfirm()
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Help Methods
+private extension QuizGameView {
+    /// "보상 받기" 버튼 처리 (광고 없이 기본 보상)
+    func handleReceiveReward() {
+        showQuizAdPopup = false
+
+        // 기본 보상 지급 (1배)
+        quizGame.completeGame(multiplier: 1.0)
+
+        // 게임 종료
+        dismiss()
+    }
+
+    /// "2배 받기(AD)" 버튼 처리 (광고 시청)
+    func handleWatchAd() async {
+        showQuizAdPopup = false
+
+        // 광고 시청
+        let success = await AdService.shared.showAdWithResult(.interstitial)
+
+        if success {
+            // 2배 보상 지급
+            let baseDiamonds = quizGame.state.totalDiamondsEarned
+            finalDiamondsEarned = baseDiamonds * 2
+            quizGame.completeGame(multiplier: 2.0)
+
+            // 보상 완료 팝업 표시
+            showQuizRewardPopup = true
+        } else {
+            // 광고 실패 시 기본 보상 지급하고 종료
+            quizGame.completeGame(multiplier: 1.0)
+            dismiss()
+        }
+    }
+
+    /// "확인" 버튼 처리 (보상 완료 팝업)
+    func handleRewardConfirm() {
+        showQuizRewardPopup = false
+        dismiss()
     }
 }
 
@@ -270,10 +332,11 @@ private struct QuizOptionsView: View {
     }
 }
 
-// MARK: - 보상 팝업 뷰
-private struct RewardPopupView: View {
+// MARK: - 퀴즈 광고 팝업 뷰
+private struct QuizAdPopupView: View {
     let totalDiamondsEarned: Int
-    let onClose: () -> Void
+    let onReceiveReward: () -> Void
+    let onWatchAd: () -> Void
 
     var body: some View {
         Popup(title: "보상 획득") {
@@ -296,10 +359,60 @@ private struct RewardPopupView: View {
                     }
                     .padding(.bottom, 20)
                 }
-                MediumButton(title: "종료하기", isFilled: true) {
-                    onClose()
+
+                HStack(spacing: 15) {
+                    MediumButton(title: "2배 받기(AD)", isFilled: true) {
+                        onWatchAd()
+                    }
+
+                    MediumButton(title: "보상 받기", isFilled: true) {
+                        onReceiveReward()
+                    }
                 }
             }
+        }
+        .padding(.horizontal, 40)
+    }
+}
+
+// MARK: - 퀴즈 보상 완료 팝업 뷰
+private struct QuizRewardPopupView: View {
+    let totalDiamondsEarned: Int
+    let onConfirm: () -> Void
+
+    var body: some View {
+        Popup(title: "보상 지급 완료!") {
+            VStack(spacing: 11) {
+                Text("광고 시청이 완료되었습니다!\n다이아를 2배로 받았습니다.")
+                    .textStyle(.body)
+                    .foregroundColor(.black)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 20)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                HStack(spacing: 4) {
+                    Text("획득한 다이아: ")
+                        .textStyle(.body)
+                    CurrencyLabel(
+                        axis: .horizontal,
+                        icon: .diamond,
+                        textStyle: .body,
+                        value: totalDiamondsEarned
+                    )
+                }
+                .padding(.bottom, 30)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 20)
+
+                HStack {
+                    Spacer()
+                    MediumButton(title: "확인", isFilled: true) {
+                        onConfirm()
+                    }
+                    Spacer()
+                }
+            }
+            .frame(maxWidth: .infinity)
         }
         .padding(.horizontal, 40)
     }
