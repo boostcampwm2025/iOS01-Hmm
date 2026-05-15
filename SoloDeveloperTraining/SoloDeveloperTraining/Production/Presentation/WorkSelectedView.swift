@@ -40,6 +40,12 @@ struct WorkSelectedView: View {
     @Binding var isGameViewDisappeared: Bool
     @Binding var careerSystem: CareerSystem?
 
+    // 광고 팝업 관련
+    @Binding var showDrinkAdPopup: Bool
+    @Binding var showRewardPopup: Bool
+    @Binding var selectedDrinkType: ConsumableType?
+    @Binding var resumeGameCallback: (() -> Void)?
+
     private let localStorage: KeyValueLocalStorage = UserDefaultsStorage()
 
     init(
@@ -47,13 +53,21 @@ struct WorkSelectedView: View {
         animationSystem: CharacterAnimationSystem?,
         isGameStarted: Binding<Bool>,
         isGameViewDisappeared: Binding<Bool>,
-        careerSystem: Binding<CareerSystem?>
+        careerSystem: Binding<CareerSystem?>,
+        showDrinkAdPopup: Binding<Bool>,
+        showRewardPopup: Binding<Bool>,
+        selectedDrinkType: Binding<ConsumableType?>,
+        resumeGameCallback: Binding<(() -> Void)?>
     ) {
         self.user = user
         self.animationSystem = animationSystem
         self._isGameStarted = isGameStarted
         self._isGameViewDisappeared = isGameViewDisappeared
         self._careerSystem = careerSystem
+        self._showDrinkAdPopup = showDrinkAdPopup
+        self._showRewardPopup = showRewardPopup
+        self._selectedDrinkType = selectedDrinkType
+        self._resumeGameCallback = resumeGameCallback
     }
 
     var body: some View {
@@ -172,28 +186,44 @@ private extension WorkSelectedView {
                 user: user,
                 isGameStarted: $isGameStarted,
                 isGameViewDisappeared: $isGameViewDisappeared,
-                animationSystem: animationSystem
+                animationSystem: animationSystem,
+                showDrinkAdPopup: $showDrinkAdPopup,
+                showRewardPopup: $showRewardPopup,
+                selectedDrinkType: $selectedDrinkType,
+                resumeGameCallback: $resumeGameCallback
             )
         case 1:
             LanguageGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
                 isGameViewDisappeared: $isGameViewDisappeared,
-                animationSystem: animationSystem
+                animationSystem: animationSystem,
+                showDrinkAdPopup: $showDrinkAdPopup,
+                showRewardPopup: $showRewardPopup,
+                selectedDrinkType: $selectedDrinkType,
+                resumeGameCallback: $resumeGameCallback
             )
         case 2:
             DodgeGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
                 isGameViewDisappeared: $isGameViewDisappeared,
-                animationSystem: animationSystem
+                animationSystem: animationSystem,
+                showDrinkAdPopup: $showDrinkAdPopup,
+                showRewardPopup: $showRewardPopup,
+                selectedDrinkType: $selectedDrinkType,
+                resumeGameCallback: $resumeGameCallback
             )
         case 3:
             StackGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
                 isGameViewDisappeared: $isGameViewDisappeared,
-                animationSystem: animationSystem
+                animationSystem: animationSystem,
+                showDrinkAdPopup: $showDrinkAdPopup,
+                showRewardPopup: $showRewardPopup,
+                selectedDrinkType: $selectedDrinkType,
+                resumeGameCallback: $resumeGameCallback
             )
         default:
             EmptyView()
@@ -232,7 +262,11 @@ private extension WorkSelectedView {
 #Preview {
     @Previewable @State var isGameStarted = false
     @Previewable @State var isGameViewDisappeared = false
-    @Previewable @State var careerSystem: CareerSystem? = nil
+    @Previewable @State var careerSystem: CareerSystem?
+    @Previewable @State var showDrinkAdPopup = false
+    @Previewable @State var showRewardPopup = false
+    @Previewable @State var selectedDrinkType: ConsumableType?
+    @Previewable @State var resumeGameCallback: (() -> Void)?
 
     let user = User(
         nickname: "Test",
@@ -246,6 +280,10 @@ private extension WorkSelectedView {
         animationSystem: nil,
         isGameStarted: $isGameStarted,
         isGameViewDisappeared: $isGameViewDisappeared,
-        careerSystem: $careerSystem
+        careerSystem: $careerSystem,
+        showDrinkAdPopup: $showDrinkAdPopup,
+        showRewardPopup: $showRewardPopup,
+        selectedDrinkType: $selectedDrinkType,
+        resumeGameCallback: $resumeGameCallback
     )
 }

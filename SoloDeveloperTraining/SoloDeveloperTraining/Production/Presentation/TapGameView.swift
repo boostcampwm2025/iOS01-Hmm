@@ -30,11 +30,21 @@ struct TapGameView: View {
     /// 탭 사운드 쓰로틀용 마지막 재생 시각
     @State private var lastTapSoundTime: Date = .distantPast
 
+    // 광고 팝업 관련
+    @Binding var showDrinkAdPopup: Bool
+    @Binding var showRewardPopup: Bool
+    @Binding var selectedDrinkType: ConsumableType?
+    @Binding var resumeGameCallback: (() -> Void)?
+
     init(
         user: User,
         isGameStarted: Binding<Bool>,
         isGameViewDisappeared: Binding<Bool>,
-        animationSystem: CharacterAnimationSystem?
+        animationSystem: CharacterAnimationSystem?,
+        showDrinkAdPopup: Binding<Bool>,
+        showRewardPopup: Binding<Bool>,
+        selectedDrinkType: Binding<ConsumableType?>,
+        resumeGameCallback: Binding<(() -> Void)?>
     ) {
         let tapGame = TapGame(
             user: user,
@@ -44,6 +54,10 @@ struct TapGameView: View {
         self._tapGame = State(initialValue: tapGame)
         self._isGameStarted = isGameStarted
         self._isGameViewDisappeared = isGameViewDisappeared
+        self._showDrinkAdPopup = showDrinkAdPopup
+        self._showRewardPopup = showRewardPopup
+        self._selectedDrinkType = selectedDrinkType
+        self._resumeGameCallback = resumeGameCallback
         self.tapGame.startGame()
     }
 
@@ -57,6 +71,10 @@ struct TapGameView: View {
             }
             .onAppear {
                 AnalyticsService.shared.logGameStart(gameType: .tap)
+                // 게임 재개 콜백 설정
+                resumeGameCallback = { [weak tapGame] in
+                    tapGame?.resumeGame()
+                }
             }
             .pauseGameStyle(
                 isGameViewDisappeared: $isGameViewDisappeared,
@@ -145,13 +163,24 @@ private extension TapGameView {
 
     /// 소비 아이템 사용 처리
     func useConsumableItem(_ type: ConsumableType) {
-        if tapGame.inventory.drink(type) {
-            SoundService.shared.trigger(.itemConsume)
-            HapticService.shared.trigger(.success)
-            tapGame.buffSystem.useConsumableItem(type: type)
-            tapGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
+        let count = tapGame.inventory.count(type) ?? 0
+
+        if count > 0 {
+            // 음료 사용
+            if tapGame.inventory.drink(type) {
+                SoundService.shared.trigger(.itemConsume)
+                HapticService.shared.trigger(.success)
+                tapGame.buffSystem.useConsumableItem(type: type)
+                tapGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
+            }
+        } else {
+            // 광고 팝업 표시
+            selectedDrinkType = type
+            showDrinkAdPopup = true
+            tapGame.pauseGame()
         }
     }
+
 }
 
 // MARK: - Helper Methods
@@ -179,6 +208,10 @@ private extension TapGameView {
 #Preview {
     @Previewable @State var isGameStarted: Bool = true
     @Previewable @State var isGameViewDisappeared: Bool = true
+    @Previewable @State var showDrinkAdPopup: Bool = false
+    @Previewable @State var showRewardPopup: Bool = false
+    @Previewable @State var selectedDrinkType: ConsumableType?
+    @Previewable @State var resumeGameCallback: (() -> Void)?
 
     let user = User(
         nickname: "Preview User",
@@ -200,6 +233,10 @@ private extension TapGameView {
         user: user,
         isGameStarted: $isGameStarted,
         isGameViewDisappeared: $isGameViewDisappeared,
-        animationSystem: nil
+        animationSystem: nil,
+        showDrinkAdPopup: $showDrinkAdPopup,
+        showRewardPopup: $showRewardPopup,
+        selectedDrinkType: $selectedDrinkType,
+        resumeGameCallback: $resumeGameCallback
     )
 }
