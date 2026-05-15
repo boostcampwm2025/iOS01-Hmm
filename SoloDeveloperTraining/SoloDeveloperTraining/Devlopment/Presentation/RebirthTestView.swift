@@ -409,16 +409,16 @@ struct RebirthTestView: View {
                         .font(.subheadline)
                         .bold()
 
-                    Text(ending.title)
+                    Text(ending.type.title)
                         .font(.title3)
                         .bold()
                         .foregroundColor(.orange)
 
-                    Text(ending.career)
+                    Text(ending.type.career)
                         .font(.caption)
                         .foregroundColor(.secondary)
 
-                    Text(ending.description)
+                    Text(ending.type.description)
                         .font(.caption2)
                         .lineLimit(3)
                 }

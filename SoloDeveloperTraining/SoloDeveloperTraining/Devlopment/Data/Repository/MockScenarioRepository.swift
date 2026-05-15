@@ -31,37 +31,37 @@ final class MockScenarioRepository: ScenarioRepository {
     ) -> Ending {
         switch (evt01, evt02, evt03, evt04) {
         case (.optionA, .optionA, .optionA, .optionA):
-            return Ending(type: .aceDeveloper)
+            return Ending(id: "END-01", type: .aceDeveloper)
         case (.optionA, .optionA, .optionA, .optionB):
-            return Ending(type: .startupCEO)
+            return Ending(id: "END-02", type: .startupCEO)
         case (.optionA, .optionA, .optionB, .optionA):
-            return Ending(type: .techInfluencer)
+            return Ending(id: "END-03", type: .techInfluencer)
         case (.optionA, .optionB, .optionA, .optionA):
-            return Ending(type: .geniusHacker)
+            return Ending(id: "END-04", type: .geniusHacker)
         case (.optionA, .optionB, .optionA, .optionB):
-            return Ending(type: .startupCEO)
+            return Ending(id: "END-05", type: .startupCEO)
         case (.optionA, .optionB, .optionB, .optionA):
-            return Ending(type: .techInfluencer)
+            return Ending(id: "END-06", type: .techInfluencer)
         case (.optionA, .optionA, .optionB, .optionB):
-            return Ending(type: .startupCEO)
+            return Ending(id: "END-07", type: .startupCEO)
         case (.optionA, .optionB, .optionB, .optionB):
-            return Ending(type: .digitalNomad)
+            return Ending(id: "END-08", type: .digitalNomad)
         case (.optionB, .optionA, .optionA, .optionA):
-            return Ending(type: .geniusHacker)
+            return Ending(id: "END-09", type: .geniusHacker)
         case (.optionB, .optionA, .optionA, .optionB):
-            return Ending(type: .darkWebAgent)
+            return Ending(id: "END-10", type: .darkWebAgent)
         case (.optionB, .optionA, .optionB, .optionA):
-            return Ending(type: .digitalNomad)
+            return Ending(id: "END-11", type: .digitalNomad)
         case (.optionB, .optionA, .optionB, .optionB):
-            return Ending(type: .darkWebAgent)
+            return Ending(id: "END-12", type: .darkWebAgent)
         case (.optionB, .optionB, .optionA, .optionA):
-            return Ending(type: .aceDeveloper)
+            return Ending(id: "END-13", type: .aceDeveloper)
         case (.optionB, .optionB, .optionA, .optionB):
-            return Ending(type: .geniusHacker)
+            return Ending(id: "END-14", type: .geniusHacker)
         case (.optionB, .optionB, .optionB, .optionA):
-            return Ending(type: .techInfluencer)
+            return Ending(id: "END-15", type: .techInfluencer)
         case (.optionB, .optionB, .optionB, .optionB):
-            return Ending(type: .digitalNomad)
+            return Ending(id: "END-16", type: .digitalNomad)
         }
     }
 

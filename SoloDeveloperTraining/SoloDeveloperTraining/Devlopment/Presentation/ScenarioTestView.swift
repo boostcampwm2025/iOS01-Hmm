@@ -333,18 +333,18 @@ struct ScenarioTestView: View {
                         if let ending = viewModel.finalEnding, viewModel.isFinalChoiceComplete {
                             // 최종 엔딩 UI
                             VStack(alignment: .leading, spacing: 12) {
-                                Text(ending.title)
+                                Text(ending.type.title)
                                     .font(.system(size: 32, weight: .bold))
                                     .foregroundColor(.orange)
 
-                                Text(ending.career)
+                                Text(ending.type.career)
                                     .font(.title2)
                                     .foregroundColor(.secondary)
 
                                 Divider()
                                     .padding(.vertical, 4)
 
-                                Text(ending.description)
+                                Text(ending.type.description)
                                     .font(.body)
                                     .lineSpacing(6)
 

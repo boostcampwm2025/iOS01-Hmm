@@ -13,18 +13,18 @@ enum EndingType: String, Codable, CaseIterable {
     case geniusHacker
     case digitalNomad
     case darkWebAgent
-    
+
     var title: String {
         switch self {
         case .aceDeveloper: return "유니콘 에이스"
         case .startupCEO: return "Series A 대표"
         case .techInfluencer: return "개발 유튜버"
         case .geniusHacker: return "전설의 해커"
-        case .digitalNomad: return "디지털 노마드"
+        case .digitalNomad: return "글로벌 워커"
         case .darkWebAgent: return "다크웹 블랙 요원"
         }
     }
-    
+
     var career: String {
         switch self {
         case .aceDeveloper: return "에이스 개발자"
@@ -35,7 +35,7 @@ enum EndingType: String, Codable, CaseIterable {
         case .darkWebAgent: return "다크웹 요원"
         }
     }
-    
+
     var description: String {
         switch self {
         case .aceDeveloper: return "연봉 100억. 스톡옵션. 야근도 행복하다."
@@ -46,7 +46,7 @@ enum EndingType: String, Codable, CaseIterable {
         case .darkWebAgent: return "내 기록은 삭제됐다. 이 게임도 기억하지 마라"
         }
     }
-    
+
     var kakaoMessageTemplateID: String {
         switch self {
         case .aceDeveloper: return "133206"
@@ -57,19 +57,28 @@ enum EndingType: String, Codable, CaseIterable {
         case .darkWebAgent: return "133203"
         }
     }
+
+    var webThumbnailImageName: String {
+        switch self {
+        case .aceDeveloper: return "ace_developer"
+        case .startupCEO: return "startup_ceo"
+        case .techInfluencer: return "tech_influencer"
+        case .geniusHacker: return "genius_hacker"
+        case .digitalNomad: return "digital_nomad"
+        case .darkWebAgent: return "darkweb_agent"
+        }
+    }
 }
 
 /// 최종 엔딩 정보
 struct Ending: Codable, Hashable {
+    let id: String
     let type: EndingType
-    
-    var id: String { type.rawValue }
-    var title: String { type.title }
-    var career: String { type.career }
-    var description: String { type.description }
+
     var kakaoMessageTemplateID: String { type.kakaoMessageTemplateID }
 
-    init(type: EndingType) {
+    init(id: String, type: EndingType) {
+        self.id = id
         self.type = type
     }
 }
