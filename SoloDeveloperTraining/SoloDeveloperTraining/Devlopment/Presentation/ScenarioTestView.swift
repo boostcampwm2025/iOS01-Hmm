@@ -120,7 +120,7 @@ final class ScenarioTestViewModel {
         )
     }
 
-    var kakaoMessageTemplateID: String { "133210" }
+    var kakaoMessageTemplateID: String { "133210" } // 테스트용 메시지 id
 
     // MARK: - Actions
 

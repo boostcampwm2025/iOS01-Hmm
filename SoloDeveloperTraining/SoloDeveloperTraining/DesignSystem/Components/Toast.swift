@@ -31,12 +31,11 @@ private enum Constant {
         static let hideDuration: CGFloat = 0.3
     }
 
-    enum EnhanceAd {
+    enum DarkTheme {
         static let cornerRadius: CGFloat = 21.5
         static let height: CGFloat = 43
         static let backgroundColor: Color = Color(red: 39 / 255.0, green: 39 / 255.0, blue: 39 / 255.0, opacity: 0.82)
         static let fontSize: CGFloat = 12
-        static let message: String = "강화 확률이 높아졌습니다!"
 
         enum Padding {
             static let horizontal: CGFloat = 16
@@ -104,8 +103,9 @@ struct Toast: ViewModifier {
     }
 }
 
-struct EnhanceAdToast: ViewModifier {
+struct DarkToast: ViewModifier {
     @Binding var isShowing: Bool
+    let message: String
     let duration: Double
 
     @State private var showContent: Bool = false
@@ -119,17 +119,17 @@ struct EnhanceAdToast: ViewModifier {
                 VStack {
                     Spacer()
                     ZStack {
-                        RoundedRectangle(cornerRadius: Constant.EnhanceAd.cornerRadius)
-                            .fill(Constant.EnhanceAd.backgroundColor)
+                        RoundedRectangle(cornerRadius: Constant.DarkTheme.cornerRadius)
+                            .fill(Constant.DarkTheme.backgroundColor)
                             .opacity(backgroundOpacity)
-                        Text(Constant.EnhanceAd.message)
-                            .font(.system(size: Constant.EnhanceAd.fontSize, weight: .regular))
+                        Text(message)
+                            .font(.system(size: Constant.DarkTheme.fontSize, weight: .regular))
                             .foregroundColor(.white)
-                            .padding(.horizontal, Constant.EnhanceAd.Padding.horizontal)
+                            .padding(.horizontal, Constant.DarkTheme.Padding.horizontal)
                     }
-                    .frame(height: Constant.EnhanceAd.height)
+                    .frame(height: Constant.DarkTheme.height)
                     .fixedSize(horizontal: true, vertical: false)
-                    .padding(.bottom, Constant.EnhanceAd.Padding.bottom)
+                    .padding(.bottom, Constant.DarkTheme.Padding.bottom)
                 }
             }
         }

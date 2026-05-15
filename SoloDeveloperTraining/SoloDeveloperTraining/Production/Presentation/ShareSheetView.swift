@@ -59,7 +59,7 @@ struct ShareSheetView: View {
             closeButton
         }
         .padding(.horizontal, Constant.horizontalPadding)
-        .toast(isShowing: $isCopied, message: "링크가 복사되었습니다.")
+        .darkToast(isShowing: $isCopied, message: "링크가 복사되었습니다.")
     }
 }
 
