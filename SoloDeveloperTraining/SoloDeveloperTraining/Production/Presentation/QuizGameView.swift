@@ -305,6 +305,92 @@ private struct RewardPopupView: View {
     }
 }
 
+// MARK: - 퀴즈 광고 팝업 뷰
+private struct QuizAdPopupView: View {
+    let totalDiamondsEarned: Int
+    let onReceiveReward: () -> Void
+    let onWatchAd: () -> Void
+
+    var body: some View {
+        Popup(title: "보상 획득") {
+            VStack(alignment: .center, spacing: 0) {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("퀴즈 풀이를 완료했습니다!\n진정한 개발자에 한걸음 더 가까워졌습니다.")
+                        .textStyle(.body)
+                        .padding(.top, 11)
+                        .padding(.bottom, 20)
+
+                    HStack(spacing: 4) {
+                        Text("획득한 다이아: ")
+                            .textStyle(.body)
+                        CurrencyLabel(
+                            axis: .horizontal,
+                            icon: .diamond,
+                            textStyle: .body,
+                            value: totalDiamondsEarned
+                        )
+                    }
+                    .padding(.bottom, 20)
+                }
+
+                HStack(spacing: 15) {
+                    MediumButton(title: "2배 받기(AD)", isFilled: true) {
+                        onWatchAd()
+                    }
+
+                    MediumButton(title: "보상 받기", isFilled: true) {
+                        onReceiveReward()
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 40)
+    }
+}
+
+// MARK: - 퀴즈 보상 완료 팝업 뷰
+private struct QuizRewardPopupView: View {
+    let totalDiamondsEarned: Int
+    let onConfirm: () -> Void
+
+    var body: some View {
+        Popup(title: "보상 지급 완료!") {
+            VStack(spacing: 11) {
+                Text("광고 시청이 완료되었습니다!\n다이아를 2배로 받았습니다.")
+                    .textStyle(.body)
+                    .foregroundColor(.black)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 20)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                HStack(spacing: 4) {
+                    Text("획득한 다이아: ")
+                        .textStyle(.body)
+                    CurrencyLabel(
+                        axis: .horizontal,
+                        icon: .diamond,
+                        textStyle: .body,
+                        value: totalDiamondsEarned
+                    )
+                }
+                .padding(.bottom, 30)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 20)
+
+                HStack {
+                    Spacer()
+                    MediumButton(title: "확인", isFilled: true) {
+                        onConfirm()
+                    }
+                    Spacer()
+                }
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .padding(.horizontal, 40)
+    }
+}
+
 #Preview {
     QuizGameView(user: User(
         nickname: "Preview User",
