@@ -41,6 +41,7 @@
 		28FB16632F9B6E3C004FCBB3 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				.firebaserc,
 				App/Info.plist,
 				Devlopment/CheatSystem/CheatManager.swift,
 				Devlopment/Data/Repository/DefaultAdminBalanceRepository.swift,
@@ -60,13 +61,29 @@
 				Devlopment/Presentation/StackGameScene.swift,
 				Devlopment/Presentation/StackGameTestView.swift,
 				Devlopment/Presentation/TabGameView.swift,
+				firebase.json,
+				"public/.well-known/apple-app-site-association",
+				public/aceDeveloper/index.html,
+				public/darkWebAgent/index.html,
+				public/digitalNomad/index.html,
+				public/geniusHacker/index.html,
+				public/index.html,
+				public/robots.txt,
+				public/startupCEO/index.html,
+				public/techInfluencer/index.html,
+				public/thumbnails/ace_developer.png,
+				public/thumbnails/dark_web_agent.png,
+				public/thumbnails/default.png,
+				public/thumbnails/digital_nomad.png,
+				public/thumbnails/genius_hacker.png,
+				public/thumbnails/startup_ceo.png,
+				public/thumbnails/tech_influencer.png,
 			);
 			target = 08267F2A2F0D06BC005A0066 /* SoloDeveloperTraining */;
 		};
 		28FB16642F9B6E3C004FCBB3 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				.firebase/hosting.cHVibGlj.cache,
 				.firebaserc,
 				"App/Info-Dev.plist",
 				App/Info.plist,
