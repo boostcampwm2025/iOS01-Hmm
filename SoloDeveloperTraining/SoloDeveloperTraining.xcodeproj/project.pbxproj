@@ -66,8 +66,11 @@
 		28FB16642F9B6E3C004FCBB3 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				.firebase/hosting.cHVibGlj.cache,
+				.firebaserc,
 				"App/Info-Dev.plist",
 				App/Info.plist,
+				firebase.json,
 				"Production/Error/PurchasingError+UserReadableError.swift",
 				"Production/Error/SkillError+UserReadableError.swift",
 				Production/Error/UserReadableError.swift,
@@ -89,6 +92,21 @@
 				Production/Presentation/StackGameView.swift,
 				Production/Presentation/TapGameView.swift,
 				Production/Presentation/WorkSelectedView.swift,
+				"public/.well-known/apple-app-site-association",
+				public/aceDeveloper/index.html,
+				public/darkWebAgent/index.html,
+				public/digitalNomad/index.html,
+				public/geniusHacker/index.html,
+				public/index.html,
+				public/startupCEO/index.html,
+				public/techInfluencer/index.html,
+				public/thumbnails/ace_developer.png,
+				public/thumbnails/dark_web_agent.png,
+				public/thumbnails/default.png,
+				public/thumbnails/digital_nomad.png,
+				public/thumbnails/genius_hacker.png,
+				public/thumbnails/startup_ceo.png,
+				public/thumbnails/tech_influencer.png,
 			);
 			target = 2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */;
 		};
