@@ -14,13 +14,13 @@ private enum Constant {
     static let horizontalPadding: CGFloat = 16
     static let iconSize: CGFloat = 64
     static let iconCornerRadius: CGFloat = 18
-
-    static let urlStirng = "https://~"
 }
 
 struct ShareSheetView: View {
     @Binding var isPresented: Bool
     @State private var isCopied = false
+
+    let kakaoMessageTemplateID: String
 
     var body: some View {
         Popup(title: "SNS 공유") {
@@ -30,7 +30,8 @@ struct ShareSheetView: View {
                         imageName: "doc.on.doc.fill",
                         title: "링크 복사",
                         action: {
-                            ShareService.copyLink(urlString: Constant.urlStirng)
+                            ShareService
+                                .copyLink(urlString: ShareService.baseURL)
                             isCopied = true
                         }
                     )
@@ -40,7 +41,9 @@ struct ShareSheetView: View {
                         title: "인스타그램",
                         action: {
                             ShareService
-                                .shareToInstagram(urlString: Constant.urlStirng)
+                                .shareToInstagram(
+                                    urlString: ShareService.baseURL
+                                )
                         }
                     )
 
@@ -49,7 +52,9 @@ struct ShareSheetView: View {
                         title: "카카오톡",
                         action: {
                             ShareService
-                                .shareToKakao(urlString: Constant.urlStirng)
+                                .shareToKakao(
+                                    messageTemplateID: kakaoMessageTemplateID
+                                )
                         }
                     )
                 }
@@ -96,8 +101,4 @@ private extension ShareSheetView {
             }
         }
     }
-}
-
-#Preview {
-    ShareSheetView(isPresented: .constant(true))
 }

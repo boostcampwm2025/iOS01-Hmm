@@ -120,11 +120,6 @@ final class ScenarioTestViewModel {
         )
     }
 
-    var endingTitle: String {
-        guard let ending = finalEnding else { return "" }
-        return ending.title
-    }
-
     // MARK: - Actions
 
     func startScenario() {
@@ -250,7 +245,10 @@ struct ScenarioTestView: View {
             Color.black.opacity(0.3)
                 .ignoresSafeArea()
                 .onTapGesture { isShareSheetPresented = false }
-            ShareSheetView(isPresented: $isShareSheetPresented)
+            ShareSheetView(
+                isPresented: $isShareSheetPresented,
+                kakaoMessageTemplateID: viewModel.finalEnding?.kakaoMessageTemplateID ?? ""
+            )
         }
     }
 
