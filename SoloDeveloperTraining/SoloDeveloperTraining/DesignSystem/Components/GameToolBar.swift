@@ -118,7 +118,6 @@ private extension GameToolBar {
                         width: Constant.Size.coffeeIcon.width,
                         height: Constant.Size.coffeeIcon.height
                     )
-                    .opacity(coffeeCount.wrappedValue == 0 ? Constant.disabledAlpha : 1.0)
                     .mask(
                         GeometryReader { geometry in
                             VStack(spacing: 0) {
@@ -137,7 +136,7 @@ private extension GameToolBar {
                     .frame(width: Constant.itemCountLabelWidth)
             }
         }
-        .disabled(isCoffeeBuffActive || coffeeCount.wrappedValue == 0)
+        .disabled(isCoffeeBuffActive)
     }
 
     /// 에너지 드링크 아이템 버튼
@@ -152,7 +151,6 @@ private extension GameToolBar {
                         width: Constant.Size.energyDrinkIcon.width,
                         height: Constant.Size.energyDrinkIcon.height
                     )
-                    .opacity(energyDrinkCount.wrappedValue == 0 ? Constant.disabledAlpha : 1.0)
                     .mask(
                         GeometryReader { geometry in
                             VStack(spacing: 0) {
@@ -171,7 +169,7 @@ private extension GameToolBar {
                     .frame(width: Constant.itemCountLabelWidth)
             }
         }
-        .disabled(isEnergyDrinkBuffActive || energyDrinkCount.wrappedValue == 0)
+        .disabled(isEnergyDrinkBuffActive)
     }
 }
 

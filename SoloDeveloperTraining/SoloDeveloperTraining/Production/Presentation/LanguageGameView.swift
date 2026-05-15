@@ -55,15 +55,29 @@ struct LanguageGameView: View {
     /// 현재 진행 중인 언어 버튼 탭 Task
     @State private var currentActionTask: Task<Void, Never>?
 
+    // 광고 팝업 관련
+    @Binding var showDrinkAdPopup: Bool
+    @Binding var showRewardPopup: Bool
+    @Binding var selectedDrinkType: ConsumableType?
+    @Binding var resumeGameCallback: (() -> Void)?
+
     init(
         user: User,
         isGameStarted: Binding<Bool>,
         isGameViewDisappeared: Binding<Bool>,
-        animationSystem: CharacterAnimationSystem? = nil
+        animationSystem: CharacterAnimationSystem? = nil,
+        showDrinkAdPopup: Binding<Bool>,
+        showRewardPopup: Binding<Bool>,
+        selectedDrinkType: Binding<ConsumableType?>,
+        resumeGameCallback: Binding<(() -> Void)?>
     ) {
         self._isGameStarted = isGameStarted
         self._isGameViewDisappeared = isGameViewDisappeared
         self.user = user
+        self._showDrinkAdPopup = showDrinkAdPopup
+        self._showRewardPopup = showRewardPopup
+        self._selectedDrinkType = selectedDrinkType
+        self._resumeGameCallback = resumeGameCallback
 
         // 게임 초기화
         let game = LanguageGame(
@@ -95,6 +109,10 @@ struct LanguageGameView: View {
             }
             .onAppear {
                 AnalyticsService.shared.logGameStart(gameType: .language)
+                // 게임 재개 콜백 설정
+                resumeGameCallback = { [weak game] in
+                    game?.resumeGame()
+                }
             }
             .pauseGameStyle(
                 isGameViewDisappeared: $isGameViewDisappeared,
@@ -193,11 +211,21 @@ private extension LanguageGameView {
 
     /// 소비 아이템 사용 처리
     func useConsumableItem(_ type: ConsumableType) {
-        if game.user.inventory.drink(type) {
-            SoundService.shared.trigger(.itemConsume)
-            HapticService.shared.trigger(.success)
-            game.buffSystem.useConsumableItem(type: type)
-            game.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
+        let count = game.user.inventory.count(type) ?? 0
+
+        if count > 0 {
+            // 음료 사용
+            if game.user.inventory.drink(type) {
+                SoundService.shared.trigger(.itemConsume)
+                HapticService.shared.trigger(.success)
+                game.buffSystem.useConsumableItem(type: type)
+                game.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
+            }
+        } else {
+            // 광고 팝업 표시
+            selectedDrinkType = type
+            showDrinkAdPopup = true
+            game.pauseGame()
         }
     }
 }
@@ -221,6 +249,11 @@ private extension LanguageGameView {
 #Preview {
     @Previewable @State var isGameStarted = true
     @Previewable @State var isGameViewDisappeared = true
+    @Previewable @State var showDrinkAdPopup = false
+    @Previewable @State var showRewardPopup = false
+    @Previewable @State var selectedDrinkType: ConsumableType?
+    @Previewable @State var resumeGameCallback: (() -> Void)?
+
     let user = User(
         nickname: "Test",
         wallet: .init(),
@@ -231,5 +264,14 @@ private extension LanguageGameView {
         ]
     )
 
-    LanguageGameView(user: user, isGameStarted: $isGameStarted, isGameViewDisappeared: $isGameViewDisappeared, animationSystem: nil)
+    LanguageGameView(
+        user: user,
+        isGameStarted: $isGameStarted,
+        isGameViewDisappeared: $isGameViewDisappeared,
+        animationSystem: nil,
+        showDrinkAdPopup: $showDrinkAdPopup,
+        showRewardPopup: $showRewardPopup,
+        selectedDrinkType: $selectedDrinkType,
+        resumeGameCallback: $resumeGameCallback
+    )
 }

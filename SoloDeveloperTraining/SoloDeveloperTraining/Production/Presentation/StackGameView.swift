@@ -27,11 +27,21 @@ struct StackGameView: View {
     @Binding var isGameStarted: Bool
     @Binding var isGameViewDisappeared: Bool
 
+    // 광고 팝업 관련
+    @Binding var showDrinkAdPopup: Bool
+    @Binding var showRewardPopup: Bool
+    @Binding var selectedDrinkType: ConsumableType?
+    @Binding var resumeGameCallback: (() -> Void)?
+
     init(
         user: User,
         isGameStarted: Binding<Bool>,
         isGameViewDisappeared: Binding<Bool>,
-        animationSystem: CharacterAnimationSystem? = nil
+        animationSystem: CharacterAnimationSystem? = nil,
+        showDrinkAdPopup: Binding<Bool>,
+        showRewardPopup: Binding<Bool>,
+        selectedDrinkType: Binding<ConsumableType?>,
+        resumeGameCallback: Binding<(() -> Void)?>
     ) {
         let stackGame = StackGame(user: user, animationSystem: animationSystem)
 
@@ -44,6 +54,10 @@ struct StackGameView: View {
          )
         self._isGameViewDisappeared = isGameViewDisappeared
         self._isGameStarted = isGameStarted
+        self._showDrinkAdPopup = showDrinkAdPopup
+        self._showRewardPopup = showRewardPopup
+        self._selectedDrinkType = selectedDrinkType
+        self._resumeGameCallback = resumeGameCallback
     }
 
     var body: some View {
@@ -59,6 +73,10 @@ struct StackGameView: View {
             .onAppear {
                 AnalyticsService.shared.logGameStart(gameType: .stack)
                 setupGameCallbacks(with: geometry)
+                // 게임 재개 콜백 설정
+                resumeGameCallback = { [weak scene] in
+                    scene?.resumeGame()
+                }
             }
             .pauseGameStyle(
                 isGameViewDisappeared: $isGameViewDisappeared,
@@ -114,11 +132,21 @@ private extension StackGameView {
 
     /// 소비 아이템 사용 처리
     func useConsumableItem(_ type: ConsumableType) {
-        if stackGame.user.inventory.drink(type) {
-            SoundService.shared.trigger(.itemConsume)
-            HapticService.shared.trigger(.success)
-            stackGame.buffSystem.useConsumableItem(type: type)
-            stackGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
+        let count = stackGame.user.inventory.count(type) ?? 0
+
+        if count > 0 {
+            // 음료 사용
+            if stackGame.user.inventory.drink(type) {
+                SoundService.shared.trigger(.itemConsume)
+                HapticService.shared.trigger(.success)
+                stackGame.buffSystem.useConsumableItem(type: type)
+                stackGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
+            }
+        } else {
+            // 광고 팝업 표시
+            selectedDrinkType = type
+            showDrinkAdPopup = true
+            scene.pauseGame()
         }
     }
 }

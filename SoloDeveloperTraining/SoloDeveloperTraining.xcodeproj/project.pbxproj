@@ -69,6 +69,8 @@
 				Production/Error/UserReadableError.swift,
 				Production/Presentation/CharacterScene.swift,
 				Production/Presentation/DodgeGameView.swift,
+				Production/Presentation/DrinkAdPopupView.swift,
+				Production/Presentation/DrinkRewardPopupView.swift,
 				Production/Presentation/FeedbackSettingView.swift,
 				Production/Presentation/Intro/IntroView.swift,
 				Production/Presentation/Intro/NicknameSetupView.swift,

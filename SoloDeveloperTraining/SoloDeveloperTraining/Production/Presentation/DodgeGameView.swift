@@ -39,18 +39,34 @@ struct DodgeGameView: View {
     @State private var goldEffects: [EffectLabelData] = []
     // 일시정지 상태 추가
     @State private var isGamePaused: Bool = false
+    // 게임 초기 설정 완료 여부
+    @State private var isGameInitialized: Bool = false
 
     @Binding var isGameStarted: Bool
     @Binding var isGameViewDisappeared: Bool
+
+    // 광고 팝업 관련
+    @Binding var showDrinkAdPopup: Bool
+    @Binding var showRewardPopup: Bool
+    @Binding var selectedDrinkType: ConsumableType?
+    @Binding var resumeGameCallback: (() -> Void)?
 
     init(
         user: User,
         isGameStarted: Binding<Bool>,
         isGameViewDisappeared: Binding<Bool>,
-        animationSystem: CharacterAnimationSystem? = nil
+        animationSystem: CharacterAnimationSystem? = nil,
+        showDrinkAdPopup: Binding<Bool>,
+        showRewardPopup: Binding<Bool>,
+        selectedDrinkType: Binding<ConsumableType?>,
+        resumeGameCallback: Binding<(() -> Void)?>
     ) {
         self._isGameStarted = isGameStarted
         self._isGameViewDisappeared = isGameViewDisappeared
+        self._showDrinkAdPopup = showDrinkAdPopup
+        self._showRewardPopup = showRewardPopup
+        self._selectedDrinkType = selectedDrinkType
+        self._resumeGameCallback = resumeGameCallback
         self.game = DodgeGame(
             user: user,
             gameAreaSize: CGSize.zero,
@@ -68,11 +84,19 @@ struct DodgeGameView: View {
                 gameAreaSection
             }
             .onAppear {
+                // 게임이 이미 초기화되었으면 다시 초기화하지 않음
+                // (광고에서 돌아올 때 게임이 자동으로 재개되는 것을 방지)
+                guard !isGameInitialized else { return }
+
                 AnalyticsService.shared.logGameStart(gameType: .dodge)
                 setupGame(with: geometry.size)
-            }
-            .onDisappear {
-                game.stopGame()
+                isGameInitialized = true
+
+                // 게임 재개 콜백 설정
+                resumeGameCallback = { [weak game] in
+                    game?.resumeGame()
+                    isGamePaused = false
+                }
             }
             .pauseGameStyle(
                 isGameViewDisappeared: $isGameViewDisappeared,
@@ -178,11 +202,22 @@ private extension DodgeGameView {
 
     /// 소비 아이템 사용 처리
     func useConsumableItem(_ type: ConsumableType) {
-        if game.user.inventory.drink(type) {
-            SoundService.shared.trigger(.itemConsume)
-            HapticService.shared.trigger(.success)
-            game.buffSystem.useConsumableItem(type: type)
-            game.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
+        let count = game.user.inventory.count(type) ?? 0
+
+        if count > 0 {
+            // 음료 사용
+            if game.user.inventory.drink(type) {
+                SoundService.shared.trigger(.itemConsume)
+                HapticService.shared.trigger(.success)
+                game.buffSystem.useConsumableItem(type: type)
+                game.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
+            }
+        } else {
+            // 광고 팝업 표시
+            selectedDrinkType = type
+            showDrinkAdPopup = true
+            game.pauseGame()
+            isGamePaused = true
         }
     }
 }
@@ -232,6 +267,10 @@ private extension DodgeGameView {
 #Preview {
     @Previewable @State var isGameStarted = true
     @Previewable @State var isGameViewDisappeared = true
+    @Previewable @State var showDrinkAdPopup = false
+    @Previewable @State var showRewardPopup = false
+    @Previewable @State var selectedDrinkType: ConsumableType?
+    @Previewable @State var resumeGameCallback: (() -> Void)?
 
     let wallet = Wallet(gold: 1000, diamond: 0)
     let inventory = Inventory(
@@ -262,7 +301,12 @@ private extension DodgeGameView {
             DodgeGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
-                isGameViewDisappeared: $isGameViewDisappeared
+                isGameViewDisappeared: $isGameViewDisappeared,
+                animationSystem: nil,
+                showDrinkAdPopup: $showDrinkAdPopup,
+                showRewardPopup: $showRewardPopup,
+                selectedDrinkType: $selectedDrinkType,
+                resumeGameCallback: $resumeGameCallback
             )
             .ignoresSafeArea()
             .frame(height: geometry.size.height / 2 - Constant.Size.ground)
