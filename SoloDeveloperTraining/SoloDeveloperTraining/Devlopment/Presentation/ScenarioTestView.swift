@@ -249,7 +249,8 @@ struct ScenarioTestView: View {
                 .onTapGesture { isShareSheetPresented = false }
             ShareSheetView(
                 isPresented: $isShareSheetPresented,
-                kakaoMessageTemplateID: viewModel.kakaoMessageTemplateID
+                kakaoMessageTemplateID: viewModel.kakaoMessageTemplateID,
+                urlString: "\(ShareService.baseURL)/\(viewModel.finalEnding?.type.webURLSlug ?? "")"
             )
         }
     }

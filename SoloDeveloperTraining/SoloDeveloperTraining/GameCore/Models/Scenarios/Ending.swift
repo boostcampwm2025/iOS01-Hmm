@@ -6,7 +6,7 @@
 //
 
 /// 최종 엔딩 종류
-enum EndingType: String, Codable, CaseIterable {
+enum EndingType: Codable {
     case aceDeveloper
     case startupCEO
     case techInfluencer
@@ -58,14 +58,14 @@ enum EndingType: String, Codable, CaseIterable {
         }
     }
 
-    var webThumbnailImageName: String {
+    var webURLSlug: String {
         switch self {
-        case .aceDeveloper: return "ace_developer"
-        case .startupCEO: return "startup_ceo"
-        case .techInfluencer: return "tech_influencer"
-        case .geniusHacker: return "genius_hacker"
-        case .digitalNomad: return "digital_nomad"
-        case .darkWebAgent: return "darkweb_agent"
+        case .aceDeveloper: return "aceDeveloper"
+        case .startupCEO: return "startupCEO"
+        case .techInfluencer: return "techInfluencer"
+        case .geniusHacker: return "geniusHacker"
+        case .digitalNomad: return "digitalNomad"
+        case .darkWebAgent: return "darkWebAgent"
         }
     }
 }
@@ -74,8 +74,6 @@ enum EndingType: String, Codable, CaseIterable {
 struct Ending: Codable, Hashable {
     let id: String
     let type: EndingType
-
-    var kakaoMessageTemplateID: String { type.kakaoMessageTemplateID }
 
     init(id: String, type: EndingType) {
         self.id = id

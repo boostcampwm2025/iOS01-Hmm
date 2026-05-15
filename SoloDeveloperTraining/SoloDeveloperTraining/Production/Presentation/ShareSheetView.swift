@@ -21,6 +21,7 @@ struct ShareSheetView: View {
     @State private var isCopied = false
 
     let kakaoMessageTemplateID: String
+    let urlString: String
 
     var body: some View {
         Popup(title: "SNS 공유") {
@@ -30,20 +31,8 @@ struct ShareSheetView: View {
                         imageName: "doc.on.doc.fill",
                         title: "링크 복사",
                         action: {
-                            ShareService
-                                .copyLink(urlString: ShareService.baseURL)
+                            ShareService.copyLink(urlString)
                             isCopied = true
-                        }
-                    )
-
-                    shareButton(
-                        imageName: "camera.fill",
-                        title: "인스타그램",
-                        action: {
-                            ShareService
-                                .shareToInstagram(
-                                    urlString: ShareService.baseURL
-                                )
                         }
                     )
 
@@ -55,6 +44,14 @@ struct ShareSheetView: View {
                                 .shareToKakao(
                                     messageTemplateID: kakaoMessageTemplateID
                                 )
+                        }
+                    )
+
+                    shareButton(
+                        imageName: "ellipsis.circle.fill",
+                        title: "기타 공유",
+                        action: {
+                            ShareService.defaultLinkShare(urlString)
                         }
                     )
                 }
