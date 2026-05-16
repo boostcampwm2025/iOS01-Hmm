@@ -15,6 +15,14 @@ private enum Constant {
     static let liveDeploymentsField = "liveDeployments"
     static let deployedByKey = "deployedBy"
     static let deployedAtKey = "deployedAt"
+    static let baseVersionField = "baseVersion"
+    static let changesField = "changes"
+    static let changeFieldIdKey = "fieldId"
+    static let changeFieldNameKey = "fieldName"
+    static let changeBeforeKey = "before"
+    static let changeAfterKey = "after"
+    static let changeBeforeInputKey = "beforeInput"
+    static let changeAfterInputKey = "afterInput"
 }
 
 enum RepositoryError: LocalizedError {
@@ -75,7 +83,7 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
 
     // MARK: - 버전 저장
 
-    func saveVersion(fields: [PolicyField], modifiedBy: String) async throws -> Int {
+    func saveVersion(fields: [PolicyField], modifiedBy: String, baseVersion: Int?, changes: [FieldChangeRecord]) async throws -> Int {
         let snapshot = try await db.collection(Constant.versionsCollection)
             .order(by: Constant.versionField, descending: true)
             .limit(to: 1)
@@ -93,6 +101,21 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
         ]
         if !formulas.isEmpty {
             metadata[Constant.formulasField] = formulas
+        }
+        if let baseVersion {
+            metadata[Constant.baseVersionField] = baseVersion
+        }
+        if !changes.isEmpty {
+            metadata[Constant.changesField] = changes.map { c in
+                [
+                    Constant.changeFieldIdKey: c.fieldId,
+                    Constant.changeFieldNameKey: c.fieldName,
+                    Constant.changeBeforeKey: c.before,
+                    Constant.changeAfterKey: c.after,
+                    Constant.changeBeforeInputKey: c.beforeInput,
+                    Constant.changeAfterInputKey: c.afterInput
+                ] as [String: Any]
+            }
         }
 
         let batch = db.batch()
@@ -156,8 +179,25 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
             isDeployedToTest: deployedTest == version,
             isDeployedToLive: deployedLive == version,
             testDeployments: parseDeployRecords(from: data[Constant.testDeploymentsField]),
-            liveDeployments: parseDeployRecords(from: data[Constant.liveDeploymentsField])
+            liveDeployments: parseDeployRecords(from: data[Constant.liveDeploymentsField]),
+            baseVersion: data[Constant.baseVersionField] as? Int,
+            fieldChanges: parseFieldChanges(from: data[Constant.changesField])
         )
+    }
+
+    /// Firestore 배열 필드를 FieldChangeRecord 배열로 파싱합니다.
+    private func parseFieldChanges(from value: Any?) -> [FieldChangeRecord] {
+        guard let arr = value as? [[String: Any]] else { return [] }
+        return arr.compactMap { dict in
+            guard let fieldId   = dict[Constant.changeFieldIdKey] as? String,
+                  let fieldName = dict[Constant.changeFieldNameKey] as? String,
+                  let before    = dict[Constant.changeBeforeKey] as? Double,
+                  let after     = dict[Constant.changeAfterKey] as? Double
+            else { return nil }
+            let beforeInput = dict[Constant.changeBeforeInputKey] as? String ?? ""
+            let afterInput  = dict[Constant.changeAfterInputKey] as? String ?? ""
+            return FieldChangeRecord(fieldId: fieldId, fieldName: fieldName, before: before, after: after, beforeInput: beforeInput, afterInput: afterInput)
+        }
     }
 
     /// Firestore 배열 필드를 DeployRecord 배열로 파싱합니다.

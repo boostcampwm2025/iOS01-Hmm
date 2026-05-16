@@ -6,6 +6,7 @@ enum SidebarItem: Hashable {
     case editor(String)
     case versionHistory
     case deploymentStatus
+    case changes
     case profile
 }
 
@@ -84,6 +85,21 @@ struct AppSidebarView: View {
             }
 
             Section("관리") {
+                HStack {
+                    Label("변경사항", systemImage: "pencil.circle")
+                    Spacer()
+                    let count = vm.changedFields.count
+                    if count > 0 {
+                        Text("\(count)")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.orange)
+                            .clipShape(Capsule())
+                    }
+                }
+                .tag(SidebarItem.changes)
                 Label("버전 이력", systemImage: "clock.arrow.circlepath")
                     .tag(SidebarItem.versionHistory)
                 Label("배포 현황", systemImage: "antenna.radiowaves.left.and.right")
@@ -127,6 +143,21 @@ struct AppSidebarView: View {
                         if meta.isDeployedToTest { DeployBadge(env: .test) }
                         if meta.isDeployedToLive { DeployBadge(env: .live) }
                     }
+                }
+
+                // 변경사항 요약
+                let changes = vm.changedFields
+                if !changes.isEmpty {
+                    Button { showSaveConfirm = false; selection = .changes } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "pencil.circle.fill")
+                                .font(.system(size: 10))
+                            Text("변경사항 \(changes.count)건")
+                                .font(.system(size: 10, weight: .medium))
+                        }
+                        .foregroundStyle(.orange)
+                    }
+                    .buttonStyle(.plain)
                 }
             } else {
                 Text("버전 없음")
@@ -201,6 +232,8 @@ struct DetailRouterView: View {
             VersionHistoryPageView(vm: vm, username: username)
         case .deploymentStatus:
             DeploymentStatusPageView(vm: vm)
+        case .changes:
+            ChangesView(vm: vm)
         case .profile:
             ProfilePageView(username: $username)
         case nil:
@@ -337,6 +370,7 @@ struct ProfilePageView: View {
 struct PolicyGroupView: View {
     let group: String
     @ObservedObject var vm: PolicyEditorViewModel
+    @State private var collapsedSections: Set<String> = []
 
     var sectioned: [(section: String, fields: [PolicyField])] {
         vm.groupedFields(for: group)
@@ -556,6 +590,119 @@ struct DeployBadge: View {
             .background(env == .live ? Color.red.opacity(0.12) : Color.blue.opacity(0.12))
             .foregroundStyle(env == .live ? Color.red : Color.blue)
             .clipShape(Capsule())
+    }
+}
+
+// MARK: - 변경사항 뷰
+
+struct ChangesView: View {
+    @ObservedObject var vm: PolicyEditorViewModel
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("변경사항")
+                        .font(.title2.bold())
+                    if let meta = vm.currentVersionMeta {
+                        Text("기준 버전: \(meta.versionLabel) · \(meta.modifiedBy)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                Spacer()
+            }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 20)
+
+            Divider()
+
+            let changes = vm.changedFields
+            if changes.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "checkmark.circle")
+                        .font(.system(size: 36))
+                        .foregroundStyle(Color(.tertiaryLabelColor))
+                    Text("변경된 항목이 없습니다")
+                        .font(.headline)
+                    Text("필드 값을 수정하면 여기서 변경 전/후를 확인할 수 있어요.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                // 그룹별 헤더
+                let grouped = Dictionary(grouping: changes, by: { $0.field.group })
+                let groupOrder = vm.groups.filter { grouped[$0] != nil }
+
+                ScrollView {
+                    LazyVStack(spacing: 0, pinnedViews: .sectionHeaders) {
+                        ForEach(groupOrder, id: \.self) { group in
+                            SwiftUI.Section {
+                                ForEach(grouped[group]!, id: \.field.id) { change in
+                                    changeRow(change)
+                                    Divider().padding(.leading, 16)
+                                }
+                            } header: {
+                                Text(group)
+                                    .font(.caption.bold())
+                                    .foregroundStyle(.secondary)
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 7)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .background(Color(.controlBackgroundColor).opacity(0.9))
+                            }
+                        }
+                    }
+                    .padding(.bottom, 16)
+                }
+            }
+        }
+        .background(Color(.windowBackgroundColor))
+    }
+
+    private func changeRow(_ change: PolicyEditorViewModel.FieldChange) -> some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(change.field.name)
+                    .font(.callout)
+                Text(change.field.id)
+                    .font(.system(size: 10, design: .monospaced))
+                    .foregroundStyle(Color(.tertiaryLabelColor))
+            }
+            .frame(minWidth: 180, alignment: .leading)
+
+            Spacer()
+
+            HStack(spacing: 6) {
+                Text(formatted(change.before, isDouble: change.field.isDouble))
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .strikethrough(true, color: .secondary)
+
+                Image(systemName: "arrow.right")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Text(formatted(change.after, isDouble: change.field.isDouble))
+                    .font(.callout.bold())
+                    .foregroundStyle(.orange)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+    }
+
+    private func formatted(_ value: Double, isDouble: Bool) -> String {
+        if isDouble {
+            if value.truncatingRemainder(dividingBy: 1) == 0 { return String(Int(value)) }
+            return String(format: "%.3f", value)
+                .replacingOccurrences(of: #"0+$"#, with: "", options: .regularExpression)
+                .replacingOccurrences(of: #"\.$"#, with: "", options: .regularExpression)
+        } else {
+            return String(Int(value.rounded()))
+        }
     }
 }
 

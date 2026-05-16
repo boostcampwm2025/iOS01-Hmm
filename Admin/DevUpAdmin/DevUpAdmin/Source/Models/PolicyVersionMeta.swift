@@ -12,6 +12,16 @@ struct DeployRecord: Identifiable {
     }
 }
 
+struct FieldChangeRecord: Identifiable {
+    let id = UUID()
+    let fieldId: String
+    let fieldName: String
+    let before: Double
+    let after: Double
+    let beforeInput: String  // 수식 또는 숫자 문자열
+    let afterInput: String
+}
+
 struct PolicyVersionMeta: Identifiable {
     let id: String          // Firestore 문서 ID ("v1", "v2", ...)
     let version: Int
@@ -21,6 +31,8 @@ struct PolicyVersionMeta: Identifiable {
     var isDeployedToLive: Bool
     var testDeployments: [DeployRecord]
     var liveDeployments: [DeployRecord]
+    var baseVersion: Int?
+    var fieldChanges: [FieldChangeRecord]
 
     var versionLabel: String { "v\(version)" }
 

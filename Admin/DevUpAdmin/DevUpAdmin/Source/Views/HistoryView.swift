@@ -125,23 +125,34 @@ struct VersionCardView: View {
                                 .clipShape(Capsule())
                         }
                     }
-                    HStack(spacing: 10) {
+                            HStack(spacing: 10) {
                         Label(meta.modifiedBy, systemImage: "person.fill")
                         Label(meta.modifiedAtFormatted, systemImage: "clock")
+                        if let base = meta.baseVersion {
+                            Label("v\(base) 기반", systemImage: "arrow.turn.up.right")
+                        }
                     }
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 }
                 Spacer()
-                Button("불러오기") {
+                Button(isCurrentlyLoaded ? "작성 기준" : "기준으로 설정") {
                     Task { await vm.loadVersion(meta.version) }
                 }
                 .buttonStyle(.borderless)
-                .foregroundStyle(.blue)
+                .foregroundStyle(isCurrentlyLoaded ? Color.secondary : Color.blue)
                 .font(.callout)
                 .disabled(isCurrentlyLoaded)
             }
             .padding(18)
+
+            // 변경 이력 영역
+            if !meta.fieldChanges.isEmpty {
+                Divider().padding(.horizontal, 18)
+                FieldChangesSection(changes: meta.fieldChanges)
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 12)
+            }
 
             // 배포 기록 영역
             if !meta.testDeployments.isEmpty || !meta.liveDeployments.isEmpty {
@@ -249,5 +260,103 @@ struct VersionCardView: View {
         }
         .font(.caption)
         .foregroundStyle(.secondary)
+    }
+}
+
+// MARK: - 필드 변경 이력 섹션
+
+struct FieldChangesSection: View {
+    let changes: [FieldChangeRecord]
+    @State private var isExpanded = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) { isExpanded.toggle() }
+            } label: {
+                HStack(spacing: 5) {
+                    Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(Color(.tertiaryLabelColor))
+                    Text("변경된 항목 \(changes.count)건")
+                        .font(.caption.bold())
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .buttonStyle(.plain)
+
+            if isExpanded {
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(changes) { change in
+                        let onlyFormulaChanged = change.before == change.after && change.beforeInput != change.afterInput
+
+                        HStack(spacing: 8) {
+                            VStack(alignment: .leading, spacing: 1) {
+                                HStack(spacing: 4) {
+                                    Text(change.fieldName)
+                                        .font(.caption)
+                                    if onlyFormulaChanged {
+                                        Text("수식")
+                                            .font(.system(size: 8, weight: .bold))
+                                            .padding(.horizontal, 4)
+                                            .padding(.vertical, 1)
+                                            .background(Color.purple.opacity(0.12))
+                                            .foregroundStyle(Color.purple)
+                                            .clipShape(Capsule())
+                                    }
+                                }
+                                Text(change.fieldId)
+                                    .font(.system(size: 9, design: .monospaced))
+                                    .foregroundStyle(Color(.tertiaryLabelColor))
+                            }
+                            .frame(minWidth: 140, alignment: .leading)
+
+                            Spacer()
+
+                            if onlyFormulaChanged {
+                                // 값은 같고 수식만 바뀐 경우
+                                VStack(alignment: .trailing, spacing: 2) {
+                                    Text(change.beforeInput)
+                                        .font(.system(size: 10, design: .monospaced))
+                                        .foregroundStyle(.secondary)
+                                        .strikethrough(true, color: .secondary)
+                                    Image(systemName: "arrow.down")
+                                        .font(.system(size: 8))
+                                        .foregroundStyle(.secondary)
+                                    Text(change.afterInput)
+                                        .font(.system(size: 10, design: .monospaced))
+                                        .foregroundStyle(Color.purple)
+                                }
+                            } else {
+                                // 값이 바뀐 경우 (수식 변경 포함)
+                                HStack(spacing: 5) {
+                                    Text(change.beforeInput.hasPrefix("=") ? change.beforeInput : formatValue(change.before))
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                        .strikethrough(true, color: .secondary)
+                                    Image(systemName: "arrow.right")
+                                        .font(.system(size: 8))
+                                        .foregroundStyle(.secondary)
+                                    Text(change.afterInput.hasPrefix("=") ? change.afterInput : formatValue(change.after))
+                                        .font(.caption.bold())
+                                        .foregroundStyle(.orange)
+                                }
+                            }
+                        }
+                        .padding(.vertical, 3)
+                        .padding(.horizontal, 8)
+                        .background(Color(.windowBackgroundColor).opacity(0.6))
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                    }
+                }
+            }
+        }
+    }
+
+    private func formatValue(_ value: Double) -> String {
+        if value.truncatingRemainder(dividingBy: 1) == 0 { return String(Int(value)) }
+        return String(format: "%.3f", value)
+            .replacingOccurrences(of: #"0+$"#, with: "", options: .regularExpression)
+            .replacingOccurrences(of: #"\.$"#, with: "", options: .regularExpression)
     }
 }

@@ -11,7 +11,7 @@ protocol AdminPolicyRepository {
     func fetchVersion(_ version: Int) async throws -> (policy: PolicyDTO, formulas: [String: String])
 
     /// 새 버전으로 저장하고 새 버전 번호를 반환합니다.
-    func saveVersion(fields: [PolicyField], modifiedBy: String) async throws -> Int
+    func saveVersion(fields: [PolicyField], modifiedBy: String, baseVersion: Int?, changes: [FieldChangeRecord]) async throws -> Int
 
     /// test/live 에 현재 배포 중인 버전 번호를 가져옵니다.
     func fetchDeployedVersionNumbers() async throws -> (test: Int?, live: Int?)

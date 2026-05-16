@@ -15,6 +15,11 @@ final class PolicyEditorViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var hasUnsavedChanges = false
 
+    /// 현재 편집의 기준이 된 버전의 필드값 스냅샷 (fieldId → resolvedValue)
+    private(set) var baseFieldValues: [String: Double] = [:]
+    /// 현재 편집의 기준이 된 버전의 rawInput 스냅샷 (fieldId → rawInput)
+    private(set) var baseFieldInputs: [String: String] = [:]
+
     private let repository: AdminPolicyRepository
 
     init(repository: AdminPolicyRepository = DefaultAdminPolicyRepository()) {
@@ -94,6 +99,7 @@ final class PolicyEditorViewModel: ObservableObject {
                 }
             }
             evaluateAllFormulas()
+            snapshotBaseFields()
             versionHistory = try await repository.fetchVersionList()
         } catch {
             errorMessage = "불러오기 실패: \(error.localizedDescription)"
@@ -108,6 +114,7 @@ final class PolicyEditorViewModel: ObservableObject {
             let result = try await repository.fetchVersion(version)
             fields = try PolicyFieldMeta.makeFields(from: result.policy, formulas: result.formulas)
             evaluateAllFormulas()
+            snapshotBaseFields()
             currentVersionMeta = versionHistory.first { $0.version == version }
             hasUnsavedChanges = false
         } catch {
@@ -125,10 +132,15 @@ final class PolicyEditorViewModel: ObservableObject {
         }
         isSaving = true
         errorMessage = nil
+        let baseVer = currentVersionMeta?.version
+        let changes = changedFields.map { c in
+            FieldChangeRecord(fieldId: c.field.id, fieldName: c.field.name, before: c.before, after: c.after, beforeInput: c.beforeInput, afterInput: c.afterInput)
+        }
         do {
-            let newVersion = try await repository.saveVersion(fields: fields, modifiedBy: modifiedBy)
+            let newVersion = try await repository.saveVersion(fields: fields, modifiedBy: modifiedBy, baseVersion: baseVer, changes: changes)
             versionHistory = try await repository.fetchVersionList()
             currentVersionMeta = versionHistory.first { $0.version == newVersion }
+            snapshotBaseFields()
             hasUnsavedChanges = false
         } catch {
             errorMessage = "저장 실패: \(error.localizedDescription)"
@@ -220,5 +232,37 @@ final class PolicyEditorViewModel: ObservableObject {
 
     func clearError() {
         errorMessage = nil
+    }
+
+    // MARK: - 변경사항 추적
+
+    private func snapshotBaseFields() {
+        baseFieldValues = Dictionary(uniqueKeysWithValues: fields.map { ($0.id, $0.resolvedValue) })
+        baseFieldInputs = Dictionary(uniqueKeysWithValues: fields.map { ($0.id, $0.rawInput) })
+    }
+
+    struct FieldChange {
+        let field: PolicyField
+        let before: Double
+        let after: Double
+        let beforeInput: String
+        let afterInput: String
+    }
+
+    var changedFields: [FieldChange] {
+        fields.compactMap { field in
+            let baseValue = baseFieldValues[field.id]
+            let baseInput = baseFieldInputs[field.id]
+            let valueChanged = baseValue != nil && field.resolvedValue != baseValue!
+            let inputChanged = baseInput != nil && field.rawInput != baseInput!
+            guard valueChanged || inputChanged else { return nil }
+            return FieldChange(
+                field: field,
+                before: baseValue ?? 0,
+                after: field.resolvedValue,
+                beforeInput: baseInput ?? "",
+                afterInput: field.rawInput
+            )
+        }
     }
 }
