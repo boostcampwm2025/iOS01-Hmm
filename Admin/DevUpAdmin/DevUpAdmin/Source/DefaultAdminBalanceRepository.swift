@@ -216,7 +216,7 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
             guard let by = dict[Constant.deployedByKey] as? String,
                   let at = (dict[Constant.deployedAtKey] as? Timestamp)?.dateValue()
             else { return nil }
-            return DeployRecord(deployedBy: by, deployedAt: at)
+            return DeployRecord(id: "\(by)_\(at.timeIntervalSince1970)", deployedBy: by, deployedAt: at)
         }
     }
 

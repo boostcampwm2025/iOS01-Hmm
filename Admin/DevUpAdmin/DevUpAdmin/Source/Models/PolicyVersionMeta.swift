@@ -1,15 +1,17 @@
 import Foundation
 
+private let policyDateFormatter: DateFormatter = {
+    let f = DateFormatter()
+    f.dateFormat = "yyyy.MM.dd HH:mm"
+    return f
+}()
+
 struct DeployRecord: Identifiable {
-    let id = UUID()
+    let id: String   // deployedBy + deployedAt 조합으로 stable identity
     let deployedBy: String
     let deployedAt: Date
 
-    var deployedAtFormatted: String {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy.MM.dd HH:mm"
-        return f.string(from: deployedAt)
-    }
+    var deployedAtFormatted: String { policyDateFormatter.string(from: deployedAt) }
 }
 
 struct FieldChangeRecord: Identifiable {
@@ -36,9 +38,5 @@ struct PolicyVersionMeta: Identifiable {
 
     var versionLabel: String { "v\(version)" }
 
-    var modifiedAtFormatted: String {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy.MM.dd HH:mm"
-        return f.string(from: modifiedAt)
-    }
+    var modifiedAtFormatted: String { policyDateFormatter.string(from: modifiedAt) }
 }
