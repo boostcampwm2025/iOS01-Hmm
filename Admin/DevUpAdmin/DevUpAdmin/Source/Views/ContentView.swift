@@ -154,10 +154,10 @@ struct AppSidebarView: View {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 2) {
                         HStack(spacing: 5) {
-                            Image(systemName: "pencil.circle.fill")
+                            Image(systemName: "doc.badge.plus")
                                 .font(.caption)
                                 .foregroundStyle(.blue)
-                            Text("\(meta.versionLabel) 편집 중")
+                            Text("\(meta.versionLabel) 기반 새 버전 작성 중")
                                 .font(.caption.bold())
                                 .foregroundStyle(.blue)
                         }
@@ -287,7 +287,7 @@ struct WelcomeView: View {
 
             VStack(spacing: 8) {
                 if let meta = vm.currentVersionMeta {
-                    Text("\(meta.versionLabel) 편집 중")
+                    Text("\(meta.versionLabel) 기반으로 새 버전 작성 중")
                         .font(.title2.bold())
                     HStack(spacing: 6) {
                         if meta.isDeployedToTest { DeployBadge(env: .test) }

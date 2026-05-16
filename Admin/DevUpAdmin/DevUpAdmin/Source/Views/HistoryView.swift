@@ -99,6 +99,7 @@ struct VersionCardView: View {
     let username: String
     @State private var showDeployTestConfirm = false
     @State private var showDeployLiveConfirm = false
+    @State private var isDeployHistoryExpanded = false
 
     var isCurrentlyLoaded: Bool {
         vm.currentVersionMeta?.version == meta.version
@@ -116,7 +117,7 @@ struct VersionCardView: View {
                         if meta.isDeployedToTest { DeployBadge(env: .test) }
                         if meta.isDeployedToLive { DeployBadge(env: .live) }
                         if isCurrentlyLoaded {
-                            Text("편집 중")
+                            Text("새 버전 기준")
                                 .font(.system(size: 10, weight: .bold))
                                 .padding(.horizontal, 7)
                                 .padding(.vertical, 3)
@@ -136,7 +137,7 @@ struct VersionCardView: View {
                     .foregroundStyle(.secondary)
                 }
                 Spacer()
-                Button(isCurrentlyLoaded ? "불러옴" : "불러오기") {
+                Button(isCurrentlyLoaded ? "새 버전 기준" : "불러오기") {
                     Task { await vm.loadVersion(meta.version) }
                 }
                 .buttonStyle(.borderless)
@@ -159,18 +160,31 @@ struct VersionCardView: View {
                 Divider().padding(.horizontal, 18)
 
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("배포 기록")
-                        .font(.caption.bold())
-                        .foregroundStyle(.secondary)
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) { isDeployHistoryExpanded.toggle() }
+                    } label: {
+                        HStack(spacing: 5) {
+                            Image(systemName: isDeployHistoryExpanded ? "chevron.down" : "chevron.right")
+                                .font(.system(size: 9, weight: .bold))
+                                .foregroundStyle(Color(.tertiaryLabelColor))
+                            let total = meta.testDeployments.count + meta.liveDeployments.count
+                            Text("배포 기록 \(total)건")
+                                .font(.caption.bold())
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .buttonStyle(.plain)
 
-                    // test + live 합쳐서 최신순 정렬
-                    let allRecords: [(env: PolicyEnvironment, record: DeployRecord)] =
-                        meta.testDeployments.map { (.test, $0) } +
-                        meta.liveDeployments.map { (.live, $0) }
-                    let sorted = allRecords.sorted { $0.record.deployedAt > $1.record.deployedAt }
+                    if isDeployHistoryExpanded {
+                        // test + live 합쳐서 최신순 정렬
+                        let allRecords: [(env: PolicyEnvironment, record: DeployRecord)] =
+                            meta.testDeployments.map { (.test, $0) } +
+                            meta.liveDeployments.map { (.live, $0) }
+                        let sorted = allRecords.sorted { $0.record.deployedAt > $1.record.deployedAt }
 
-                    ForEach(sorted, id: \.record.id) { item in
-                        deployRecord(env: item.env, record: item.record)
+                        ForEach(sorted, id: \.record.id) { item in
+                            deployRecord(env: item.env, record: item.record)
+                        }
                     }
                 }
                 .padding(.horizontal, 18)
