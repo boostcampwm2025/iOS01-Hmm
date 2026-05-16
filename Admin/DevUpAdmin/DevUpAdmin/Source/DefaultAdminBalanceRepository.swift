@@ -40,14 +40,16 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
     // MARK: - 최신 버전 조회
 
     func fetchLatestVersion() async throws -> (meta: PolicyVersionMeta, policy: PolicyDTO, formulas: [String: String])? {
-        let snapshot = try await db.collection(Constant.versionsCollection)
+        // snapshot과 배포 버전 번호를 병렬 조회
+        async let snapshotTask = db.collection(Constant.versionsCollection)
             .order(by: Constant.versionField, descending: true)
             .limit(to: 1)
             .getDocuments()
+        async let deployedTask = fetchDeployedVersionNumbers()
 
+        let (snapshot, deployed) = try await (snapshotTask, deployedTask)
         guard let doc = snapshot.documents.first else { return nil }
 
-        let deployed = try await fetchDeployedVersionNumbers()
         let meta = try parseMeta(from: doc, deployedTest: deployed.test, deployedLive: deployed.live)
         let formulas = extractFormulas(from: doc.data())
         let policy = try await fetchPolicyData(from: doc.reference.collection(Constant.dataCollection))

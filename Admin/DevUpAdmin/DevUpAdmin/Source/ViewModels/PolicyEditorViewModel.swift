@@ -81,7 +81,11 @@ final class PolicyEditorViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         do {
-            if let result = try await repository.fetchLatestVersion() {
+            // 최신 버전과 버전 이력을 병렬 조회
+            async let latestTask = repository.fetchLatestVersion()
+            async let historyTask = repository.fetchVersionList()
+
+            if let result = try await latestTask {
                 currentVersionMeta = result.meta
                 fields = try PolicyFieldMeta.makeFields(from: result.policy, formulas: result.formulas)
             } else {
@@ -100,7 +104,7 @@ final class PolicyEditorViewModel: ObservableObject {
             }
             evaluateAllFormulas()
             snapshotBaseFields()
-            versionHistory = try await repository.fetchVersionList()
+            versionHistory = try await historyTask
         } catch {
             errorMessage = "불러오기 실패: \(error.localizedDescription)"
         }
