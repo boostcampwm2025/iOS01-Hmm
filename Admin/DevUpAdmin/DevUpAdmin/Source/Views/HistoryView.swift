@@ -208,7 +208,7 @@ struct VersionCardView: View {
                 }
                 .buttonStyle(.bordered)
                 .tint(.red)
-                .disabled(meta.isDeployedToLive || vm.isDeploying)
+                .disabled(meta.isDeployedToLive || vm.isDeploying || meta.testDeployments.isEmpty)
                 .confirmationDialog(
                     "\(meta.versionLabel)을 라이브 환경에 배포합니다.",
                     isPresented: $showDeployLiveConfirm,
@@ -220,6 +220,13 @@ struct VersionCardView: View {
                     Button("취소", role: .cancel) {}
                 } message: {
                     Text("실제 서비스에 즉시 반영됩니다.")
+                }
+
+                if meta.testDeployments.isEmpty && !meta.isDeployedToLive {
+                    Text("테스트 배포 후 라이브 배포 가능")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                 }
             }
             .padding(.horizontal, 18)
