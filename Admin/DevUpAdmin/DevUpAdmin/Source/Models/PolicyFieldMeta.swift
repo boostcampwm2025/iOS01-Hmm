@@ -1,5 +1,23 @@
 import Foundation
 
+// MARK: - Double 포맷 유틸리티
+
+extension Double {
+    /// 게임 밸런스 값을 표시용 문자열로 변환합니다.
+    /// isDouble: true이면 소수점 3자리까지, false이면 정수로 표시합니다.
+    func policyFormatted(isDouble: Bool) -> String {
+        if isDouble {
+            let rounded = (self * 1000).rounded() / 1000
+            if rounded.truncatingRemainder(dividingBy: 1) == 0 { return String(Int(rounded)) }
+            return String(format: "%.3f", rounded)
+                .replacingOccurrences(of: #"0+$"#, with: "", options: .regularExpression)
+                .replacingOccurrences(of: #"\.$"#, with: "", options: .regularExpression)
+        } else {
+            return String(Int(self.rounded()))
+        }
+    }
+}
+
 // MARK: - PolicyField
 
 struct PolicyField: Identifiable {
@@ -13,19 +31,7 @@ struct PolicyField: Identifiable {
 
     var hasFormula: Bool { rawInput.trimmingCharacters(in: .whitespaces).hasPrefix("=") }
 
-    var displayValue: String {
-        if isDouble {
-            let rounded = (resolvedValue * 1000).rounded() / 1000
-            if rounded.truncatingRemainder(dividingBy: 1) == 0 {
-                return String(Int(rounded))
-            }
-            return String(format: "%.3f", rounded)
-                .replacingOccurrences(of: #"0+$"#, with: "", options: .regularExpression)
-                .replacingOccurrences(of: #"\.$"#, with: "", options: .regularExpression)
-        } else {
-            return String(Int(resolvedValue.rounded()))
-        }
-    }
+    var displayValue: String { resolvedValue.policyFormatted(isDouble: isDouble) }
 
     /// 입력값 자체가 숫자/수식이 아닌 경우의 포맷 오류 (최우선 검사)
     var inputFormatError: String? {

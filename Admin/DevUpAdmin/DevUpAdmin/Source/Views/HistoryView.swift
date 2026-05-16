@@ -354,9 +354,6 @@ struct FieldChangesSection: View {
     }
 
     private func formatValue(_ value: Double) -> String {
-        if value.truncatingRemainder(dividingBy: 1) == 0 { return String(Int(value)) }
-        return String(format: "%.3f", value)
-            .replacingOccurrences(of: #"0+$"#, with: "", options: .regularExpression)
-            .replacingOccurrences(of: #"\.$"#, with: "", options: .regularExpression)
+        value.policyFormatted(isDouble: true)
     }
 }

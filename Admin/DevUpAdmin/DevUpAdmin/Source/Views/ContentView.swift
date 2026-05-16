@@ -710,14 +710,7 @@ struct ChangesView: View {
     }
 
     private func formatted(_ value: Double, isDouble: Bool) -> String {
-        if isDouble {
-            if value.truncatingRemainder(dividingBy: 1) == 0 { return String(Int(value)) }
-            return String(format: "%.3f", value)
-                .replacingOccurrences(of: #"0+$"#, with: "", options: .regularExpression)
-                .replacingOccurrences(of: #"\.$"#, with: "", options: .regularExpression)
-        } else {
-            return String(Int(value.rounded()))
-        }
+        value.policyFormatted(isDouble: isDouble)
     }
 }
 
