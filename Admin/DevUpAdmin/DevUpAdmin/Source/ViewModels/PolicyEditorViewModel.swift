@@ -251,16 +251,13 @@ final class PolicyEditorViewModel: ObservableObject {
 
     var changedFields: [FieldChange] {
         fields.compactMap { field in
-            let baseValue = baseFieldValues[field.id]
-            let baseInput = baseFieldInputs[field.id]
-            let valueChanged = baseValue != nil && field.resolvedValue != baseValue!
-            let inputChanged = baseInput != nil && field.rawInput != baseInput!
-            guard valueChanged || inputChanged else { return nil }
+            guard let baseInput = baseFieldInputs[field.id],
+                  field.rawInput != baseInput else { return nil }
             return FieldChange(
                 field: field,
-                before: baseValue ?? 0,
+                before: baseFieldValues[field.id] ?? 0,
                 after: field.resolvedValue,
-                beforeInput: baseInput ?? "",
+                beforeInput: baseInput,
                 afterInput: field.rawInput
             )
         }
