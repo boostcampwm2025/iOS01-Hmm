@@ -663,7 +663,9 @@ struct ChangesView: View {
     }
 
     private func changeRow(_ change: PolicyEditorViewModel.FieldChange) -> some View {
-        HStack(spacing: 12) {
+        let onlyFormulaChanged = change.before == change.after && change.beforeInput != change.afterInput
+
+        return HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(change.field.name)
                     .font(.callout)
@@ -675,19 +677,32 @@ struct ChangesView: View {
 
             Spacer()
 
-            HStack(spacing: 6) {
-                Text(formatted(change.before, isDouble: change.field.isDouble))
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                    .strikethrough(true, color: .secondary)
-
-                Image(systemName: "arrow.right")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                Text(formatted(change.after, isDouble: change.field.isDouble))
-                    .font(.callout.bold())
-                    .foregroundStyle(.orange)
+            if onlyFormulaChanged {
+                HStack(spacing: 6) {
+                    Text(change.beforeInput)
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .strikethrough(true, color: .secondary)
+                    Image(systemName: "arrow.right")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text(change.afterInput)
+                        .font(.callout.bold())
+                        .foregroundStyle(.purple)
+                }
+            } else {
+                HStack(spacing: 6) {
+                    Text(change.beforeInput.hasPrefix("=") ? change.beforeInput : formatted(change.before, isDouble: change.field.isDouble))
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .strikethrough(true, color: .secondary)
+                    Image(systemName: "arrow.right")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text(change.afterInput.hasPrefix("=") ? change.afterInput : formatted(change.after, isDouble: change.field.isDouble))
+                        .font(.callout.bold())
+                        .foregroundStyle(.orange)
+                }
             }
         }
         .padding(.horizontal, 16)
