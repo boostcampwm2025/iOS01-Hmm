@@ -258,9 +258,9 @@ extension PolicyFieldMeta {
 
     static func makeFields(from policy: PolicyDTO, formulas: [String: String] = [:]) throws -> [PolicyField] {
         let values = try policy.toValueDictionary()
-        return all.compactMap { meta in
-            guard let value = values[meta.id] else { return nil }
-            // 저장된 수식이 있으면 복원, 없으면 숫자 문자열로 재구성
+        return all.map { meta in
+            // 이전 버전에 없는 신규 필드는 0으로 기본값 설정
+            let value = values[meta.id] ?? 0
             let rawInput = formulas[meta.id] ?? (
                 meta.isDouble
                     ? String(value)
