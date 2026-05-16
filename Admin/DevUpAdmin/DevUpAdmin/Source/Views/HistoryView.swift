@@ -25,7 +25,7 @@ struct VersionHistoryPageView: View {
                         .font(.callout.bold())
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(vm.isSaving || vm.hasValidationErrors)
+                .disabled(!vm.canEdit || vm.isSaving || vm.hasValidationErrors)
                 .confirmationDialog(
                     "현재 편집 내용을 새 버전으로 저장합니다.",
                     isPresented: $showSaveConfirm,
@@ -194,7 +194,7 @@ struct VersionCardView: View {
                 }
                 .buttonStyle(.bordered)
                 .tint(.blue)
-                .disabled(meta.isDeployedToTest || vm.isDeploying)
+                .disabled(!vm.canEdit || meta.isDeployedToTest || vm.isDeploying)
                 .confirmationDialog(
                     "\(meta.versionLabel)을 테스트 환경에 배포합니다.",
                     isPresented: $showDeployTestConfirm,
@@ -219,7 +219,7 @@ struct VersionCardView: View {
                 }
                 .buttonStyle(.bordered)
                 .tint(.red)
-                .disabled(meta.isDeployedToLive || vm.isDeploying || meta.testDeployments.isEmpty)
+                .disabled(!vm.canEdit || meta.isDeployedToLive || vm.isDeploying || meta.testDeployments.isEmpty)
                 .confirmationDialog(
                     "\(meta.versionLabel)을 라이브 환경에 배포합니다.",
                     isPresented: $showDeployLiveConfirm,

@@ -23,6 +23,13 @@ private enum Constant {
     static let changeAfterKey = "after"
     static let changeBeforeInputKey = "beforeInput"
     static let changeAfterInputKey = "afterInput"
+
+    // 편집 락
+    static let editingSessionCollection = "editingSession"
+    static let lockLockedByField = "lockedBy"
+    static let lockSessionIdField = "sessionId"
+    static let lockLastHeartbeatField = "lastHeartbeat"
+    static let lockStaleThreshold: TimeInterval = 60
 }
 
 enum RepositoryError: LocalizedError {
@@ -257,5 +264,69 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
         try batch.setData(from: policy.equipment,  forDocument: collection.document(PolicyDataField.equipment.rawValue))
         try batch.setData(from: policy.housing,    forDocument: collection.document(PolicyDataField.housing.rawValue))
         try batch.setData(from: policy.system,     forDocument: collection.document(PolicyDataField.system.rawValue))
+    }
+
+    // MARK: - 편집 락
+
+    func acquireLock(username: String, sessionId: String) async throws -> Bool {
+        let lockRef = db.collection(Constant.editingSessionCollection).document(Constant.currentDocID)
+        let doc = try await lockRef.getDocument()
+        let now = Timestamp(date: Date())
+        let newData: [String: Any] = [
+            Constant.lockLockedByField: username,
+            Constant.lockSessionIdField: sessionId,
+            Constant.lockLastHeartbeatField: now
+        ]
+
+        if !doc.exists {
+            try await lockRef.setData(newData)
+            return true
+        }
+
+        guard let data = doc.data(),
+              let existingSession = data[Constant.lockSessionIdField] as? String,
+              let lastHeartbeat = (data[Constant.lockLastHeartbeatField] as? Timestamp)?.dateValue()
+        else {
+            try await lockRef.setData(newData)
+            return true
+        }
+
+        if existingSession == sessionId {
+            try await lockRef.updateData([Constant.lockLastHeartbeatField: now])
+            return true
+        }
+
+        if Date().timeIntervalSince(lastHeartbeat) > Constant.lockStaleThreshold {
+            try await lockRef.setData(newData)
+            return true
+        }
+
+        return false
+    }
+
+    func releaseLock(sessionId: String) async throws {
+        let lockRef = db.collection(Constant.editingSessionCollection).document(Constant.currentDocID)
+        let doc = try await lockRef.getDocument()
+        guard (doc.data()?[Constant.lockSessionIdField] as? String) == sessionId else { return }
+        try await lockRef.delete()
+    }
+
+    func heartbeat(sessionId: String) async throws {
+        let lockRef = db.collection(Constant.editingSessionCollection).document(Constant.currentDocID)
+        try await lockRef.updateData([Constant.lockLastHeartbeatField: Timestamp(date: Date())])
+    }
+
+    func fetchLock() async throws -> (lockedBy: String, sessionId: String)? {
+        let doc = try await db.collection(Constant.editingSessionCollection)
+            .document(Constant.currentDocID)
+            .getDocument()
+        guard doc.exists,
+              let data = doc.data(),
+              let lockedBy = data[Constant.lockLockedByField] as? String,
+              let sessionId = data[Constant.lockSessionIdField] as? String,
+              let lastHeartbeat = (data[Constant.lockLastHeartbeatField] as? Timestamp)?.dateValue(),
+              Date().timeIntervalSince(lastHeartbeat) <= Constant.lockStaleThreshold
+        else { return nil }
+        return (lockedBy, sessionId)
     }
 }

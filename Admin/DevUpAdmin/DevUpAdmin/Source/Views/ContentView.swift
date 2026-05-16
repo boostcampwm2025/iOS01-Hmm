@@ -26,7 +26,12 @@ struct ContentView: View {
             }
         }
         .onChange(of: username) { _, new in
-            if !new.isEmpty { Task { await vm.loadLatest() } }
+            if !new.isEmpty {
+                Task {
+                    await vm.loadLatest()
+                    await vm.acquireLock(username: new)
+                }
+            }
         }
         .alert("오류", isPresented: Binding(
             get: { vm.errorMessage != nil },
@@ -39,14 +44,36 @@ struct ContentView: View {
     }
 
     private var mainView: some View {
-        NavigationSplitView {
-            AppSidebarView(vm: vm, selection: $selection, username: username)
-        } detail: {
-            DetailRouterView(vm: vm, selection: selection, username: $username)
+        VStack(spacing: 0) {
+            if !vm.canEdit, let owner = vm.lockOwner {
+                readOnlyBanner(owner: owner)
+            }
+            NavigationSplitView {
+                AppSidebarView(vm: vm, selection: $selection, username: username)
+            } detail: {
+                DetailRouterView(vm: vm, selection: selection, username: $username)
+            }
         }
         .onAppear {
-            Task { await vm.loadLatest() }
+            Task {
+                await vm.loadLatest()
+                await vm.acquireLock(username: username)
+            }
         }
+    }
+
+    private func readOnlyBanner(owner: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "lock.fill")
+                .font(.caption)
+            Text("\(owner) 님이 편집 중 — 읽기 전용입니다. 편집이 끝나면 자동으로 전환됩니다.")
+                .font(.caption)
+            Spacer()
+        }
+        .foregroundStyle(.white)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(Color.orange)
     }
 }
 
@@ -193,7 +220,7 @@ struct AppSidebarView: View {
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.small)
-            .disabled(vm.isSaving || vm.hasValidationErrors)
+            .disabled(!vm.canEdit || vm.isSaving || vm.hasValidationErrors)
             .confirmationDialog("현재 편집 내용을 새 버전으로 저장합니다.", isPresented: $showSaveConfirm, titleVisibility: .visible) {
                 Button("저장") { Task { await vm.save(modifiedBy: username) } }
                 Button("취소", role: .cancel) {}
@@ -392,7 +419,8 @@ struct PolicyGroupView: View {
                                     ForEach(item.fields) { field in
                                         PolicyFieldRow(
                                             field: field,
-                                            errorMessage: vm.validationError(for: field.id)
+                                            errorMessage: vm.validationError(for: field.id),
+                                            canEdit: vm.canEdit
                                         ) { id, raw in
                                             vm.updateField(id: id, rawInput: raw)
                                         }
@@ -469,13 +497,15 @@ struct PolicyGroupView: View {
 struct PolicyFieldRow: View {
     let field: PolicyField
     let errorMessage: String?
+    let canEdit: Bool
     let onUpdate: (String, String) -> Void
     @State private var localInput: String
     @State private var isCopied = false
 
-    init(field: PolicyField, errorMessage: String?, onUpdate: @escaping (String, String) -> Void) {
+    init(field: PolicyField, errorMessage: String?, canEdit: Bool, onUpdate: @escaping (String, String) -> Void) {
         self.field = field
         self.errorMessage = errorMessage
+        self.canEdit = canEdit
         self.onUpdate = onUpdate
         self._localInput = State(initialValue: field.rawInput)
     }
@@ -526,9 +556,9 @@ struct PolicyFieldRow: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(backgroundFor(hasFormula: field.hasFormula, hasError: hasError))
+                    .disabled(!canEdit)
                     .onSubmit { onUpdate(field.id, localInput) }
                     .onChange(of: localInput) { _, new in
-                        // 항상 VM에 즉시 전달 → 실시간 유효성 반응
                         onUpdate(field.id, new)
                     }
 

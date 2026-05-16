@@ -15,15 +15,32 @@ final class PolicyEditorViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var hasUnsavedChanges = false
 
+    // MARK: - 편집 락
+    @Published var canEdit = false
+    /// nil이면 본인이 락 보유 중 또는 아직 확인 전. 값이 있으면 해당 유저가 락 보유 중.
+    @Published var lockOwner: String? = nil
+
     /// 현재 편집의 기준이 된 버전의 필드값 스냅샷 (fieldId → resolvedValue)
     private(set) var baseFieldValues: [String: Double] = [:]
     /// 현재 편집의 기준이 된 버전의 rawInput 스냅샷 (fieldId → rawInput)
     private(set) var baseFieldInputs: [String: String] = [:]
 
     private let repository: AdminPolicyRepository
+    private let sessionId = UUID().uuidString
+    private var currentUsername = ""
+    private var heartbeatTask: Task<Void, Never>?
+    private var lockRetryTask: Task<Void, Never>?
 
     init(repository: AdminPolicyRepository = DefaultAdminPolicyRepository()) {
         self.repository = repository
+        NotificationCenter.default.addObserver(
+            forName: NSApplication.willTerminateNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self else { return }
+            Task { try? await self.repository.releaseLock(sessionId: self.sessionId) }
+        }
     }
 
     // MARK: - 그룹
@@ -130,6 +147,10 @@ final class PolicyEditorViewModel: ObservableObject {
     // MARK: - 저장
 
     func save(modifiedBy: String) async {
+        guard canEdit else {
+            errorMessage = "편집 권한이 없습니다. 다른 관리자가 편집 중입니다."
+            return
+        }
         guard !hasValidationErrors else {
             errorMessage = "유효성 오류가 있는 필드가 있습니다. 오류를 먼저 수정해주세요."
             return
@@ -155,6 +176,10 @@ final class PolicyEditorViewModel: ObservableObject {
     // MARK: - 배포
 
     func deploy(version: Int, to env: PolicyEnvironment, deployedBy: String) async {
+        guard canEdit else {
+            errorMessage = "편집 권한이 없습니다. 다른 관리자가 편집 중입니다."
+            return
+        }
         isDeploying = true
         errorMessage = nil
         do {
@@ -236,6 +261,64 @@ final class PolicyEditorViewModel: ObservableObject {
 
     func clearError() {
         errorMessage = nil
+    }
+
+    // MARK: - 편집 락
+
+    func acquireLock(username: String) async {
+        currentUsername = username
+        do {
+            let acquired = try await repository.acquireLock(username: username, sessionId: sessionId)
+            if acquired {
+                canEdit = true
+                lockOwner = nil
+                startHeartbeat()
+                lockRetryTask?.cancel()
+            } else {
+                canEdit = false
+                lockOwner = try await repository.fetchLock()?.lockedBy
+                startLockRetry()
+            }
+        } catch {
+            // 락 실패는 편집 불가 처리 (네트워크 오류 등)
+            canEdit = false
+        }
+    }
+
+    func releaseLock() async {
+        heartbeatTask?.cancel()
+        lockRetryTask?.cancel()
+        try? await repository.releaseLock(sessionId: sessionId)
+        canEdit = false
+        lockOwner = nil
+    }
+
+    private func startHeartbeat() {
+        heartbeatTask?.cancel()
+        heartbeatTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(30))
+                guard let self, !Task.isCancelled else { break }
+                do {
+                    try await self.repository.heartbeat(sessionId: self.sessionId)
+                } catch {
+                    // heartbeat 실패 시 락 재확인
+                    await self.acquireLock(username: self.currentUsername)
+                }
+            }
+        }
+    }
+
+    private func startLockRetry() {
+        lockRetryTask?.cancel()
+        lockRetryTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(30))
+                guard let self, !Task.isCancelled else { break }
+                await self.acquireLock(username: self.currentUsername)
+                if self.canEdit { break }
+            }
+        }
     }
 
     // MARK: - 변경사항 추적
