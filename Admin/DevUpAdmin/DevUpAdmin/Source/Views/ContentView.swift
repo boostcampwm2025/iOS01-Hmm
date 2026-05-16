@@ -154,14 +154,14 @@ struct AppSidebarView: View {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 2) {
                         HStack(spacing: 5) {
-                            Image(systemName: "plus.circle.fill")
+                            Image(systemName: "pencil.circle.fill")
                                 .font(.caption)
                                 .foregroundStyle(.blue)
-                            Text("새 버전 작성 중")
+                            Text("\(meta.versionLabel) 편집 중")
                                 .font(.caption.bold())
                                 .foregroundStyle(.blue)
                         }
-                        Text("기준: \(meta.versionLabel) · \(meta.modifiedBy)")
+                        Text("\(meta.modifiedBy) · \(meta.modifiedAtFormatted)")
                             .font(.system(size: 10))
                             .foregroundStyle(Color(.tertiaryLabelColor))
                     }
@@ -287,7 +287,7 @@ struct WelcomeView: View {
 
             VStack(spacing: 8) {
                 if let meta = vm.currentVersionMeta {
-                    Text("\(meta.versionLabel) 기준으로 새 버전 작성 중")
+                    Text("\(meta.versionLabel) 편집 중")
                         .font(.title2.bold())
                     HStack(spacing: 6) {
                         if meta.isDeployedToTest { DeployBadge(env: .test) }

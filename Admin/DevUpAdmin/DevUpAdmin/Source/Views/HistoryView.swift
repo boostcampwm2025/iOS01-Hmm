@@ -116,7 +116,7 @@ struct VersionCardView: View {
                         if meta.isDeployedToTest { DeployBadge(env: .test) }
                         if meta.isDeployedToLive { DeployBadge(env: .live) }
                         if isCurrentlyLoaded {
-                            Text("새 버전 작성 기준")
+                            Text("편집 중")
                                 .font(.system(size: 10, weight: .bold))
                                 .padding(.horizontal, 7)
                                 .padding(.vertical, 3)
@@ -125,7 +125,7 @@ struct VersionCardView: View {
                                 .clipShape(Capsule())
                         }
                     }
-                            HStack(spacing: 10) {
+                    HStack(spacing: 10) {
                         Label(meta.modifiedBy, systemImage: "person.fill")
                         Label(meta.modifiedAtFormatted, systemImage: "clock")
                         if let base = meta.baseVersion {
@@ -136,13 +136,13 @@ struct VersionCardView: View {
                     .foregroundStyle(.secondary)
                 }
                 Spacer()
-                Button(isCurrentlyLoaded ? "작성 기준" : "기준으로 설정") {
+                Button(isCurrentlyLoaded ? "불러옴" : "불러오기") {
                     Task { await vm.loadVersion(meta.version) }
                 }
                 .buttonStyle(.borderless)
                 .foregroundStyle(isCurrentlyLoaded ? Color.secondary : Color.blue)
                 .font(.callout)
-                .disabled(isCurrentlyLoaded)
+                .disabled(isCurrentlyLoaded || !vm.canEdit)
             }
             .padding(18)
 
