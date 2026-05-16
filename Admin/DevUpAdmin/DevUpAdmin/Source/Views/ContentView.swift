@@ -347,18 +347,20 @@ struct PolicyGroupView: View {
                     LazyVStack(spacing: 0, pinnedViews: .sectionHeaders) {
                         ForEach(sectioned, id: \.section) { item in
                             SwiftUI.Section {
-                                ForEach(item.fields) { field in
-                                    PolicyFieldRow(
-                                        field: field,
-                                        errorMessage: vm.validationError(for: field.id)
-                                    ) { id, raw in
-                                        vm.updateField(id: id, rawInput: raw)
+                                if !collapsedSections.contains(item.section) {
+                                    ForEach(item.fields) { field in
+                                        PolicyFieldRow(
+                                            field: field,
+                                            errorMessage: vm.validationError(for: field.id)
+                                        ) { id, raw in
+                                            vm.updateField(id: id, rawInput: raw)
+                                        }
+                                        Divider().padding(.leading, 216)
                                     }
-                                    Divider().padding(.leading, 216)
                                 }
                             } header: {
                                 if !item.section.isEmpty {
-                                    sectionHeader(item.section)
+                                    sectionHeader(item.section, isCollapsed: collapsedSections.contains(item.section))
                                 }
                             }
                         }
@@ -394,14 +396,30 @@ struct PolicyGroupView: View {
         .background(Color(.controlBackgroundColor))
     }
 
-    private func sectionHeader(_ title: String) -> some View {
-        Text(title)
-            .font(.caption.bold())
-            .foregroundStyle(.secondary)
+    private func sectionHeader(_ title: String, isCollapsed: Bool) -> some View {
+        Button {
+            if isCollapsed {
+                collapsedSections.remove(title)
+            } else {
+                collapsedSections.insert(title)
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundStyle(Color(.tertiaryLabelColor))
+                Text(title)
+                    .font(.caption.bold())
+                    .foregroundStyle(.secondary)
+                Spacer()
+            }
             .padding(.horizontal, 16)
             .padding(.vertical, 7)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color(.controlBackgroundColor).opacity(0.8))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -412,6 +430,7 @@ struct PolicyFieldRow: View {
     let errorMessage: String?
     let onUpdate: (String, String) -> Void
     @State private var localInput: String
+    @State private var isCopied = false
 
     init(field: PolicyField, errorMessage: String?, onUpdate: @escaping (String, String) -> Void) {
         self.field = field
@@ -426,13 +445,31 @@ struct PolicyFieldRow: View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 // 항목명
-                HStack(spacing: 6) {
-                    Text(field.name)
-                        .font(.callout)
-                    if hasError {
-                        Image(systemName: "exclamationmark.circle.fill")
-                            .font(.caption)
-                            .foregroundStyle(.red)
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(spacing: 6) {
+                        Text(field.name)
+                            .font(.callout)
+                        if hasError {
+                            Image(systemName: "exclamationmark.circle.fill")
+                                .font(.caption)
+                                .foregroundStyle(.red)
+                        }
+                    }
+                    HStack(spacing: 4) {
+                        Text(field.id)
+                            .font(.system(size: 10, design: .monospaced))
+                            .foregroundStyle(Color(.tertiaryLabelColor))
+                        Button {
+                            NSPasteboard.general.clearContents()
+                            NSPasteboard.general.setString(field.id, forType: .string)
+                            isCopied = true
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { isCopied = false }
+                        } label: {
+                            Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
+                                .font(.system(size: 9))
+                                .foregroundStyle(isCopied ? Color.green : Color(.tertiaryLabelColor))
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
                 .frame(width: 208, alignment: .leading)
