@@ -13,7 +13,7 @@ struct VersionHistoryPageView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("버전 이력")
                         .font(.title2.bold())
-                    Text("버전을 선택해 불러오거나 테스트·라이브에 배포할 수 있습니다.")
+                    Text("버전을 불러오면 해당 버전 기준으로 새 버전을 작성할 수 있습니다. 저장된 버전만 배포 가능합니다.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -116,7 +116,7 @@ struct VersionCardView: View {
                         if meta.isDeployedToTest { DeployBadge(env: .test) }
                         if meta.isDeployedToLive { DeployBadge(env: .live) }
                         if isCurrentlyLoaded {
-                            Text("편집 중")
+                            Text("새 버전 작성 기준")
                                 .font(.system(size: 10, weight: .bold))
                                 .padding(.horizontal, 7)
                                 .padding(.vertical, 3)

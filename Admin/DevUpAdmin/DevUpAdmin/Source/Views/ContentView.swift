@@ -107,13 +107,20 @@ struct AppSidebarView: View {
                         .foregroundStyle(.secondary)
                 }
             } else if let meta = vm.currentVersionMeta {
-                HStack(alignment: .top, spacing: 0) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(meta.versionLabel)
-                            .font(.subheadline.bold())
-                        Text(meta.modifiedBy)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                // 새 버전 작성 중임을 명확히 표시
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack(spacing: 5) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.caption)
+                                .foregroundStyle(.blue)
+                            Text("새 버전 작성 중")
+                                .font(.caption.bold())
+                                .foregroundStyle(.blue)
+                        }
+                        Text("기준: \(meta.versionLabel) · \(meta.modifiedBy)")
+                            .font(.system(size: 10))
+                            .foregroundStyle(Color(.tertiaryLabelColor))
                     }
                     Spacer()
                     VStack(alignment: .trailing, spacing: 3) {
@@ -147,7 +154,7 @@ struct AppSidebarView: View {
                     } else {
                         Image(systemName: "square.and.arrow.up")
                     }
-                    Text(vm.hasUnsavedChanges ? "새 버전으로 저장 •" : "새 버전으로 저장")
+                    Text(vm.hasUnsavedChanges ? "새 버전으로 저장 ●" : "새 버전으로 저장")
                         .font(.caption.bold())
                 }
                 .frame(maxWidth: .infinity)
@@ -220,7 +227,7 @@ struct WelcomeView: View {
 
             VStack(spacing: 8) {
                 if let meta = vm.currentVersionMeta {
-                    Text("현재 \(meta.versionLabel) 편집 중")
+                    Text("\(meta.versionLabel) 기준으로 새 버전 작성 중")
                         .font(.title2.bold())
                     HStack(spacing: 6) {
                         if meta.isDeployedToTest { DeployBadge(env: .test) }
