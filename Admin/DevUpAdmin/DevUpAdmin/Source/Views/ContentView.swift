@@ -663,7 +663,8 @@ struct ChangesView: View {
     }
 
     private func changeRow(_ change: PolicyEditorViewModel.FieldChange) -> some View {
-        let onlyFormulaChanged = change.before == change.after && change.beforeInput != change.afterInput
+        let formulaChanged = change.beforeInput != change.afterInput
+        let onlyFormulaChanged = formulaChanged && change.before == change.after
 
         return HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 2) {
@@ -678,6 +679,7 @@ struct ChangesView: View {
             Spacer()
 
             if onlyFormulaChanged {
+                // 값은 같고 수식 텍스트만 바뀐 경우
                 HStack(spacing: 6) {
                     Text(change.beforeInput)
                         .font(.callout)
@@ -690,16 +692,31 @@ struct ChangesView: View {
                         .font(.callout.bold())
                         .foregroundStyle(.purple)
                 }
-            } else {
+            } else if formulaChanged {
+                // 수식 텍스트도 바뀌고 값도 바뀐 경우 → 수식 텍스트 표시
                 HStack(spacing: 6) {
-                    Text(change.beforeInput.hasPrefix("=") ? change.beforeInput : formatted(change.before, isDouble: change.field.isDouble))
+                    Text(change.beforeInput)
                         .font(.callout)
                         .foregroundStyle(.secondary)
                         .strikethrough(true, color: .secondary)
                     Image(systemName: "arrow.right")
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                    Text(change.afterInput.hasPrefix("=") ? change.afterInput : formatted(change.after, isDouble: change.field.isDouble))
+                    Text(change.afterInput)
+                        .font(.callout.bold())
+                        .foregroundStyle(.orange)
+                }
+            } else {
+                // 수식 미변경(의존성 전파) 또는 일반 숫자 변경 → 값 표시
+                HStack(spacing: 6) {
+                    Text(formatted(change.before, isDouble: change.field.isDouble))
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .strikethrough(true, color: .secondary)
+                    Image(systemName: "arrow.right")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text(formatted(change.after, isDouble: change.field.isDouble))
                         .font(.callout.bold())
                         .foregroundStyle(.orange)
                 }
