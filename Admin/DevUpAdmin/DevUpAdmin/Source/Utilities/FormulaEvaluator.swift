@@ -2,15 +2,31 @@ import Foundation
 import JavaScriptCore
 
 enum FormulaEvaluator {
+
+    enum EvalResult {
+        case value(Double)
+        case divisionByZero
+        case unknownIdentifier(String)
+        case invalid
+    }
+
     /// 수식을 평가합니다.
     /// - `=` 로 시작하면 수식으로 처리합니다.
     /// - 변수로 한글 항목명 (예: 무직, 탭당 획득량), 전체 경로 (예: career.unemployed),
     ///   언더스코어 (예: career_unemployed), 단축 영문 (예: unemployed) 모두 지원합니다.
     /// - 예: "=무직 * 1.1", "=탭당 획득량 + 5", "=career.unemployed * 2"
     static func evaluate(_ input: String, context: [String: Double], nameContext: [String: Double] = [:]) -> Double? {
+        if case .value(let v) = evaluateDetailed(input, context: context, nameContext: nameContext) {
+            return v
+        }
+        return nil
+    }
+
+    static func evaluateDetailed(_ input: String, context: [String: Double], nameContext: [String: Double] = [:]) -> EvalResult {
         let trimmed = input.trimmingCharacters(in: .whitespaces)
         if !trimmed.hasPrefix("=") {
-            return Double(trimmed)
+            guard let v = Double(trimmed) else { return .invalid }
+            return .value(v)
         }
 
         var expression = String(trimmed.dropFirst()).trimmingCharacters(in: .whitespaces)
@@ -42,6 +58,9 @@ enum FormulaEvaluator {
         allVars += shortNameContext.map { ($0.key, $0.value) }
         allVars.sort { $0.0.count > $1.0.count }
 
+        // 알려진 식별자 집합
+        let knownIdentifiers = Set(allVars.map(\.0))
+
         for (varName, value) in allVars {
             let numStr = value.truncatingRemainder(dividingBy: 1) == 0
                 ? String(Int(value))
@@ -49,9 +68,33 @@ enum FormulaEvaluator {
             expression = expression.replacingOccurrences(of: varName, with: numStr)
         }
 
-        guard let jsContext = JSContext() else { return nil }
+        // 치환 후 남은 알파벳/한글 식별자가 있으면 미정의 필드명
+        let identifierPattern = "[a-zA-Z가-힣_][a-zA-Z가-힣0-9_.]*"
+        if let regex = try? NSRegularExpression(pattern: identifierPattern),
+           let match = regex.firstMatch(in: expression, range: NSRange(expression.startIndex..., in: expression)) {
+            let range = Range(match.range, in: expression)!
+            let unknown = String(expression[range])
+            // JS 내장 함수(Math 등)는 허용
+            if !unknown.hasPrefix("Math") {
+                // 원본 수식에서 해당 토큰이 knownIdentifiers에 없는 경우만 오류
+                let originalExpression = String(trimmed.dropFirst()).trimmingCharacters(in: .whitespaces)
+                let originalMatches = (try? NSRegularExpression(pattern: identifierPattern))?
+                    .matches(in: originalExpression, range: NSRange(originalExpression.startIndex..., in: originalExpression))
+                    .compactMap { Range($0.range, in: originalExpression).map { String(originalExpression[$0]) } } ?? []
+                if let unknownOriginal = originalMatches.first(where: { !knownIdentifiers.contains($0) && !$0.hasPrefix("Math") }) {
+                    return .unknownIdentifier(unknownOriginal)
+                }
+            }
+        }
+
+        guard let jsContext = JSContext() else { return .invalid }
+        jsContext.exceptionHandler = { _, _ in }
         let result = jsContext.evaluateScript(expression)
-        guard let result, result.isNumber else { return nil }
-        return result.toDouble()
+        guard let result, result.isNumber else { return .invalid }
+        let value = result.toDouble()
+
+        if value.isNaN { return .invalid }
+        if value.isInfinite { return .divisionByZero }
+        return .value(value)
     }
 }

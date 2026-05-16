@@ -15,8 +15,13 @@ struct PolicyField: Identifiable {
 
     var displayValue: String {
         if isDouble {
-            let rounded = (resolvedValue * 10000).rounded() / 10000
-            return String(rounded)
+            let rounded = (resolvedValue * 1000).rounded() / 1000
+            if rounded.truncatingRemainder(dividingBy: 1) == 0 {
+                return String(Int(rounded))
+            }
+            return String(format: "%.3f", rounded)
+                .replacingOccurrences(of: #"0+$"#, with: "", options: .regularExpression)
+                .replacingOccurrences(of: #"\.$"#, with: "", options: .regularExpression)
         } else {
             return String(Int(resolvedValue.rounded()))
         }

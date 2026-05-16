@@ -8,6 +8,7 @@ final class PolicyEditorViewModel: ObservableObject {
     @Published var currentVersionMeta: PolicyVersionMeta?
     @Published var versionHistory: [PolicyVersionMeta] = []
     @Published var crossFieldErrors: [String: String] = [:]
+    @Published var formulaErrors: [String: String] = [:]
     @Published var isLoading = false
     @Published var isSaving = false
     @Published var isDeploying = false
@@ -38,10 +39,11 @@ final class PolicyEditorViewModel: ObservableObject {
 
     // MARK: - 유효성
 
-    /// 특정 필드의 최종 오류 메시지 (포맷 → 단일 규칙 → 크로스필드 순 우선순위)
+    /// 특정 필드의 최종 오류 메시지 (포맷 → 수식오류 → 단일 규칙 → 크로스필드 순 우선순위)
     func validationError(for fieldID: String) -> String? {
         guard let field = fields.first(where: { $0.id == fieldID }) else { return nil }
         if let formatError = field.inputFormatError { return formatError }
+        if let formulaError = formulaErrors[fieldID] { return formulaError }
         if let singleError = field.singleFieldError { return singleError }
         return crossFieldErrors[fieldID]
     }
@@ -51,7 +53,10 @@ final class PolicyEditorViewModel: ObservableObject {
         let groupFields = fields.filter { $0.group == group }
         let errorIDs = Set(
             groupFields
-                .filter { $0.inputFormatError != nil || $0.singleFieldError != nil || crossFieldErrors[$0.id] != nil }
+                .filter {
+                    $0.inputFormatError != nil || formulaErrors[$0.id] != nil ||
+                    $0.singleFieldError != nil || crossFieldErrors[$0.id] != nil
+                }
                 .map(\.id)
         )
         return errorIDs.count
@@ -62,7 +67,7 @@ final class PolicyEditorViewModel: ObservableObject {
         let hasFieldError = fields.contains { field in
             field.inputFormatError != nil || field.singleFieldError != nil
         }
-        return hasFieldError || !crossFieldErrors.isEmpty
+        return hasFieldError || !crossFieldErrors.isEmpty || !formulaErrors.isEmpty
     }
 
     // MARK: - 데이터 로드
@@ -163,7 +168,8 @@ final class PolicyEditorViewModel: ObservableObject {
         // 1차: 수식이 아닌 필드 먼저 확정
         for i in fields.indices {
             if !fields[i].hasFormula {
-                fields[i].resolvedValue = Double(fields[i].rawInput.trimmingCharacters(in: .whitespaces)) ?? 0
+                let raw = Double(fields[i].rawInput.trimmingCharacters(in: .whitespaces)) ?? 0
+                fields[i].resolvedValue = fields[i].isDouble ? (raw * 1000).rounded() / 1000 : raw
             }
         }
 
@@ -182,17 +188,32 @@ final class PolicyEditorViewModel: ObservableObject {
         for name in ambiguousNames { nameContext.removeValue(forKey: name) }
 
         // 2차: 수식 필드 평가
+        var newFormulaErrors: [String: String] = [:]
         for i in fields.indices {
             guard fields[i].hasFormula else { continue }
-            let evaluated = FormulaEvaluator.evaluate(
+            let result = FormulaEvaluator.evaluateDetailed(
                 fields[i].rawInput,
                 context: context,
                 nameContext: nameContext
-            ) ?? 0
-            fields[i].resolvedValue = evaluated
-            context[fields[i].id] = evaluated
-            nameContext[fields[i].name] = evaluated
+            )
+            switch result {
+            case .value(let v):
+                let rounded = fields[i].isDouble ? (v * 1000).rounded() / 1000 : v
+                fields[i].resolvedValue = rounded
+                context[fields[i].id] = rounded
+                nameContext[fields[i].name] = rounded
+            case .divisionByZero:
+                newFormulaErrors[fields[i].id] = "0으로 나눌 수 없습니다."
+                fields[i].resolvedValue = 0
+            case .unknownIdentifier(let name):
+                newFormulaErrors[fields[i].id] = "'\(name)'은(는) 존재하지 않는 필드명입니다."
+                fields[i].resolvedValue = 0
+            case .invalid:
+                newFormulaErrors[fields[i].id] = "수식을 계산할 수 없습니다."
+                fields[i].resolvedValue = 0
+            }
         }
+        formulaErrors = newFormulaErrors
 
         crossFieldErrors = CrossFieldValidation.validate(fields: fields)
     }
