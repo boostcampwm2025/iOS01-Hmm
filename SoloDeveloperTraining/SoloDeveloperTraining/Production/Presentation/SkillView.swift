@@ -39,7 +39,9 @@ struct SkillView: View {
             imageName: "skill_ad_reward",
             price: .text("AD"),
             state: .available,
-            action: {}
+            action: {
+                Task { await handleWatchAd() }
+            }
         )
     }
 
@@ -116,6 +118,24 @@ private extension SkillView {
             return false
         }
     }
+
+    func handleWatchAd() async {
+        let success = await AdService.shared.showAdWithResult(.interstitial)
+        if success {
+            popupContent = PopupConfiguration(title: "보상 완료") {
+                VStack(spacing: Constant.popupContentSpacing) {
+                    Text("5분간 게임 재화를 2배로 획득합니다.")
+                        .textStyle(.body)
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.center)
+                    MediumButton(title: "확인", isFilled: true) {
+                        popupContent = nil
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 #Preview {
