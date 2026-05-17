@@ -32,9 +32,21 @@ struct SkillView: View {
         self._popupContent = popupContent
     }
 
+    var skillAdItemRow: some View {
+        ItemRow(
+            title: "업무 효율 대박",
+            description: "5분간 골드 2배 획득",
+            imageName: "skill_ad_reward",
+            price: .text("AD"),
+            state: .available,
+            action: {}
+        )
+    }
+
     var body: some View {
         ScrollView {
             LazyVStack(spacing: Constant.itemCardSpacing) {
+                skillAdItemRow
                 ForEach(skillSystem.skillList(), id: \.skill) { skillState in
                     ItemRow(
                         title: skillState.skill.title,
