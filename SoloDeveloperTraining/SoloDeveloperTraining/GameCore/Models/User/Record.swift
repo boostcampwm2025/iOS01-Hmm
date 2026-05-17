@@ -8,6 +8,19 @@
 import Foundation
 import Observation
 
+struct SkillAdRewardState: Codable {
+    var usedDate: Date?
+    var useCount: Int
+
+    init(
+        usedDate: Date? = nil,
+        useCount: Int = 0
+    ) {
+        self.usedDate = usedDate
+        self.useCount = useCount
+    }
+}
+
 @MainActor
 @Observable
 final class Record {
@@ -63,6 +76,8 @@ final class Record {
     var coffeeUseCount: Int = 0
     /// 에너지 드링크 사용 횟수
     var energyDrinkUseCount: Int = 0
+    /// 스킬 광고 보상 사용 상태
+    var skillAdRewardState: SkillAdRewardState = .init()
 
     // MARK: - Tutorial Records
     /// 튜토리얼 클리어 여부
@@ -228,6 +243,7 @@ extension Record {
         // Consumable Usage Records 초기화
         coffeeUseCount = 0
         energyDrinkUseCount = 0
+        skillAdRewardState = .init()
 
         // totalPlayTime은 유지 (누적 플레이 시간)
 

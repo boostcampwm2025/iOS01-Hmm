@@ -20,6 +20,7 @@ struct SkillView: View {
     private let skillSystem: SkillSystem
 
     @Binding var popupContent: PopupConfiguration?
+    @State private var adRewardNow = Date()
 
     init(
         user: User,
@@ -33,12 +34,15 @@ struct SkillView: View {
     }
 
     var skillAdItemRow: some View {
-        ItemRow(
+        let isActive = SkillAdRewardManager.isRewardActive(user: user, now: adRewardNow)
+        let canUseToday = SkillAdRewardManager.canUseRewardToday(user: user, now: adRewardNow)
+
+        return ItemRow(
             title: "업무 효율 대박",
-            description: "5분간 골드 2배 획득",
+            description: "5분간 골드 \(Int(SkillAdRewardManager.rewardMultiplier))배 획득",
             imageName: "skill_ad_reward",
-            price: .text("AD"),
-            state: .available,
+            price: .text(isActive ? "사용중" : "AD"),
+            state: adRewardButtonState(isActive: isActive, canUseToday: canUseToday),
             action: {
                 Task { await handleWatchAd() }
             }
@@ -71,10 +75,28 @@ struct SkillView: View {
         .onAppear {
             AnalyticsService.shared.logScreenView(screenName: "skill")
         }
+        .task {
+            await updateAdRewardTimer()
+        }
     }
 }
 
 private extension SkillView {
+    func adRewardButtonState(isActive: Bool, canUseToday: Bool) -> ItemState {
+        if isActive { // 한도 도달 여부와 상관없이, 사용중일 경우 .insufficient로 표시
+            return .insufficient
+        }
+        return canUseToday ? .available : .locked
+    }
+
+    @MainActor
+    func updateAdRewardTimer() async {
+        while !Task.isCancelled {
+            adRewardNow = Date()
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+        }
+    }
+
     func upgrade(skill: Skill) {
         do {
             try skillSystem.upgrade(skill: skill)
@@ -120,17 +142,26 @@ private extension SkillView {
     }
 
     func handleWatchAd() async {
+        let isActive = SkillAdRewardManager.isRewardActive(user: user)
+        let canUseToday = SkillAdRewardManager.canUseRewardToday(user: user)
+        guard adRewardButtonState(isActive: isActive, canUseToday: canUseToday) == .available else { return }
+
         let success = await AdService.shared.showAdWithResult(.interstitial)
         if success {
             popupContent = PopupConfiguration(title: "보상 완료") {
                 VStack(spacing: Constant.popupContentSpacing) {
-                    Text("5분간 게임 재화를 2배로 획득합니다.")
+                    Text(
+                        "\(Int(SkillAdRewardManager.rewardDuration / 60))분간 게임 재화를 \(Int(SkillAdRewardManager.rewardMultiplier))배로 획득합니다."
+                    )
                         .textStyle(.body)
                         .foregroundColor(.black)
                         .multilineTextAlignment(.center)
                     MediumButton(title: "확인", isFilled: true) {
                         popupContent = nil
                     }
+                }
+                .onDisappear {
+                    SkillAdRewardManager.grantReward(user: user)
                 }
             }
         }

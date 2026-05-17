@@ -89,6 +89,9 @@ struct SoloDeveloperTrainingApp: App {
             }
             .onChange(of: scenePhase) { _, newPhase in
                 if newPhase == .background || newPhase == .inactive {
+                    if let user {
+                        SkillAdRewardManager.pauseRewardTimer(user: user)
+                    }
                     saveUser()
                 }
             }
