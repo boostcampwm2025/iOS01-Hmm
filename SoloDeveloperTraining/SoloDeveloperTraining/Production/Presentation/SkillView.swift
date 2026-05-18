@@ -78,6 +78,9 @@ struct SkillView: View {
         .task {
             await updateAdRewardTimer()
         }
+        .task {
+            await AdService.shared.loadAd(.interstitial)
+        }
     }
 }
 
@@ -153,9 +156,9 @@ private extension SkillView {
                     Text(
                         "\(Int(SkillAdRewardManager.rewardDuration / 60))분간 게임 재화를 \(Int(SkillAdRewardManager.rewardMultiplier))배로 획득합니다."
                     )
-                        .textStyle(.body)
-                        .foregroundColor(.black)
-                        .multilineTextAlignment(.center)
+                    .textStyle(.body)
+                    .foregroundColor(.black)
+                    .multilineTextAlignment(.center)
                     MediumButton(title: "확인", isFilled: true) {
                         popupContent = nil
                     }
