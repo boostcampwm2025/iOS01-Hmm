@@ -259,7 +259,6 @@ private extension MainView {
     func setupOnAppear() {
         AnalyticsService.shared.logScreenView(screenName: "main")
         SoundService.shared.playBGM()
-        SkillAdRewardManager.resumeRewardTimer(user: user)
         skillAdRewardNow = Date()
         autoGainSystem.startSystem()
         Task {
@@ -274,11 +273,9 @@ private extension MainView {
 
     func handleScenePhaseChange(_ oldValue: ScenePhase, _ newValue: ScenePhase) {
         if newValue == .active {
-            SkillAdRewardManager.resumeRewardTimer(user: user)
             skillAdRewardNow = Date()
             autoGainSystem.startSystem()
         } else if newValue == .inactive || newValue == .background {
-            SkillAdRewardManager.pauseRewardTimer(user: user)
             skillAdRewardNow = Date()
             autoGainSystem.stopSystem()
         }

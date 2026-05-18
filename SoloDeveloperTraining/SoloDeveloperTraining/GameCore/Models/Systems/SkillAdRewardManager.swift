@@ -16,7 +16,6 @@ enum SkillAdRewardManager {
     static let rewardDuration: TimeInterval = 5 * 60
 
     private static var rewardEndDate: Date?
-    private static var pausedRewardRemainingSeconds: Int?
 
     // 현재 사용중 여부 체크
     static func isRewardActive(user: User, now: Date = Date()) -> Bool {
@@ -37,7 +36,6 @@ enum SkillAdRewardManager {
 
         user.record.skillAdRewardState.useCount += 1
         rewardEndDate = now.addingTimeInterval(rewardDuration)
-        pausedRewardRemainingSeconds = nil
     }
 
     // 골드 계산시 해당 값을 참조
@@ -47,32 +45,8 @@ enum SkillAdRewardManager {
 
     // 남은 시간 계산
     static func remainingRewardSeconds(user: User, now: Date = Date()) -> Int {
-        if let pausedRewardRemainingSeconds,
-           pausedRewardRemainingSeconds > 0 {
-            return pausedRewardRemainingSeconds
-        }
         guard let rewardEndDate, rewardEndDate > now else { return 0 }
         return min(Int(rewardDuration), Int(ceil(rewardEndDate.timeIntervalSince(now))))
-    }
-
-    // 타이머 정지
-    static func pauseRewardTimer(user: User, now: Date = Date()) {
-        guard pausedRewardRemainingSeconds == nil else { return }
-
-        let remainingSeconds = remainingRewardSeconds(user: user, now: now)
-        guard remainingSeconds > 0 else { return }
-
-        pausedRewardRemainingSeconds = remainingSeconds
-        rewardEndDate = nil
-    }
-
-    // 타이머 재개
-    static func resumeRewardTimer(user: User, now: Date = Date()) {
-        guard let remainingSeconds = pausedRewardRemainingSeconds,
-              remainingSeconds > 0 else { return }
-
-        rewardEndDate = now.addingTimeInterval(TimeInterval(remainingSeconds))
-        pausedRewardRemainingSeconds = nil
     }
 
     static func remainingTimeText(user: User, now: Date = Date()) -> String? {
