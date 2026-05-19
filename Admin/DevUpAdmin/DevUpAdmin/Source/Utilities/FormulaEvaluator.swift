@@ -6,9 +6,13 @@ enum FormulaEvaluator {
     enum EvalResult {
         case value(Double)
         case divisionByZero
+        case overflow
         case unknownIdentifier(String)
         case invalid
     }
+
+    private static let identifierPattern = "[a-zA-Z가-힣_][a-zA-Z가-힣0-9_.]*"
+    private static let identifierRegex = try? NSRegularExpression(pattern: identifierPattern)
 
     /// 수식을 평가합니다.
     /// - `=` 로 시작하면 수식으로 처리합니다.
@@ -69,8 +73,7 @@ enum FormulaEvaluator {
         }
 
         // 치환 후 남은 알파벳/한글 식별자가 있으면 미정의 필드명
-        let identifierPattern = "[a-zA-Z가-힣_][a-zA-Z가-힣0-9_.]*"
-        if let regex = try? NSRegularExpression(pattern: identifierPattern),
+        if let regex = Self.identifierRegex,
            let match = regex.firstMatch(in: expression, range: NSRange(expression.startIndex..., in: expression)) {
             let range = Range(match.range, in: expression)!
             let unknown = String(expression[range])
@@ -78,7 +81,7 @@ enum FormulaEvaluator {
             if !unknown.hasPrefix("Math") {
                 // 원본 수식에서 해당 토큰이 knownIdentifiers에 없는 경우만 오류
                 let originalExpression = String(trimmed.dropFirst()).trimmingCharacters(in: .whitespaces)
-                let originalMatches = (try? NSRegularExpression(pattern: identifierPattern))?
+                let originalMatches = Self.identifierRegex?
                     .matches(in: originalExpression, range: NSRange(originalExpression.startIndex..., in: originalExpression))
                     .compactMap { Range($0.range, in: originalExpression).map { String(originalExpression[$0]) } } ?? []
                 if let unknownOriginal = originalMatches.first(where: { !knownIdentifiers.contains($0) && !$0.hasPrefix("Math") }) {
@@ -94,7 +97,7 @@ enum FormulaEvaluator {
         let value = result.toDouble()
 
         if value.isNaN { return .invalid }
-        if value.isInfinite { return .divisionByZero }
+        if value.isInfinite { return value > 0 ? .divisionByZero : .overflow }
         return .value(value)
     }
 }

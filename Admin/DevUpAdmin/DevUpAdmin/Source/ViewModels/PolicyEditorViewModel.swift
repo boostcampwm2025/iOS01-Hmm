@@ -14,7 +14,7 @@ final class PolicyEditorViewModel: ObservableObject {
     @Published var isSaving = false
     @Published var isDeploying = false
     @Published var errorMessage: String?
-    @Published var hasUnsavedChanges = false
+    var hasUnsavedChanges: Bool { !changedFields.isEmpty }
 
     // MARK: - 편집 락
     @Published var canEdit = false
@@ -138,7 +138,6 @@ final class PolicyEditorViewModel: ObservableObject {
             evaluateAllFormulas()
             snapshotBaseFields()
             currentVersionMeta = versionHistory.first { $0.version == version }
-            hasUnsavedChanges = false
         } catch {
             errorMessage = "버전 불러오기 실패: \(error.localizedDescription)"
         }
@@ -167,7 +166,6 @@ final class PolicyEditorViewModel: ObservableObject {
             versionHistory = try await repository.fetchVersionList()
             currentVersionMeta = versionHistory.first { $0.version == newVersion }
             snapshotBaseFields()
-            hasUnsavedChanges = false
         } catch {
             errorMessage = "저장 실패: \(error.localizedDescription)"
         }
@@ -200,7 +198,6 @@ final class PolicyEditorViewModel: ObservableObject {
     func updateField(id: String, rawInput: String) {
         guard let idx = fields.firstIndex(where: { $0.id == id }) else { return }
         fields[idx].rawInput = rawInput
-        hasUnsavedChanges = true
         evaluateAllFormulas()
     }
 
@@ -246,6 +243,9 @@ final class PolicyEditorViewModel: ObservableObject {
                 nameContext[fields[i].name] = rounded
             case .divisionByZero:
                 newFormulaErrors[fields[i].id] = "0으로 나눌 수 없습니다."
+                fields[i].resolvedValue = 0
+            case .overflow:
+                newFormulaErrors[fields[i].id] = "오버플로우가 발생했습니다."
                 fields[i].resolvedValue = 0
             case .unknownIdentifier(let name):
                 newFormulaErrors[fields[i].id] = "'\(name)'은(는) 존재하지 않는 필드명입니다."
@@ -301,7 +301,7 @@ final class PolicyEditorViewModel: ObservableObject {
                 try? await Task.sleep(for: .seconds(30))
                 guard let self, !Task.isCancelled else { break }
                 do {
-                    try await self.repository.heartbeat(sessionId: self.sessionId)
+                    try await self.repository.heartbeat()
                 } catch {
                     // heartbeat 실패 시 락 재확인
                     await self.acquireLock(username: self.currentUsername)

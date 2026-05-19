@@ -73,16 +73,16 @@ extension PolicyFieldMeta {
     // MARK: 커리어
 
     private static let career: [PolicyFieldMeta] = [
-        .init(id: "career.unemployed",          group: "커리어", section: "", name: "무직",            isDouble: false),
-        .init(id: "career.laptopOwner",         group: "커리어", section: "", name: "노트북 보유자",    isDouble: false),
-        .init(id: "career.aspiringDeveloper",   group: "커리어", section: "", name: "개발자 지망생",    isDouble: false),
-        .init(id: "career.juniorDeveloper",     group: "커리어", section: "", name: "주니어 개발자",    isDouble: false),
-        .init(id: "career.normalDeveloper",     group: "커리어", section: "", name: "일반 개발자",      isDouble: false),
-        .init(id: "career.nightOwlDeveloper",   group: "커리어", section: "", name: "야행성 개발자",    isDouble: false),
-        .init(id: "career.skilledDeveloper",    group: "커리어", section: "", name: "숙련 개발자",      isDouble: false),
-        .init(id: "career.famousDeveloper",     group: "커리어", section: "", name: "유명 개발자",      isDouble: false),
-        .init(id: "career.allRounderDeveloper", group: "커리어", section: "", name: "올라운더 개발자",  isDouble: false),
-        .init(id: "career.worldClassDeveloper", group: "커리어", section: "", name: "세계 최고 개발자", isDouble: false),
+        .init(id: "career.unemployed",          group: "커리어", section: "", name: "백수",             isDouble: false),
+        .init(id: "career.laptopOwner",         group: "커리어", section: "", name: "노트북 보유자",     isDouble: false),
+        .init(id: "career.aspiringDeveloper",   group: "커리어", section: "", name: "개발자 지망생",     isDouble: false),
+        .init(id: "career.juniorDeveloper",     group: "커리어", section: "", name: "하찮은 개발자",     isDouble: false),
+        .init(id: "career.normalDeveloper",     group: "커리어", section: "", name: "아무튼 개발자",     isDouble: false),
+        .init(id: "career.nightOwlDeveloper",   group: "커리어", section: "", name: "밤 새는 개발자",    isDouble: false),
+        .init(id: "career.skilledDeveloper",    group: "커리어", section: "", name: "유능한 개발자",     isDouble: false),
+        .init(id: "career.famousDeveloper",     group: "커리어", section: "", name: "유명한 개발자",     isDouble: false),
+        .init(id: "career.allRounderDeveloper", group: "커리어", section: "", name: "올라운더 개발자",   isDouble: false),
+        .init(id: "career.worldClassDeveloper", group: "커리어", section: "", name: "월드클래스 개발자", isDouble: false),
     ]
 
     // MARK: 피버
@@ -172,14 +172,14 @@ extension PolicyFieldMeta {
     // MARK: 장비
 
     private static let rarities: [(key: String, name: String)] = [
-        ("broken",           "망가진"),
+        ("broken",           "고장난"),
         ("cheap",            "싸구려"),
         ("vintage",          "빈티지"),
-        ("decent",           "보통"),
-        ("premium",          "프리미엄"),
+        ("decent",           "쓸만한"),
+        ("premium",          "고오급"),
         ("diamond",          "다이아"),
-        ("limited",          "한정"),
-        ("nationalTreasure", "국보"),
+        ("limited",          "한정판"),
+        ("nationalTreasure", "국보급"),
     ]
 
     private static let equipment: [PolicyFieldMeta] = {
@@ -213,12 +213,12 @@ extension PolicyFieldMeta {
     // MARK: 주거
 
     private static let housings: [(key: String, name: String)] = [
-        ("street",       "길거리"),
+        ("street",       "길바닥"),
         ("semiBasement", "반지하"),
         ("rooftop",      "옥탑방"),
         ("villa",        "빌라"),
         ("apartment",    "아파트"),
-        ("house",        "주택"),
+        ("house",        "단독주택"),
         ("pentHouse",    "펜트하우스"),
     ]
 

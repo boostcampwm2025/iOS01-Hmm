@@ -28,7 +28,7 @@ protocol AdminPolicyRepository {
     func releaseLock(sessionId: String) async throws
 
     /// 락의 lastHeartbeat를 현재 시각으로 갱신합니다.
-    func heartbeat(sessionId: String) async throws
+    func heartbeat() async throws
 
     /// 현재 유효한 락 정보를 반환합니다. 만료(60초 초과)된 경우 nil을 반환합니다.
     func fetchLock() async throws -> (lockedBy: String, sessionId: String)?

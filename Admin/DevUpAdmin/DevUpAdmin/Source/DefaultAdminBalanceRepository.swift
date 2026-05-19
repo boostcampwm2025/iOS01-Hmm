@@ -2,34 +2,45 @@ import Foundation
 import FirebaseFirestore
 
 private enum Constant {
-    static let versionsCollection = "versions"
-    static let testCollection = "test"
-    static let liveCollection = "live"
-    static let currentDocID = "current"
-    static let dataCollection = "Data"
-    static let versionField = "version"
-    static let modifiedByField = "modifiedBy"
-    static let modifiedAtField = "modifiedAt"
-    static let formulasField = "formulas"
-    static let testDeploymentsField = "testDeployments"
-    static let liveDeploymentsField = "liveDeployments"
-    static let deployedByKey = "deployedBy"
-    static let deployedAtKey = "deployedAt"
-    static let baseVersionField = "baseVersion"
-    static let changesField = "changes"
-    static let changeFieldIdKey = "fieldId"
-    static let changeFieldNameKey = "fieldName"
-    static let changeBeforeKey = "before"
-    static let changeAfterKey = "after"
-    static let changeBeforeInputKey = "beforeInput"
-    static let changeAfterInputKey = "afterInput"
+    enum Collection {
+        static let versions = "versions"
+        static let test = "test"
+        static let live = "live"
+        static let data = "Data"
+        static let editingSession = "editingSession"
+    }
 
-    // 편집 락
-    static let editingSessionCollection = "editingSession"
-    static let lockLockedByField = "lockedBy"
-    static let lockSessionIdField = "sessionId"
-    static let lockLastHeartbeatField = "lastHeartbeat"
-    static let lockStaleThreshold: TimeInterval = 60
+    enum Document {
+        static let current = "current"
+        static func version(_ v: Int) -> String { "v\(v)" }
+    }
+
+    enum Field {
+        static let version = "version"
+        static let modifiedBy = "modifiedBy"
+        static let modifiedAt = "modifiedAt"
+        static let formulas = "formulas"
+        static let testDeployments = "testDeployments"
+        static let liveDeployments = "liveDeployments"
+        static let baseVersion = "baseVersion"
+        static let changes = "changes"
+        // 편집 락
+        static let lockedBy = "lockedBy"
+        static let sessionId = "sessionId"
+        static let lastHeartbeat = "lastHeartbeat"
+        static let staleThreshold: TimeInterval = 60
+    }
+
+    enum Key {
+        static let deployedBy = "deployedBy"
+        static let deployedAt = "deployedAt"
+        static let changeFieldId = "fieldId"
+        static let changeFieldName = "fieldName"
+        static let changeBefore = "before"
+        static let changeAfter = "after"
+        static let changeBeforeInput = "beforeInput"
+        static let changeAfterInput = "afterInput"
+    }
 }
 
 enum RepositoryError: LocalizedError {
@@ -48,8 +59,8 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
 
     func fetchLatestVersion() async throws -> (meta: PolicyVersionMeta, policy: PolicyDTO, formulas: [String: String])? {
         // snapshot과 배포 버전 번호를 병렬 조회
-        async let snapshotTask = db.collection(Constant.versionsCollection)
-            .order(by: Constant.versionField, descending: true)
+        async let snapshotTask = db.collection(Constant.Collection.versions)
+            .order(by: Constant.Field.version, descending: true)
             .limit(to: 1)
             .getDocuments()
         async let deployedTask = fetchDeployedVersionNumbers()
@@ -59,15 +70,15 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
 
         let meta = try parseMeta(from: doc, deployedTest: deployed.test, deployedLive: deployed.live)
         let formulas = extractFormulas(from: doc.data())
-        let policy = try await fetchPolicyData(from: doc.reference.collection(Constant.dataCollection))
+        let policy = try await fetchPolicyData(from: doc.reference.collection(Constant.Collection.data))
         return (meta, policy, formulas)
     }
 
     // MARK: - 버전 목록 조회
 
     func fetchVersionList() async throws -> [PolicyVersionMeta] {
-        async let snapshotTask = db.collection(Constant.versionsCollection)
-            .order(by: Constant.versionField, descending: true)
+        async let snapshotTask = db.collection(Constant.Collection.versions)
+            .order(by: Constant.Field.version, descending: true)
             .getDocuments()
         async let deployedTask = fetchDeployedVersionNumbers()
 
@@ -81,8 +92,8 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
     // MARK: - 특정 버전 조회
 
     func fetchVersion(_ version: Int) async throws -> (policy: PolicyDTO, formulas: [String: String]) {
-        let ref = db.collection(Constant.versionsCollection).document("v\(version)")
-        async let policyTask = fetchPolicyData(from: ref.collection(Constant.dataCollection))
+        let ref = db.collection(Constant.Collection.versions).document(Constant.Document.version(version))
+        async let policyTask = fetchPolicyData(from: ref.collection(Constant.Collection.data))
         async let docTask = ref.getDocument()
 
         let (policy, doc) = try await (policyTask, docTask)
@@ -93,44 +104,44 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
     // MARK: - 버전 저장
 
     func saveVersion(fields: [PolicyField], modifiedBy: String, baseVersion: Int?, changes: [FieldChangeRecord]) async throws -> Int {
-        let snapshot = try await db.collection(Constant.versionsCollection)
-            .order(by: Constant.versionField, descending: true)
+        let snapshot = try await db.collection(Constant.Collection.versions)
+            .order(by: Constant.Field.version, descending: true)
             .limit(to: 1)
             .getDocuments()
 
-        let nextVersion = (snapshot.documents.first.flatMap { $0.data()[Constant.versionField] as? Int } ?? 0) + 1
+        let nextVersion = (snapshot.documents.first.flatMap { $0.data()[Constant.Field.version] as? Int } ?? 0) + 1
 
         let policy = try PolicyFieldMeta.makePolicy(from: fields)
         let formulas = buildFormulasMap(from: fields)
 
         var metadata: [String: Any] = [
-            Constant.versionField: nextVersion,
-            Constant.modifiedByField: modifiedBy,
-            Constant.modifiedAtField: Timestamp(date: Date())
+            Constant.Field.version: nextVersion,
+            Constant.Field.modifiedBy: modifiedBy,
+            Constant.Field.modifiedAt: Timestamp(date: Date())
         ]
         if !formulas.isEmpty {
-            metadata[Constant.formulasField] = formulas
+            metadata[Constant.Field.formulas] = formulas
         }
         if let baseVersion {
-            metadata[Constant.baseVersionField] = baseVersion
+            metadata[Constant.Field.baseVersion] = baseVersion
         }
         if !changes.isEmpty {
-            metadata[Constant.changesField] = changes.map { c in
+            metadata[Constant.Field.changes] = changes.map { c in
                 [
-                    Constant.changeFieldIdKey: c.fieldId,
-                    Constant.changeFieldNameKey: c.fieldName,
-                    Constant.changeBeforeKey: c.before,
-                    Constant.changeAfterKey: c.after,
-                    Constant.changeBeforeInputKey: c.beforeInput,
-                    Constant.changeAfterInputKey: c.afterInput
+                    Constant.Key.changeFieldId: c.fieldId,
+                    Constant.Key.changeFieldName: c.fieldName,
+                    Constant.Key.changeBefore: c.before,
+                    Constant.Key.changeAfter: c.after,
+                    Constant.Key.changeBeforeInput: c.beforeInput,
+                    Constant.Key.changeAfterInput: c.afterInput
                 ] as [String: Any]
             }
         }
 
         let batch = db.batch()
-        let versionRef = db.collection(Constant.versionsCollection).document("v\(nextVersion)")
+        let versionRef = db.collection(Constant.Collection.versions).document(Constant.Document.version(nextVersion))
         batch.setData(metadata, forDocument: versionRef)
-        try writePolicyData(batch: batch, collection: versionRef.collection(Constant.dataCollection), policy: policy)
+        try writePolicyData(batch: batch, collection: versionRef.collection(Constant.Collection.data), policy: policy)
 
         try await batch.commit()
         return nextVersion
@@ -139,13 +150,13 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
     // MARK: - 배포 버전 조회
 
     func fetchDeployedVersionNumbers() async throws -> (test: Int?, live: Int?) {
-        async let testDoc = db.collection(Constant.testCollection).document(Constant.currentDocID).getDocument()
-        async let liveDoc = db.collection(Constant.liveCollection).document(Constant.currentDocID).getDocument()
+        async let testDoc = db.collection(Constant.Collection.test).document(Constant.Document.current).getDocument()
+        async let liveDoc = db.collection(Constant.Collection.live).document(Constant.Document.current).getDocument()
 
         let (t, l) = try await (testDoc, liveDoc)
         return (
-            t.data()?[Constant.versionField] as? Int,
-            l.data()?[Constant.versionField] as? Int
+            t.data()?[Constant.Field.version] as? Int,
+            l.data()?[Constant.Field.version] as? Int
         )
     }
 
@@ -153,17 +164,17 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
 
     func deploy(version: Int, to env: PolicyEnvironment, deployedBy: String) async throws {
         let now = Timestamp(date: Date())
-        let envRef = db.collection(env.rawValue).document(Constant.currentDocID)
-        let versionRef = db.collection(Constant.versionsCollection).document("v\(version)")
-        let deploymentsField = env == .test ? Constant.testDeploymentsField : Constant.liveDeploymentsField
+        let envRef = db.collection(env.rawValue).document(Constant.Document.current)
+        let versionRef = db.collection(Constant.Collection.versions).document(Constant.Document.version(version))
+        let deploymentsField = env == .test ? Constant.Field.testDeployments : Constant.Field.liveDeployments
 
         let newRecord: [String: Any] = [
-            Constant.deployedByKey: deployedBy,
-            Constant.deployedAtKey: now
+            Constant.Key.deployedBy: deployedBy,
+            Constant.Key.deployedAt: now
         ]
 
         let batch = db.batch()
-        batch.setData([Constant.versionField: version], forDocument: envRef)
+        batch.setData([Constant.Field.version: version], forDocument: envRef)
         batch.updateData([
             deploymentsField: FieldValue.arrayUnion([newRecord])
         ], forDocument: versionRef)
@@ -175,9 +186,9 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
 
     private func parseMeta(from doc: QueryDocumentSnapshot, deployedTest: Int?, deployedLive: Int?) throws -> PolicyVersionMeta {
         let data = doc.data()
-        guard let version = data[Constant.versionField] as? Int,
-              let modifiedBy = data[Constant.modifiedByField] as? String,
-              let modifiedAt = (data[Constant.modifiedAtField] as? Timestamp)?.dateValue()
+        guard let version = data[Constant.Field.version] as? Int,
+              let modifiedBy = data[Constant.Field.modifiedBy] as? String,
+              let modifiedAt = (data[Constant.Field.modifiedAt] as? Timestamp)?.dateValue()
         else { throw RepositoryError.invalidData(doc.documentID) }
 
         return PolicyVersionMeta(
@@ -187,10 +198,10 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
             modifiedAt: modifiedAt,
             isDeployedToTest: deployedTest == version,
             isDeployedToLive: deployedLive == version,
-            testDeployments: parseDeployRecords(from: data[Constant.testDeploymentsField]),
-            liveDeployments: parseDeployRecords(from: data[Constant.liveDeploymentsField]),
-            baseVersion: data[Constant.baseVersionField] as? Int,
-            fieldChanges: parseFieldChanges(from: data[Constant.changesField])
+            testDeployments: parseDeployRecords(from: data[Constant.Field.testDeployments]),
+            liveDeployments: parseDeployRecords(from: data[Constant.Field.liveDeployments]),
+            baseVersion: data[Constant.Field.baseVersion] as? Int,
+            fieldChanges: parseFieldChanges(from: data[Constant.Field.changes])
         )
     }
 
@@ -198,13 +209,13 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
     private func parseFieldChanges(from value: Any?) -> [FieldChangeRecord] {
         guard let arr = value as? [[String: Any]] else { return [] }
         return arr.compactMap { dict in
-            guard let fieldId   = dict[Constant.changeFieldIdKey] as? String,
-                  let fieldName = dict[Constant.changeFieldNameKey] as? String,
-                  let before    = dict[Constant.changeBeforeKey] as? Double,
-                  let after     = dict[Constant.changeAfterKey] as? Double
+            guard let fieldId   = dict[Constant.Key.changeFieldId] as? String,
+                  let fieldName = dict[Constant.Key.changeFieldName] as? String,
+                  let before    = dict[Constant.Key.changeBefore] as? Double,
+                  let after     = dict[Constant.Key.changeAfter] as? Double
             else { return nil }
-            let beforeInput = dict[Constant.changeBeforeInputKey] as? String ?? ""
-            let afterInput  = dict[Constant.changeAfterInputKey] as? String ?? ""
+            let beforeInput = dict[Constant.Key.changeBeforeInput] as? String ?? ""
+            let afterInput  = dict[Constant.Key.changeAfterInput] as? String ?? ""
             return FieldChangeRecord(fieldId: fieldId, fieldName: fieldName, before: before, after: after, beforeInput: beforeInput, afterInput: afterInput)
         }
     }
@@ -213,8 +224,8 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
     private func parseDeployRecords(from value: Any?) -> [DeployRecord] {
         guard let arr = value as? [[String: Any]] else { return [] }
         return arr.compactMap { dict in
-            guard let by = dict[Constant.deployedByKey] as? String,
-                  let at = (dict[Constant.deployedAtKey] as? Timestamp)?.dateValue()
+            guard let by = dict[Constant.Key.deployedBy] as? String,
+                  let at = (dict[Constant.Key.deployedAt] as? Timestamp)?.dateValue()
             else { return nil }
             return DeployRecord(id: "\(by)_\(at.timeIntervalSince1970)", deployedBy: by, deployedAt: at)
         }
@@ -222,7 +233,7 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
 
     /// Firestore 문서 data()에서 formulas 맵을 추출합니다. 없으면 빈 맵 반환.
     private func extractFormulas(from data: [String: Any]) -> [String: String] {
-        data[Constant.formulasField] as? [String: String] ?? [:]
+        data[Constant.Field.formulas] as? [String: String] ?? [:]
     }
 
     /// PolicyField 배열에서 수식 필드만 [id: rawInput] 맵으로 추출합니다.
@@ -269,13 +280,13 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
     // MARK: - 편집 락
 
     func acquireLock(username: String, sessionId: String) async throws -> Bool {
-        let lockRef = db.collection(Constant.editingSessionCollection).document(Constant.currentDocID)
+        let lockRef = db.collection(Constant.Collection.editingSession).document(Constant.Document.current)
         let doc = try await lockRef.getDocument()
         let now = Timestamp(date: Date())
         let newData: [String: Any] = [
-            Constant.lockLockedByField: username,
-            Constant.lockSessionIdField: sessionId,
-            Constant.lockLastHeartbeatField: now
+            Constant.Field.lockedBy: username,
+            Constant.Field.sessionId: sessionId,
+            Constant.Field.lastHeartbeat: now
         ]
 
         if !doc.exists {
@@ -284,19 +295,19 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
         }
 
         guard let data = doc.data(),
-              let existingSession = data[Constant.lockSessionIdField] as? String,
-              let lastHeartbeat = (data[Constant.lockLastHeartbeatField] as? Timestamp)?.dateValue()
+              let existingSession = data[Constant.Field.sessionId] as? String,
+              let lastHeartbeat = (data[Constant.Field.lastHeartbeat] as? Timestamp)?.dateValue()
         else {
             try await lockRef.setData(newData)
             return true
         }
 
         if existingSession == sessionId {
-            try await lockRef.updateData([Constant.lockLastHeartbeatField: now])
+            try await lockRef.updateData([Constant.Field.lastHeartbeat: now])
             return true
         }
 
-        if Date().timeIntervalSince(lastHeartbeat) > Constant.lockStaleThreshold {
+        if Date().timeIntervalSince(lastHeartbeat) > Constant.Field.staleThreshold {
             try await lockRef.setData(newData)
             return true
         }
@@ -305,27 +316,27 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
     }
 
     func releaseLock(sessionId: String) async throws {
-        let lockRef = db.collection(Constant.editingSessionCollection).document(Constant.currentDocID)
+        let lockRef = db.collection(Constant.Collection.editingSession).document(Constant.Document.current)
         let doc = try await lockRef.getDocument()
-        guard (doc.data()?[Constant.lockSessionIdField] as? String) == sessionId else { return }
+        guard (doc.data()?[Constant.Field.sessionId] as? String) == sessionId else { return }
         try await lockRef.delete()
     }
 
-    func heartbeat(sessionId: String) async throws {
-        let lockRef = db.collection(Constant.editingSessionCollection).document(Constant.currentDocID)
-        try await lockRef.updateData([Constant.lockLastHeartbeatField: Timestamp(date: Date())])
+    func heartbeat() async throws {
+        let lockRef = db.collection(Constant.Collection.editingSession).document(Constant.Document.current)
+        try await lockRef.updateData([Constant.Field.lastHeartbeat: Timestamp(date: Date())])
     }
 
     func fetchLock() async throws -> (lockedBy: String, sessionId: String)? {
-        let doc = try await db.collection(Constant.editingSessionCollection)
-            .document(Constant.currentDocID)
+        let doc = try await db.collection(Constant.Collection.editingSession)
+            .document(Constant.Document.current)
             .getDocument()
         guard doc.exists,
               let data = doc.data(),
-              let lockedBy = data[Constant.lockLockedByField] as? String,
-              let sessionId = data[Constant.lockSessionIdField] as? String,
-              let lastHeartbeat = (data[Constant.lockLastHeartbeatField] as? Timestamp)?.dateValue(),
-              Date().timeIntervalSince(lastHeartbeat) <= Constant.lockStaleThreshold
+              let lockedBy = data[Constant.Field.lockedBy] as? String,
+              let sessionId = data[Constant.Field.sessionId] as? String,
+              let lastHeartbeat = (data[Constant.Field.lastHeartbeat] as? Timestamp)?.dateValue(),
+              Date().timeIntervalSince(lastHeartbeat) <= Constant.Field.staleThreshold
         else { return nil }
         return (lockedBy, sessionId)
     }
