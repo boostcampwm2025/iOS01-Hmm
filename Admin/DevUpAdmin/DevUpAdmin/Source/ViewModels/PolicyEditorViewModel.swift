@@ -244,9 +244,6 @@ final class PolicyEditorViewModel: ObservableObject {
             case .divisionByZero:
                 newFormulaErrors[fields[i].id] = "0으로 나눌 수 없습니다."
                 fields[i].resolvedValue = 0
-            case .overflow:
-                newFormulaErrors[fields[i].id] = "오버플로우가 발생했습니다."
-                fields[i].resolvedValue = 0
             case .unknownIdentifier(let name):
                 newFormulaErrors[fields[i].id] = "'\(name)'은(는) 존재하지 않는 필드명입니다."
                 fields[i].resolvedValue = 0

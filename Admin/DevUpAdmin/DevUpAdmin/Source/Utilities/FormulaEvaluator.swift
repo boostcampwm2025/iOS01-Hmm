@@ -6,7 +6,6 @@ enum FormulaEvaluator {
     enum EvalResult {
         case value(Double)
         case divisionByZero
-        case overflow
         case unknownIdentifier(String)
         case invalid
     }
@@ -97,7 +96,7 @@ enum FormulaEvaluator {
         let value = result.toDouble()
 
         if value.isNaN { return .invalid }
-        if value.isInfinite { return value > 0 ? .divisionByZero : .overflow }
+        if value.isInfinite { return .divisionByZero }
         return .value(value)
     }
 }
