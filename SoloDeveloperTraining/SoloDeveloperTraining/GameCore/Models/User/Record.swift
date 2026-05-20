@@ -8,6 +8,25 @@
 import Foundation
 import Observation
 
+struct OfflineRewardState: Codable {
+    /// 마지막 앱 종료 시간
+    var lastExitTime: TimeInterval?
+    /// 마지막 systemUptime (device 모드용)
+    var lastSystemUptime: TimeInterval?
+    /// 시간 출처 ("server" 또는 "device")
+    var timeSource: String?
+
+    init(
+        lastExitTime: TimeInterval? = nil,
+        lastSystemUptime: TimeInterval? = nil,
+        timeSource: String? = nil
+    ) {
+        self.lastExitTime = lastExitTime
+        self.lastSystemUptime = lastSystemUptime
+        self.timeSource = timeSource
+    }
+}
+
 @MainActor
 @Observable
 final class Record {
@@ -81,6 +100,10 @@ final class Record {
     // MARK: - Play Time Records
     /// 총 플레이 시간
     var totalPlayTime: TimeInterval = 0
+
+    // MARK: - Offline Reward Records
+    /// 오프라인 보상 상태
+    var offlineRewardState: OfflineRewardState = .init()
 
     // MARK: - Rebirth Records
     /// 환생 횟수
@@ -243,6 +266,9 @@ extension Record {
 
         // Mission System 초기화
         missionSystem.reset()
+
+        // Offline Reward State 초기화
+        offlineRewardState = .init()
 
         // 유지: rebirthCount, allEndingsAchieved, totalPlayTime
     }
