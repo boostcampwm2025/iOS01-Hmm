@@ -51,6 +51,13 @@ struct MainView: View {
     @State private var selectedDrinkType: ConsumableType?
     @State private var resumeGameCallback: (() -> Void)?
 
+    // 오프라인 보상 팝업 관련
+    @State private var showOfflineRewardPopup: Bool = false
+    @State private var offlineRewardGold: Int = 0
+    @State private var offlineRewardHours: Double = 0.0
+    @State private var showOfflineRewardConfirmPopup: Bool = false
+    @State private var hasCheckedOfflineReward: Bool = false
+
     private var autoGainSystem: AutoGainSystem
     private let user: User
     private let scene: CharacterScene
@@ -96,6 +103,8 @@ struct MainView: View {
             .overlay { settingsOverlayView }
             .overlay { drinkAdPopupOverlayView }
             .overlay { drinkRewardPopupOverlayView }
+            .overlay { offlineRewardPopupOverlayView }
+            .overlay { offlineRewardConfirmPopupOverlayView }
             .fullScreenCover(isPresented: $showQuizView) {
                 QuizGameView(user: user)
             }
@@ -255,6 +264,12 @@ private extension MainView {
         AnalyticsService.shared.logScreenView(screenName: "main")
         SoundService.shared.playBGM()
         autoGainSystem.startSystem()
+
+        // 오프라인 보상 체크
+        Task {
+            await checkOfflineReward()
+        }
+
         Task {
             if careerSystem == nil {
                 careerSystem = await CareerSystem(user: user)
@@ -268,6 +283,10 @@ private extension MainView {
     func handleScenePhaseChange(_ oldValue: ScenePhase, _ newValue: ScenePhase) {
         if newValue == .active {
             autoGainSystem.startSystem()
+            // 오프라인 보상 체크
+            Task {
+                await checkOfflineReward()
+            }
         } else if newValue == .inactive || newValue == .background {
             autoGainSystem.stopSystem()
         }
@@ -353,6 +372,95 @@ private extension MainView {
         showRewardPopup = false
         selectedDrinkType = nil
         resumeGameCallback?()
+    }
+
+    // MARK: - Offline Reward
+
+    @ViewBuilder
+    var offlineRewardPopupOverlayView: some View {
+        if showOfflineRewardPopup {
+            ZStack {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+
+                OfflineRewardPopupView(
+                    gold: offlineRewardGold,
+                    hoursElapsed: offlineRewardHours,
+                    onWatchAd: { Task { await handleOfflineRewardWatchAd() } },
+                    onSkip: handleOfflineRewardSkip
+                )
+                .padding(.horizontal, Constant.Padding.horizontalPadding)
+            }
+        }
+    }
+
+    func checkOfflineReward() async {
+        guard !hasCheckedOfflineReward else { return }
+
+        hasCheckedOfflineReward = true
+
+        let manager = OfflineRewardManager()
+        let result = await manager.checkAndAwardOfflineReward(user: user)
+
+        switch result {
+        case .awarded(let gold, let hoursElapsed):
+            // 보상 데이터 저장
+            offlineRewardGold = gold
+            offlineRewardHours = hoursElapsed
+            // 팝업 표시
+            showOfflineRewardPopup = true
+        case .notEligible(_):
+            break
+        }
+    }
+
+    func handleOfflineRewardWatchAd() async {
+        showOfflineRewardPopup = false
+
+        let success = await AdService.shared.showAdWithResult(.interstitial)
+
+        if success {
+            user.wallet.addGold(offlineRewardGold)
+            showOfflineRewardConfirmPopup = true
+        } else {
+            // 광고 실패 시 데이터 초기화
+            offlineRewardGold = 0
+            offlineRewardHours = 0.0
+        }
+    }
+
+    func handleOfflineRewardSkip() {
+        showOfflineRewardPopup = false
+        // 데이터 초기화
+        offlineRewardGold = 0
+        offlineRewardHours = 0.0
+        // 다음 체크를 위해 플래그 리셋
+        hasCheckedOfflineReward = false
+    }
+
+    @ViewBuilder
+    var offlineRewardConfirmPopupOverlayView: some View {
+        if showOfflineRewardConfirmPopup {
+            ZStack {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+
+                OfflineRewardConfirmPopupView(
+                    gold: offlineRewardGold,
+                    onConfirm: handleOfflineRewardConfirm
+                )
+                .padding(.horizontal, Constant.Padding.horizontalPadding)
+            }
+        }
+    }
+
+    func handleOfflineRewardConfirm() {
+        showOfflineRewardConfirmPopup = false
+        // 데이터 초기화
+        offlineRewardGold = 0
+        offlineRewardHours = 0.0
+        // 다음 체크를 위해 플래그 리셋
+        hasCheckedOfflineReward = false
     }
 }
 
