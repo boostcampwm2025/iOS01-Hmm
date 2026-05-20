@@ -39,7 +39,7 @@ struct SkillView: View {
 
         return ItemRow(
             title: "업무 효율 대박",
-            description: "5분간 골드 \(Int(SkillAdRewardManager.rewardMultiplier))배 획득",
+            description: "5분간 골드 \(Int(Policy.Ad.SkillReward.rewardMultiplier))배 획득",
             imageName: "skill_ad_reward",
             price: .text(isActive ? "사용중" : "AD"),
             state: adRewardButtonState(isActive: isActive, canUseToday: canUseToday),
@@ -154,7 +154,7 @@ private extension SkillView {
             popupContent = PopupConfiguration(title: "보상 완료") {
                 VStack(spacing: Constant.popupContentSpacing) {
                     Text(
-                        "\(Int(SkillAdRewardManager.rewardDuration / 60))분간 게임 재화를 \(Int(SkillAdRewardManager.rewardMultiplier))배로 획득합니다."
+                        "\(Int(Policy.Ad.SkillReward.rewardDuration / 60))분간 게임 재화를 \(Int(Policy.Ad.SkillReward.rewardMultiplier))배로 획득합니다."
                     )
                     .textStyle(.body)
                     .foregroundColor(.black)

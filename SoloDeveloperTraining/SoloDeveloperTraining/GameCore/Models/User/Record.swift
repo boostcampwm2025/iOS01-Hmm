@@ -11,13 +11,16 @@ import Observation
 struct SkillAdRewardState: Codable {
     var usedDate: Date?
     var useCount: Int
+    var rewardEndDate: Date?
 
     init(
         usedDate: Date? = nil,
-        useCount: Int = 0
+        useCount: Int = 0,
+        rewardEndDate: Date? = nil
     ) {
         self.usedDate = usedDate
         self.useCount = useCount
+        self.rewardEndDate = rewardEndDate
     }
 }
 
