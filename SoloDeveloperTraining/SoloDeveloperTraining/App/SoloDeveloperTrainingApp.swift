@@ -52,7 +52,7 @@ struct SoloDeveloperTrainingApp: App {
         WindowGroup {
 #if DEV_BUILD
             ContentView()
-                .task { try? await PolicyStore.shared.initialize() }
+                .task { try? await policyStore.initialize() }
 #else
             gameContent
                 .task { await loadPolicy() }
@@ -123,7 +123,7 @@ private extension SoloDeveloperTrainingApp {
         isPolicyLoading = true
         hasPolicyError = false
         do {
-            try await PolicyStore.shared.initialize()
+            try await policyStore.initialize()
             isPolicyLoading = false
         } catch {
             isPolicyLoading = false

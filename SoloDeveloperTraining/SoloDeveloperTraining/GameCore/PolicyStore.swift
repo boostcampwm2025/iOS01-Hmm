@@ -17,11 +17,17 @@ enum PolicyStoreError: LocalizedError {
     }
 }
 
-final class PolicyStore {
-    static let shared = PolicyStore()
+protocol PolicyStoreProtocol: AnyObject {
+    var current: PolicyDTO { get }
+    func initialize() async throws
+}
+
+var policyStore: any PolicyStoreProtocol = PolicyStore()
+
+final class PolicyStore: PolicyStoreProtocol {
     var current: PolicyDTO = .defaultValues
 
-    private init() {}
+    init() {}
 
     /// 환경에 맞는 정책을 Firestore에서 로드합니다. 실패 시 throw합니다.
     func initialize() async throws {

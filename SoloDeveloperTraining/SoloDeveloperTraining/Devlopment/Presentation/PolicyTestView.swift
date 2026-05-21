@@ -7,8 +7,9 @@ import SwiftUI
 
 struct PolicyTestView: View {
     @State private var isLoading = false
+    @State private var isMocked = false
 
-    private var policy: PolicyDTO { PolicyStore.shared.current }
+    private var policy: PolicyDTO { policyStore.current }
 
     var body: some View {
         NavigationStack {
@@ -189,6 +190,16 @@ struct PolicyTestView: View {
             }
             .navigationTitle("Policy 확인")
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        isMocked.toggle()
+                        policyStore = isMocked ? MockPolicyStore(shouldFail: true) : PolicyStore()
+                        Task { await reload() }
+                    } label: {
+                        Image(systemName: isMocked ? "exclamationmark.triangle.fill" : "exclamationmark.triangle")
+                            .foregroundStyle(isMocked ? .red : .secondary)
+                    }
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { Task { await reload() } } label: {
                         if isLoading {
@@ -251,7 +262,7 @@ struct PolicyTestView: View {
 
     private func reload() async {
         isLoading = true
-        try? await PolicyStore.shared.initialize()
+        try? await policyStore.initialize()
         isLoading = false
     }
 
