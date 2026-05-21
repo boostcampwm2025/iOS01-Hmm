@@ -23,6 +23,7 @@ final class OfflineRewardManager {
         case notEnoughTime              // 3시간 미만
         case timeManipulationDetected   // 시간 조작 감지
         case networkUnavailable         // 네트워크 없음
+        case noGoldPerSecond            // 부동산 없음 (goldPerSecond = 0)
     }
 
     /// 오프라인 보상 체크 및 지급
@@ -114,6 +115,11 @@ final class OfflineRewardManager {
 
         // 부동산의 초당 골드 획득량 가져오기
         let goldPerSecond = user.inventory.housing.goldPerSecond
+
+        // 초당 골드가 0이면 보상 없음 (길바닥 케이스)
+        guard goldPerSecond > 0 else {
+            return .notEligible(reason: .noGoldPerSecond)
+        }
 
         // 오프라인 보상 계산: 초당 골드 × 경과 시간
         let offlineGold = Int(Double(goldPerSecond) * elapsed)
