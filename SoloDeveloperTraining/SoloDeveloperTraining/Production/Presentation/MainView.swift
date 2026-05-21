@@ -219,7 +219,12 @@ private extension MainView {
                 )
             }
         case .skill:
-            SkillView(user: user, careerSystem: careerSystem, popupContent: $popupContent)
+            SkillView(
+                user: user,
+                careerSystem: careerSystem,
+                popupContent: $popupContent,
+                adRewardNow: skillAdRewardNow
+            )
         case .shop:
             ShopView(user: user, popupContent: $popupContent)
         case .mission:

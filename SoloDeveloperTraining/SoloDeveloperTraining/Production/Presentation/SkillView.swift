@@ -20,17 +20,19 @@ struct SkillView: View {
     private let skillSystem: SkillSystem
 
     @Binding var popupContent: PopupConfiguration?
-    @State private var adRewardNow = Date()
+    let adRewardNow: Date
 
     init(
         user: User,
         careerSystem: CareerSystem?,
-        popupContent: Binding<PopupConfiguration?>
+        popupContent: Binding<PopupConfiguration?>,
+        adRewardNow: Date
     ) {
         self.user = user
         self.careerSystem = careerSystem
         self.skillSystem = SkillSystem(user: user, careerSystem: careerSystem)
         self._popupContent = popupContent
+        self.adRewardNow = adRewardNow
     }
 
     var skillAdItemRow: some View {
@@ -76,9 +78,6 @@ struct SkillView: View {
             AnalyticsService.shared.logScreenView(screenName: "skill")
         }
         .task {
-            await updateAdRewardTimer()
-        }
-        .task {
             await AdService.shared.loadAd(.interstitial)
         }
     }
@@ -86,18 +85,10 @@ struct SkillView: View {
 
 private extension SkillView {
     func adRewardButtonState(isActive: Bool, canUseToday: Bool) -> ItemState {
-        if isActive { // 한도 도달 여부와 상관없이, 사용중일 경우 .insufficient로 표시
+        if isActive {
             return .insufficient
         }
         return canUseToday ? .available : .locked
-    }
-
-    @MainActor
-    func updateAdRewardTimer() async {
-        while !Task.isCancelled {
-            adRewardNow = Date()
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
-        }
     }
 
     func upgrade(skill: Skill) {
@@ -117,8 +108,6 @@ private extension SkillView {
                 }
             }
         } catch {
-            // UserReadableError를 채택하지 않은 예상치 못한 에러
-            // 실제로는 발생하지 않지만 Swift 컴파일러 요구사항
             popupContent = PopupConfiguration(title: "스킬") {
                 VStack(spacing: Constant.popupContentSpacing) {
                     Text(error.localizedDescription)
@@ -134,7 +123,6 @@ private extension SkillView {
         }
     }
 
-    /// 롱프레스 연속 구매용. 성공 시 `true`, 실패(재화 부족 등) 시 `false` 반환해 연속 호출 중단.
     func upgradeRepeating(skill: Skill) -> Bool {
         do {
             try skillSystem.upgrade(skill: skill)
@@ -145,8 +133,8 @@ private extension SkillView {
     }
 
     func handleWatchAd() async {
-        let isActive = SkillAdRewardManager.isRewardActive(user: user)
-        let canUseToday = SkillAdRewardManager.canUseRewardToday(user: user)
+        let isActive = SkillAdRewardManager.isRewardActive(user: user, now: adRewardNow)
+        let canUseToday = SkillAdRewardManager.canUseRewardToday(user: user, now: adRewardNow)
         guard adRewardButtonState(isActive: isActive, canUseToday: canUseToday) == .available else { return }
 
         let success = await AdService.shared.showAdWithResult(.interstitial)
@@ -169,7 +157,6 @@ private extension SkillView {
             }
         }
     }
-
 }
 
 #Preview {
@@ -198,5 +185,5 @@ private extension SkillView {
         ]
     )
 
-    SkillView(user: user, careerSystem: nil, popupContent: .constant(nil))
+    SkillView(user: user, careerSystem: nil, popupContent: .constant(nil), adRewardNow: Date())
 }
