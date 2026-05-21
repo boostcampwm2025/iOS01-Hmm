@@ -431,7 +431,8 @@ private extension MainView {
             // 팝업 표시
             showOfflineRewardPopup = true
         case .notEligible(_):
-            break
+            // 보상을 받을 수 없는 경우, 다음 체크를 위해 플래그 리셋
+            hasCheckedOfflineReward = false
         }
     }
 
