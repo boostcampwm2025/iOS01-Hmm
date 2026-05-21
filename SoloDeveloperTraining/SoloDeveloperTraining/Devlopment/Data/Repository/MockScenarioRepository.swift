@@ -31,117 +31,37 @@ final class MockScenarioRepository: ScenarioRepository {
     ) -> Ending {
         switch (evt01, evt02, evt03, evt04) {
         case (.optionA, .optionA, .optionA, .optionA):
-            return Ending(
-                id: "END-01",
-                title: "유니콘 에이스",
-                career: "에이스 개발자",
-                description: "연봉 100억. 스톡옵션. 야근도 행복하다."
-            )
+            return Ending(id: "END-01", type: .aceDeveloper)
         case (.optionA, .optionA, .optionA, .optionB):
-            return Ending(
-                id: "END-02",
-                title: "Series A 대표",
-                career: "스타트업 대표",
-                description: "엑싯이 목표! 인생은 한방이다."
-            )
+            return Ending(id: "END-02", type: .startupCEO)
         case (.optionA, .optionA, .optionB, .optionA):
-            return Ending(
-                id: "END-03",
-                title: "개발 유튜버",
-                career: "테크 인플루언서",
-                description: "유튜브 구독자 100만. 강의 매출 연 10억."
-            )
+            return Ending(id: "END-03", type: .techInfluencer)
         case (.optionA, .optionB, .optionA, .optionA):
-            return Ending(
-                id: "END-04",
-                title: "전설의 해커",
-                career: "천재 해커",
-                description: "이름 없이, 흔적 없이. 그러나 전설로 남다."
-            )
+            return Ending(id: "END-04", type: .geniusHacker)
         case (.optionA, .optionB, .optionA, .optionB):
-            return Ending(
-                id: "END-05",
-                title: "Series A 대표",
-                career: "스타트업 대표",
-                description: "엑싯이 목표! 인생은 한방이다."
-            )
+            return Ending(id: "END-05", type: .startupCEO)
         case (.optionA, .optionB, .optionB, .optionA):
-            return Ending(
-                id: "END-06",
-                title: "개발 유튜버",
-                career: "테크 인플루언서",
-                description: "유튜브 구독자 100만. 강의 매출 연 10억."
-            )
+            return Ending(id: "END-06", type: .techInfluencer)
         case (.optionA, .optionA, .optionB, .optionB):
-            return Ending(
-                id: "END-07",
-                title: "Series A 대표",
-                career: "스타트업 대표",
-                description: "엑싯이 목표! 인생은 한방이다."
-            )
+            return Ending(id: "END-07", type: .startupCEO)
         case (.optionA, .optionB, .optionB, .optionB):
-            return Ending(
-                id: "END-08",
-                title: "디지털 노마드",
-                career: "디지털 노마드",
-                description: "전 세계 해변이 나의 사무실, 코드와 자유뿐."
-            )
+            return Ending(id: "END-08", type: .digitalNomad)
         case (.optionB, .optionA, .optionA, .optionA):
-            return Ending(
-                id: "END-09",
-                title: "전설의 해커",
-                career: "천재 해커",
-                description: "이름 없이, 흔적 없이. 그러나 전설로 남다."
-            )
+            return Ending(id: "END-09", type: .geniusHacker)
         case (.optionB, .optionA, .optionA, .optionB):
-            return Ending(
-                id: "END-10",
-                title: "다크웹 블랙 요원",
-                career: "다크웹 요원",
-                description: "내 기록은 삭제됐다. 이 게임도 기억하지 마라"
-            )
+            return Ending(id: "END-10", type: .darkWebAgent)
         case (.optionB, .optionA, .optionB, .optionA):
-            return Ending(
-                id: "END-11",
-                title: "디지털 노마드",
-                career: "디지털 노마드",
-                description: "전 세계 해변이 나의 사무실, 코드와 자유뿐."
-            )
+            return Ending(id: "END-11", type: .digitalNomad)
         case (.optionB, .optionA, .optionB, .optionB):
-            return Ending(
-                id: "END-12",
-                title: "다크웹 블랙 요원",
-                career: "다크웹 요원",
-                description: "내 기록은 삭제됐다. 이 게임도 기억하지 마라"
-            )
+            return Ending(id: "END-12", type: .darkWebAgent)
         case (.optionB, .optionB, .optionA, .optionA):
-            return Ending(
-                id: "END-13",
-                title: "유니콘 에이스",
-                career: "에이스 개발자",
-                description: "연봉 100억. 스톡옵션. 야근도 행복하다."
-            )
+            return Ending(id: "END-13", type: .aceDeveloper)
         case (.optionB, .optionB, .optionA, .optionB):
-            return Ending(
-                id: "END-14",
-                title: "전설의 해커",
-                career: "천재 해커",
-                description: "이름 없이, 흔적 없이. 그러나 전설로 남다."
-            )
+            return Ending(id: "END-14", type: .geniusHacker)
         case (.optionB, .optionB, .optionB, .optionA):
-            return Ending(
-                id: "END-15",
-                title: "개발 유튜버",
-                career: "테크 인플루언서",
-                description: "유튜브 구독자 100만. 강의 매출 연 10억."
-            )
+            return Ending(id: "END-15", type: .techInfluencer)
         case (.optionB, .optionB, .optionB, .optionB):
-            return Ending(
-                id: "END-16",
-                title: "디지털 노마드",
-                career: "디지털 노마드",
-                description: "전 세계 해변이 나의 사무실, 코드와 자유뿐."
-            )
+            return Ending(id: "END-16", type: .digitalNomad)
         }
     }
 

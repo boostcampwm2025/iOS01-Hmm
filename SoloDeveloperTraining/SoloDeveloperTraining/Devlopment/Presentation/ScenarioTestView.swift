@@ -120,6 +120,8 @@ final class ScenarioTestViewModel {
         )
     }
 
+    var kakaoMessageTemplateID: String { "133210" } // 테스트용 메시지 id
+
     // MARK: - Actions
 
     func startScenario() {
@@ -238,6 +240,20 @@ final class ScenarioTestViewModel {
 
 struct ScenarioTestView: View {
     @State private var viewModel = ScenarioTestViewModel()
+    @State private var isShareSheetPresented = false
+
+    var shareSheetOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.3)
+                .ignoresSafeArea()
+                .onTapGesture { isShareSheetPresented = false }
+            ShareSheetView(
+                isPresented: $isShareSheetPresented,
+                kakaoMessageTemplateID: viewModel.kakaoMessageTemplateID,
+                urlString: "\(ShareService.baseURL)/\(viewModel.finalEnding?.type.webURLSlug ?? "")"
+            )
+        }
+    }
 
     var body: some View {
         ScrollView {
@@ -318,18 +334,18 @@ struct ScenarioTestView: View {
                         if let ending = viewModel.finalEnding, viewModel.isFinalChoiceComplete {
                             // 최종 엔딩 UI
                             VStack(alignment: .leading, spacing: 12) {
-                                Text(ending.title)
+                                Text(ending.type.title)
                                     .font(.system(size: 32, weight: .bold))
                                     .foregroundColor(.orange)
 
-                                Text(ending.career)
+                                Text(ending.type.career)
                                     .font(.title2)
                                     .foregroundColor(.secondary)
 
                                 Divider()
                                     .padding(.vertical, 4)
 
-                                Text(ending.description)
+                                Text(ending.type.description)
                                     .font(.body)
                                     .lineSpacing(6)
 
@@ -443,7 +459,9 @@ struct ScenarioTestView: View {
                         // Final 엔딩 버튼
                         if viewModel.isFinalChoiceComplete {
                             VStack(spacing: 8) {
-                                Button(action: {}) {
+                                Button {
+                                    isShareSheetPresented = true
+                                } label: {
                                     HStack {
                                         Image(systemName: "square.and.arrow.up")
                                         Text("공유하기")
@@ -521,10 +539,16 @@ struct ScenarioTestView: View {
             }
             .padding(.top)
         }
+        .overlay {
+            if isShareSheetPresented {
+                shareSheetOverlay
+            }
+        }
         .navigationTitle("시나리오 테스트")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
+
 
 // ScenarioType description extension
 extension ScenarioType {

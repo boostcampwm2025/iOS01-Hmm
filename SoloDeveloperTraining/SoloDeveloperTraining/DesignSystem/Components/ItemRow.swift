@@ -29,10 +29,28 @@ struct ItemRow: View {
     let title: String
     let description: String
     let imageName: String
-    let cost: Cost
+    let price: PriceContent
     let state: ItemState
     let action: () -> Void
     let onLongPressAction: (() -> Bool)?
+
+    init(
+        title: String,
+        description: String,
+        imageName: String,
+        price: PriceContent,
+        state: ItemState,
+        action: @escaping () -> Void,
+        onLongPressAction: (() -> Bool)? = nil
+    ) {
+        self.title = title
+        self.description = description
+        self.imageName = imageName
+        self.price = price
+        self.state = state
+        self.action = action
+        self.onLongPressAction = onLongPressAction
+    }
 
     init(
         title: String,
@@ -43,13 +61,15 @@ struct ItemRow: View {
         action: @escaping () -> Void,
         onLongPressAction: (() -> Bool)? = nil
     ) {
-        self.title = title
-        self.description = description
-        self.imageName = imageName
-        self.cost = cost
-        self.state = state
-        self.action = action
-        self.onLongPressAction = onLongPressAction
+        self.init(
+            title: title,
+            description: description,
+            imageName: imageName,
+            price: .cost(cost),
+            state: state,
+            action: action,
+            onLongPressAction: onLongPressAction
+        )
     }
 
     var body: some View {
@@ -70,7 +90,7 @@ struct ItemRow: View {
             Spacer()
 
             PriceButton(
-                cost: cost,
+                price: price,
                 state: state,
                 axis: .vertical,
                 width: Constant.priceButtonWidth,

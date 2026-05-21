@@ -36,6 +36,7 @@ struct RecordDTO: Codable {
     // Consumable Usage Records
     let coffeeUseCount: Int
     let energyDrinkUseCount: Int
+    let skillAdRewardState: SkillAdRewardState?
 
     // Play Time Records
     let totalPlayTime: TimeInterval
@@ -78,6 +79,7 @@ struct RecordDTO: Codable {
         self.stackConsecutiveSuccess = record.stackConsecutiveSuccess
         self.coffeeUseCount = record.coffeeUseCount
         self.energyDrinkUseCount = record.energyDrinkUseCount
+        self.skillAdRewardState = record.skillAdRewardState
         self.totalPlayTime = record.totalPlayTime
         self.offlineRewardState = record.offlineRewardState
         self.tutorialCompleted = record.tutorialCompleted
@@ -120,6 +122,7 @@ struct RecordDTO: Codable {
         // Consumable Usage Records
         record.coffeeUseCount = coffeeUseCount
         record.energyDrinkUseCount = energyDrinkUseCount
+        record.skillAdRewardState = skillAdRewardState ?? .init()
 
         // Play Time Records
         record.totalPlayTime = totalPlayTime

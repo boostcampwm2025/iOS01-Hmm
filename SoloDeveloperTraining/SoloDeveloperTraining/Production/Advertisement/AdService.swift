@@ -58,28 +58,6 @@ final class AdService {
 
         return result
     }
-
-    // 광고 표시
-    func showAd(_ type: AdType) async {
-        guard !isShowing else { return }
-        isShowing = true
-        defer { isShowing = false }
-
-        await requestTrackingAuthorizationIfNeeded()
-
-        guard let ads = await getOrLoadAd(type) else {
-            print("⚠️ Ad not ready")
-            return
-        }
-
-        await ads.show()
-        loadedAds.removeValue(forKey: type)
-
-        // 다음 광고 preload
-        Task {
-            await loadAd(type)
-        }
-    }
 }
 
 private extension AdService {

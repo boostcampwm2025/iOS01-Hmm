@@ -385,4 +385,14 @@ enum Policy {
         /// 허용 오차
         static let allowedTimeDrift: TimeInterval = 120.0
     }
+
+    // MARK: - 광고 정책
+    enum Ad {
+        /// 스킬 광고 보상 (업무 효율 대박)
+        enum SkillReward {
+            static let dailyLimit: Int = 3
+            static let rewardMultiplier: Double = 2.0
+            static let rewardDuration: TimeInterval = 300 // 5분
+        }
+    }
 }

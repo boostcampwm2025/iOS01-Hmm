@@ -13,8 +13,12 @@ struct AdView: View {
             Section(header: Text("광고 테스트")) {
                 Button("전면 광고 노출") {
                     Task {
-                        await AdService.shared.showAd(.interstitial)
-                        print("광고가 닫히면 실행됩니다.")
+                        let success = await AdService.shared.showAdWithResult(
+                            .interstitial
+                        )
+                        if success {
+                            print("광고가 닫히면 실행됩니다.")
+                        }
                     }
                 }
             }
