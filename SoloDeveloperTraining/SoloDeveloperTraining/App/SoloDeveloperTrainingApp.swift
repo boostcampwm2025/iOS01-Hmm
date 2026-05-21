@@ -8,6 +8,7 @@
 import SwiftUI
 import FirebaseCore
 import GoogleMobileAds
+import KakaoSDKCommon
 
 private enum Constant {
     enum Animation {
@@ -32,6 +33,8 @@ struct SoloDeveloperTrainingApp: App {
     init() {
         FirebaseApp.configure()
         MobileAds.shared.start()
+        let kakaoAppKey = Bundle.main.kakaoAppKey
+        KakaoSDK.initSDK(appKey: kakaoAppKey)
     }
 
     @State private var hasSeenIntro = false
@@ -64,6 +67,9 @@ struct SoloDeveloperTrainingApp: App {
                 }
             }
             .animation(.easeOut(duration: Constant.Animation.transitionDuration), value: hasSeenIntro)
+            .onOpenURL { url in
+                print("\(url) app open")
+            }
             .overlay {
                 nicknameSetupOverlay
             }

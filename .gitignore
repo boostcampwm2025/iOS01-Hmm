@@ -108,3 +108,7 @@ iOSInjectionProject/
 Secret.swift
 # End of https://www.toptal.com/developers/gitignore/api/swift,xcode,macos
 
+
+# Firebase
+.firebase/
+hosting.cHVibGlj.cache

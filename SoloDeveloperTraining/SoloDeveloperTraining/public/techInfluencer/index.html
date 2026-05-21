@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>개발자 키우기</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- OG 태그 -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="[개발자 키우기] 테크 인플루언서">
+    <meta property="og:description" content="유튜브 구독자 100만. 강의 매출 연 10억.">
+    <meta property="og:url" content="https://solodevelopertraining.web.app/techInfluencer">
+    <meta property="og:image" content="https://solodevelopertraining.web.app/thumbnails/tech_influencer.png">
+    <meta property="fb:app_id" content="1484631113301060">
+
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f4f4f9; color: #1a1a1a; }
+        .container { text-align: center; padding: 40px 24px; max-width: 450px; width: 100%; background: white; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin: 20px; }
+        .thumbnail { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 16px; margin-bottom: 24px; }
+        h3 { font-size: 22px; font-weight: 700; margin-bottom: 12px; color: #007AFF; }
+        .ending-desc { font-size: 16px; color: #666; line-height: 1.6; margin-bottom: 30px; word-break: keep-all; }
+        .button { display: block; padding: 16px; background: #007AFF; color: white; text-decoration: none; border-radius: 14px; font-weight: 600; font-size: 16px; }
+        .instagram-notice { display: none; text-align: center; padding: 40px 24px; }
+        .icon { font-size: 50px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container" id="normal-view">
+        <img class="thumbnail" src="https://solodevelopertraining.web.app/thumbnails/tech_influencer.png" alt="개발 유튜버">
+        <h3>[테크 인플루언서] 개발 유튜버</h3>
+        <p class="ending-desc">유튜브 구독자 100만. 강의 매출 연 10억.</p>
+        <a href="https://apps.apple.com/kr/app/id6758282441" class="button">App Store에서 열기</a>
+    </div>
+
+    <div class="instagram-notice" id="instagram-view">
+        <div class="icon">📲</div>
+        <h3>외부 브라우저에서 열기</h3>
+        <p class="ending-desc" style="text-align: left; background: #eee; padding: 20px; border-radius: 12px; margin-top: 20px;">
+            인스타그램에서는 앱 연결이 제한됩니다.<br><br>
+            1. 오른쪽 상단 <strong>점 세개(···)</strong> 클릭<br>
+            2. <strong>'시스템 브라우저에서 열기'</strong> 선택
+        </p>
+    </div>
+
+    <script>
+        const isInstagram = /Instagram|FBAN|FBAV/.test(navigator.userAgent);
+        if (isInstagram) {
+            document.getElementById('normal-view').style.display = 'none';
+            document.getElementById('instagram-view').style.display = 'block';
+        } else {
+            setTimeout(() => { window.location.href = "devup://"; }, 500);
+        }
+    </script>
+</body>
+</html>

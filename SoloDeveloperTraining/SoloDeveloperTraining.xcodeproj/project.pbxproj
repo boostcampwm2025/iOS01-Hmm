@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		283B980E2FAB24750033B924 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 283B980D2FAB24750033B924 /* GoogleMobileAds */; };
 		283B9A432FAB36020033B924 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 283B9A422FAB36020033B924 /* GoogleMobileAds */; };
+		28F3C5072FB37EDA0077B77A /* KakaoSDKShare in Frameworks */ = {isa = PBXBuildFile; productRef = 28F3C5062FB37EDA0077B77A /* KakaoSDKShare */; };
+		28F3C7C32FB73B6E0077B77A /* KakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 28F3C7C22FB73B6E0077B77A /* KakaoSDK */; };
+		28F3C7C52FB73B7B0077B77A /* KakaoSDKShare in Frameworks */ = {isa = PBXBuildFile; productRef = 28F3C7C42FB73B7B0077B77A /* KakaoSDKShare */; };
+		28F3C7C72FB73B820077B77A /* KakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 28F3C7C62FB73B820077B77A /* KakaoSDK */; };
 		28FB12B02F9B5EA8004FCBB3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */; };
 		28FB12B22F9B5EB1004FCBB3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 28FB12B12F9B5EB1004FCBB3 /* FirebaseFirestore */; };
 		BC19336F2F8FC7110033A27E /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BC19336E2F8FC7110033A27E /* FirebaseAnalytics */; };
@@ -37,6 +41,7 @@
 		28FB16632F9B6E3C004FCBB3 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				.firebaserc,
 				App/Info.plist,
 				Devlopment/CheatSystem/CheatManager.swift,
 				Devlopment/Data/Repository/DefaultAdminBalanceRepository.swift,
@@ -56,14 +61,33 @@
 				Devlopment/Presentation/StackGameScene.swift,
 				Devlopment/Presentation/StackGameTestView.swift,
 				Devlopment/Presentation/TabGameView.swift,
+				firebase.json,
+				"public/.well-known/apple-app-site-association",
+				public/aceDeveloper/index.html,
+				public/darkWebAgent/index.html,
+				public/digitalNomad/index.html,
+				public/geniusHacker/index.html,
+				public/index.html,
+				public/robots.txt,
+				public/startupCEO/index.html,
+				public/techInfluencer/index.html,
+				public/thumbnails/ace_developer.png,
+				public/thumbnails/dark_web_agent.png,
+				public/thumbnails/default.png,
+				public/thumbnails/digital_nomad.png,
+				public/thumbnails/genius_hacker.png,
+				public/thumbnails/startup_ceo.png,
+				public/thumbnails/tech_influencer.png,
 			);
 			target = 08267F2A2F0D06BC005A0066 /* SoloDeveloperTraining */;
 		};
 		28FB16642F9B6E3C004FCBB3 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				.firebaserc,
 				"App/Info-Dev.plist",
 				App/Info.plist,
+				firebase.json,
 				"Production/Error/PurchasingError+UserReadableError.swift",
 				"Production/Error/SkillError+UserReadableError.swift",
 				Production/Error/UserReadableError.swift,
@@ -87,6 +111,21 @@
 				Production/Presentation/StackGameView.swift,
 				Production/Presentation/TapGameView.swift,
 				Production/Presentation/WorkSelectedView.swift,
+				"public/.well-known/apple-app-site-association",
+				public/aceDeveloper/index.html,
+				public/darkWebAgent/index.html,
+				public/digitalNomad/index.html,
+				public/geniusHacker/index.html,
+				public/index.html,
+				public/startupCEO/index.html,
+				public/techInfluencer/index.html,
+				public/thumbnails/ace_developer.png,
+				public/thumbnails/dark_web_agent.png,
+				public/thumbnails/default.png,
+				public/thumbnails/digital_nomad.png,
+				public/thumbnails/genius_hacker.png,
+				public/thumbnails/startup_ceo.png,
+				public/thumbnails/tech_influencer.png,
 			);
 			target = 2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */;
 		};
@@ -118,6 +157,8 @@
 				BC1933712F8FC7110033A27E /* FirebaseCore in Frameworks */,
 				BC19336F2F8FC7110033A27E /* FirebaseAnalytics in Frameworks */,
 				28FB12B02F9B5EA8004FCBB3 /* FirebaseFirestore in Frameworks */,
+				28F3C7C52FB73B7B0077B77A /* KakaoSDKShare in Frameworks */,
+				28F3C7C72FB73B820077B77A /* KakaoSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,8 +168,10 @@
 			files = (
 				283B9A432FAB36020033B924 /* GoogleMobileAds in Frameworks */,
 				BCC0EAD02F8FE90D00D7A84A /* FirebaseCore in Frameworks */,
+				28F3C5072FB37EDA0077B77A /* KakaoSDKShare in Frameworks */,
 				BCC0EACE2F8FE90700D7A84A /* FirebaseAnalytics in Frameworks */,
 				28FB12B22F9B5EB1004FCBB3 /* FirebaseFirestore in Frameworks */,
+				28F3C7C32FB73B6E0077B77A /* KakaoSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -194,6 +237,8 @@
 				BC1933702F8FC7110033A27E /* FirebaseCore */,
 				28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */,
 				283B980D2FAB24750033B924 /* GoogleMobileAds */,
+				28F3C7C42FB73B7B0077B77A /* KakaoSDKShare */,
+				28F3C7C62FB73B820077B77A /* KakaoSDK */,
 			);
 			productName = SoloDeveloperTraining;
 			productReference = 08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */;
@@ -221,6 +266,8 @@
 				BCC0EACF2F8FE90D00D7A84A /* FirebaseCore */,
 				28FB12B12F9B5EB1004FCBB3 /* FirebaseFirestore */,
 				283B9A422FAB36020033B924 /* GoogleMobileAds */,
+				28F3C5062FB37EDA0077B77A /* KakaoSDKShare */,
+				28F3C7C22FB73B6E0077B77A /* KakaoSDK */,
 			);
 			productName = SoloDeveloperTraining;
 			productReference = 2896AE422F100CD600D38732 /* SoloDeveloperTraining-Dev.app */;
@@ -280,6 +327,7 @@
 			packageReferences = (
 				BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				283B95DB2FA9D44B0033B924 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+				28F3C5032FB37EA70077B77A /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 08267F2C2F0D06BC005A0066 /* Products */;
@@ -517,6 +565,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = app_icon_release;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SoloDeveloperTraining/App/SoloDeveloperTraining.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = B3PWYBKFUK;
@@ -559,6 +608,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = app_icon_release;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SoloDeveloperTraining/App/SoloDeveloperTraining.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = B3PWYBKFUK;
@@ -601,6 +651,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = app_icon_dev;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = B3PWYBKFUK;
@@ -609,6 +660,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "SoloDeveloperTraining/App/Info-Dev.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "개발자 키우기 (Dev)";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "개인화된 광고 제공 목적으로 사용됩니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
@@ -644,6 +696,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = app_icon_dev;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = B3PWYBKFUK;
@@ -652,6 +705,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "SoloDeveloperTraining/App/Info-Dev.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "개발자 키우기 (Dev)";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "개인화된 광고 제공 목적으로 사용됩니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
@@ -776,6 +830,14 @@
 				minimumVersion = 13.3.0;
 			};
 		};
+		28F3C5032FB37EA70077B77A /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -796,6 +858,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 283B95DB2FA9D44B0033B924 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
 			productName = GoogleMobileAds;
+		};
+		28F3C5062FB37EDA0077B77A /* KakaoSDKShare */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28F3C5032FB37EA70077B77A /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKShare;
+		};
+		28F3C7C22FB73B6E0077B77A /* KakaoSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28F3C5032FB37EA70077B77A /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDK;
+		};
+		28F3C7C42FB73B7B0077B77A /* KakaoSDKShare */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28F3C5032FB37EA70077B77A /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKShare;
+		};
+		28F3C7C62FB73B820077B77A /* KakaoSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28F3C5032FB37EA70077B77A /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDK;
 		};
 		28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;

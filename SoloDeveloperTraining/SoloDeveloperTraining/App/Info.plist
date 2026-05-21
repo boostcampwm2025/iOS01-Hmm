@@ -2,6 +2,31 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>kr.codesquad.boostcamp10.SoloDeveloperTraining</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>devup</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakaofb587f972d89b4cb6b50d06d9e92c03d</string>
+			</array>
+		</dict>
+	</array>
+	<key>KAKAO_APP_KEY</key>
+	<string>fb587f972d89b4cb6b50d06d9e92c03d</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>kakaokompassauth</string>
+		<string>kakaotalk</string>
+		<string>kakaolink</string>
+	</array>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>개인화된 광고 제공 목적으로 사용됩니다.</string>
 	<key>UIAppFonts</key>
