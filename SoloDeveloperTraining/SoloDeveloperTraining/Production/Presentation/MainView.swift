@@ -153,8 +153,10 @@ private extension MainView {
                     showSettingsView = true
                 }
                 Spacer()
-                SmallButton(title: "퀴즈", hasBadge: true) {
-                    showQuizView = true
+                if !isWorkGameInProgress {
+                    SmallButton(title: "퀴즈", hasBadge: true) {
+                        showQuizView = true
+                    }
                 }
             }
             .padding(.top, Constant.TopButton.top)
