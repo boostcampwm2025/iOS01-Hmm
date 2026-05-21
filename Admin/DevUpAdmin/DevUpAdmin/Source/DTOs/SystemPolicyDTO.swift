@@ -8,6 +8,7 @@
 struct SystemPolicyDTO: Codable {
     let autoGain: AutoGainDTO
     let buff: BuffDTO
+    let scenario: ScenarioPolicyDTO?
 }
 
 struct AutoGainDTO: Codable {
@@ -16,4 +17,8 @@ struct AutoGainDTO: Codable {
 
 struct BuffDTO: Codable {
     let decreaseInterval: Double
+}
+
+struct ScenarioPolicyDTO: Codable {
+    let maxLevelupQueueSize: Int
 }
