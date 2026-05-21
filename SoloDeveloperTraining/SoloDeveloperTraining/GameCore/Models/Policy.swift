@@ -11,67 +11,67 @@ enum Policy {
     // MARK: - 커리어 시스템 (기준점)
     /// 단계별 필요 누적 재산 (밸런스에 맞춰 약 20× 상향)
     enum Career {
-        static let unemployed = 0
-        static let laptopOwner = 100_000
-        static let aspiringDeveloper = 1_000_000
-        static let juniorDeveloper = 20_000_000
-        static let normalDeveloper = 2_000_000_000
-        static let nightOwlDeveloper = 20_000_000_000
-        static let skilledDeveloper = 200_000_000_000
-        static let famousDeveloper = 2_000_000_000_000
-        static let allRounderDeveloper = 100_000_000_000_000   // 100조
-        static let worldClassDeveloper = 2_000_000_000_000_000 // 2000조: 만렙
+        static var unemployed: Int { PolicyStore.shared.current.career.unemployed }
+        static var laptopOwner: Int { PolicyStore.shared.current.career.laptopOwner }
+        static var aspiringDeveloper: Int { PolicyStore.shared.current.career.aspiringDeveloper }
+        static var juniorDeveloper: Int { PolicyStore.shared.current.career.juniorDeveloper }
+        static var normalDeveloper: Int { PolicyStore.shared.current.career.normalDeveloper }
+        static var nightOwlDeveloper: Int { PolicyStore.shared.current.career.nightOwlDeveloper }
+        static var skilledDeveloper: Int { PolicyStore.shared.current.career.skilledDeveloper }
+        static var famousDeveloper: Int { PolicyStore.shared.current.career.famousDeveloper }
+        static var allRounderDeveloper: Int { PolicyStore.shared.current.career.allRounderDeveloper }
+        static var worldClassDeveloper: Int { PolicyStore.shared.current.career.worldClassDeveloper }
     }
 
     // MARK: - 피버 시스템 (쾌감 증대)
     enum Fever {
         /// 공통 설정
-        static let maxPercent: Double = 400.0
-        static let decreaseInterval: TimeInterval = 0.05
+        static var maxPercent: Double { PolicyStore.shared.current.fever.maxPercent }
+        static var decreaseInterval: TimeInterval { PolicyStore.shared.current.fever.decreaseInterval }
 
         /// 피버 단계 경계값
         enum StageThreshold {
-            static let stage0: Double = 0
-            static let stage1: Double = 100
-            static let stage2: Double = 200
-            static let stage3: Double = 300
+            static var stage0: Double { PolicyStore.shared.current.fever.stageThreshold.stage0 }
+            static var stage1: Double { PolicyStore.shared.current.fever.stageThreshold.stage1 }
+            static var stage2: Double { PolicyStore.shared.current.fever.stageThreshold.stage2 }
+            static var stage3: Double { PolicyStore.shared.current.fever.stageThreshold.stage3 }
         }
 
         /// 피버 단계별 배수 (상향 조정: 피버 시 확실한 보상)
         enum Multiplier {
-            static let stage0: Double = 1.0 // 0~100
-            static let stage1: Double = 1.5 // 1.2 -> 1.5
-            static let stage2: Double = 2.5 // 1.5 -> 2.5
-            static let stage3: Double = 5.0 // 2.0 -> 5.0
+            static var stage0: Double { PolicyStore.shared.current.fever.multiplier.stage0 }
+            static var stage1: Double { PolicyStore.shared.current.fever.multiplier.stage1 }
+            static var stage2: Double { PolicyStore.shared.current.fever.multiplier.stage2 }
+            static var stage3: Double { PolicyStore.shared.current.fever.multiplier.stage3 }
         }
 
         /// 코드 짜기 (TapGame) — 피버 상승량 대폭 하향
         enum Tap {
-            static let decreasePercent: Double = 1.5
-            static let gainPerTap: Double = 5.0 // 2.0 -> 5.0
+            static var decreasePercent: Double { PolicyStore.shared.current.fever.tap.decreasePercent }
+            static var gainPerTap: Double { PolicyStore.shared.current.fever.tap.gainPerTap }
         }
 
         /// 언어 맞추기 (LanguageGame)
         enum Language {
-            static let decreasePercent: Double = 1.5
-            static let gainPerCorrect: Double = 33.0
-            static let lossPerIncorrect: Double = -33.0
+            static var decreasePercent: Double { PolicyStore.shared.current.fever.language.decreasePercent }
+            static var gainPerCorrect: Double { PolicyStore.shared.current.fever.language.gainPerCorrect }
+            static var lossPerIncorrect: Double { PolicyStore.shared.current.fever.language.lossPerIncorrect }
         }
 
         /// 버그 피하기 (DodgeGame)
         enum Dodge {
-            static let decreasePercent: Double = 1.2
-            static let gainPerSmallGold: Double = 33.0
-            static let gainPerLargeGold: Double = 50.0
-            static let gainPerBugDodge: Double = 15.0
-            static let lossPerBugHit: Double = -20.0
+            static var decreasePercent: Double { PolicyStore.shared.current.fever.dodge.decreasePercent }
+            static var gainPerSmallGold: Double { PolicyStore.shared.current.fever.dodge.gainPerSmallGold }
+            static var gainPerLargeGold: Double { PolicyStore.shared.current.fever.dodge.gainPerLargeGold }
+            static var gainPerBugDodge: Double { PolicyStore.shared.current.fever.dodge.gainPerBugDodge }
+            static var lossPerBugHit: Double { PolicyStore.shared.current.fever.dodge.lossPerBugHit }
         }
 
         /// 데이터 쌓기 (StackGame)
         enum Stack {
-            static let decreasePercent: Double = 1.0
-            static let gainPerSuccess: Double = 80.0
-            static let lossPerFailure: Double = -40.0
+            static var decreasePercent: Double { PolicyStore.shared.current.fever.stack.decreasePercent }
+            static var gainPerSuccess: Double { PolicyStore.shared.current.fever.stack.gainPerSuccess }
+            static var lossPerFailure: Double { PolicyStore.shared.current.fever.stack.lossPerFailure }
         }
     }
 
@@ -79,10 +79,10 @@ enum Policy {
     enum Game {
         /// 게임별 해금 조건 (2단계씩: 탭 0 → 언어 2 → 버그 4 → 데이터 6)
         enum GameUnlock {
-            static let tap = Policy.Career.unemployed          // 0단계
-            static let language = Policy.Career.aspiringDeveloper   // 2단계
-            static let dodge = Policy.Career.normalDeveloper        // 4단계
-            static let stack = Policy.Career.skilledDeveloper       // 6단계
+            static var tap: Int { Policy.Career.unemployed }
+            static var language: Int { Policy.Career.aspiringDeveloper }
+            static var dodge: Int { Policy.Career.normalDeveloper }
+            static var stack: Int { Policy.Career.skilledDeveloper }
         }
 
         /// 코드 짜기 (TapGame)
@@ -90,45 +90,45 @@ enum Policy {
 
         /// 언어 맞추기 (LanguageGame)
         enum Language {
-            static let incorrectGoldLossMultiplier: Double = 0.5 // 오답시 골드 감소 (획득량의 0.5배)
+            static var incorrectGoldLossMultiplier: Double { PolicyStore.shared.current.game.language.incorrectGoldLossMultiplier }
         }
 
         /// 버그 피하기 (DodgeGame)
         enum Dodge {
             // 골드
-            static let smallGoldMultiplier: Double = 1.5
-            static let largeGoldMultiplier: Double = 2.0
-            static let bugHitLossGoldMultiplier: Double = 0.5 // 버그 맞으면 골드 감소 (획득량의 0.5배)
-            static let bugDodgeGoldMultiplier: Double = 0.5 // 버그 피하면 골드 획득
+            static var smallGoldMultiplier: Double { PolicyStore.shared.current.game.dodge.smallGoldMultiplier }
+            static var largeGoldMultiplier: Double { PolicyStore.shared.current.game.dodge.largeGoldMultiplier }
+            static var bugHitLossGoldMultiplier: Double { PolicyStore.shared.current.game.dodge.bugHitLossGoldMultiplier }
+            static var bugDodgeGoldMultiplier: Double { PolicyStore.shared.current.game.dodge.bugDodgeGoldMultiplier }
 
             // GameCore 설정
-            static let updateFPS: Double = 120.0                // 업데이트 주기: 120fps
-            static let spawnInterval: TimeInterval = 0.3        // 낙하물 생성 간격
-            static let fallSpeed: CGFloat = 3.0                 // 낙하 속도
+            static var updateFPS: Double { PolicyStore.shared.current.game.dodge.updateFPS }
+            static var spawnInterval: TimeInterval { PolicyStore.shared.current.game.dodge.spawnInterval }
+            static var fallSpeed: CGFloat { CGFloat(PolicyStore.shared.current.game.dodge.fallSpeed) }
 
             // 생성 확률 (%)
-            static let smallGoldSpawnRate: Int = 7
-            static let largeGoldSpawnRate: Int = 3
-            static let bugSpawnRate: Int = 90
+            static var smallGoldSpawnRate: Int { PolicyStore.shared.current.game.dodge.smallGoldSpawnRate }
+            static var largeGoldSpawnRate: Int { PolicyStore.shared.current.game.dodge.largeGoldSpawnRate }
+            static var bugSpawnRate: Int { PolicyStore.shared.current.game.dodge.bugSpawnRate }
 
             /// 모션 시스템
             enum Motion {
-                static let deadZoneThreshold: Double = 0.05
-                static let maxSpeed: CGFloat = 2000.0
-                static let minSpeed: CGFloat = 300.0
+                static var deadZoneThreshold: Double { PolicyStore.shared.current.game.dodge.motion.deadZoneThreshold }
+                static var maxSpeed: CGFloat { CGFloat(PolicyStore.shared.current.game.dodge.motion.maxSpeed) }
+                static var minSpeed: CGFloat { CGFloat(PolicyStore.shared.current.game.dodge.motion.minSpeed) }
             }
         }
 
         /// 데이터 쌓기 (StackGame)
         enum Stack {
-            static let failureGoldLossMultiplier: Double = 0.5  // 실패시 골드 감소 (획득량의 0.5배)
+            static var failureGoldLossMultiplier: Double { PolicyStore.shared.current.game.stack.failureGoldLossMultiplier }
         }
 
         /// 퀴즈 게임 (QuizGame)
         enum Quiz {
-            static let questionsPerGame: Int = 3                // 게임당 문제 수
-            static let secondsPerQuestion: Int = 20             // 문제당 제한 시간
-            static let diamondsPerCorrect: Int = 5              // 정답당 다이아
+            static var questionsPerGame: Int { PolicyStore.shared.current.game.quiz.questionsPerGame }
+            static var secondsPerQuestion: Int { PolicyStore.shared.current.game.quiz.secondsPerQuestion }
+            static var diamondsPerCorrect: Int { PolicyStore.shared.current.game.quiz.diamondsPerCorrect }
         }
     }
 
@@ -136,102 +136,71 @@ enum Policy {
     // *전략: 초반 스킬 비용을 낮추고 효율을 높여 '클리커'의 재미를 느끼게 함
     enum Skill {
         // 공통 레벨 범위 (모든 게임 통일)
-        static let beginnerMinLevel: Int = 1
-        static let beginnerMaxLevel: Int = 999
-        static let intermediateMinLevel: Int = 0
-        static let intermediateMaxLevel: Int = 999
-        static let advancedMinLevel: Int = 0
-        static let advancedMaxLevel: Int = 999
+        static var beginnerMinLevel: Int { PolicyStore.shared.current.skill.beginnerMinLevel }
+        static var beginnerMaxLevel: Int { PolicyStore.shared.current.skill.beginnerMaxLevel }
+        static var intermediateMinLevel: Int { PolicyStore.shared.current.skill.intermediateMinLevel }
+        static var intermediateMaxLevel: Int { PolicyStore.shared.current.skill.intermediateMaxLevel }
+        static var advancedMinLevel: Int { PolicyStore.shared.current.skill.advancedMinLevel }
+        static var advancedMaxLevel: Int { PolicyStore.shared.current.skill.advancedMaxLevel }
 
         /// 코드 짜기 (TapGame)
         enum Tap {
-            // 기본 골드 단위 (상향: 최소 1)
-            static let baseGold: Int = 1
-
-            // 티어별 골드 획득 증가량
-            static let beginnerGoldMultiplier: Int = 1
-            static let intermediateGoldMultiplier: Int = 10
-            static let advancedGoldMultiplier: Int = 100
-
-            // 업그레이드 비용 증가량
-            static let beginnerGoldCostMultiplier: Int = 10
-            static let intermediateGoldCostMultiplier: Int = 150
-            static let advancedGoldCostMultiplier: Int = 2500
-            static let diamondCostDivider: Int = 100
-            static let diamondCostMultiplier: Int = 10
-
-            // 스킬 해금 조건
-            static let intermediateUnlockLevel: Int = 200
-            static let advancedUnlockLevel: Int = 300
+            static var baseGold: Int { PolicyStore.shared.current.skill.tap.baseGold }
+            static var beginnerGoldMultiplier: Int { PolicyStore.shared.current.skill.tap.beginnerGoldMultiplier }
+            static var intermediateGoldMultiplier: Int { PolicyStore.shared.current.skill.tap.intermediateGoldMultiplier }
+            static var advancedGoldMultiplier: Int { PolicyStore.shared.current.skill.tap.advancedGoldMultiplier }
+            static var beginnerGoldCostMultiplier: Int { PolicyStore.shared.current.skill.tap.beginnerGoldCostMultiplier }
+            static var intermediateGoldCostMultiplier: Int { PolicyStore.shared.current.skill.tap.intermediateGoldCostMultiplier }
+            static var advancedGoldCostMultiplier: Int { PolicyStore.shared.current.skill.tap.advancedGoldCostMultiplier }
+            static var diamondCostDivider: Int { PolicyStore.shared.current.skill.tap.diamondCostDivider }
+            static var diamondCostMultiplier: Int { PolicyStore.shared.current.skill.tap.diamondCostMultiplier }
+            static var intermediateUnlockLevel: Int { PolicyStore.shared.current.skill.tap.intermediateUnlockLevel }
+            static var advancedUnlockLevel: Int { PolicyStore.shared.current.skill.tap.advancedUnlockLevel }
         }
 
         /// 언어 맞추기 (LanguageGame)
-        /// * 분당 골드 = 탭의 3배 (피버 2.5 기준): 40정답/분 → Lv1,0,0 합 180
         enum Language {
-            // 기본 골드 단위
-            static let baseGold: Int = 45
-
-            // 티어별 골드 획득 증가량
-            static let beginnerGoldMultiplier: Int = 45
-            static let intermediateGoldMultiplier: Int = 450
-            static let advancedGoldMultiplier: Int = 4500
-
-            // 업그레이드 비용 증가량 (Tap 대비 스킬 합 비율 45배)
-            static let beginnerGoldCostMultiplier: Int = 450
-            static let intermediateGoldCostMultiplier: Int = 6750
-            static let advancedGoldCostMultiplier: Int = 112_500
-            static let diamondCostDivider: Int = 100
-            static let diamondCostMultiplier: Int = 10
-
-            // 스킬 해금 조건
-            static let intermediateUnlockLevel: Int = 200
-            static let advancedUnlockLevel: Int = 300
+            static var baseGold: Int { PolicyStore.shared.current.skill.language.baseGold }
+            static var beginnerGoldMultiplier: Int { PolicyStore.shared.current.skill.language.beginnerGoldMultiplier }
+            static var intermediateGoldMultiplier: Int { PolicyStore.shared.current.skill.language.intermediateGoldMultiplier }
+            static var advancedGoldMultiplier: Int { PolicyStore.shared.current.skill.language.advancedGoldMultiplier }
+            static var beginnerGoldCostMultiplier: Int { PolicyStore.shared.current.skill.language.beginnerGoldCostMultiplier }
+            static var intermediateGoldCostMultiplier: Int { PolicyStore.shared.current.skill.language.intermediateGoldCostMultiplier }
+            static var advancedGoldCostMultiplier: Int { PolicyStore.shared.current.skill.language.advancedGoldCostMultiplier }
+            static var diamondCostDivider: Int { PolicyStore.shared.current.skill.language.diamondCostDivider }
+            static var diamondCostMultiplier: Int { PolicyStore.shared.current.skill.language.diamondCostMultiplier }
+            static var intermediateUnlockLevel: Int { PolicyStore.shared.current.skill.language.intermediateUnlockLevel }
+            static var advancedUnlockLevel: Int { PolicyStore.shared.current.skill.language.advancedUnlockLevel }
         }
 
         /// 버그 피하기 (DodgeGame)
-        /// * 아무튼 개발자(20억) 해금 시 언어(초250·중300·고100) 분당 ~6천만 수준에 맞춤: Lv1,0,0 합 348,000
         enum Dodge {
-            // 기본 골드 단위
-            static let baseGold: Int = 87_000
-
-            // 티어별 골드 획득 증가량
-            static let beginnerGoldMultiplier: Int = 87_000
-            static let intermediateGoldMultiplier: Int = 870_000
-            static let advancedGoldMultiplier: Int = 8_700_000
-
-            // 업그레이드 비용 증가량 (스킬 합 비율에 맞춤)
-            static let beginnerGoldCostMultiplier: Int = 870_000
-            static let intermediateGoldCostMultiplier: Int = 13_050_000
-            static let advancedGoldCostMultiplier: Int = 217_500_000
-            static let diamondCostDivider: Int = 100
-            static let diamondCostMultiplier: Int = 10
-
-            // 스킬 해금 조건
-            static let intermediateUnlockLevel: Int = 200
-            static let advancedUnlockLevel: Int = 300
+            static var baseGold: Int { PolicyStore.shared.current.skill.dodge.baseGold }
+            static var beginnerGoldMultiplier: Int { PolicyStore.shared.current.skill.dodge.beginnerGoldMultiplier }
+            static var intermediateGoldMultiplier: Int { PolicyStore.shared.current.skill.dodge.intermediateGoldMultiplier }
+            static var advancedGoldMultiplier: Int { PolicyStore.shared.current.skill.dodge.advancedGoldMultiplier }
+            static var beginnerGoldCostMultiplier: Int { PolicyStore.shared.current.skill.dodge.beginnerGoldCostMultiplier }
+            static var intermediateGoldCostMultiplier: Int { PolicyStore.shared.current.skill.dodge.intermediateGoldCostMultiplier }
+            static var advancedGoldCostMultiplier: Int { PolicyStore.shared.current.skill.dodge.advancedGoldCostMultiplier }
+            static var diamondCostDivider: Int { PolicyStore.shared.current.skill.dodge.diamondCostDivider }
+            static var diamondCostMultiplier: Int { PolicyStore.shared.current.skill.dodge.diamondCostMultiplier }
+            static var intermediateUnlockLevel: Int { PolicyStore.shared.current.skill.dodge.intermediateUnlockLevel }
+            static var advancedUnlockLevel: Int { PolicyStore.shared.current.skill.dodge.advancedUnlockLevel }
         }
 
         /// 데이터 쌓기 (StackGame)
-        /// * 유능한 개발자(2000억) 해금 시 버그 피하기 대비 보상 상향: Lv1,0,0 합 9,000,000 (순 8회/분 → 분당 ~1.8억)
         enum Stack {
-            // 기본 골드 단위
-            static let baseGold: Int = 2_250_000
-
-            // 티어별 골드 획득 증가량
-            static let beginnerGoldMultiplier: Int = 2_250_000
-            static let intermediateGoldMultiplier: Int = 22_500_000
-            static let advancedGoldMultiplier: Int = 225_000_000
-
-            // 업그레이드 비용 증가량 (스킬 합 비율에 맞춤)
-            static let beginnerGoldCostMultiplier: Int = 22_500_000
-            static let intermediateGoldCostMultiplier: Int = 3_375_000_000
-            static let advancedGoldCostMultiplier: Int = 56_250_000_000
-            static let diamondCostDivider: Int = 100
-            static let diamondCostMultiplier: Int = 10
-
-            // 스킬 해금 조건
-            static let intermediateUnlockLevel: Int = 200
-            static let advancedUnlockLevel: Int = 300
+            static var baseGold: Int { PolicyStore.shared.current.skill.stack.baseGold }
+            static var beginnerGoldMultiplier: Int { PolicyStore.shared.current.skill.stack.beginnerGoldMultiplier }
+            static var intermediateGoldMultiplier: Int { PolicyStore.shared.current.skill.stack.intermediateGoldMultiplier }
+            static var advancedGoldMultiplier: Int { PolicyStore.shared.current.skill.stack.advancedGoldMultiplier }
+            static var beginnerGoldCostMultiplier: Int { PolicyStore.shared.current.skill.stack.beginnerGoldCostMultiplier }
+            static var intermediateGoldCostMultiplier: Int { PolicyStore.shared.current.skill.stack.intermediateGoldCostMultiplier }
+            static var advancedGoldCostMultiplier: Int { PolicyStore.shared.current.skill.stack.advancedGoldCostMultiplier }
+            static var diamondCostDivider: Int { PolicyStore.shared.current.skill.stack.diamondCostDivider }
+            static var diamondCostMultiplier: Int { PolicyStore.shared.current.skill.stack.diamondCostMultiplier }
+            static var intermediateUnlockLevel: Int { PolicyStore.shared.current.skill.stack.intermediateUnlockLevel }
+            static var advancedUnlockLevel: Int { PolicyStore.shared.current.skill.stack.advancedUnlockLevel }
         }
     }
 
@@ -239,16 +208,16 @@ enum Policy {
     enum Consumable {
         /// 커피 (1초당 3씩 증가)
         enum Coffee {
-            static let duration: Int = 15
-            static let buffMultiplier: Double = 2.0
-            static let priceDiamond: Int = 5
+            static var duration: Int { PolicyStore.shared.current.consumable.coffee.duration }
+            static var buffMultiplier: Double { PolicyStore.shared.current.consumable.coffee.buffMultiplier }
+            static var priceDiamond: Int { PolicyStore.shared.current.consumable.coffee.priceDiamond }
         }
 
         /// 박하스 (1초당 6씩 증가)
         enum EnergyDrink {
-            static let duration: Int = 20
-            static let buffMultiplier: Double = 3.0
-            static let priceDiamond: Int = 10
+            static var duration: Int { PolicyStore.shared.current.consumable.energyDrink.duration }
+            static var buffMultiplier: Double { PolicyStore.shared.current.consumable.energyDrink.buffMultiplier }
+            static var priceDiamond: Int { PolicyStore.shared.current.consumable.energyDrink.priceDiamond }
         }
     }
 
@@ -256,81 +225,81 @@ enum Policy {
     // *밸런스: 업그레이드 비용 20×, 초당 골드 5× (부동산과 동일 비율)
     enum Equipment {
         // 업그레이드 비용 (골드)
-        static let brokenUpgradeCost: Int = 100_000
-        static let cheapUpgradeCost: Int = 2_000_000
-        static let vintageUpgradeCost: Int = 40_000_000
-        static let decentUpgradeCost: Int = 1_000_000_000
-        static let premiumUpgradeCost: Int = 20_000_000_000
-        static let diamondUpgradeCost: Int = 200_000_000_000
-        static let limitedUpgradeCost: Int = 1_000_000_000_000
-        static let nationalTreasureUpgradeCost: Int = 4_000_000_000_000
+        static var brokenUpgradeCost: Int { PolicyStore.shared.current.equipment.brokenUpgradeCost }
+        static var cheapUpgradeCost: Int { PolicyStore.shared.current.equipment.cheapUpgradeCost }
+        static var vintageUpgradeCost: Int { PolicyStore.shared.current.equipment.vintageUpgradeCost }
+        static var decentUpgradeCost: Int { PolicyStore.shared.current.equipment.decentUpgradeCost }
+        static var premiumUpgradeCost: Int { PolicyStore.shared.current.equipment.premiumUpgradeCost }
+        static var diamondUpgradeCost: Int { PolicyStore.shared.current.equipment.diamondUpgradeCost }
+        static var limitedUpgradeCost: Int { PolicyStore.shared.current.equipment.limitedUpgradeCost }
+        static var nationalTreasureUpgradeCost: Int { PolicyStore.shared.current.equipment.nationalTreasureUpgradeCost }
 
         // 업그레이드 비용 (다이아몬드) — 강화 시 골드와 함께 소모
-        static let brokenUpgradeDiamond: Int = 5
-        static let cheapUpgradeDiamond: Int = 10
-        static let vintageUpgradeDiamond: Int = 20
-        static let decentUpgradeDiamond: Int = 35
-        static let premiumUpgradeDiamond: Int = 50
-        static let diamondUpgradeDiamond: Int = 80
-        static let limitedUpgradeDiamond: Int = 120
-        static let nationalTreasureUpgradeDiamond: Int = 0
+        static var brokenUpgradeDiamond: Int { PolicyStore.shared.current.equipment.brokenUpgradeDiamond }
+        static var cheapUpgradeDiamond: Int { PolicyStore.shared.current.equipment.cheapUpgradeDiamond }
+        static var vintageUpgradeDiamond: Int { PolicyStore.shared.current.equipment.vintageUpgradeDiamond }
+        static var decentUpgradeDiamond: Int { PolicyStore.shared.current.equipment.decentUpgradeDiamond }
+        static var premiumUpgradeDiamond: Int { PolicyStore.shared.current.equipment.premiumUpgradeDiamond }
+        static var diamondUpgradeDiamond: Int { PolicyStore.shared.current.equipment.diamondUpgradeDiamond }
+        static var limitedUpgradeDiamond: Int { PolicyStore.shared.current.equipment.limitedUpgradeDiamond }
+        static var nationalTreasureUpgradeDiamond: Int { PolicyStore.shared.current.equipment.nationalTreasureUpgradeDiamond }
 
         // 업그레이드 성공 확률 (모든 장비 공통)
-        static let brokenSuccessRate: Double = 1.0
-        static let cheapSuccessRate: Double = 0.8
-        static let vintageSuccessRate: Double = 0.6
-        static let decentSuccessRate: Double = 0.4
-        static let premiumSuccessRate: Double = 0.3
-        static let diamondSuccessRate: Double = 0.2
-        static let limitedSuccessRate: Double = 0.1
-        static let nationalTreasureSuccessRate: Double = 0.05
+        static var brokenSuccessRate: Double { PolicyStore.shared.current.equipment.brokenSuccessRate }
+        static var cheapSuccessRate: Double { PolicyStore.shared.current.equipment.cheapSuccessRate }
+        static var vintageSuccessRate: Double { PolicyStore.shared.current.equipment.vintageSuccessRate }
+        static var decentSuccessRate: Double { PolicyStore.shared.current.equipment.decentSuccessRate }
+        static var premiumSuccessRate: Double { PolicyStore.shared.current.equipment.premiumSuccessRate }
+        static var diamondSuccessRate: Double { PolicyStore.shared.current.equipment.diamondSuccessRate }
+        static var limitedSuccessRate: Double { PolicyStore.shared.current.equipment.limitedSuccessRate }
+        static var nationalTreasureSuccessRate: Double { PolicyStore.shared.current.equipment.nationalTreasureSuccessRate }
 
         /// 초당 획득 골드량 (키보드·마우스·모니터·의자 동일)
         enum Keyboard {
-            static let brokenGoldPerSecond: Int = 0
-            static let cheapGoldPerSecond: Int = 1_250
-            static let vintageGoldPerSecond: Int = 30_000
-            static let decentGoldPerSecond: Int = 750_000
-            static let premiumGoldPerSecond: Int = 17_500_000
-            static let diamondGoldPerSecond: Int = 200_000_000
-            static let limitedGoldPerSecond: Int = 1_250_000_000
-            static let nationalTreasureGoldPerSecond: Int = 6_000_000_000
+            static var brokenGoldPerSecond: Int { PolicyStore.shared.current.equipment.keyboard.brokenGoldPerSecond }
+            static var cheapGoldPerSecond: Int { PolicyStore.shared.current.equipment.keyboard.cheapGoldPerSecond }
+            static var vintageGoldPerSecond: Int { PolicyStore.shared.current.equipment.keyboard.vintageGoldPerSecond }
+            static var decentGoldPerSecond: Int { PolicyStore.shared.current.equipment.keyboard.decentGoldPerSecond }
+            static var premiumGoldPerSecond: Int { PolicyStore.shared.current.equipment.keyboard.premiumGoldPerSecond }
+            static var diamondGoldPerSecond: Int { PolicyStore.shared.current.equipment.keyboard.diamondGoldPerSecond }
+            static var limitedGoldPerSecond: Int { PolicyStore.shared.current.equipment.keyboard.limitedGoldPerSecond }
+            static var nationalTreasureGoldPerSecond: Int { PolicyStore.shared.current.equipment.keyboard.nationalTreasureGoldPerSecond }
         }
 
         /// 마우스
         enum Mouse {
-            static let brokenGoldPerSecond: Int = 0
-            static let cheapGoldPerSecond: Int = 1_250
-            static let vintageGoldPerSecond: Int = 30_000
-            static let decentGoldPerSecond: Int = 750_000
-            static let premiumGoldPerSecond: Int = 17_500_000
-            static let diamondGoldPerSecond: Int = 200_000_000
-            static let limitedGoldPerSecond: Int = 1_250_000_000
-            static let nationalTreasureGoldPerSecond: Int = 6_000_000_000
+            static var brokenGoldPerSecond: Int { PolicyStore.shared.current.equipment.mouse.brokenGoldPerSecond }
+            static var cheapGoldPerSecond: Int { PolicyStore.shared.current.equipment.mouse.cheapGoldPerSecond }
+            static var vintageGoldPerSecond: Int { PolicyStore.shared.current.equipment.mouse.vintageGoldPerSecond }
+            static var decentGoldPerSecond: Int { PolicyStore.shared.current.equipment.mouse.decentGoldPerSecond }
+            static var premiumGoldPerSecond: Int { PolicyStore.shared.current.equipment.mouse.premiumGoldPerSecond }
+            static var diamondGoldPerSecond: Int { PolicyStore.shared.current.equipment.mouse.diamondGoldPerSecond }
+            static var limitedGoldPerSecond: Int { PolicyStore.shared.current.equipment.mouse.limitedGoldPerSecond }
+            static var nationalTreasureGoldPerSecond: Int { PolicyStore.shared.current.equipment.mouse.nationalTreasureGoldPerSecond }
         }
 
         /// 모니터
         enum Monitor {
-            static let brokenGoldPerSecond: Int = 0
-            static let cheapGoldPerSecond: Int = 1_250
-            static let vintageGoldPerSecond: Int = 30_000
-            static let decentGoldPerSecond: Int = 750_000
-            static let premiumGoldPerSecond: Int = 17_500_000
-            static let diamondGoldPerSecond: Int = 200_000_000
-            static let limitedGoldPerSecond: Int = 1_250_000_000
-            static let nationalTreasureGoldPerSecond: Int = 6_000_000_000
+            static var brokenGoldPerSecond: Int { PolicyStore.shared.current.equipment.monitor.brokenGoldPerSecond }
+            static var cheapGoldPerSecond: Int { PolicyStore.shared.current.equipment.monitor.cheapGoldPerSecond }
+            static var vintageGoldPerSecond: Int { PolicyStore.shared.current.equipment.monitor.vintageGoldPerSecond }
+            static var decentGoldPerSecond: Int { PolicyStore.shared.current.equipment.monitor.decentGoldPerSecond }
+            static var premiumGoldPerSecond: Int { PolicyStore.shared.current.equipment.monitor.premiumGoldPerSecond }
+            static var diamondGoldPerSecond: Int { PolicyStore.shared.current.equipment.monitor.diamondGoldPerSecond }
+            static var limitedGoldPerSecond: Int { PolicyStore.shared.current.equipment.monitor.limitedGoldPerSecond }
+            static var nationalTreasureGoldPerSecond: Int { PolicyStore.shared.current.equipment.monitor.nationalTreasureGoldPerSecond }
         }
 
         /// 의자
         enum Chair {
-            static let brokenGoldPerSecond: Int = 0
-            static let cheapGoldPerSecond: Int = 1_250
-            static let vintageGoldPerSecond: Int = 30_000
-            static let decentGoldPerSecond: Int = 750_000
-            static let premiumGoldPerSecond: Int = 17_500_000
-            static let diamondGoldPerSecond: Int = 200_000_000
-            static let limitedGoldPerSecond: Int = 1_250_000_000
-            static let nationalTreasureGoldPerSecond: Int = 6_000_000_000
+            static var brokenGoldPerSecond: Int { PolicyStore.shared.current.equipment.chair.brokenGoldPerSecond }
+            static var cheapGoldPerSecond: Int { PolicyStore.shared.current.equipment.chair.cheapGoldPerSecond }
+            static var vintageGoldPerSecond: Int { PolicyStore.shared.current.equipment.chair.vintageGoldPerSecond }
+            static var decentGoldPerSecond: Int { PolicyStore.shared.current.equipment.chair.decentGoldPerSecond }
+            static var premiumGoldPerSecond: Int { PolicyStore.shared.current.equipment.chair.premiumGoldPerSecond }
+            static var diamondGoldPerSecond: Int { PolicyStore.shared.current.equipment.chair.diamondGoldPerSecond }
+            static var limitedGoldPerSecond: Int { PolicyStore.shared.current.equipment.chair.limitedGoldPerSecond }
+            static var nationalTreasureGoldPerSecond: Int { PolicyStore.shared.current.equipment.chair.nationalTreasureGoldPerSecond }
         }
     }
 
@@ -338,39 +307,39 @@ enum Policy {
     // *밸런스: 가격·초당 골드를 분당 3배수 경제에 맞춤 (가격 20×, 초당 골드 5× → 회수 시간 약 4배)
     enum Housing {
         // 구입 비용
-        static let streetPurchaseCost: Int = 0
-        static let semiBasementPurchaseCost: Int = 10_000_000
-        static let rooftopPurchaseCost: Int = 200_000_000
-        static let villaPurchaseCost: Int = 10_000_000_000
-        static let apartmentPurchaseCost: Int = 100_000_000_000
-        static let housePurchaseCost: Int = 1_000_000_000_000
-        static let pentHousePurchaseCost: Int = 4_000_000_000_000
+        static var streetPurchaseCost: Int { PolicyStore.shared.current.housing.streetPurchaseCost }
+        static var semiBasementPurchaseCost: Int { PolicyStore.shared.current.housing.semiBasementPurchaseCost }
+        static var rooftopPurchaseCost: Int { PolicyStore.shared.current.housing.rooftopPurchaseCost }
+        static var villaPurchaseCost: Int { PolicyStore.shared.current.housing.villaPurchaseCost }
+        static var apartmentPurchaseCost: Int { PolicyStore.shared.current.housing.apartmentPurchaseCost }
+        static var housePurchaseCost: Int { PolicyStore.shared.current.housing.housePurchaseCost }
+        static var pentHousePurchaseCost: Int { PolicyStore.shared.current.housing.pentHousePurchaseCost }
 
         // 초당 골드 획득 (분당 = ×60)
-        static let streetGoldPerSecond: Int = 0
-        static let semiBasementGoldPerSecond: Int = 2_500
-        static let rooftopGoldPerSecond: Int = 50_000
-        static let villaGoldPerSecond: Int = 2_500_000
-        static let apartmentGoldPerSecond: Int = 25_000_000
-        static let houseGoldPerSecond: Int = 250_000_000
-        static let pentHouseGoldPerSecond: Int = 1_000_000_000
+        static var streetGoldPerSecond: Int { PolicyStore.shared.current.housing.streetGoldPerSecond }
+        static var semiBasementGoldPerSecond: Int { PolicyStore.shared.current.housing.semiBasementGoldPerSecond }
+        static var rooftopGoldPerSecond: Int { PolicyStore.shared.current.housing.rooftopGoldPerSecond }
+        static var villaGoldPerSecond: Int { PolicyStore.shared.current.housing.villaGoldPerSecond }
+        static var apartmentGoldPerSecond: Int { PolicyStore.shared.current.housing.apartmentGoldPerSecond }
+        static var houseGoldPerSecond: Int { PolicyStore.shared.current.housing.houseGoldPerSecond }
+        static var pentHouseGoldPerSecond: Int { PolicyStore.shared.current.housing.pentHouseGoldPerSecond }
     }
 
     // MARK: - 기타 시스템
     enum System {
         /// 자동 획득 시스템 (AutoGainSystem)
         enum AutoGain {
-            static let interval: TimeInterval = 1.0  // 자동 획득 주기 (초)
+            static var interval: TimeInterval { PolicyStore.shared.current.system.autoGain.interval }
         }
 
         /// 버프 시스템 (BuffSystem)
         enum Buff {
-            static let decreaseInterval: TimeInterval = 1.0  // 버프 감소 주기 (초)
+            static var decreaseInterval: TimeInterval { PolicyStore.shared.current.system.buff.decreaseInterval }
         }
     }
 
     // MARK: - 시나리오 시스템
     enum Scenario {
-        static let maxLevelupQueueSize: Int = 3
+        static var maxLevelupQueueSize: Int { PolicyStore.shared.current.system.scenario?.maxLevelupQueueSize ?? 3 }
     }
 }
