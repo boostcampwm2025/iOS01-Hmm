@@ -454,7 +454,7 @@ private extension MainView {
         if success {
             applyExitBonus()
         }
-        exitWorkGame(shouldReturnToWorkTab: success)
+        exitWorkGame()
     }
 
     func handleExitWithoutBonus() {
@@ -475,10 +475,7 @@ private extension MainView {
         workGameSession.showsExitBonusToast = true
     }
 
-    func exitWorkGame(shouldReturnToWorkTab: Bool = false) {
-        if shouldReturnToWorkTab {
-            workGameSession.pendingTab = nil
-        }
+    func exitWorkGame() {
         workGameSession.exitGame?()
         workGameSession.isPauseRequested = false
         workGameSession.clearGameCallbacks()
