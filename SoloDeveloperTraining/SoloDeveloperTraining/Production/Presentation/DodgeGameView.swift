@@ -136,7 +136,10 @@ private extension DodgeGameView {
     var pauseBinding: Binding<Bool> {
         Binding(
             get: { tabSwitchPause || closePause },
-            set: { closePause = $0 }
+            set: {
+                tabSwitchPause = $0
+                closePause = $0
+            }
         )
     }
 

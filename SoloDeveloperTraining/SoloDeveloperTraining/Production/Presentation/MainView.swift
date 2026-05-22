@@ -39,9 +39,11 @@ private enum Constant {
 struct MainView: View {
     @Environment(\.scenePhase) var scenePhase
     @State private var selectedTab: TabItem = .work
+    @State private var targetTab: TabItem = .work
     @State private var popupContent: PopupConfiguration?
     @State private var careerSystem: CareerSystem?
     @State private var isWorkGameInProgress: Bool = false
+    @State private var tabSwitchPause: Bool = false
     @State private var showQuizView: Bool = false
     @State private var showSettingsView: Bool = false
 
@@ -128,7 +130,10 @@ private extension MainView {
 
     var tabBar: some View {
         TabBar(
-            selectedTab: $selectedTab,
+            selectedTab: Binding(
+                get: { selectedTab },
+                set: { handleTabTap($0) }
+            ),
             hasCompletedMisson: user.record
                 .missionSystem.hasCompletedMission
         )
@@ -180,11 +185,8 @@ private extension MainView {
         WorkSelectedView(
             user: user,
             animationSystem: animationSystem,
-            isGameStarted: $isWorkGameInProgress,
-            tabSwitchPause: Binding(
-                get: { selectedTab != .work },
-                set: { _ in }
-            ),
+            isGameStarted: workGameStartedBinding,
+            tabSwitchPause: tabSwitchPauseBinding,
             careerSystem: $careerSystem,
             showDrinkAdPopup: $showDrinkAdPopup,
             showRewardPopup: $showRewardPopup,
@@ -203,11 +205,8 @@ private extension MainView {
                 WorkSelectedView(
                     user: user,
                     animationSystem: animationSystem,
-                    isGameStarted: $isWorkGameInProgress,
-                    tabSwitchPause: Binding(
-                        get: { selectedTab != .work },
-                        set: { _ in }
-                    ),
+                    isGameStarted: workGameStartedBinding,
+                    tabSwitchPause: tabSwitchPauseBinding,
                     careerSystem: $careerSystem,
                     showDrinkAdPopup: $showDrinkAdPopup,
                     showRewardPopup: $showRewardPopup,
@@ -273,6 +272,50 @@ private extension MainView {
         } else if newValue == .inactive || newValue == .background {
             autoGainSystem.stopSystem()
         }
+    }
+
+    var workGameStartedBinding: Binding<Bool> {
+        Binding(
+            get: { isWorkGameInProgress },
+            set: { isStarted in
+                isWorkGameInProgress = isStarted
+
+                guard !isStarted else {
+                    targetTab = .work
+                    return
+                }
+
+                if targetTab != .work {
+                    selectedTab = targetTab
+                    targetTab = .work
+                }
+            }
+        )
+    }
+
+    var tabSwitchPauseBinding: Binding<Bool> {
+        Binding(
+            get: { tabSwitchPause },
+            set: { isPaused in
+                tabSwitchPause = isPaused
+                if !isPaused {
+                    targetTab = .work
+                }
+            }
+        )
+    }
+
+    func handleTabTap(_ newTab: TabItem) {
+        guard selectedTab != newTab else { return }
+
+        if isWorkGameInProgress && selectedTab == .work && newTab != .work {
+            targetTab = newTab
+            tabSwitchPause = true
+            return
+        }
+
+        selectedTab = newTab
+        targetTab = newTab
     }
 
     func showCareerPopup() {
