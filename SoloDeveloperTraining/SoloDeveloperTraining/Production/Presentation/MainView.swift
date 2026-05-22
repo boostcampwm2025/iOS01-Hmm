@@ -39,24 +39,18 @@ private enum Constant {
 struct MainView: View {
     @Environment(\.scenePhase) var scenePhase
     @State private var selectedTab: TabItem = .work
-    @State private var targetTab: TabItem = .work
+    // 게임 세션 관리
+    @State private var workGameSession = WorkGameSession()
+
     @State private var popupContent: PopupConfiguration?
     @State private var careerSystem: CareerSystem?
-    @State private var isWorkGameInProgress: Bool = false
-    @State private var tabSwitchPause: Bool = false
     @State private var showQuizView: Bool = false
     @State private var showSettingsView: Bool = false
-    @State private var gameActionGoldDelta: Int = 0
-    @State private var showExitBonusToast: Bool = false
-    @State private var exitBonusToastMessage: String = ""
 
     // 음료 광고 팝업 관련
     @State private var showDrinkAdPopup: Bool = false
     @State private var showRewardPopup: Bool = false
-    @State private var showExitBonusPopup: Bool = false
     @State private var selectedDrinkType: ConsumableType?
-    @State private var resumeGameCallback: (() -> Void)?
-    @State private var exitGameCallback: (() -> Void)?
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
@@ -108,7 +102,10 @@ struct MainView: View {
                 QuizGameView(user: user)
             }
         }
-        .darkToast(isShowing: $showExitBonusToast, message: exitBonusToastMessage)
+        .darkToast(
+            isShowing: workGameSession.exitBonusToastBinding,
+            message: workGameSession.exitBonusToastMessage
+        )
     }
 }
 
@@ -165,7 +162,7 @@ private extension MainView {
                     showSettingsView = true
                 }
                 Spacer()
-                if !isWorkGameInProgress {
+                if !workGameSession.isInProgress {
                     SmallButton(title: "퀴즈", hasBadge: true) {
                         showQuizView = true
                     }
@@ -179,10 +176,10 @@ private extension MainView {
 
     var tabContentView: some View {
         ZStack {
-            if isWorkGameInProgress {
+            if workGameSession.isInProgress {
                 workGameOverlayView
             }
-            if !isWorkGameInProgress || selectedTab != .work {
+            if !workGameSession.isInProgress || selectedTab != .work {
                 tabContentSwitchView
             }
         }
@@ -193,15 +190,15 @@ private extension MainView {
             user: user,
             animationSystem: animationSystem,
             isGameStarted: workGameStartedBinding,
-            gameActionGoldDelta: $gameActionGoldDelta,
+            gameActionGoldDelta: workGameSession.actionGoldDeltaBinding,
             tabSwitchPause: tabSwitchPauseBinding,
             careerSystem: $careerSystem,
             showDrinkAdPopup: $showDrinkAdPopup,
             showRewardPopup: $showRewardPopup,
-            showExitBonusPopup: $showExitBonusPopup,
+            showExitBonusPopup: workGameSession.exitBonusPopupBinding,
             selectedDrinkType: $selectedDrinkType,
-            resumeGameCallback: $resumeGameCallback,
-            exitGameCallback: $exitGameCallback
+            resumeGameCallback: workGameSession.resumeGameBinding,
+            exitGameCallback: workGameSession.exitGameBinding
         )
         .opacity(selectedTab == .work ? 1 : 0)
         .allowsHitTesting(selectedTab == .work)
@@ -211,20 +208,20 @@ private extension MainView {
     var tabContentSwitchView: some View {
         switch selectedTab {
         case .work:
-            if !isWorkGameInProgress {
+            if !workGameSession.isInProgress {
                 WorkSelectedView(
                     user: user,
                     animationSystem: animationSystem,
                     isGameStarted: workGameStartedBinding,
-                    gameActionGoldDelta: $gameActionGoldDelta,
+                    gameActionGoldDelta: workGameSession.actionGoldDeltaBinding,
                     tabSwitchPause: tabSwitchPauseBinding,
                     careerSystem: $careerSystem,
                     showDrinkAdPopup: $showDrinkAdPopup,
                     showRewardPopup: $showRewardPopup,
-                    showExitBonusPopup: $showExitBonusPopup,
+                    showExitBonusPopup: workGameSession.exitBonusPopupBinding,
                     selectedDrinkType: $selectedDrinkType,
-                    resumeGameCallback: $resumeGameCallback,
-                    exitGameCallback: $exitGameCallback
+                    resumeGameCallback: workGameSession.resumeGameBinding,
+                    exitGameCallback: workGameSession.exitGameBinding
                 )
             }
         case .skill:
@@ -289,19 +286,15 @@ private extension MainView {
 
     var workGameStartedBinding: Binding<Bool> {
         Binding(
-            get: { isWorkGameInProgress },
+            get: { workGameSession.isInProgress },
             set: { isStarted in
-                isWorkGameInProgress = isStarted
-
                 guard !isStarted else {
-                    targetTab = .work
-                    gameActionGoldDelta = 0
+                    workGameSession.start()
                     return
                 }
 
-                if targetTab != .work {
-                    selectedTab = targetTab
-                    targetTab = .work
+                if let pendingTab = workGameSession.finish() {
+                    selectedTab = pendingTab
                 }
             }
         )
@@ -309,11 +302,12 @@ private extension MainView {
 
     var tabSwitchPauseBinding: Binding<Bool> {
         Binding(
-            get: { tabSwitchPause },
+            get: { workGameSession.isPauseRequested },
             set: { isPaused in
-                tabSwitchPause = isPaused
-                if !isPaused {
-                    targetTab = .work
+                if isPaused {
+                    workGameSession.isPauseRequested = true
+                } else {
+                    workGameSession.cancelPauseRequest()
                 }
             }
         )
@@ -322,14 +316,12 @@ private extension MainView {
     func handleTabTap(_ newTab: TabItem) {
         guard selectedTab != newTab else { return }
 
-        if isWorkGameInProgress && selectedTab == .work && newTab != .work {
-            targetTab = newTab
-            tabSwitchPause = true
+        if workGameSession.isInProgress && selectedTab == .work && newTab != .work {
+            workGameSession.requestTabSwitch(to: newTab)
             return
         }
 
         selectedTab = newTab
-        targetTab = newTab
     }
 
     func showCareerPopup() {
@@ -384,7 +376,7 @@ private extension MainView {
 
     @ViewBuilder
     var exitBonusPopupOverlayView: some View {
-        if showExitBonusPopup {
+        if workGameSession.showsExitBonusPopup {
             ZStack {
                 Color.black.opacity(0.4)
                     .ignoresSafeArea()
@@ -421,17 +413,17 @@ private extension MainView {
     func handleSkipAdInMainView() {
         showDrinkAdPopup = false
         selectedDrinkType = nil
-        resumeGameCallback?()
+        workGameSession.resumeGame?()
     }
 
     func handleRewardConfirmInMainView() {
         showRewardPopup = false
         selectedDrinkType = nil
-        resumeGameCallback?()
+        workGameSession.resumeGame?()
     }
 
     func handleExitBonusAd() async {
-        showExitBonusPopup = false
+        workGameSession.showsExitBonusPopup = false
         let success = await AdService.shared.showAdWithResult(.interstitial)
         if success {
             applyExitBonus()
@@ -440,30 +432,27 @@ private extension MainView {
     }
 
     func handleExitWithoutBonus() {
-        showExitBonusPopup = false
+        workGameSession.showsExitBonusPopup = false
         exitWorkGame()
     }
 
     func applyExitBonus() {
-        let bonusGold = max(0, gameActionGoldDelta)
+        let bonusGold = max(0, workGameSession.actionGoldDelta)
         if bonusGold > 0 {
             user.wallet.addGold(bonusGold)
             user.record.record(.earnMoney(bonusGold))
-            exitBonusToastMessage = "업무 보너스 \(bonusGold.formatted) 골드를 받았습니다!"
-        } else {
-            exitBonusToastMessage = "업무 보너스를 받을 재화가 없습니다."
         }
-        showExitBonusToast = true
+        workGameSession.exitBonusToastMessage = bonusGold > 0 ? "업무 보너스 \(bonusGold.formatted) 골드를 받았습니다!" : "업무 보너스를 받을 재화가 없습니다."
+        workGameSession.showsExitBonusToast = true
     }
 
     func exitWorkGame(shouldReturnToWorkTab: Bool = false) {
         if shouldReturnToWorkTab {
-            targetTab = .work
+            workGameSession.pendingTab = nil
         }
-        exitGameCallback?()
-        tabSwitchPause = false
-        exitGameCallback = nil
-        resumeGameCallback = nil
+        workGameSession.exitGame?()
+        workGameSession.isPauseRequested = false
+        workGameSession.resetCallbacks()
     }
 }
 
