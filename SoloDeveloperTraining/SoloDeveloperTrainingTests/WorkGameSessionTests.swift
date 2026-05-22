@@ -7,191 +7,129 @@
 
 import Testing
 @testable import SoloDeveloperTraining
+import SwiftUI
 
-// MARK: - 기존 MainView에 흩어져 있던 상태 로직의 묶음 (Legacy)
-private struct LegacyWorkGameState {
-    var selectedTab: TabItem = .work
-    var targetTab: TabItem = .work
-    var isWorkGameInProgress: Bool = false
-    var tabSwitchPause: Bool = false
-    var gameActionGoldDelta: Int = 0
+struct WorkGameSessionTests {
 
-    var pendingTab: TabItem? {
-        tabSwitchPause && targetTab != .work ? targetTab : nil
+    @Test("새 게임 시작 시 세션 상태를 초기화한다")
+    func startResetsSessionForNewGame() {
+        let session = WorkGameSession()
+        session.pendingTab = .shop
+        session.isPauseRequested = true
+        session.actionGoldDelta = 100
+        session.showsExitBonusPopup = true
+
+        session.start()
+
+        #expect(session.isInProgress)
+        #expect(session.pendingTab == nil)
+        #expect(!session.isPauseRequested)
+        #expect(session.actionGoldDelta == 0)
+        #expect(!session.showsExitBonusPopup)
     }
 
-    mutating func setGameStarted(_ isStarted: Bool) {
-        isWorkGameInProgress = isStarted
+    @Test("탭 이동 요청 시 대기 탭과 일시정지 요청을 설정한다")
+    func requestTabSwitchStoresPendingTabAndPauseRequest() {
+        let session = WorkGameSession()
 
-        guard !isStarted else {
-            targetTab = .work
-            gameActionGoldDelta = 0
-            return
-        }
+        session.requestTabSwitch(to: .skill)
 
-        if targetTab != .work {
-            selectedTab = targetTab
-            targetTab = .work
-        }
+        #expect(session.pendingTab == .skill)
+        #expect(session.isPauseRequested)
     }
 
-    mutating func setTabSwitchPause(_ isPaused: Bool) {
-        tabSwitchPause = isPaused
-        if !isPaused {
-            targetTab = .work
-        }
+    @Test("일시정지 요청 취소 시 대기 탭을 초기화한다")
+    func cancelPauseRequestClearsPendingTab() {
+        let session = WorkGameSession()
+        session.requestTabSwitch(to: .mission)
+
+        session.cancelPauseRequest()
+
+        #expect(session.pendingTab == nil)
+        #expect(!session.isPauseRequested)
     }
 
-    mutating func handleTabTap(_ newTab: TabItem) {
-        guard selectedTab != newTab else { return }
+    @Test("게임 종료 시 대기 탭을 반환하고 세션 내부 대기 탭은 초기화한다")
+    func finishReturnsPendingTabAndClearsIt() {
+        let session = WorkGameSession()
+        session.start()
+        session.requestTabSwitch(to: .shop)
 
-        if isWorkGameInProgress && selectedTab == .work && newTab != .work {
-            targetTab = newTab
-            tabSwitchPause = true
-            return
-        }
+        let pendingTab = session.finish()
 
-        selectedTab = newTab
-        targetTab = newTab
+        #expect(pendingTab == .shop)
+        #expect(!session.isInProgress)
+        #expect(session.pendingTab == nil)
     }
 
-    mutating func exitWorkGame(shouldReturnToWorkTab: Bool) {
-        if shouldReturnToWorkTab {
-            targetTab = .work
-        }
-        setGameStarted(false)
-        tabSwitchPause = false
-    }
-}
+    @Test("대기 탭이 없으면 게임 종료 시 nil을 반환한다")
+    func finishReturnsNilWithoutPendingTab() {
+        let session = WorkGameSession()
+        session.start()
 
-// MARK: - 리팩토링 후 WorkGameSession 기반의 상태 로직
-private struct CurrentWorkGameState {
-    var selectedTab: TabItem = .work
-    var session = WorkGameSession()
+        let pendingTab = session.finish()
 
-    mutating func setGameStarted(_ isStarted: Bool) {
-        guard !isStarted else {
-            session.start()
-            return
-        }
-
-        if let pendingTab = session.finish() {
-            selectedTab = pendingTab
-        }
+        #expect(pendingTab == nil)
+        #expect(!session.isInProgress)
     }
 
-    mutating func setTabSwitchPause(_ isPaused: Bool) {
-        if isPaused {
-            session.isPauseRequested = true
-        } else {
-            session.cancelPauseRequest()
-        }
+    @Test("광고를 보지 않고 다른 탭으로 나가는 경우 보너스 팝업만 닫고 게임 상태와 일시정지를 유지한다")
+    func closeExitBonusPopupReturnsPendingTabAndKeepsGamePaused() {
+        let session = WorkGameSession()
+        session.start()
+        session.requestTabSwitch(to: .shop)
+        session.showsExitBonusPopup = true
+
+        let pendingTab = session.closeExitBonusPopupAndReturnPendingTab()
+
+        #expect(pendingTab == .shop)
+        #expect(session.isInProgress)
+        #expect(session.isPauseRequested)
+        #expect(session.pendingTab == .shop)
+        #expect(!session.showsExitBonusPopup)
     }
 
-    mutating func handleTabTap(_ newTab: TabItem) {
-        guard selectedTab != newTab else { return }
+    @Test("업무 탭에서 광고를 보지 않고 나가는 경우 보너스 팝업을 닫고 대기 탭 없이 반환한다")
+    func closeExitBonusPopupReturnsNilWhenPendingTabIsMissing() {
+        let session = WorkGameSession()
+        session.start()
+        session.isPauseRequested = true
+        session.showsExitBonusPopup = true
 
-        if session.isInProgress && selectedTab == .work && newTab != .work {
-            session.requestTabSwitch(to: newTab)
-            return
-        }
+        let pendingTab = session.closeExitBonusPopupAndReturnPendingTab()
 
-        selectedTab = newTab
+        #expect(pendingTab == nil)
+        #expect(session.pendingTab == nil)
+        #expect(!session.showsExitBonusPopup)
     }
 
-    mutating func exitWorkGame(shouldReturnToWorkTab: Bool) {
-        if shouldReturnToWorkTab {
-            session.pendingTab = nil
-        }
-        setGameStarted(false)
-        session.isPauseRequested = false
+    @Test("게임 콜백을 초기화한다")
+    func clearGameCallbacksRemovesCallbacks() {
+        let session = WorkGameSession()
+        session.resumeGame = {}
+        session.exitGame = {}
+
         session.clearGameCallbacks()
-    }
-}
 
-// MARK: - Characterization test
-struct WorkGameSessionCharacterizationTests {
-
-    @Test("탭 이동 후 게임 종료 전이가 기존 MainView 상태 전이와 동일하다")
-    func tabSwitchExitMatchesLegacyMainViewStateTransition() {
-        var legacy = LegacyWorkGameState()
-        var current = CurrentWorkGameState()
-
-        legacy.setGameStarted(true)
-        current.setGameStarted(true)
-
-        legacy.handleTabTap(.skill)
-        current.handleTabTap(.skill)
-
-        legacy.setGameStarted(false)
-        current.setGameStarted(false)
-
-        assertEquivalent(legacy, current)
-        #expect(current.selectedTab == .skill)
+        #expect(session.resumeGame == nil)
+        #expect(session.exitGame == nil)
     }
 
-    @Test("탭 이동 요청 취소 전이가 기존 MainView 상태 전이와 동일하다")
-    func tabSwitchCancelMatchesLegacyMainViewStateTransition() {
-        var legacy = LegacyWorkGameState()
-        var current = CurrentWorkGameState()
+    @Test("세션 바인딩이 세션 상태를 갱신한다")
+    func bindingsUpdateSessionState() {
+        let session = WorkGameSession()
+        var didResume = false
 
-        legacy.setGameStarted(true)
-        current.setGameStarted(true)
+        session.actionGoldDeltaBinding.wrappedValue = 150
+        session.exitBonusPopupBinding.wrappedValue = true
+        session.exitBonusToastBinding.wrappedValue = true
+        session.resumeGameBinding.wrappedValue = { didResume = true }
 
-        legacy.handleTabTap(.shop)
-        current.handleTabTap(.shop)
+        #expect(session.actionGoldDelta == 150)
+        #expect(session.showsExitBonusPopup)
+        #expect(session.showsExitBonusToast)
 
-        legacy.setTabSwitchPause(false)
-        current.setTabSwitchPause(false)
-
-        legacy.setGameStarted(false)
-        current.setGameStarted(false)
-
-        assertEquivalent(legacy, current)
-        #expect(current.selectedTab == .work)
-    }
-
-    @Test("종료 보너스 성공 전이가 기존 MainView 상태 전이와 동일하다")
-    func exitBonusSuccessMatchesLegacyMainViewStateTransition() {
-        var legacy = LegacyWorkGameState()
-        var current = CurrentWorkGameState()
-
-        legacy.setGameStarted(true)
-        current.setGameStarted(true)
-
-        legacy.handleTabTap(.mission)
-        current.handleTabTap(.mission)
-
-        legacy.exitWorkGame(shouldReturnToWorkTab: true)
-        current.exitWorkGame(shouldReturnToWorkTab: true)
-
-        assertEquivalent(legacy, current)
-        #expect(current.selectedTab == .work)
-    }
-
-    @Test("일반 탭 이동 전이가 기존 MainView 상태 전이와 동일하다")
-    func normalTabTapMatchesLegacyMainViewStateTransition() {
-        var legacy = LegacyWorkGameState()
-        var current = CurrentWorkGameState()
-
-        legacy.handleTabTap(.skill)
-        current.handleTabTap(.skill)
-
-        legacy.handleTabTap(.shop)
-        current.handleTabTap(.shop)
-
-        assertEquivalent(legacy, current)
-        #expect(current.selectedTab == .shop)
-    }
-
-    private func assertEquivalent(
-        _ legacy: LegacyWorkGameState,
-        _ current: CurrentWorkGameState
-    ) {
-        #expect(legacy.selectedTab == current.selectedTab)
-        #expect(legacy.isWorkGameInProgress == current.session.isInProgress)
-        #expect(legacy.tabSwitchPause == current.session.isPauseRequested)
-        #expect(legacy.pendingTab == current.session.pendingTab)
-        #expect(legacy.gameActionGoldDelta == current.session.actionGoldDelta)
+        session.resumeGame?()
+        #expect(didResume)
     }
 }

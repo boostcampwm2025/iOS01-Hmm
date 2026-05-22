@@ -41,10 +41,16 @@ final class WorkGameSession {
         isPauseRequested = true
     }
 
-    // '계속하기'
+    // 게임 '계속하기'
     func cancelPauseRequest() {
         pendingTab = nil
         isPauseRequested = false
+    }
+
+    // 보너스 팝업에서 '그냥 나가기' 선택
+    func closeExitBonusPopupAndReturnPendingTab() -> TabItem? {
+        showsExitBonusPopup = false
+        return pendingTab
     }
 
     // 클로저 정리

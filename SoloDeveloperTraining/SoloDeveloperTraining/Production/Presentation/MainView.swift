@@ -458,8 +458,7 @@ private extension MainView {
     }
 
     func handleExitWithoutBonus() {
-        workGameSession.showsExitBonusPopup = false
-        if let pendingTab = workGameSession.pendingTab {
+        if let pendingTab = workGameSession.closeExitBonusPopupAndReturnPendingTab() {
             selectedTab = pendingTab
         } else {
             exitWorkGame()
