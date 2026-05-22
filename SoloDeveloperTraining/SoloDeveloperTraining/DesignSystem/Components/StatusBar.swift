@@ -13,6 +13,23 @@ struct StatusBar: View {
     let careerProgress: Double
     let gold: Int
     let diamond: Int
+    let skillAdRewardRemainingText: String?
+
+    init(
+        career: Career,
+        nickname: String,
+        careerProgress: Double,
+        gold: Int,
+        diamond: Int,
+        skillAdRewardRemainingText: String? = nil
+    ) {
+        self.career = career
+        self.nickname = nickname
+        self.careerProgress = careerProgress
+        self.gold = gold
+        self.diamond = diamond
+        self.skillAdRewardRemainingText = skillAdRewardRemainingText
+    }
 
     var body: some View {
         VStack {
@@ -38,10 +55,20 @@ struct StatusBar: View {
 
                 Spacer()
 
-                // 오른쪽: 재산 + 다이아
-                HStack(spacing: 12) {
-                    CurrencyLabel(axis: .horizontal, icon: .gold, value: gold)
-                    CurrencyLabel(axis: .horizontal, icon: .diamond, value: diamond)
+                // 오른쪽: 재산 + 다이아, 스킬 버프 시간
+                VStack(alignment: .trailing, spacing: 4) {
+                    HStack(spacing: 12) {
+                        CurrencyLabel(axis: .horizontal, icon: .gold, value: gold)
+                        CurrencyLabel(axis: .horizontal, icon: .diamond, value: diamond)
+                    }
+
+                    if let skillAdRewardRemainingText {
+                        Text(skillAdRewardRemainingText)
+                            .textStyle(.caption)
+                            .foregroundStyle(.orange700)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                    }
                 }
             }
             .padding(.horizontal, 16)

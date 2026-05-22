@@ -10,7 +10,10 @@ import Foundation
 enum Calculator {
     /// 게임 액션당 획득 골드 계산
     static func calculateGoldPerAction(game: GameType, user: User, feverMultiplier: Double, buffMultiplier: Double) -> Int {
-        let actionPerGainGold = user.skills.filter { $0.key.game == game }.map { $0.gainGold }.reduce(0, +)
+        let actionPerGainGold = user.skills
+            .filter { $0.key.game == game }
+            .map { $0.gainGold * SkillAdRewardManager.currentMultiplier(user: user) }
+            .reduce(0, +)
         let result = Double(actionPerGainGold) * feverMultiplier * buffMultiplier
         return Int(result)
     }

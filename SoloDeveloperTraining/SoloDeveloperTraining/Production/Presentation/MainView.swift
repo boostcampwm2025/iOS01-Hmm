@@ -41,6 +41,7 @@ struct MainView: View {
     @State private var selectedTab: TabItem = .work
     // 게임 세션 관리
     @State private var workGameSession = WorkGameSession()
+    @State private var resumeGameCallback: (() -> Void)?
 
     @State private var popupContent: PopupConfiguration?
     @State private var careerSystem: CareerSystem?
@@ -51,6 +52,10 @@ struct MainView: View {
     @State private var showDrinkAdPopup: Bool = false
     @State private var showRewardPopup: Bool = false
     @State private var selectedDrinkType: ConsumableType?
+
+    // 스킬 광고 보상 지속시 남은 시간
+    @State private var skillAdRewardNow = Date()
+
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
@@ -88,6 +93,9 @@ struct MainView: View {
             .ignoresSafeArea(edges: [.top, .bottom])
             .background(AppTheme.backgroundColor)
             .onAppear(perform: setupOnAppear)
+            .task {
+                await updateSkillAdRewardTimer()
+            }
             .onDisappear { SoundService.shared.stopBGM() }
             .onChange(of: scenePhase, handleScenePhaseChange)
             .task(id: user.record.totalEarnedMoney) {
@@ -120,7 +128,8 @@ private extension MainView {
                 nickname: user.nickname,
                 careerProgress: careerSystem?.careerProgress ?? 0.0,
                 gold: user.wallet.gold,
-                diamond: user.wallet.diamond
+                diamond: user.wallet.diamond,
+                skillAdRewardRemainingText: SkillAdRewardManager.remainingTimeText(user: user, now: skillAdRewardNow)
             )
             .onTapGesture { showCareerPopup() }
             Spacer()
@@ -221,7 +230,12 @@ private extension MainView {
                 )
             }
         case .skill:
-            SkillView(user: user, careerSystem: careerSystem, popupContent: $popupContent)
+            SkillView(
+                user: user,
+                careerSystem: careerSystem,
+                popupContent: $popupContent,
+                adRewardNow: skillAdRewardNow
+            )
         case .shop:
             ShopView(user: user, popupContent: $popupContent)
         case .mission:
@@ -262,6 +276,7 @@ private extension MainView {
     func setupOnAppear() {
         AnalyticsService.shared.logScreenView(screenName: "main")
         SoundService.shared.playBGM()
+        skillAdRewardNow = Date()
         autoGainSystem.startSystem()
         Task {
             if careerSystem == nil {
@@ -275,9 +290,19 @@ private extension MainView {
 
     func handleScenePhaseChange(_ oldValue: ScenePhase, _ newValue: ScenePhase) {
         if newValue == .active {
+            skillAdRewardNow = Date()
             autoGainSystem.startSystem()
         } else if newValue == .inactive || newValue == .background {
+            skillAdRewardNow = Date()
             autoGainSystem.stopSystem()
+        }
+    }
+
+    @MainActor
+    func updateSkillAdRewardTimer() async {
+        while !Task.isCancelled {
+            skillAdRewardNow = Date()
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
         }
     }
 

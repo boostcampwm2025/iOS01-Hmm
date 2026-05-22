@@ -30,17 +30,38 @@ private enum Constant {
     }
 }
 
+enum PriceContent: Equatable {
+    case cost(Cost)
+    case text(String)
+}
+
 struct PriceButton: View {
 
     @GestureState private var isPressed: Bool = false
     @State private var isLongPressing: Bool = false
 
-    let cost: Cost
+    let price: PriceContent
     let state: ItemState
     let axis: Axis
     let width: CGFloat?
     let action: () -> Void
     let onLongPressRepeat: (() -> Bool)?
+
+    init(
+        price: PriceContent,
+        state: ItemState,
+        axis: Axis,
+        width: CGFloat? = nil,
+        action: @escaping () -> Void,
+        onLongPressRepeat: (() -> Bool)? = nil
+    ) {
+        self.price = price
+        self.state = state
+        self.axis = axis
+        self.width = width
+        self.action = action
+        self.onLongPressRepeat = onLongPressRepeat
+    }
 
     init(
         cost: Cost,
@@ -50,12 +71,14 @@ struct PriceButton: View {
         action: @escaping () -> Void,
         onLongPressRepeat: (() -> Bool)? = nil
     ) {
-        self.cost = cost
-        self.state = state
-        self.axis = axis
-        self.width = width
-        self.action = action
-        self.onLongPressRepeat = onLongPressRepeat
+        self.init(
+            price: .cost(cost),
+            state: state,
+            axis: axis,
+            width: width,
+            action: action,
+            onLongPressRepeat: onLongPressRepeat
+        )
     }
 
     private var isDisabled: Bool {
@@ -127,7 +150,7 @@ struct PriceButton: View {
             x: (isPressed && !isDisabled) ? Constant.Shadow.offsetX : 0,
             y: (isPressed && !isDisabled) ? Constant.Shadow.offsetY : 0
         )
-        .animation(.none, value: cost)
+        .animation(.none, value: price)
         .animation(.none, value: state)
     }
 
@@ -139,25 +162,32 @@ struct PriceButton: View {
                     .textStyle(.caption)
                     .foregroundStyle(.white)
             } else {
-                if cost.gold > 0 {
-                    CurrencyLabel(
-                        axis: .horizontal,
-                        icon: .gold,
-                        textStyle: .caption,
-                        value: cost.gold
-                    )
-                    .foregroundStyle(.white)
-                    .fixedSize()
-                }
-                if cost.diamond > 0 {
-                    CurrencyLabel(
-                        axis: .horizontal,
-                        icon: .diamond,
-                        textStyle: .caption,
-                        value: cost.diamond
-                    )
-                    .foregroundStyle(.white)
-                    .fixedSize()
+                switch price {
+                case .cost(let cost):
+                    if cost.gold > 0 {
+                        CurrencyLabel(
+                            axis: .horizontal,
+                            icon: .gold,
+                            textStyle: .caption,
+                            value: cost.gold
+                        )
+                        .foregroundStyle(.white)
+                        .fixedSize()
+                    }
+                    if cost.diamond > 0 {
+                        CurrencyLabel(
+                            axis: .horizontal,
+                            icon: .diamond,
+                            textStyle: .caption,
+                            value: cost.diamond
+                        )
+                        .foregroundStyle(.white)
+                        .fixedSize()
+                    }
+                case .text(let text):
+                    Text(text)
+                        .textStyle(.caption)
+                        .foregroundStyle(.white)
                 }
             }
         }
