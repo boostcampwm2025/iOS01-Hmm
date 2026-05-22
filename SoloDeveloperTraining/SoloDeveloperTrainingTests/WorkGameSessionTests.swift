@@ -105,7 +105,7 @@ private struct CurrentWorkGameState {
         }
         setGameStarted(false)
         session.isPauseRequested = false
-        session.resetCallbacks()
+        session.clearGameCallbacks()
     }
 }
 

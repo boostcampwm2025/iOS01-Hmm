@@ -452,7 +452,7 @@ private extension MainView {
         }
         workGameSession.exitGame?()
         workGameSession.isPauseRequested = false
-        workGameSession.resetCallbacks()
+        workGameSession.clearGameCallbacks()
     }
 }
 

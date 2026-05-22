@@ -19,6 +19,7 @@ final class WorkGameSession {
     var resumeGame: (() -> Void)?
     var exitGame: (() -> Void)?
 
+    // 게임 시작
     func start() {
         isInProgress = true
         pendingTab = nil
@@ -27,23 +28,27 @@ final class WorkGameSession {
         showsExitBonusPopup = false
     }
 
+    // 게임 종료 후 이동을 원하는 탭을 반환하고, 세션 내부 pending 상태는 초기화
     func finish() -> TabItem? {
         isInProgress = false
         defer { pendingTab = nil }
         return pendingTab
     }
 
+    // 게임 화면에서 다른 탭 전환 시도
     func requestTabSwitch(to tab: TabItem) {
         pendingTab = tab
         isPauseRequested = true
     }
 
+    // '계속하기'
     func cancelPauseRequest() {
         pendingTab = nil
         isPauseRequested = false
     }
 
-    func resetCallbacks() {
+    // 클로저 정리
+    func clearGameCallbacks() {
         resumeGame = nil
         exitGame = nil
     }
