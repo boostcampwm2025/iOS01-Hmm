@@ -21,6 +21,7 @@ private enum Constant {
 struct StackGameView: View {
     @State private var stackGame: StackGame
     @State private var scene: StackGameScene
+    @State private var isExitRequested: Bool = false
     @State private var effectLabels: [EffectLabelData] = []
 
     /// 게임 시작 상태 (부모 뷰와 바인딩)
@@ -79,7 +80,7 @@ struct StackGameView: View {
                 }
             }
             .pauseGameStyle(
-                isGameViewDisappeared: $isGameViewDisappeared,
+                isGameViewDisappeared: pauseTrigger,
                 height: geometry.size.height,
                 onLeave: { handleCloseButton() },
                 onPause: { scene.pauseGame() },
@@ -94,7 +95,7 @@ private extension StackGameView {
     /// 상단 툴바
     var toolbarSection: some View {
         GameToolBar(
-            closeButtonDidTapHandler: handleCloseButton,
+            closeButtonDidTapHandler: { isExitRequested = true },
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
             feverState: stackGame.feverSystem,
@@ -104,6 +105,13 @@ private extension StackGameView {
         )
         .padding(.horizontal, Constant.Padding.horizontal)
         .padding(.bottom, Constant.Padding.toolBarBottom)
+    }
+
+    var pauseTrigger: Binding<Bool> {
+        Binding(
+            get: { isGameViewDisappeared || isExitRequested },
+            set: { isExitRequested = $0 }
+        )
     }
 
     /// 게임 영역

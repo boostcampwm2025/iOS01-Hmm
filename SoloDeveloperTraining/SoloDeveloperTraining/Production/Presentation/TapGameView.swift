@@ -25,6 +25,7 @@ struct TapGameView: View {
     // MARK: - State
     /// 의존 게임
     @State private var tapGame: TapGame
+    @State private var isExitRequested: Bool = false
     /// 터치한 위치에 표시될 EffectLabel들의 위치와 값
     @State private var effectLabels: [EffectLabelData] = []
     /// 탭 사운드 쓰로틀용 마지막 재생 시각
@@ -77,7 +78,7 @@ struct TapGameView: View {
                 }
             }
             .pauseGameStyle(
-                isGameViewDisappeared: $isGameViewDisappeared,
+                isGameViewDisappeared: pauseTrigger,
                 height: geometry.size.height,
                 onLeave: { handleCloseButton() },
                 onPause: {
@@ -96,7 +97,7 @@ private extension TapGameView {
     /// 상단 툴바
     var toolbarSection: some View {
         GameToolBar(
-            closeButtonDidTapHandler: handleCloseButton,
+            closeButtonDidTapHandler: { isExitRequested = true },
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
             feverState: tapGame.feverSystem,
@@ -112,6 +113,13 @@ private extension TapGameView {
         )
         .padding(.horizontal, Constant.Padding.horizontal)
         .padding(.bottom, Constant.Padding.toolBarBottom)
+    }
+
+    var pauseTrigger: Binding<Bool> {
+        Binding(
+            get: { isGameViewDisappeared || isExitRequested },
+            set: { isExitRequested = $0 }
+        )
     }
 
     /// 터치 가능한 게임 영역

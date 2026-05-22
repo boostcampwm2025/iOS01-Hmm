@@ -39,6 +39,7 @@ struct DodgeGameView: View {
     @State private var goldEffects: [EffectLabelData] = []
     // 일시정지 상태 추가
     @State private var isGamePaused: Bool = false
+    @State private var isExitRequested: Bool = false
     // 게임 초기 설정 완료 여부
     @State private var isGameInitialized: Bool = false
 
@@ -99,7 +100,7 @@ struct DodgeGameView: View {
                 }
             }
             .pauseGameStyle(
-                isGameViewDisappeared: $isGameViewDisappeared,
+                isGameViewDisappeared: pauseTrigger,
                 height: geometry.size.height,
                 onLeave: { handleCloseButton() },
                 onPause: {
@@ -120,7 +121,7 @@ private extension DodgeGameView {
     /// 상단 툴바
     var toolbarSection: some View {
         GameToolBar(
-            closeButtonDidTapHandler: handleCloseButton,
+            closeButtonDidTapHandler: { isExitRequested = true },
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
             feverState: game.feverSystem,
@@ -130,6 +131,13 @@ private extension DodgeGameView {
         )
         .padding(.horizontal, Constant.Padding.horizontal)
         .padding(.bottom, Constant.Padding.toolBarBottom)
+    }
+
+    var pauseTrigger: Binding<Bool> {
+        Binding(
+            get: { isGameViewDisappeared || isExitRequested },
+            set: { isExitRequested = $0 }
+        )
     }
 
     /// 게임 영역

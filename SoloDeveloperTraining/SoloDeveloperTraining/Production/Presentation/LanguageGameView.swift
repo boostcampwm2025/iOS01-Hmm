@@ -48,6 +48,7 @@ struct LanguageGameView: View {
 
     /// 상태를 유지
     @State private var game: LanguageGame
+    @State private var isExitRequested: Bool = false
 
     /// 획득한 골드를 표시하기 위한 효과 라벨 배열
     @State private var effectValues: [(id: UUID, value: Int)] = []
@@ -115,7 +116,7 @@ struct LanguageGameView: View {
                 }
             }
             .pauseGameStyle(
-                isGameViewDisappeared: $isGameViewDisappeared,
+                isGameViewDisappeared: pauseTrigger,
                 height: geometry.size.height,
                 onLeave: { handleCloseButton() },
                 onPause: { game.pauseGame() },
@@ -130,7 +131,7 @@ private extension LanguageGameView {
     /// 상단 툴바
     var toolbarSection: some View {
         GameToolBar(
-            closeButtonDidTapHandler: handleCloseButton,
+            closeButtonDidTapHandler: { isExitRequested = true },
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
             feverState: game.feverSystem,
@@ -140,6 +141,13 @@ private extension LanguageGameView {
         )
         .padding(.horizontal, Constant.Padding.horizontal)
         .padding(.bottom, Constant.Padding.toolBarBottom)
+    }
+
+    var pauseTrigger: Binding<Bool> {
+        Binding(
+            get: { isGameViewDisappeared || isExitRequested },
+            set: { isExitRequested = $0 }
+        )
     }
 
     /// 중앙 언어 아이템 영역

@@ -118,12 +118,14 @@ private extension GamePauseWrapper {
     func handleLeave() {
         guard isPaused else { return }
         isPaused = false
+        isGameViewDisappeared = false
         onLeave()
     }
 
     func handleResume() {
         guard isPaused else { return }
         isPaused = false
+        isGameViewDisappeared = false
         onResume()
     }
 }
