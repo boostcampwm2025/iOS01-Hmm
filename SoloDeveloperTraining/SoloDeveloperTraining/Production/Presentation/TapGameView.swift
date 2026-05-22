@@ -34,8 +34,10 @@ struct TapGameView: View {
     // 광고 팝업 관련
     @Binding var showDrinkAdPopup: Bool
     @Binding var showRewardPopup: Bool
+    @Binding var showExitBonusPopup: Bool
     @Binding var selectedDrinkType: ConsumableType?
     @Binding var resumeGameCallback: (() -> Void)?
+    @Binding var exitGameCallback: (() -> Void)?
 
     init(
         user: User,
@@ -44,8 +46,10 @@ struct TapGameView: View {
         animationSystem: CharacterAnimationSystem?,
         showDrinkAdPopup: Binding<Bool>,
         showRewardPopup: Binding<Bool>,
+        showExitBonusPopup: Binding<Bool>,
         selectedDrinkType: Binding<ConsumableType?>,
-        resumeGameCallback: Binding<(() -> Void)?>
+        resumeGameCallback: Binding<(() -> Void)?>,
+        exitGameCallback: Binding<(() -> Void)?>
     ) {
         let tapGame = TapGame(
             user: user,
@@ -57,8 +61,10 @@ struct TapGameView: View {
         self._tabSwitchPause = tabSwitchPause
         self._showDrinkAdPopup = showDrinkAdPopup
         self._showRewardPopup = showRewardPopup
+        self._showExitBonusPopup = showExitBonusPopup
         self._selectedDrinkType = selectedDrinkType
         self._resumeGameCallback = resumeGameCallback
+        self._exitGameCallback = exitGameCallback
         self.tapGame.startGame()
     }
 
@@ -76,11 +82,12 @@ struct TapGameView: View {
                 resumeGameCallback = { [weak tapGame] in
                     tapGame?.resumeGame()
                 }
+                exitGameCallback = { handleCloseButton() }
             }
             .pauseGameStyle(
                 pauseBinding: pauseBinding,
                 height: geometry.size.height,
-                onLeave: { handleCloseButton() },
+                onLeave: { showExitBonusPopup = true },
                 onPause: {
                     tapGame.pauseGame()
                     SoundService.shared.stopAllSFX()
@@ -221,8 +228,10 @@ private extension TapGameView {
     @Previewable @State var tabSwitchPause: Bool = true
     @Previewable @State var showDrinkAdPopup: Bool = false
     @Previewable @State var showRewardPopup: Bool = false
+    @Previewable @State var showExitBonusPopup: Bool = false
     @Previewable @State var selectedDrinkType: ConsumableType?
     @Previewable @State var resumeGameCallback: (() -> Void)?
+    @Previewable @State var exitGameCallback: (() -> Void)?
 
     let user = User(
         nickname: "Preview User",
@@ -247,7 +256,9 @@ private extension TapGameView {
         animationSystem: nil,
         showDrinkAdPopup: $showDrinkAdPopup,
         showRewardPopup: $showRewardPopup,
+        showExitBonusPopup: $showExitBonusPopup,
         selectedDrinkType: $selectedDrinkType,
-        resumeGameCallback: $resumeGameCallback
+        resumeGameCallback: $resumeGameCallback,
+        exitGameCallback: $exitGameCallback
     )
 }

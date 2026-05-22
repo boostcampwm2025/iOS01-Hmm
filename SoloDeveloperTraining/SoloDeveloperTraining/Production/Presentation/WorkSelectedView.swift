@@ -43,8 +43,10 @@ struct WorkSelectedView: View {
     // 광고 팝업 관련
     @Binding var showDrinkAdPopup: Bool
     @Binding var showRewardPopup: Bool
+    @Binding var showExitBonusPopup: Bool
     @Binding var selectedDrinkType: ConsumableType?
     @Binding var resumeGameCallback: (() -> Void)?
+    @Binding var exitGameCallback: (() -> Void)?
 
     private let localStorage: KeyValueLocalStorage = UserDefaultsStorage()
 
@@ -56,8 +58,10 @@ struct WorkSelectedView: View {
         careerSystem: Binding<CareerSystem?>,
         showDrinkAdPopup: Binding<Bool>,
         showRewardPopup: Binding<Bool>,
+        showExitBonusPopup: Binding<Bool>,
         selectedDrinkType: Binding<ConsumableType?>,
-        resumeGameCallback: Binding<(() -> Void)?>
+        resumeGameCallback: Binding<(() -> Void)?>,
+        exitGameCallback: Binding<(() -> Void)?>
     ) {
         self.user = user
         self.animationSystem = animationSystem
@@ -66,8 +70,10 @@ struct WorkSelectedView: View {
         self._careerSystem = careerSystem
         self._showDrinkAdPopup = showDrinkAdPopup
         self._showRewardPopup = showRewardPopup
+        self._showExitBonusPopup = showExitBonusPopup
         self._selectedDrinkType = selectedDrinkType
         self._resumeGameCallback = resumeGameCallback
+        self._exitGameCallback = exitGameCallback
     }
 
     var body: some View {
@@ -189,8 +195,10 @@ private extension WorkSelectedView {
                 animationSystem: animationSystem,
                 showDrinkAdPopup: $showDrinkAdPopup,
                 showRewardPopup: $showRewardPopup,
+                showExitBonusPopup: $showExitBonusPopup,
                 selectedDrinkType: $selectedDrinkType,
-                resumeGameCallback: $resumeGameCallback
+                resumeGameCallback: $resumeGameCallback,
+                exitGameCallback: $exitGameCallback
             )
         case 1:
             LanguageGameView(
@@ -200,8 +208,10 @@ private extension WorkSelectedView {
                 animationSystem: animationSystem,
                 showDrinkAdPopup: $showDrinkAdPopup,
                 showRewardPopup: $showRewardPopup,
+                showExitBonusPopup: $showExitBonusPopup,
                 selectedDrinkType: $selectedDrinkType,
-                resumeGameCallback: $resumeGameCallback
+                resumeGameCallback: $resumeGameCallback,
+                exitGameCallback: $exitGameCallback
             )
         case 2:
             DodgeGameView(
@@ -211,8 +221,10 @@ private extension WorkSelectedView {
                 animationSystem: animationSystem,
                 showDrinkAdPopup: $showDrinkAdPopup,
                 showRewardPopup: $showRewardPopup,
+                showExitBonusPopup: $showExitBonusPopup,
                 selectedDrinkType: $selectedDrinkType,
-                resumeGameCallback: $resumeGameCallback
+                resumeGameCallback: $resumeGameCallback,
+                exitGameCallback: $exitGameCallback
             )
         case 3:
             StackGameView(
@@ -222,8 +234,10 @@ private extension WorkSelectedView {
                 animationSystem: animationSystem,
                 showDrinkAdPopup: $showDrinkAdPopup,
                 showRewardPopup: $showRewardPopup,
+                showExitBonusPopup: $showExitBonusPopup,
                 selectedDrinkType: $selectedDrinkType,
-                resumeGameCallback: $resumeGameCallback
+                resumeGameCallback: $resumeGameCallback,
+                exitGameCallback: $exitGameCallback
             )
         default:
             EmptyView()
@@ -265,8 +279,10 @@ private extension WorkSelectedView {
     @Previewable @State var careerSystem: CareerSystem?
     @Previewable @State var showDrinkAdPopup = false
     @Previewable @State var showRewardPopup = false
+    @Previewable @State var showExitBonusPopup = false
     @Previewable @State var selectedDrinkType: ConsumableType?
     @Previewable @State var resumeGameCallback: (() -> Void)?
+    @Previewable @State var exitGameCallback: (() -> Void)?
 
     let user = User(
         nickname: "Test",
@@ -283,7 +299,9 @@ private extension WorkSelectedView {
         careerSystem: $careerSystem,
         showDrinkAdPopup: $showDrinkAdPopup,
         showRewardPopup: $showRewardPopup,
+        showExitBonusPopup: $showExitBonusPopup,
         selectedDrinkType: $selectedDrinkType,
-        resumeGameCallback: $resumeGameCallback
+        resumeGameCallback: $resumeGameCallback,
+        exitGameCallback: $exitGameCallback
     )
 }

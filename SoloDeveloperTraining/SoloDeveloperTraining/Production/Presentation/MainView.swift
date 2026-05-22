@@ -50,8 +50,10 @@ struct MainView: View {
     // 음료 광고 팝업 관련
     @State private var showDrinkAdPopup: Bool = false
     @State private var showRewardPopup: Bool = false
+    @State private var showExitBonusPopup: Bool = false
     @State private var selectedDrinkType: ConsumableType?
     @State private var resumeGameCallback: (() -> Void)?
+    @State private var exitGameCallback: (() -> Void)?
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
@@ -98,6 +100,7 @@ struct MainView: View {
             .overlay { settingsOverlayView }
             .overlay { drinkAdPopupOverlayView }
             .overlay { drinkRewardPopupOverlayView }
+            .overlay { exitBonusPopupOverlayView }
             .fullScreenCover(isPresented: $showQuizView) {
                 QuizGameView(user: user)
             }
@@ -190,8 +193,10 @@ private extension MainView {
             careerSystem: $careerSystem,
             showDrinkAdPopup: $showDrinkAdPopup,
             showRewardPopup: $showRewardPopup,
+            showExitBonusPopup: $showExitBonusPopup,
             selectedDrinkType: $selectedDrinkType,
-            resumeGameCallback: $resumeGameCallback
+            resumeGameCallback: $resumeGameCallback,
+            exitGameCallback: $exitGameCallback
         )
         .opacity(selectedTab == .work ? 1 : 0)
         .allowsHitTesting(selectedTab == .work)
@@ -210,8 +215,10 @@ private extension MainView {
                     careerSystem: $careerSystem,
                     showDrinkAdPopup: $showDrinkAdPopup,
                     showRewardPopup: $showRewardPopup,
+                    showExitBonusPopup: $showExitBonusPopup,
                     selectedDrinkType: $selectedDrinkType,
-                    resumeGameCallback: $resumeGameCallback
+                    resumeGameCallback: $resumeGameCallback,
+                    exitGameCallback: $exitGameCallback
                 )
             }
         case .skill:
@@ -368,6 +375,22 @@ private extension MainView {
         }
     }
 
+    @ViewBuilder
+    var exitBonusPopupOverlayView: some View {
+        if showExitBonusPopup {
+            ZStack {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+
+                WorkExitBonusPopupView(
+                    onWatchAd: { Task { await handleExitBonusAd() } },
+                    onLeave: handleExitWithoutBonus
+                )
+                .padding(.horizontal, Constant.Padding.horizontalPadding)
+            }
+        }
+    }
+
     func handleWatchAdInMainView() async {
         showDrinkAdPopup = false
 
@@ -398,6 +421,24 @@ private extension MainView {
         showRewardPopup = false
         selectedDrinkType = nil
         resumeGameCallback?()
+    }
+
+    func handleExitBonusAd() async {
+        showExitBonusPopup = false
+        _ = await AdService.shared.showAdWithResult(.interstitial)
+        exitWorkGame()
+    }
+
+    func handleExitWithoutBonus() {
+        showExitBonusPopup = false
+        exitWorkGame()
+    }
+
+    func exitWorkGame() {
+        exitGameCallback?()
+        tabSwitchPause = false
+        exitGameCallback = nil
+        resumeGameCallback = nil
     }
 }
 

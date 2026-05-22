@@ -119,7 +119,6 @@ private extension GamePauseWrapper {
         guard isPaused else { return }
         isPaused = false
         onLeave()
-        pauseBinding = false
     }
 
     func handleResume() {

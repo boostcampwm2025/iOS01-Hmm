@@ -49,8 +49,10 @@ struct DodgeGameView: View {
     // 광고 팝업 관련
     @Binding var showDrinkAdPopup: Bool
     @Binding var showRewardPopup: Bool
+    @Binding var showExitBonusPopup: Bool
     @Binding var selectedDrinkType: ConsumableType?
     @Binding var resumeGameCallback: (() -> Void)?
+    @Binding var exitGameCallback: (() -> Void)?
 
     init(
         user: User,
@@ -59,15 +61,19 @@ struct DodgeGameView: View {
         animationSystem: CharacterAnimationSystem? = nil,
         showDrinkAdPopup: Binding<Bool>,
         showRewardPopup: Binding<Bool>,
+        showExitBonusPopup: Binding<Bool>,
         selectedDrinkType: Binding<ConsumableType?>,
-        resumeGameCallback: Binding<(() -> Void)?>
+        resumeGameCallback: Binding<(() -> Void)?>,
+        exitGameCallback: Binding<(() -> Void)?>
     ) {
         self._isGameStarted = isGameStarted
         self._tabSwitchPause = tabSwitchPause
         self._showDrinkAdPopup = showDrinkAdPopup
         self._showRewardPopup = showRewardPopup
+        self._showExitBonusPopup = showExitBonusPopup
         self._selectedDrinkType = selectedDrinkType
         self._resumeGameCallback = resumeGameCallback
+        self._exitGameCallback = exitGameCallback
         self.game = DodgeGame(
             user: user,
             gameAreaSize: CGSize.zero,
@@ -98,11 +104,12 @@ struct DodgeGameView: View {
                     game?.resumeGame()
                     isGamePaused = false
                 }
+                exitGameCallback = { handleCloseButton() }
             }
             .pauseGameStyle(
                 pauseBinding: pauseBinding,
                 height: geometry.size.height,
-                onLeave: { handleCloseButton() },
+                onLeave: { showExitBonusPopup = true },
                 onPause: {
                     isGamePaused = true
                     game.pauseGame()
@@ -280,8 +287,10 @@ private extension DodgeGameView {
     @Previewable @State var tabSwitchPause = true
     @Previewable @State var showDrinkAdPopup = false
     @Previewable @State var showRewardPopup = false
+    @Previewable @State var showExitBonusPopup = false
     @Previewable @State var selectedDrinkType: ConsumableType?
     @Previewable @State var resumeGameCallback: (() -> Void)?
+    @Previewable @State var exitGameCallback: (() -> Void)?
 
     let wallet = Wallet(gold: 1000, diamond: 0)
     let inventory = Inventory(
@@ -316,8 +325,10 @@ private extension DodgeGameView {
                 animationSystem: nil,
                 showDrinkAdPopup: $showDrinkAdPopup,
                 showRewardPopup: $showRewardPopup,
+                showExitBonusPopup: $showExitBonusPopup,
                 selectedDrinkType: $selectedDrinkType,
-                resumeGameCallback: $resumeGameCallback
+                resumeGameCallback: $resumeGameCallback,
+                exitGameCallback: $exitGameCallback
             )
             .ignoresSafeArea()
             .frame(height: geometry.size.height / 2 - Constant.Size.ground)
