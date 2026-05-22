@@ -22,7 +22,7 @@ private enum Constant {
     }
 
     enum Color {
-        static let overlay = SwiftUI.Color.black.opacity(0.3)
+        static let overlay = SwiftUI.Color.black.opacity(0.4)
     }
 
     enum CareerPopup {
@@ -93,11 +93,7 @@ struct MainView: View {
             .task(id: user.record.totalEarnedMoney) {
                 await careerSystem?.updateCareer()
             }
-            .overlay { popupOverlayView }
-            .overlay { settingsOverlayView }
-            .overlay { drinkAdPopupOverlayView }
-            .overlay { drinkRewardPopupOverlayView }
-            .overlay { exitBonusPopupOverlayView }
+            .overlay { overlayView }
             .fullScreenCover(isPresented: $showQuizView) {
                 QuizGameView(user: user)
             }
@@ -234,16 +230,22 @@ private extension MainView {
     }
 
     @ViewBuilder
+    var overlayView: some View {
+        ZStack {
+            popupOverlayView
+            settingsOverlayView
+            drinkAdPopupOverlayView
+            drinkRewardPopupOverlayView
+            exitBonusPopupOverlayView
+        }
+    }
+
+    @ViewBuilder
     var popupOverlayView: some View {
         if let popupContent {
-            ZStack {
-                Constant.Color.overlay
-                    .ignoresSafeArea()
-                    .onTapGesture { self.popupContent = nil }
-
+            modalOverlay(onBackgroundTap: { self.popupContent = nil }) {
                 Popup(title: popupContent.title, contentView: popupContent.content)
                     .frame(maxHeight: popupContent.maxHeight)
-                    .padding(.horizontal, Constant.Padding.horizontalPadding)
             }
         }
     }
@@ -251,13 +253,8 @@ private extension MainView {
     @ViewBuilder
     var settingsOverlayView: some View {
         if showSettingsView {
-            ZStack {
-                Constant.Color.overlay
-                    .ignoresSafeArea()
-                    .onTapGesture { showSettingsView = false }
-
+            modalOverlay(onBackgroundTap: { showSettingsView = false }) {
                 FeedbackSettingView(onClose: { showSettingsView = false })
-                    .padding(.horizontal, Constant.Padding.horizontalPadding)
             }
         }
     }
@@ -344,16 +341,12 @@ private extension MainView {
     @ViewBuilder
     var drinkAdPopupOverlayView: some View {
         if showDrinkAdPopup, let drinkType = selectedDrinkType {
-            ZStack {
-                Color.black.opacity(0.4)
-                    .ignoresSafeArea()
-
+            modalOverlay {
                 DrinkAdPopupView(
                     drinkType: drinkType,
                     onWatchAd: { Task { await handleWatchAdInMainView() } },
                     onSkip: handleSkipAdInMainView
                 )
-                .padding(.horizontal, Constant.Padding.horizontalPadding)
             }
         }
     }
@@ -361,15 +354,11 @@ private extension MainView {
     @ViewBuilder
     var drinkRewardPopupOverlayView: some View {
         if showRewardPopup, let drinkType = selectedDrinkType {
-            ZStack {
-                Color.black.opacity(0.4)
-                    .ignoresSafeArea()
-
+            modalOverlay {
                 DrinkRewardPopupView(
                     drinkType: drinkType,
                     onConfirm: handleRewardConfirmInMainView
                 )
-                .padding(.horizontal, Constant.Padding.horizontalPadding)
             }
         }
     }
@@ -377,16 +366,28 @@ private extension MainView {
     @ViewBuilder
     var exitBonusPopupOverlayView: some View {
         if workGameSession.showsExitBonusPopup {
-            ZStack {
-                Color.black.opacity(0.4)
-                    .ignoresSafeArea()
-
+            modalOverlay {
                 WorkExitBonusPopupView(
                     onWatchAd: { Task { await handleExitBonusAd() } },
                     onLeave: handleExitWithoutBonus
                 )
-                .padding(.horizontal, Constant.Padding.horizontalPadding)
             }
+        }
+    }
+
+    func modalOverlay<Content: View>(
+        onBackgroundTap: (() -> Void)? = nil,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        ZStack {
+            Constant.Color.overlay
+                .ignoresSafeArea()
+                .onTapGesture {
+                    onBackgroundTap?()
+                }
+
+            content()
+                .padding(.horizontal, Constant.Padding.horizontalPadding)
         }
     }
 
