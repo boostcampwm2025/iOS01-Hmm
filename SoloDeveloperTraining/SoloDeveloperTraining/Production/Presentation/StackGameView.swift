@@ -26,6 +26,7 @@ struct StackGameView: View {
 
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
+    @Binding var gameActionGoldDelta: Int
     @Binding var tabSwitchPause: Bool
 
     // 광고 팝업 관련
@@ -39,6 +40,7 @@ struct StackGameView: View {
     init(
         user: User,
         isGameStarted: Binding<Bool>,
+        gameActionGoldDelta: Binding<Int>,
         tabSwitchPause: Binding<Bool>,
         animationSystem: CharacterAnimationSystem? = nil,
         showDrinkAdPopup: Binding<Bool>,
@@ -56,9 +58,10 @@ struct StackGameView: View {
                  stackGame: stackGame,
                  onBlockDropped: { _ in }
              )
-         )
+        )
         self._tabSwitchPause = tabSwitchPause
         self._isGameStarted = isGameStarted
+        self._gameActionGoldDelta = gameActionGoldDelta
         self._showDrinkAdPopup = showDrinkAdPopup
         self._showRewardPopup = showRewardPopup
         self._showExitBonusPopup = showExitBonusPopup
@@ -174,6 +177,7 @@ private extension StackGameView {
     /// 게임 콜백 설정
     func setupGameCallbacks(with geometry: GeometryProxy) {
         scene.onBlockDropped = { gold in
+            gameActionGoldDelta += gold
             showEffectLabel(
                 at: CGPoint(
                     x: geometry.size.width * randomEffectXRatio,

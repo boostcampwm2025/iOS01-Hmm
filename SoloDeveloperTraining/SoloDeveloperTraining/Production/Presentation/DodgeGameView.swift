@@ -44,6 +44,7 @@ struct DodgeGameView: View {
     @State private var isGameInitialized: Bool = false
 
     @Binding var isGameStarted: Bool
+    @Binding var gameActionGoldDelta: Int
     @Binding var tabSwitchPause: Bool
 
     // 광고 팝업 관련
@@ -57,6 +58,7 @@ struct DodgeGameView: View {
     init(
         user: User,
         isGameStarted: Binding<Bool>,
+        gameActionGoldDelta: Binding<Int>,
         tabSwitchPause: Binding<Bool>,
         animationSystem: CharacterAnimationSystem? = nil,
         showDrinkAdPopup: Binding<Bool>,
@@ -67,6 +69,7 @@ struct DodgeGameView: View {
         exitGameCallback: Binding<(() -> Void)?>
     ) {
         self._isGameStarted = isGameStarted
+        self._gameActionGoldDelta = gameActionGoldDelta
         self._tabSwitchPause = tabSwitchPause
         self._showDrinkAdPopup = showDrinkAdPopup
         self._showRewardPopup = showRewardPopup
@@ -255,6 +258,8 @@ private extension DodgeGameView {
 
     /// 골드 변화 이펙트 표시
     func showGoldChangeEffect(_ goldDelta: Int) {
+        gameActionGoldDelta += goldDelta
+
         let effect = EffectLabelData(
             id: UUID(),
             position: CGPoint(
@@ -284,6 +289,7 @@ private extension DodgeGameView {
 
 #Preview {
     @Previewable @State var isGameStarted = true
+    @Previewable @State var gameActionGoldDelta = 0
     @Previewable @State var tabSwitchPause = true
     @Previewable @State var showDrinkAdPopup = false
     @Previewable @State var showRewardPopup = false
@@ -321,6 +327,7 @@ private extension DodgeGameView {
             DodgeGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
+                gameActionGoldDelta: $gameActionGoldDelta,
                 tabSwitchPause: $tabSwitchPause,
                 animationSystem: nil,
                 showDrinkAdPopup: $showDrinkAdPopup,

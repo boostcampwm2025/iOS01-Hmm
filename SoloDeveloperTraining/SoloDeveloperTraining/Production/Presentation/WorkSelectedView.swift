@@ -37,6 +37,7 @@ struct WorkSelectedView: View {
     @State private var showToast: Bool = false
     @State private var toastMessage: String = ""
     @Binding var isGameStarted: Bool
+    @Binding var gameActionGoldDelta: Int
     @Binding var tabSwitchPause: Bool
     @Binding var careerSystem: CareerSystem?
 
@@ -54,6 +55,7 @@ struct WorkSelectedView: View {
         user: User,
         animationSystem: CharacterAnimationSystem?,
         isGameStarted: Binding<Bool>,
+        gameActionGoldDelta: Binding<Int>,
         tabSwitchPause: Binding<Bool>,
         careerSystem: Binding<CareerSystem?>,
         showDrinkAdPopup: Binding<Bool>,
@@ -66,6 +68,7 @@ struct WorkSelectedView: View {
         self.user = user
         self.animationSystem = animationSystem
         self._isGameStarted = isGameStarted
+        self._gameActionGoldDelta = gameActionGoldDelta
         self._tabSwitchPause = tabSwitchPause
         self._careerSystem = careerSystem
         self._showDrinkAdPopup = showDrinkAdPopup
@@ -191,6 +194,7 @@ private extension WorkSelectedView {
             TapGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
+                gameActionGoldDelta: $gameActionGoldDelta,
                 tabSwitchPause: $tabSwitchPause,
                 animationSystem: animationSystem,
                 showDrinkAdPopup: $showDrinkAdPopup,
@@ -204,6 +208,7 @@ private extension WorkSelectedView {
             LanguageGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
+                gameActionGoldDelta: $gameActionGoldDelta,
                 tabSwitchPause: $tabSwitchPause,
                 animationSystem: animationSystem,
                 showDrinkAdPopup: $showDrinkAdPopup,
@@ -217,6 +222,7 @@ private extension WorkSelectedView {
             DodgeGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
+                gameActionGoldDelta: $gameActionGoldDelta,
                 tabSwitchPause: $tabSwitchPause,
                 animationSystem: animationSystem,
                 showDrinkAdPopup: $showDrinkAdPopup,
@@ -230,6 +236,7 @@ private extension WorkSelectedView {
             StackGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
+                gameActionGoldDelta: $gameActionGoldDelta,
                 tabSwitchPause: $tabSwitchPause,
                 animationSystem: animationSystem,
                 showDrinkAdPopup: $showDrinkAdPopup,
@@ -275,6 +282,7 @@ private extension WorkSelectedView {
 
 #Preview {
     @Previewable @State var isGameStarted = false
+    @Previewable @State var gameActionGoldDelta = 0
     @Previewable @State var tabSwitchPause = false
     @Previewable @State var careerSystem: CareerSystem?
     @Previewable @State var showDrinkAdPopup = false
@@ -295,6 +303,7 @@ private extension WorkSelectedView {
         user: user,
         animationSystem: nil,
         isGameStarted: $isGameStarted,
+        gameActionGoldDelta: $gameActionGoldDelta,
         tabSwitchPause: $tabSwitchPause,
         careerSystem: $careerSystem,
         showDrinkAdPopup: $showDrinkAdPopup,

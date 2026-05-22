@@ -20,6 +20,7 @@ struct TapGameView: View {
     // MARK: - Properties
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
+    @Binding var gameActionGoldDelta: Int
     @Binding var tabSwitchPause: Bool
 
     // MARK: - State
@@ -42,6 +43,7 @@ struct TapGameView: View {
     init(
         user: User,
         isGameStarted: Binding<Bool>,
+        gameActionGoldDelta: Binding<Int>,
         tabSwitchPause: Binding<Bool>,
         animationSystem: CharacterAnimationSystem?,
         showDrinkAdPopup: Binding<Bool>,
@@ -58,6 +60,7 @@ struct TapGameView: View {
         )
         self._tapGame = State(initialValue: tapGame)
         self._isGameStarted = isGameStarted
+        self._gameActionGoldDelta = gameActionGoldDelta
         self._tabSwitchPause = tabSwitchPause
         self._showDrinkAdPopup = showDrinkAdPopup
         self._showRewardPopup = showRewardPopup
@@ -176,6 +179,7 @@ private extension TapGameView {
             lastTapSoundTime = now
         }
         let gainGold = await tapGame.didPerformAction()
+        gameActionGoldDelta += gainGold
         showEffectLabel(at: location, value: gainGold)
     }
 
@@ -225,6 +229,7 @@ private extension TapGameView {
 
 #Preview {
     @Previewable @State var isGameStarted: Bool = true
+    @Previewable @State var gameActionGoldDelta: Int = 0
     @Previewable @State var tabSwitchPause: Bool = true
     @Previewable @State var showDrinkAdPopup: Bool = false
     @Previewable @State var showRewardPopup: Bool = false
@@ -252,6 +257,7 @@ private extension TapGameView {
     TapGameView(
         user: user,
         isGameStarted: $isGameStarted,
+        gameActionGoldDelta: $gameActionGoldDelta,
         tabSwitchPause: $tabSwitchPause,
         animationSystem: nil,
         showDrinkAdPopup: $showDrinkAdPopup,

@@ -46,6 +46,9 @@ struct MainView: View {
     @State private var tabSwitchPause: Bool = false
     @State private var showQuizView: Bool = false
     @State private var showSettingsView: Bool = false
+    @State private var gameActionGoldDelta: Int = 0
+    @State private var showExitBonusToast: Bool = false
+    @State private var exitBonusToastMessage: String = ""
 
     // 음료 광고 팝업 관련
     @State private var showDrinkAdPopup: Bool = false
@@ -105,6 +108,7 @@ struct MainView: View {
                 QuizGameView(user: user)
             }
         }
+        .darkToast(isShowing: $showExitBonusToast, message: exitBonusToastMessage)
     }
 }
 
@@ -189,6 +193,7 @@ private extension MainView {
             user: user,
             animationSystem: animationSystem,
             isGameStarted: workGameStartedBinding,
+            gameActionGoldDelta: $gameActionGoldDelta,
             tabSwitchPause: tabSwitchPauseBinding,
             careerSystem: $careerSystem,
             showDrinkAdPopup: $showDrinkAdPopup,
@@ -211,6 +216,7 @@ private extension MainView {
                     user: user,
                     animationSystem: animationSystem,
                     isGameStarted: workGameStartedBinding,
+                    gameActionGoldDelta: $gameActionGoldDelta,
                     tabSwitchPause: tabSwitchPauseBinding,
                     careerSystem: $careerSystem,
                     showDrinkAdPopup: $showDrinkAdPopup,
@@ -289,6 +295,7 @@ private extension MainView {
 
                 guard !isStarted else {
                     targetTab = .work
+                    gameActionGoldDelta = 0
                     return
                 }
 
@@ -425,8 +432,11 @@ private extension MainView {
 
     func handleExitBonusAd() async {
         showExitBonusPopup = false
-        _ = await AdService.shared.showAdWithResult(.interstitial)
-        exitWorkGame()
+        let success = await AdService.shared.showAdWithResult(.interstitial)
+        if success {
+            applyExitBonus()
+        }
+        exitWorkGame(shouldReturnToWorkTab: success)
     }
 
     func handleExitWithoutBonus() {
@@ -434,7 +444,22 @@ private extension MainView {
         exitWorkGame()
     }
 
-    func exitWorkGame() {
+    func applyExitBonus() {
+        let bonusGold = max(0, gameActionGoldDelta)
+        if bonusGold > 0 {
+            user.wallet.addGold(bonusGold)
+            user.record.record(.earnMoney(bonusGold))
+            exitBonusToastMessage = "업무 보너스 \(bonusGold.formatted) 골드를 받았습니다!"
+        } else {
+            exitBonusToastMessage = "업무 보너스를 받을 재화가 없습니다."
+        }
+        showExitBonusToast = true
+    }
+
+    func exitWorkGame(shouldReturnToWorkTab: Bool = false) {
+        if shouldReturnToWorkTab {
+            targetTab = .work
+        }
         exitGameCallback?()
         tabSwitchPause = false
         exitGameCallback = nil

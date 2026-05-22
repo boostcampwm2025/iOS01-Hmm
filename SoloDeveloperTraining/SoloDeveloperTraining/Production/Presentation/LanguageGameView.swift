@@ -44,6 +44,7 @@ struct LanguageGameView: View {
     // MARK: State Properties
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
+    @Binding var gameActionGoldDelta: Int
     @Binding var tabSwitchPause: Bool
 
     /// 상태를 유지
@@ -67,6 +68,7 @@ struct LanguageGameView: View {
     init(
         user: User,
         isGameStarted: Binding<Bool>,
+        gameActionGoldDelta: Binding<Int>,
         tabSwitchPause: Binding<Bool>,
         animationSystem: CharacterAnimationSystem? = nil,
         showDrinkAdPopup: Binding<Bool>,
@@ -77,6 +79,7 @@ struct LanguageGameView: View {
         exitGameCallback: Binding<(() -> Void)?>
     ) {
         self._isGameStarted = isGameStarted
+        self._gameActionGoldDelta = gameActionGoldDelta
         self._tabSwitchPause = tabSwitchPause
         self.user = user
         self._showDrinkAdPopup = showDrinkAdPopup
@@ -223,6 +226,7 @@ private extension LanguageGameView {
             if gainedGold <= 0 {
                 HapticService.shared.trigger(.error)
             }
+            gameActionGoldDelta += gainedGold
             showEffectLabel(gainedGold: gainedGold)
         }
     }
@@ -266,6 +270,7 @@ private extension LanguageGameView {
 
 #Preview {
     @Previewable @State var isGameStarted = true
+    @Previewable @State var gameActionGoldDelta = 0
     @Previewable @State var tabSwitchPause = true
     @Previewable @State var showDrinkAdPopup = false
     @Previewable @State var showRewardPopup = false
@@ -287,6 +292,7 @@ private extension LanguageGameView {
     LanguageGameView(
         user: user,
         isGameStarted: $isGameStarted,
+        gameActionGoldDelta: $gameActionGoldDelta,
         tabSwitchPause: $tabSwitchPause,
         animationSystem: nil,
         showDrinkAdPopup: $showDrinkAdPopup,

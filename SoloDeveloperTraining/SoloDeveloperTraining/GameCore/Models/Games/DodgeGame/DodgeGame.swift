@@ -210,13 +210,13 @@ final class DodgeGame: Game {
 
             // 골드 손실
             let loseGold = Int(Double(baseGold) * Policy.Game.Dodge.bugHitLossGoldMultiplier)
-            user.wallet.spendGold(loseGold)
+            let didSpendGold = user.wallet.spendGold(loseGold)
             /// 실패 기록
             user.record.record(.dodgeFail)
 
             SoundService.shared.trigger(.bugHit)
             HapticService.shared.trigger(.error)
-            return -loseGold
+            return didSpendGold ? -loseGold : 0
         }
     }
 }
