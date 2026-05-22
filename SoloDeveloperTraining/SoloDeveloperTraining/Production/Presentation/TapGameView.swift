@@ -20,12 +20,12 @@ struct TapGameView: View {
     // MARK: - Properties
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
-    @Binding var isGameViewDisappeared: Bool
+    @Binding var tabSwitchPause: Bool
 
     // MARK: - State
     /// 의존 게임
     @State private var tapGame: TapGame
-    @State private var isExitRequested: Bool = false
+    @State private var closePause: Bool = false
     /// 터치한 위치에 표시될 EffectLabel들의 위치와 값
     @State private var effectLabels: [EffectLabelData] = []
     /// 탭 사운드 쓰로틀용 마지막 재생 시각
@@ -40,7 +40,7 @@ struct TapGameView: View {
     init(
         user: User,
         isGameStarted: Binding<Bool>,
-        isGameViewDisappeared: Binding<Bool>,
+        tabSwitchPause: Binding<Bool>,
         animationSystem: CharacterAnimationSystem?,
         showDrinkAdPopup: Binding<Bool>,
         showRewardPopup: Binding<Bool>,
@@ -54,7 +54,7 @@ struct TapGameView: View {
         )
         self._tapGame = State(initialValue: tapGame)
         self._isGameStarted = isGameStarted
-        self._isGameViewDisappeared = isGameViewDisappeared
+        self._tabSwitchPause = tabSwitchPause
         self._showDrinkAdPopup = showDrinkAdPopup
         self._showRewardPopup = showRewardPopup
         self._selectedDrinkType = selectedDrinkType
@@ -78,7 +78,7 @@ struct TapGameView: View {
                 }
             }
             .pauseGameStyle(
-                isGameViewDisappeared: pauseTrigger,
+                pauseBinding: pauseBinding,
                 height: geometry.size.height,
                 onLeave: { handleCloseButton() },
                 onPause: {
@@ -97,7 +97,7 @@ private extension TapGameView {
     /// 상단 툴바
     var toolbarSection: some View {
         GameToolBar(
-            closeButtonDidTapHandler: { isExitRequested = true },
+            closeButtonDidTapHandler: { closePause = true },
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
             feverState: tapGame.feverSystem,
@@ -115,10 +115,10 @@ private extension TapGameView {
         .padding(.bottom, Constant.Padding.toolBarBottom)
     }
 
-    var pauseTrigger: Binding<Bool> {
+    var pauseBinding: Binding<Bool> {
         Binding(
-            get: { isGameViewDisappeared || isExitRequested },
-            set: { isExitRequested = $0 }
+            get: { tabSwitchPause || closePause },
+            set: { closePause = $0 }
         )
     }
 
@@ -215,7 +215,7 @@ private extension TapGameView {
 
 #Preview {
     @Previewable @State var isGameStarted: Bool = true
-    @Previewable @State var isGameViewDisappeared: Bool = true
+    @Previewable @State var tabSwitchPause: Bool = true
     @Previewable @State var showDrinkAdPopup: Bool = false
     @Previewable @State var showRewardPopup: Bool = false
     @Previewable @State var selectedDrinkType: ConsumableType?
@@ -240,7 +240,7 @@ private extension TapGameView {
     TapGameView(
         user: user,
         isGameStarted: $isGameStarted,
-        isGameViewDisappeared: $isGameViewDisappeared,
+        tabSwitchPause: $tabSwitchPause,
         animationSystem: nil,
         showDrinkAdPopup: $showDrinkAdPopup,
         showRewardPopup: $showRewardPopup,

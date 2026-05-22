@@ -21,12 +21,12 @@ private enum Constant {
 struct StackGameView: View {
     @State private var stackGame: StackGame
     @State private var scene: StackGameScene
-    @State private var isExitRequested: Bool = false
+    @State private var closePause: Bool = false
     @State private var effectLabels: [EffectLabelData] = []
 
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
-    @Binding var isGameViewDisappeared: Bool
+    @Binding var tabSwitchPause: Bool
 
     // 광고 팝업 관련
     @Binding var showDrinkAdPopup: Bool
@@ -37,7 +37,7 @@ struct StackGameView: View {
     init(
         user: User,
         isGameStarted: Binding<Bool>,
-        isGameViewDisappeared: Binding<Bool>,
+        tabSwitchPause: Binding<Bool>,
         animationSystem: CharacterAnimationSystem? = nil,
         showDrinkAdPopup: Binding<Bool>,
         showRewardPopup: Binding<Bool>,
@@ -53,7 +53,7 @@ struct StackGameView: View {
                  onBlockDropped: { _ in }
              )
          )
-        self._isGameViewDisappeared = isGameViewDisappeared
+        self._tabSwitchPause = tabSwitchPause
         self._isGameStarted = isGameStarted
         self._showDrinkAdPopup = showDrinkAdPopup
         self._showRewardPopup = showRewardPopup
@@ -80,7 +80,7 @@ struct StackGameView: View {
                 }
             }
             .pauseGameStyle(
-                isGameViewDisappeared: pauseTrigger,
+                pauseBinding: pauseBinding,
                 height: geometry.size.height,
                 onLeave: { handleCloseButton() },
                 onPause: { scene.pauseGame() },
@@ -95,7 +95,7 @@ private extension StackGameView {
     /// 상단 툴바
     var toolbarSection: some View {
         GameToolBar(
-            closeButtonDidTapHandler: { isExitRequested = true },
+            closeButtonDidTapHandler: { closePause = true },
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
             feverState: stackGame.feverSystem,
@@ -107,10 +107,10 @@ private extension StackGameView {
         .padding(.bottom, Constant.Padding.toolBarBottom)
     }
 
-    var pauseTrigger: Binding<Bool> {
+    var pauseBinding: Binding<Bool> {
         Binding(
-            get: { isGameViewDisappeared || isExitRequested },
-            set: { isExitRequested = $0 }
+            get: { tabSwitchPause || closePause },
+            set: { closePause = $0 }
         )
     }
 

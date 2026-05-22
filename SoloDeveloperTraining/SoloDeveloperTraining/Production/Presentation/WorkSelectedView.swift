@@ -37,7 +37,7 @@ struct WorkSelectedView: View {
     @State private var showToast: Bool = false
     @State private var toastMessage: String = ""
     @Binding var isGameStarted: Bool
-    @Binding var isGameViewDisappeared: Bool
+    @Binding var tabSwitchPause: Bool
     @Binding var careerSystem: CareerSystem?
 
     // 광고 팝업 관련
@@ -52,7 +52,7 @@ struct WorkSelectedView: View {
         user: User,
         animationSystem: CharacterAnimationSystem?,
         isGameStarted: Binding<Bool>,
-        isGameViewDisappeared: Binding<Bool>,
+        tabSwitchPause: Binding<Bool>,
         careerSystem: Binding<CareerSystem?>,
         showDrinkAdPopup: Binding<Bool>,
         showRewardPopup: Binding<Bool>,
@@ -62,7 +62,7 @@ struct WorkSelectedView: View {
         self.user = user
         self.animationSystem = animationSystem
         self._isGameStarted = isGameStarted
-        self._isGameViewDisappeared = isGameViewDisappeared
+        self._tabSwitchPause = tabSwitchPause
         self._careerSystem = careerSystem
         self._showDrinkAdPopup = showDrinkAdPopup
         self._showRewardPopup = showRewardPopup
@@ -185,7 +185,7 @@ private extension WorkSelectedView {
             TapGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
-                isGameViewDisappeared: $isGameViewDisappeared,
+                tabSwitchPause: $tabSwitchPause,
                 animationSystem: animationSystem,
                 showDrinkAdPopup: $showDrinkAdPopup,
                 showRewardPopup: $showRewardPopup,
@@ -196,7 +196,7 @@ private extension WorkSelectedView {
             LanguageGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
-                isGameViewDisappeared: $isGameViewDisappeared,
+                tabSwitchPause: $tabSwitchPause,
                 animationSystem: animationSystem,
                 showDrinkAdPopup: $showDrinkAdPopup,
                 showRewardPopup: $showRewardPopup,
@@ -207,7 +207,7 @@ private extension WorkSelectedView {
             DodgeGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
-                isGameViewDisappeared: $isGameViewDisappeared,
+                tabSwitchPause: $tabSwitchPause,
                 animationSystem: animationSystem,
                 showDrinkAdPopup: $showDrinkAdPopup,
                 showRewardPopup: $showRewardPopup,
@@ -218,7 +218,7 @@ private extension WorkSelectedView {
             StackGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
-                isGameViewDisappeared: $isGameViewDisappeared,
+                tabSwitchPause: $tabSwitchPause,
                 animationSystem: animationSystem,
                 showDrinkAdPopup: $showDrinkAdPopup,
                 showRewardPopup: $showRewardPopup,
@@ -261,7 +261,7 @@ private extension WorkSelectedView {
 
 #Preview {
     @Previewable @State var isGameStarted = false
-    @Previewable @State var isGameViewDisappeared = false
+    @Previewable @State var tabSwitchPause = false
     @Previewable @State var careerSystem: CareerSystem?
     @Previewable @State var showDrinkAdPopup = false
     @Previewable @State var showRewardPopup = false
@@ -279,7 +279,7 @@ private extension WorkSelectedView {
         user: user,
         animationSystem: nil,
         isGameStarted: $isGameStarted,
-        isGameViewDisappeared: $isGameViewDisappeared,
+        tabSwitchPause: $tabSwitchPause,
         careerSystem: $careerSystem,
         showDrinkAdPopup: $showDrinkAdPopup,
         showRewardPopup: $showRewardPopup,

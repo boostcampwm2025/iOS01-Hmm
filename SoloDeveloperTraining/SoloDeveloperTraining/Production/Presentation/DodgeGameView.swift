@@ -39,12 +39,12 @@ struct DodgeGameView: View {
     @State private var goldEffects: [EffectLabelData] = []
     // 일시정지 상태 추가
     @State private var isGamePaused: Bool = false
-    @State private var isExitRequested: Bool = false
+    @State private var closePause: Bool = false
     // 게임 초기 설정 완료 여부
     @State private var isGameInitialized: Bool = false
 
     @Binding var isGameStarted: Bool
-    @Binding var isGameViewDisappeared: Bool
+    @Binding var tabSwitchPause: Bool
 
     // 광고 팝업 관련
     @Binding var showDrinkAdPopup: Bool
@@ -55,7 +55,7 @@ struct DodgeGameView: View {
     init(
         user: User,
         isGameStarted: Binding<Bool>,
-        isGameViewDisappeared: Binding<Bool>,
+        tabSwitchPause: Binding<Bool>,
         animationSystem: CharacterAnimationSystem? = nil,
         showDrinkAdPopup: Binding<Bool>,
         showRewardPopup: Binding<Bool>,
@@ -63,7 +63,7 @@ struct DodgeGameView: View {
         resumeGameCallback: Binding<(() -> Void)?>
     ) {
         self._isGameStarted = isGameStarted
-        self._isGameViewDisappeared = isGameViewDisappeared
+        self._tabSwitchPause = tabSwitchPause
         self._showDrinkAdPopup = showDrinkAdPopup
         self._showRewardPopup = showRewardPopup
         self._selectedDrinkType = selectedDrinkType
@@ -100,7 +100,7 @@ struct DodgeGameView: View {
                 }
             }
             .pauseGameStyle(
-                isGameViewDisappeared: pauseTrigger,
+                pauseBinding: pauseBinding,
                 height: geometry.size.height,
                 onLeave: { handleCloseButton() },
                 onPause: {
@@ -121,7 +121,7 @@ private extension DodgeGameView {
     /// 상단 툴바
     var toolbarSection: some View {
         GameToolBar(
-            closeButtonDidTapHandler: { isExitRequested = true },
+            closeButtonDidTapHandler: { closePause = true },
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
             feverState: game.feverSystem,
@@ -133,10 +133,10 @@ private extension DodgeGameView {
         .padding(.bottom, Constant.Padding.toolBarBottom)
     }
 
-    var pauseTrigger: Binding<Bool> {
+    var pauseBinding: Binding<Bool> {
         Binding(
-            get: { isGameViewDisappeared || isExitRequested },
-            set: { isExitRequested = $0 }
+            get: { tabSwitchPause || closePause },
+            set: { closePause = $0 }
         )
     }
 
@@ -274,7 +274,7 @@ private extension DodgeGameView {
 
 #Preview {
     @Previewable @State var isGameStarted = true
-    @Previewable @State var isGameViewDisappeared = true
+    @Previewable @State var tabSwitchPause = true
     @Previewable @State var showDrinkAdPopup = false
     @Previewable @State var showRewardPopup = false
     @Previewable @State var selectedDrinkType: ConsumableType?
@@ -309,7 +309,7 @@ private extension DodgeGameView {
             DodgeGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
-                isGameViewDisappeared: $isGameViewDisappeared,
+                tabSwitchPause: $tabSwitchPause,
                 animationSystem: nil,
                 showDrinkAdPopup: $showDrinkAdPopup,
                 showRewardPopup: $showRewardPopup,

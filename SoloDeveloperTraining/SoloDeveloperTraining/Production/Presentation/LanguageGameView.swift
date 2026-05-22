@@ -44,11 +44,11 @@ struct LanguageGameView: View {
     // MARK: State Properties
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
-    @Binding var isGameViewDisappeared: Bool
+    @Binding var tabSwitchPause: Bool
 
     /// 상태를 유지
     @State private var game: LanguageGame
-    @State private var isExitRequested: Bool = false
+    @State private var closePause: Bool = false
 
     /// 획득한 골드를 표시하기 위한 효과 라벨 배열
     @State private var effectValues: [(id: UUID, value: Int)] = []
@@ -65,7 +65,7 @@ struct LanguageGameView: View {
     init(
         user: User,
         isGameStarted: Binding<Bool>,
-        isGameViewDisappeared: Binding<Bool>,
+        tabSwitchPause: Binding<Bool>,
         animationSystem: CharacterAnimationSystem? = nil,
         showDrinkAdPopup: Binding<Bool>,
         showRewardPopup: Binding<Bool>,
@@ -73,7 +73,7 @@ struct LanguageGameView: View {
         resumeGameCallback: Binding<(() -> Void)?>
     ) {
         self._isGameStarted = isGameStarted
-        self._isGameViewDisappeared = isGameViewDisappeared
+        self._tabSwitchPause = tabSwitchPause
         self.user = user
         self._showDrinkAdPopup = showDrinkAdPopup
         self._showRewardPopup = showRewardPopup
@@ -116,7 +116,7 @@ struct LanguageGameView: View {
                 }
             }
             .pauseGameStyle(
-                isGameViewDisappeared: pauseTrigger,
+                pauseBinding: pauseBinding,
                 height: geometry.size.height,
                 onLeave: { handleCloseButton() },
                 onPause: { game.pauseGame() },
@@ -131,7 +131,7 @@ private extension LanguageGameView {
     /// 상단 툴바
     var toolbarSection: some View {
         GameToolBar(
-            closeButtonDidTapHandler: { isExitRequested = true },
+            closeButtonDidTapHandler: { closePause = true },
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
             feverState: game.feverSystem,
@@ -143,10 +143,10 @@ private extension LanguageGameView {
         .padding(.bottom, Constant.Padding.toolBarBottom)
     }
 
-    var pauseTrigger: Binding<Bool> {
+    var pauseBinding: Binding<Bool> {
         Binding(
-            get: { isGameViewDisappeared || isExitRequested },
-            set: { isExitRequested = $0 }
+            get: { tabSwitchPause || closePause },
+            set: { closePause = $0 }
         )
     }
 
@@ -256,7 +256,7 @@ private extension LanguageGameView {
 
 #Preview {
     @Previewable @State var isGameStarted = true
-    @Previewable @State var isGameViewDisappeared = true
+    @Previewable @State var tabSwitchPause = true
     @Previewable @State var showDrinkAdPopup = false
     @Previewable @State var showRewardPopup = false
     @Previewable @State var selectedDrinkType: ConsumableType?
@@ -275,7 +275,7 @@ private extension LanguageGameView {
     LanguageGameView(
         user: user,
         isGameStarted: $isGameStarted,
-        isGameViewDisappeared: $isGameViewDisappeared,
+        tabSwitchPause: $tabSwitchPause,
         animationSystem: nil,
         showDrinkAdPopup: $showDrinkAdPopup,
         showRewardPopup: $showRewardPopup,
