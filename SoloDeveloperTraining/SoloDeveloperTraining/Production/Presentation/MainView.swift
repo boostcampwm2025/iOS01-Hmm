@@ -182,7 +182,7 @@ private extension MainView {
             animationSystem: animationSystem,
             isGameStarted: $isWorkGameInProgress,
             tabSwitchPause: Binding(
-                get: { selectedTab != .work || showQuizView },
+                get: { selectedTab != .work },
                 set: { _ in }
             ),
             careerSystem: $careerSystem,
@@ -205,7 +205,7 @@ private extension MainView {
                     animationSystem: animationSystem,
                     isGameStarted: $isWorkGameInProgress,
                     tabSwitchPause: Binding(
-                        get: { selectedTab != .work || showQuizView },
+                        get: { selectedTab != .work },
                         set: { _ in }
                     ),
                     careerSystem: $careerSystem,
