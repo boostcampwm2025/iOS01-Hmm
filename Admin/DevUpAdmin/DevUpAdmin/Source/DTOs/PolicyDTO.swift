@@ -19,4 +19,5 @@ struct PolicyDTO: Codable {
     var equipment: EquipmentPolicyDTO
     var housing: HousingPolicyDTO
     var system: SystemPolicyDTO
+    var ad: AdPolicyDTO
 }

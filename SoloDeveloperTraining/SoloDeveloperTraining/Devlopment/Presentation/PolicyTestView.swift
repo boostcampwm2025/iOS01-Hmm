@@ -181,6 +181,13 @@ struct PolicyTestView: View {
                     row("펜트하우스", policy.housing.pentHouseGoldPerSecond)
                 }
 
+                // Ad
+                Section("광고 · 스킬 보상") {
+                    row("1일 사용 횟수", policy.ad.skillReward.dailyLimit)
+                    row("보상 배율", policy.ad.skillReward.rewardMultiplier)
+                    row("보상 지속 시간(초)", policy.ad.skillReward.rewardDuration)
+                }
+
                 // System
                 Section("시스템") {
                     row("자동 획득 간격(초)", policy.system.autoGain.interval)

@@ -347,9 +347,9 @@ enum Policy {
     enum Ad {
         /// 스킬 광고 보상 (업무 효율 대박)
         enum SkillReward {
-            static let dailyLimit: Int = 3
-            static let rewardMultiplier: Double = 2.0
-            static let rewardDuration: TimeInterval = 300 // 5분
+            static var dailyLimit: Int { policyStore.current.ad.skillReward.dailyLimit }
+            static var rewardMultiplier: Double { policyStore.current.ad.skillReward.rewardMultiplier }
+            static var rewardDuration: TimeInterval { policyStore.current.ad.skillReward.rewardDuration }
         }
     }
 }

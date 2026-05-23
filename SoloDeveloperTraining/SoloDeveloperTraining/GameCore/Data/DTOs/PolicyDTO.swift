@@ -19,6 +19,7 @@ struct PolicyDTO: Codable {
     var equipment: EquipmentPolicyDTO
     var housing: HousingPolicyDTO
     var system: SystemPolicyDTO
+    var ad: AdPolicyDTO
 }
 
 extension PolicyDTO {
@@ -263,6 +264,13 @@ extension PolicyDTO {
                 autoGain: AutoGainDTO(interval: 1.0),
                 buff: BuffDTO(decreaseInterval: 1.0),
                 scenario: ScenarioPolicyDTO(maxLevelupQueueSize: 3)
+            ),
+            ad: AdPolicyDTO(
+                skillReward: SkillRewardDTO(
+                    dailyLimit: 3,
+                    rewardMultiplier: 2.0,
+                    rewardDuration: 300
+                )
             )
         )
     }

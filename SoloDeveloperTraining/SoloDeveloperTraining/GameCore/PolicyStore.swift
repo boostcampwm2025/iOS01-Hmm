@@ -48,11 +48,13 @@ final class PolicyStore: PolicyStoreProtocol {
         async let equipment  = dataRef.document("equipment").getDocument(as: EquipmentPolicyDTO.self)
         async let housing    = dataRef.document("housing").getDocument(as: HousingPolicyDTO.self)
         async let system     = dataRef.document("system").getDocument(as: SystemPolicyDTO.self)
+        async let ad         = dataRef.document("ad").getDocument(as: AdPolicyDTO.self)
 
         current = try await PolicyDTO(
             version: "v\(version)",
             career: career, fever: fever, game: game, skill: skill,
-            consumable: consumable, equipment: equipment, housing: housing, system: system
+            consumable: consumable, equipment: equipment, housing: housing, system: system,
+            ad: ad
         )
     }
 
