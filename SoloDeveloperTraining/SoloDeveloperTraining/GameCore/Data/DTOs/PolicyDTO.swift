@@ -6,7 +6,7 @@
 import Foundation
 
 enum PolicyDataField: String {
-    case career, fever, game, skill, consumable, equipment, housing, system
+    case career, fever, game, skill, consumable, equipment, housing, system, ad
 }
 
 struct PolicyDTO: Codable {
@@ -19,7 +19,7 @@ struct PolicyDTO: Codable {
     var equipment: EquipmentPolicyDTO
     var housing: HousingPolicyDTO
     var system: SystemPolicyDTO
-    var ad: AdPolicyDTO
+    var ad: AdPolicyDTO?
 }
 
 extension PolicyDTO {
@@ -265,13 +265,7 @@ extension PolicyDTO {
                 buff: BuffDTO(decreaseInterval: 1.0),
                 scenario: ScenarioPolicyDTO(maxLevelupQueueSize: 3)
             ),
-            ad: AdPolicyDTO(
-                skillReward: SkillRewardDTO(
-                    dailyLimit: 3,
-                    rewardMultiplier: 2.0,
-                    rewardDuration: 300
-                )
-            )
+            ad: nil
         )
     }
 }

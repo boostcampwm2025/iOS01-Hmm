@@ -6,7 +6,7 @@
 import Foundation
 
 enum PolicyDataField: String {
-    case career, fever, game, skill, consumable, equipment, housing, system
+    case career, fever, game, skill, consumable, equipment, housing, system, ad
 }
 
 struct PolicyDTO: Codable {
@@ -19,5 +19,5 @@ struct PolicyDTO: Codable {
     var equipment: EquipmentPolicyDTO
     var housing: HousingPolicyDTO
     var system: SystemPolicyDTO
-    var ad: AdPolicyDTO
+    var ad: AdPolicyDTO?
 }

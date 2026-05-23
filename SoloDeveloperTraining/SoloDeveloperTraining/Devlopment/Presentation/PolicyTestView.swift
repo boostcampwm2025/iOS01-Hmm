@@ -183,9 +183,9 @@ struct PolicyTestView: View {
 
                 // Ad
                 Section("광고 · 스킬 보상") {
-                    row("1일 사용 횟수", policy.ad.skillReward.dailyLimit)
-                    row("보상 배율", policy.ad.skillReward.rewardMultiplier)
-                    row("보상 지속 시간(초)", policy.ad.skillReward.rewardDuration)
+                    row("1일 사용 횟수", policy.ad?.skillReward.dailyLimit ?? 3)
+                    row("보상 배율", policy.ad?.skillReward.rewardMultiplier ?? 2.0)
+                    row("보상 지속 시간(초)", policy.ad?.skillReward.rewardDuration ?? 300)
                 }
 
                 // System

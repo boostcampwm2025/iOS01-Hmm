@@ -347,9 +347,9 @@ enum Policy {
     enum Ad {
         /// 스킬 광고 보상 (업무 효율 대박)
         enum SkillReward {
-            static var dailyLimit: Int { policyStore.current.ad.skillReward.dailyLimit }
-            static var rewardMultiplier: Double { policyStore.current.ad.skillReward.rewardMultiplier }
-            static var rewardDuration: TimeInterval { policyStore.current.ad.skillReward.rewardDuration }
+            static var dailyLimit: Int { policyStore.current.ad?.skillReward.dailyLimit ?? 3 }
+            static var rewardMultiplier: Double { policyStore.current.ad?.skillReward.rewardMultiplier ?? 2.0 }
+            static var rewardDuration: TimeInterval { policyStore.current.ad?.skillReward.rewardDuration ?? 300 }
         }
     }
 }
