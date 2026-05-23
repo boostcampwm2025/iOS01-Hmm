@@ -127,6 +127,12 @@ struct ContentView: View {
                     Image(systemName: "arrow.clockwise.circle")
                     Text("환생")
                 }
+            PolicyTestView()
+                .tag(12)
+                .tabItem {
+                    Image(systemName: "slider.horizontal.3")
+                    Text("Policy")
+                }
         }
         .task {
             await AdService.shared.loadAd(.interstitial)

@@ -9,8 +9,8 @@ import SwiftUI
 
 private enum Constant {
     enum Animation {
-        static let transitionDuration: Double = 0.5  // 화면 전환
-        static let blinkingDuration: Double = 1.0    // 깜빡임
+        static let transitionDuration: Double = 0.5
+        static let blinkingDuration: Double = 1.0
     }
 
     enum Layout {
@@ -24,6 +24,7 @@ private enum Constant {
 
     enum Text {
         static let touchPrompt = "화면을 터치해 주세요"
+        static let networkError = "네트워크 오류가 발생했습니다.\n화면을 터치하여 재시도해 주세요."
     }
 }
 
@@ -32,13 +33,25 @@ struct IntroView: View {
     @Binding var hasSeenIntro: Bool
     @Binding var showNicknameSetup: Bool
     let user: User?
+    var isPolicyReady: Bool
+    var hasPolicyError: Bool
+    var onRetry: () -> Void
 
     var body: some View {
         ZStack {
             backgroundImage
-            touchPromptView
+            if hasPolicyError {
+                errorView
+            } else if isPolicyReady {
+                touchPromptView
+            }
         }
         .onTapGesture {
+            if hasPolicyError {
+                onRetry()
+                return
+            }
+            guard isPolicyReady else { return }
             if user == nil {
                 showNicknameSetup = true
             } else {
@@ -48,9 +61,6 @@ struct IntroView: View {
             }
         }
         .ignoresSafeArea()
-        .onAppear {
-            isBlinking = false
-        }
     }
 }
 
@@ -68,12 +78,23 @@ private extension IntroView {
     var touchPromptView: some View {
         VStack {
             Spacer()
-
             Text(Constant.Text.touchPrompt)
                 .textStyle(.title2)
                 .foregroundColor(.white)
                 .opacity(isBlinking ? Constant.Opacity.blinking : Constant.Opacity.normal)
                 .animation(.easeInOut(duration: Constant.Animation.blinkingDuration).repeatForever(autoreverses: true), value: isBlinking)
+                .padding(.bottom, Constant.Layout.bottomPadding)
+                .onAppear { isBlinking = false }
+        }
+    }
+
+    var errorView: some View {
+        VStack {
+            Spacer()
+            Text(Constant.Text.networkError)
+                .textStyle(.body)
+                .foregroundColor(.white.opacity(0.8))
+                .multilineTextAlignment(.center)
                 .padding(.bottom, Constant.Layout.bottomPadding)
         }
     }
@@ -83,6 +104,9 @@ private extension IntroView {
     IntroView(
         hasSeenIntro: .constant(false),
         showNicknameSetup: .constant(false),
-        user: nil
+        user: nil,
+        isPolicyReady: true,
+        hasPolicyError: false,
+        onRetry: {}
     )
 }
