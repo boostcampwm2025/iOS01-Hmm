@@ -132,4 +132,36 @@ struct WorkGameSessionTests {
         session.resumeGame?()
         #expect(didResume)
     }
+
+    @Test("획득 재화가 0 이하이면 보너스 팝업 없이 게임을 종료한다")
+    func exitBonusPopupBindingExitsWithoutPopupWhenGoldDeltaIsNotPositive() {
+        let session = WorkGameSession()
+        var didExit = false
+        session.start()
+        session.actionGoldDelta = 0
+        session.isPauseRequested = true
+        session.exitGame = { didExit = true }
+
+        session.exitBonusPopupBinding.wrappedValue = true
+
+        #expect(didExit)
+        #expect(!session.showsExitBonusPopup)
+        #expect(!session.isPauseRequested)
+        #expect(session.exitGame == nil)
+    }
+
+    @Test("획득 재화가 양수이면 보너스 팝업을 표시한다")
+    func exitBonusPopupBindingShowsPopupWhenGoldDeltaIsPositive() {
+        let session = WorkGameSession()
+        var didExit = false
+        session.start()
+        session.actionGoldDelta = 1
+        session.exitGame = { didExit = true }
+
+        session.exitBonusPopupBinding.wrappedValue = true
+
+        #expect(!didExit)
+        #expect(session.showsExitBonusPopup)
+        #expect(session.exitGame != nil)
+    }
 }

@@ -58,6 +58,17 @@ final class WorkGameSession {
         resumeGame = nil
         exitGame = nil
     }
+
+    func requestExitBonusPopupOrExit() {
+        guard actionGoldDelta > 0 else {
+            exitGame?()
+            isPauseRequested = false
+            clearGameCallbacks()
+            return
+        }
+
+        showsExitBonusPopup = true
+    }
 }
 
 extension WorkGameSession {
@@ -71,7 +82,13 @@ extension WorkGameSession {
     var exitBonusPopupBinding: Binding<Bool> {
         Binding(
             get: { self.showsExitBonusPopup },
-            set: { self.showsExitBonusPopup = $0 }
+            set: { isShowing in
+                if isShowing {
+                    self.requestExitBonusPopupOrExit()
+                } else {
+                    self.showsExitBonusPopup = false
+                }
+            }
         )
     }
 
