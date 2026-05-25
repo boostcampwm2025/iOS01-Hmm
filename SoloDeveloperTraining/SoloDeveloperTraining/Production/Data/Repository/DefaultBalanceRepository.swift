@@ -28,11 +28,13 @@ class DefaultBalanceRepository: BalanceRepository {
         async let equipment = fetchEquipment(tab: tab, docID: docID)
         async let housing = fetchHousing(tab: tab, docID: docID)
         async let system = fetchSystem(tab: tab, docID: docID)
+        let ad = try? await fetchAd(tab: tab, docID: docID)
 
         return try await PolicyDTO(
             version: version,
             career: career, fever: fever, game: game, skill: skill,
-            consumable: consumable, equipment: equipment, housing: housing, system: system
+            consumable: consumable, equipment: equipment, housing: housing, system: system,
+            ad: ad
         )
     }
 
@@ -95,5 +97,10 @@ private extension DefaultBalanceRepository {
     func fetchSystem(tab: PolicyTab, docID: String) async throws -> SystemPolicyDTO {
         try await dataBase.collection(tab.firestoreCollectionName).document(docID)
             .collection(Constant.dataCollectionName).document(PolicyDataField.system.rawValue).getDocument(as: SystemPolicyDTO.self)
+    }
+
+    func fetchAd(tab: PolicyTab, docID: String) async throws -> AdPolicyDTO {
+        try await dataBase.collection(tab.firestoreCollectionName).document(docID)
+            .collection(Constant.dataCollectionName).document(PolicyDataField.ad.rawValue).getDocument(as: AdPolicyDTO.self)
     }
 }

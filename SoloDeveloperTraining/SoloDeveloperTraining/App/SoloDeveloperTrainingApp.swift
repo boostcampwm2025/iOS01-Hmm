@@ -12,8 +12,7 @@ import KakaoSDKCommon
 
 private enum Constant {
     enum Animation {
-        static let transitionDuration: Double = 0.5  // 화면 전환
-        static let blinkingDuration: Double = 1.0    // 깜빡임
+        static let transitionDuration: Double = 0.5
     }
 
     enum Padding {
@@ -43,6 +42,8 @@ struct SoloDeveloperTrainingApp: App {
     @State private var user: User?
     @State private var showErrorPopup = false
     @State private var errorMessage: String = ""
+    @State private var isPolicyLoading = true
+    @State private var hasPolicyError = false
     @Environment(\.scenePhase) private var scenePhase
 
     private let userRepository: UserRepository = FileManagerUserRepository()
@@ -50,54 +51,11 @@ struct SoloDeveloperTrainingApp: App {
     var body: some Scene {
         WindowGroup {
 #if DEV_BUILD
-            // Dev 타깃용 루트뷰
             ContentView()
+                .task { try? await policyStore.initialize() }
 #else
-            // 운영 타깃용 뷰
-            Group {
-                if hasSeenIntro, let user {
-                    MainView(user: user)
-                        .transition(.opacity)
-                } else {
-                    IntroView(
-                        hasSeenIntro: $hasSeenIntro,
-                        showNicknameSetup: $showNicknameSetup,
-                        user: user
-                    )
-                }
-            }
-            .animation(.easeOut(duration: Constant.Animation.transitionDuration), value: hasSeenIntro)
-            .onOpenURL { url in
-                print("\(url) app open")
-            }
-            .overlay {
-                nicknameSetupOverlay
-            }
-            .overlay {
-                errorPopupOverlay
-            }
-            .fullScreenCover(isPresented: $showTutorial) {
-                TutorialView(isPresented: $showTutorial) {
-                    user?.record.tutorialCompleted = true
-                    hasSeenIntro = true
-                    showTutorial = false
-                }
-                .onAppear {
-                    Task {
-                        try? await Task.sleep(nanoseconds: UInt64(Constant.Animation.transitionDuration * 1_000_000_000))
-                        hasSeenIntro = true
-                    }
-                }
-            }
-            .onAppear {
-                guard user == nil else { return }
-                loadUser()
-            }
-            .onChange(of: scenePhase) { oldPhase, newPhase in
-                if oldPhase == .active && (newPhase == .background || newPhase == .inactive) {
-                    saveUser()
-                }
-            }
+            gameContent
+                .task { await loadPolicy() }
 #endif
         }
     }
@@ -105,7 +63,74 @@ struct SoloDeveloperTrainingApp: App {
 
 #if !DEV_BUILD
 private extension SoloDeveloperTrainingApp {
-    /// 저장된 User를 로드합니다.
+
+    // MARK: - 게임 콘텐츠
+
+    @ViewBuilder
+    var gameContent: some View {
+        Group {
+            if hasSeenIntro, let user {
+                MainView(user: user)
+                    .transition(.opacity)
+            } else {
+                IntroView(
+                    hasSeenIntro: $hasSeenIntro,
+                    showNicknameSetup: $showNicknameSetup,
+                    user: user,
+                    isPolicyReady: !isPolicyLoading && !hasPolicyError,
+                    hasPolicyError: hasPolicyError,
+                    onRetry: { Task { await loadPolicy() } }
+                )
+            }
+        }
+        .animation(.easeOut(duration: Constant.Animation.transitionDuration), value: hasSeenIntro)
+        .onOpenURL { url in
+            print("\(url) app open")
+        }
+        .overlay {
+            nicknameSetupOverlay
+        }
+        .overlay {
+            errorPopupOverlay
+        }
+        .fullScreenCover(isPresented: $showTutorial) {
+            TutorialView(isPresented: $showTutorial) {
+                user?.record.tutorialCompleted = true
+                hasSeenIntro = true
+                showTutorial = false
+            }
+            .onAppear {
+                Task {
+                    try? await Task.sleep(nanoseconds: UInt64(Constant.Animation.transitionDuration * 1_000_000_000))
+                    hasSeenIntro = true
+                }
+            }
+        }
+        .onAppear {
+            guard user == nil else { return }
+            loadUser()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .background || newPhase == .inactive {
+                saveUser()
+            }
+        }
+    }
+
+    // MARK: - Async
+
+    func loadPolicy() async {
+        isPolicyLoading = true
+        hasPolicyError = false
+        do {
+            try await policyStore.initialize()
+            isPolicyLoading = false
+        } catch {
+            isPolicyLoading = false
+            hasPolicyError = true
+        }
+    }
+
     func loadUser() {
         Task {
             do {
@@ -123,7 +148,6 @@ private extension SoloDeveloperTrainingApp {
         }
     }
 
-    /// 현재 User를 저장합니다.
     func saveUser() {
         guard let user = user else { return }
         Task {
@@ -158,6 +182,8 @@ private extension SoloDeveloperTrainingApp {
             user.record.offlineRewardState.lastSystemUptime = ProcessInfo.processInfo.systemUptime
         }
     }
+
+    // MARK: - Overlays
 
     @ViewBuilder
     var nicknameSetupOverlay: some View {

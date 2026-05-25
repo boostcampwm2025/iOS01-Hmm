@@ -252,17 +252,19 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
         async let equipment  = collection.document(PolicyDataField.equipment.rawValue).getDocument(as: EquipmentPolicyDTO.self)
         async let housing    = collection.document(PolicyDataField.housing.rawValue).getDocument(as: HousingPolicyDTO.self)
         async let system     = collection.document(PolicyDataField.system.rawValue).getDocument(as: SystemPolicyDTO.self)
+        let ad = try? await collection.document(PolicyDataField.ad.rawValue).getDocument(as: AdPolicyDTO.self)
 
-        return PolicyDTO(
+        return try await PolicyDTO(
             version: "",
-            career: try await career,
-            fever: try await fever,
-            game: try await game,
-            skill: try await skill,
-            consumable: try await consumable,
-            equipment: try await equipment,
-            housing: try await housing,
-            system: try await system
+            career: career,
+            fever: fever,
+            game: game,
+            skill: skill,
+            consumable: consumable,
+            equipment: equipment,
+            housing: housing,
+            system: system,
+            ad: ad
         )
     }
 
@@ -275,6 +277,7 @@ final class DefaultAdminPolicyRepository: AdminPolicyRepository {
         try batch.setData(from: policy.equipment,  forDocument: collection.document(PolicyDataField.equipment.rawValue))
         try batch.setData(from: policy.housing,    forDocument: collection.document(PolicyDataField.housing.rawValue))
         try batch.setData(from: policy.system,     forDocument: collection.document(PolicyDataField.system.rawValue))
+        try batch.setData(from: policy.ad,         forDocument: collection.document(PolicyDataField.ad.rawValue))
     }
 
     // MARK: - 편집 락

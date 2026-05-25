@@ -68,7 +68,7 @@ struct PolicyFieldMeta {
 
 extension PolicyFieldMeta {
 
-    static let all: [PolicyFieldMeta] = career + fever + game + skill + equipment + housing + consumable + system
+    static let all: [PolicyFieldMeta] = career + fever + game + skill + equipment + housing + consumable + system + ad
 
     // MARK: 커리어
 
@@ -247,8 +247,17 @@ extension PolicyFieldMeta {
     // MARK: 시스템
 
     private static let system: [PolicyFieldMeta] = [
-        .init(id: "system.autoGain.interval",     group: "시스템", section: "", name: "자동 획득 간격(초)", isDouble: true),
-        .init(id: "system.buff.decreaseInterval", group: "시스템", section: "", name: "버프 감소 간격(초)", isDouble: true),
+        .init(id: "system.autoGain.interval",              group: "시스템", section: "자동 획득", name: "획득 간격(초)",         isDouble: true),
+        .init(id: "system.buff.decreaseInterval",          group: "시스템", section: "버프",      name: "감소 간격(초)",         isDouble: true),
+        .init(id: "system.scenario.maxLevelupQueueSize",   group: "시스템", section: "시나리오",  name: "레벨업 큐 최대 크기",    isDouble: false),
+    ]
+
+    // MARK: 광고
+
+    private static let ad: [PolicyFieldMeta] = [
+        .init(id: "ad.skillReward.dailyLimit",       group: "광고", section: "스킬 보상", name: "1일 사용 횟수",    isDouble: false),
+        .init(id: "ad.skillReward.rewardMultiplier", group: "광고", section: "스킬 보상", name: "보상 배율",        isDouble: true),
+        .init(id: "ad.skillReward.rewardDuration",   group: "광고", section: "스킬 보상", name: "보상 지속 시간(초)", isDouble: false),
     ]
 }
 
