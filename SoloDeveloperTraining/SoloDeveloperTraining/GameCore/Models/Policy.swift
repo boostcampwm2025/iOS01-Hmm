@@ -345,14 +345,9 @@ enum Policy {
 
     // MARK: - 오프라인(미접속) 보상 시스템
     enum OfflineReward {
-        /// 오프라인 보상을 받기 위한 최소 경과 시간
-        static let minimumHours: TimeInterval = 3 * 3600  // 10800초 == 3시간
-
-        /// 서버 시간 조회 타임아웃
-        static let serverTimeTimeout: TimeInterval = 5.0
-
-        /// 허용 오차
-        static let allowedTimeDrift: TimeInterval = 120.0
+        static var minimumHours: TimeInterval { policyStore.current.system.offlineReward?.minimumHours ?? 3 }
+        static var serverTimeTimeout: TimeInterval { policyStore.current.system.offlineReward?.serverTimeTimeout ?? 5.0 }
+        static var allowedTimeDrift: TimeInterval { policyStore.current.system.offlineReward?.allowedTimeDrift ?? 120.0 }
     }
 
     // MARK: - 광고 정책

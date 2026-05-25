@@ -263,7 +263,8 @@ extension PolicyDTO {
             system: SystemPolicyDTO(
                 autoGain: AutoGainDTO(interval: 1.0),
                 buff: BuffDTO(decreaseInterval: 1.0),
-                scenario: ScenarioPolicyDTO(maxLevelupQueueSize: 3)
+                scenario: ScenarioPolicyDTO(maxLevelupQueueSize: 3),
+                offlineReward: OfflineRewardDTO(minimumHours: 3, serverTimeTimeout: 5.0, allowedTimeDrift: 120.0)
             ),
             ad: nil
         )
