@@ -21,27 +21,34 @@ private enum Constant {
 struct StackGameView: View {
     @State private var stackGame: StackGame
     @State private var scene: StackGameScene
+    @State private var closePause: Bool = false
     @State private var effectLabels: [EffectLabelData] = []
 
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
-    @Binding var isGameViewDisappeared: Bool
+    @Binding var gameActionGoldDelta: Int
+    @Binding var tabSwitchPause: Bool
 
     // 광고 팝업 관련
     @Binding var showDrinkAdPopup: Bool
     @Binding var showRewardPopup: Bool
+    @Binding var showExitBonusPopup: Bool
     @Binding var selectedDrinkType: ConsumableType?
     @Binding var resumeGameCallback: (() -> Void)?
+    @Binding var exitGameCallback: (() -> Void)?
 
     init(
         user: User,
         isGameStarted: Binding<Bool>,
-        isGameViewDisappeared: Binding<Bool>,
+        gameActionGoldDelta: Binding<Int>,
+        tabSwitchPause: Binding<Bool>,
         animationSystem: CharacterAnimationSystem? = nil,
         showDrinkAdPopup: Binding<Bool>,
         showRewardPopup: Binding<Bool>,
+        showExitBonusPopup: Binding<Bool>,
         selectedDrinkType: Binding<ConsumableType?>,
-        resumeGameCallback: Binding<(() -> Void)?>
+        resumeGameCallback: Binding<(() -> Void)?>,
+        exitGameCallback: Binding<(() -> Void)?>
     ) {
         let stackGame = StackGame(user: user, animationSystem: animationSystem)
 
@@ -51,13 +58,16 @@ struct StackGameView: View {
                  stackGame: stackGame,
                  onBlockDropped: { _ in }
              )
-         )
-        self._isGameViewDisappeared = isGameViewDisappeared
+        )
+        self._tabSwitchPause = tabSwitchPause
         self._isGameStarted = isGameStarted
+        self._gameActionGoldDelta = gameActionGoldDelta
         self._showDrinkAdPopup = showDrinkAdPopup
         self._showRewardPopup = showRewardPopup
+        self._showExitBonusPopup = showExitBonusPopup
         self._selectedDrinkType = selectedDrinkType
         self._resumeGameCallback = resumeGameCallback
+        self._exitGameCallback = exitGameCallback
     }
 
     var body: some View {
@@ -77,11 +87,12 @@ struct StackGameView: View {
                 resumeGameCallback = { [weak scene] in
                     scene?.resumeGame()
                 }
+                exitGameCallback = { handleCloseButton() }
             }
             .pauseGameStyle(
-                isGameViewDisappeared: $isGameViewDisappeared,
+                pauseBinding: pauseBinding,
                 height: geometry.size.height,
-                onLeave: { handleCloseButton() },
+                onLeave: { showExitBonusPopup = true },
                 onPause: { scene.pauseGame() },
                 onResume: { scene.resumeGame() }
             )
@@ -94,7 +105,7 @@ private extension StackGameView {
     /// 상단 툴바
     var toolbarSection: some View {
         GameToolBar(
-            closeButtonDidTapHandler: handleCloseButton,
+            closeButtonDidTapHandler: { closePause = true },
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
             feverState: stackGame.feverSystem,
@@ -104,6 +115,16 @@ private extension StackGameView {
         )
         .padding(.horizontal, Constant.Padding.horizontal)
         .padding(.bottom, Constant.Padding.toolBarBottom)
+    }
+
+    var pauseBinding: Binding<Bool> {
+        Binding(
+            get: { tabSwitchPause || closePause },
+            set: {
+                tabSwitchPause = $0
+                closePause = $0
+            }
+        )
     }
 
     /// 게임 영역
@@ -156,6 +177,7 @@ private extension StackGameView {
     /// 게임 콜백 설정
     func setupGameCallbacks(with geometry: GeometryProxy) {
         scene.onBlockDropped = { gold in
+            gameActionGoldDelta += gold
             showEffectLabel(
                 at: CGPoint(
                     x: geometry.size.width * randomEffectXRatio,
