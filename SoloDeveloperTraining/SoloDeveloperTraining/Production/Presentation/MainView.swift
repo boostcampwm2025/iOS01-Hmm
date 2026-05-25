@@ -41,7 +41,6 @@ struct MainView: View {
     @State private var selectedTab: TabItem = .work
     // 게임 세션 관리
     @State private var workGameSession = WorkGameSession()
-    @State private var resumeGameCallback: (() -> Void)?
 
     @State private var popupContent: PopupConfiguration?
     @State private var careerSystem: CareerSystem?
