@@ -41,6 +41,9 @@ struct RecordDTO: Codable {
     // Play Time Records
     let totalPlayTime: TimeInterval
 
+    // Offline Reward Records
+    let offlineRewardState: OfflineRewardState
+
     // Tutorial Records
     let tutorialCompleted: Bool
 
@@ -78,6 +81,7 @@ struct RecordDTO: Codable {
         self.energyDrinkUseCount = record.energyDrinkUseCount
         self.skillAdRewardState = record.skillAdRewardState
         self.totalPlayTime = record.totalPlayTime
+        self.offlineRewardState = record.offlineRewardState
         self.tutorialCompleted = record.tutorialCompleted
         self.hasAchievedJuniorDeveloper = record.hasAchievedJuniorDeveloper
         self.scenarioProgress = ScenarioProgressDTO(from: record.scenarioProgress)
@@ -122,6 +126,9 @@ struct RecordDTO: Codable {
 
         // Play Time Records
         record.totalPlayTime = totalPlayTime
+
+        // Offline Reward Records
+        record.offlineRewardState = offlineRewardState
 
         // Tutorial Records
         record.tutorialCompleted = tutorialCompleted

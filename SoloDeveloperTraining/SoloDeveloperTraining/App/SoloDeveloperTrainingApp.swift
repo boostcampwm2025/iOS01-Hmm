@@ -151,6 +151,9 @@ private extension SoloDeveloperTrainingApp {
     func saveUser() {
         guard let user = user else { return }
         Task {
+            // 앱 종료 시 시간 기록
+            await recordExitTime(for: user)
+
             do {
                 try await userRepository.save(user)
             } catch {
@@ -159,6 +162,24 @@ private extension SoloDeveloperTrainingApp {
                     self.showErrorPopup = true
                 }
             }
+        }
+    }
+
+    /// 앱 종료 시 시간 기록
+    @MainActor
+    func recordExitTime(for user: User) async {
+        // 서버 시간 조회 시도
+        if let serverTime = try? await TimeService.fetchCurrentTime() {
+            // 서버 시간 저장 성공
+            user.record.offlineRewardState.lastExitTime = serverTime
+            user.record.offlineRewardState.timeSource = .server
+            user.record.offlineRewardState.lastSystemUptime = nil
+        } else {
+            // 서버 시간 실패 -> 기기 시간 + systemUptime 저장
+            let deviceTime = Date().timeIntervalSince1970
+            user.record.offlineRewardState.lastExitTime = deviceTime
+            user.record.offlineRewardState.timeSource = .device
+            user.record.offlineRewardState.lastSystemUptime = ProcessInfo.processInfo.systemUptime
         }
     }
 

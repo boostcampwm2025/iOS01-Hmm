@@ -55,6 +55,12 @@ struct MainView: View {
     // 스킬 광고 보상 지속시 남은 시간
     @State private var skillAdRewardNow = Date()
 
+    // 오프라인 보상 팝업 관련
+    @State private var showOfflineRewardPopup: Bool = false
+    @State private var offlineRewardGold: Int = 0
+    @State private var offlineRewardHours: Double = 0.0
+    @State private var showOfflineRewardConfirmPopup: Bool = false
+    @State private var hasCheckedOfflineReward: Bool = false
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
@@ -250,6 +256,8 @@ private extension MainView {
             drinkAdPopupOverlayView
             drinkRewardPopupOverlayView
             exitBonusPopupOverlayView
+            offlineRewardPopupOverlayView
+            offlineRewardConfirmPopupOverlayView
         }
     }
 
@@ -277,6 +285,12 @@ private extension MainView {
         SoundService.shared.playBGM()
         skillAdRewardNow = Date()
         autoGainSystem.startSystem()
+
+        // 오프라인 보상 체크
+        Task {
+            await checkOfflineReward()
+        }
+
         Task {
             if careerSystem == nil {
                 careerSystem = await CareerSystem(user: user)
@@ -291,6 +305,10 @@ private extension MainView {
         if newValue == .active {
             skillAdRewardNow = Date()
             autoGainSystem.startSystem()
+            // 오프라인 보상 체크
+            Task {
+                await checkOfflineReward()
+            }
         } else if newValue == .inactive || newValue == .background {
             skillAdRewardNow = Date()
             autoGainSystem.stopSystem()
@@ -478,6 +496,87 @@ private extension MainView {
         workGameSession.exitGame?()
         workGameSession.isPauseRequested = false
         workGameSession.clearGameCallbacks()
+    }
+
+    // MARK: - Offline Reward
+
+    @ViewBuilder
+    var offlineRewardPopupOverlayView: some View {
+        if showOfflineRewardPopup {
+            modalOverlay {
+                OfflineRewardPopupView(
+                    gold: offlineRewardGold,
+                    hoursElapsed: offlineRewardHours,
+                    onWatchAd: { Task { await handleOfflineRewardWatchAd() } },
+                    onSkip: handleOfflineRewardSkip
+                )
+            }
+        }
+    }
+
+    func checkOfflineReward() async {
+        guard !hasCheckedOfflineReward else { return }
+
+        hasCheckedOfflineReward = true
+
+        let result = await OfflineRewardManager.checkAndAwardOfflineReward(user: user)
+
+        switch result {
+        case .awarded(let gold, let hoursElapsed):
+            // 보상 데이터 저장
+            offlineRewardGold = gold
+            offlineRewardHours = hoursElapsed
+            // 팝업 표시
+            showOfflineRewardPopup = true
+        case .notEligible(_):
+            // 보상을 받을 수 없는 경우, 다음 체크를 위해 플래그 리셋
+            hasCheckedOfflineReward = false
+        }
+    }
+
+    func handleOfflineRewardWatchAd() async {
+        showOfflineRewardPopup = false
+
+        let success = await AdService.shared.showAdWithResult(.interstitial)
+
+        if success {
+            user.wallet.addGold(offlineRewardGold)
+            showOfflineRewardConfirmPopup = true
+        } else {
+            // 광고 실패 시 데이터 초기화
+            offlineRewardGold = 0
+            offlineRewardHours = 0.0
+        }
+    }
+
+    func handleOfflineRewardSkip() {
+        showOfflineRewardPopup = false
+        // 데이터 초기화
+        offlineRewardGold = 0
+        offlineRewardHours = 0.0
+        // 다음 체크를 위해 플래그 리셋
+        hasCheckedOfflineReward = false
+    }
+
+    @ViewBuilder
+    var offlineRewardConfirmPopupOverlayView: some View {
+        if showOfflineRewardConfirmPopup {
+            modalOverlay {
+                OfflineRewardConfirmPopupView(
+                    gold: offlineRewardGold,
+                    onConfirm: handleOfflineRewardConfirm
+                )
+            }
+        }
+    }
+
+    func handleOfflineRewardConfirm() {
+        showOfflineRewardConfirmPopup = false
+        // 데이터 초기화
+        offlineRewardGold = 0
+        offlineRewardHours = 0.0
+        // 다음 체크를 위해 플래그 리셋
+        hasCheckedOfflineReward = false
     }
 }
 

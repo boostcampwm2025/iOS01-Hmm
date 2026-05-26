@@ -250,6 +250,9 @@ extension PolicyFieldMeta {
         .init(id: "system.autoGain.interval",              group: "시스템", section: "자동 획득", name: "획득 간격(초)",         isDouble: true),
         .init(id: "system.buff.decreaseInterval",          group: "시스템", section: "버프",      name: "감소 간격(초)",         isDouble: true),
         .init(id: "system.scenario.maxLevelupQueueSize",   group: "시스템", section: "시나리오",  name: "레벨업 큐 최대 크기",    isDouble: false),
+        .init(id: "system.offlineReward.minimumHours",      group: "시스템", section: "오프라인 보상", name: "최소 경과 시간(시)",          isDouble: true),
+        .init(id: "system.offlineReward.serverTimeTimeout", group: "시스템", section: "오프라인 보상", name: "서버 시간 조회 타임아웃(초)", isDouble: true),
+        .init(id: "system.offlineReward.allowedTimeDrift",  group: "시스템", section: "오프라인 보상", name: "허용 오차(초)",              isDouble: true),
     ]
 
     // MARK: 광고

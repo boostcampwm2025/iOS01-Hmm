@@ -343,6 +343,13 @@ enum Policy {
         static var maxLevelupQueueSize: Int { policyStore.current.system.scenario?.maxLevelupQueueSize ?? 3 }
     }
 
+    // MARK: - 오프라인(미접속) 보상 시스템
+    enum OfflineReward {
+        static var minimumHours: TimeInterval { policyStore.current.system.offlineReward?.minimumHours ?? 3 }
+        static var serverTimeTimeout: TimeInterval { policyStore.current.system.offlineReward?.serverTimeTimeout ?? 5.0 }
+        static var allowedTimeDrift: TimeInterval { policyStore.current.system.offlineReward?.allowedTimeDrift ?? 120.0 }
+    }
+
     // MARK: - 광고 정책
     enum Ad {
         /// 스킬 광고 보상 (업무 효율 대박)

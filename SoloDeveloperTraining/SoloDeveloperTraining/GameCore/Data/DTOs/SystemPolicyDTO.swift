@@ -9,6 +9,7 @@ struct SystemPolicyDTO: Codable {
     let autoGain: AutoGainDTO
     let buff: BuffDTO
     let scenario: ScenarioPolicyDTO?
+    let offlineReward: OfflineRewardDTO?
 }
 
 struct AutoGainDTO: Codable {
@@ -21,4 +22,10 @@ struct BuffDTO: Codable {
 
 struct ScenarioPolicyDTO: Codable {
     let maxLevelupQueueSize: Int
+}
+
+struct OfflineRewardDTO: Codable {
+    let minimumHours: Double
+    let serverTimeTimeout: Double
+    let allowedTimeDrift: Double
 }

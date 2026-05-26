@@ -104,6 +104,8 @@
 				Production/Presentation/MainView.swift,
 				Production/Presentation/MissionView.swift,
 				Production/Presentation/MultiTouchView.swift,
+				Production/Presentation/OfflineRewardConfirmPopupView.swift,
+				Production/Presentation/OfflineRewardPopupView.swift,
 				Production/Presentation/ShopView.swift,
 				Production/Presentation/SkillView.swift,
 				Production/Presentation/Work/Game/DodgeGameView.swift,
