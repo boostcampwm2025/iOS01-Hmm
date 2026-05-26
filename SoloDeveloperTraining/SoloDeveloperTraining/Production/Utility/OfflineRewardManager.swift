@@ -8,9 +8,7 @@
 import Foundation
 
 /// 오프라인 보상 검증 및 지급 관리자
-@MainActor
-final class OfflineRewardManager {
-
+enum OfflineRewardManager {
     /// 보상 지급 결과
     enum RewardResult {
         case awarded(gold: Int, hoursElapsed: Double)
@@ -29,7 +27,7 @@ final class OfflineRewardManager {
     /// 오프라인 보상 체크 및 지급
     /// - Parameter user: 사용자 객체
     /// - Returns: 보상 결과
-    func checkAndAwardOfflineReward(user: User) async -> RewardResult {
+    static func checkAndAwardOfflineReward(user: User) async -> RewardResult {
         let state = user.record.offlineRewardState
 
         // 신규 유저 체크
@@ -50,7 +48,7 @@ final class OfflineRewardManager {
     // MARK: - Private Methods
 
     /// 서버 시간 기반 검증
-    private func validateWithServerTime(user: User, lastExitTime: TimeInterval) async -> RewardResult {
+    private static func validateWithServerTime(user: User, lastExitTime: TimeInterval) async -> RewardResult {
         // 현재 서버 시간 조회
         guard let currentServerTime = try? await TimeService.fetchCurrentTime() else {
             return .notEligible(reason: .networkUnavailable)
@@ -66,7 +64,7 @@ final class OfflineRewardManager {
     }
 
     /// 기기 시간 기반 검증
-    private func validateWithDeviceTime(user: User, state: OfflineRewardState, lastExitTime: TimeInterval) async -> RewardResult {
+    private static func validateWithDeviceTime(user: User, state: OfflineRewardState, lastExitTime: TimeInterval) async -> RewardResult {
         guard let savedUptime = state.lastSystemUptime else {
             return .notEligible(reason: .networkUnavailable)
         }
@@ -109,7 +107,7 @@ final class OfflineRewardManager {
     }
 
     /// 보상 계산
-    private func awardReward(user: User, lastExitTime: TimeInterval, currentTime: TimeInterval) -> RewardResult {
+    private static func awardReward(user: User, lastExitTime: TimeInterval, currentTime: TimeInterval) -> RewardResult {
         let elapsed = currentTime - lastExitTime
         let hoursElapsed = elapsed / 3600.0
 

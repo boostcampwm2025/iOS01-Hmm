@@ -519,8 +519,7 @@ private extension MainView {
 
         hasCheckedOfflineReward = true
 
-        let manager = OfflineRewardManager()
-        let result = await manager.checkAndAwardOfflineReward(user: user)
+        let result = await OfflineRewardManager.checkAndAwardOfflineReward(user: user)
 
         switch result {
         case .awarded(let gold, let hoursElapsed):
