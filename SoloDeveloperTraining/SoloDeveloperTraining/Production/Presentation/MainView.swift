@@ -503,17 +503,13 @@ private extension MainView {
     @ViewBuilder
     var offlineRewardPopupOverlayView: some View {
         if showOfflineRewardPopup {
-            ZStack {
-                Color.black.opacity(0.4)
-                    .ignoresSafeArea()
-
+            modalOverlay {
                 OfflineRewardPopupView(
                     gold: offlineRewardGold,
                     hoursElapsed: offlineRewardHours,
                     onWatchAd: { Task { await handleOfflineRewardWatchAd() } },
                     onSkip: handleOfflineRewardSkip
                 )
-                .padding(.horizontal, Constant.Padding.horizontalPadding)
             }
         }
     }
@@ -566,15 +562,11 @@ private extension MainView {
     @ViewBuilder
     var offlineRewardConfirmPopupOverlayView: some View {
         if showOfflineRewardConfirmPopup {
-            ZStack {
-                Color.black.opacity(0.4)
-                    .ignoresSafeArea()
-
+            modalOverlay {
                 OfflineRewardConfirmPopupView(
                     gold: offlineRewardGold,
                     onConfirm: handleOfflineRewardConfirm
                 )
-                .padding(.horizontal, Constant.Padding.horizontalPadding)
             }
         }
     }
