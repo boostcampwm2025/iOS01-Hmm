@@ -172,13 +172,13 @@ private extension SoloDeveloperTrainingApp {
         if let serverTime = try? await TimeService.fetchCurrentTime() {
             // 서버 시간 저장 성공
             user.record.offlineRewardState.lastExitTime = serverTime
-            user.record.offlineRewardState.timeSource = "server"
+            user.record.offlineRewardState.timeSource = .server
             user.record.offlineRewardState.lastSystemUptime = nil
         } else {
             // 서버 시간 실패 -> 기기 시간 + systemUptime 저장
             let deviceTime = Date().timeIntervalSince1970
             user.record.offlineRewardState.lastExitTime = deviceTime
-            user.record.offlineRewardState.timeSource = "device"
+            user.record.offlineRewardState.timeSource = .device
             user.record.offlineRewardState.lastSystemUptime = ProcessInfo.processInfo.systemUptime
         }
     }

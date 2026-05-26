@@ -38,7 +38,7 @@ final class OfflineRewardManager {
         }
 
         // timeSource에 따라 검증 분기
-        if state.timeSource == "server" {
+        if state.timeSource == TimeSource.server {
             // 서버 시간으로 저장된 케이스
             return await validateWithServerTime(user: user, lastExitTime: lastExitTime)
         } else {

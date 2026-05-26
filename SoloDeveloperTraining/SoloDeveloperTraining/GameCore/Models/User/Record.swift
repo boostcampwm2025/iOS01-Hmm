@@ -8,18 +8,23 @@
 import Foundation
 import Observation
 
+enum TimeSource: String, Codable {
+    case server
+    case device
+}
+
 struct OfflineRewardState: Codable {
     /// 마지막 앱 종료 시간
     var lastExitTime: TimeInterval?
     /// 마지막 systemUptime (device 모드용)
     var lastSystemUptime: TimeInterval?
-    /// 시간 출처 ("server" 또는 "device")
-    var timeSource: String?
+    /// 시간 출처
+    var timeSource: TimeSource?
 
     init(
         lastExitTime: TimeInterval? = nil,
         lastSystemUptime: TimeInterval? = nil,
-        timeSource: String? = nil
+        timeSource: TimeSource? = nil
     ) {
         self.lastExitTime = lastExitTime
         self.lastSystemUptime = lastSystemUptime
