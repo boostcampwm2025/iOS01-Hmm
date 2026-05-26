@@ -44,10 +44,12 @@ struct LanguageGameView: View {
     // MARK: State Properties
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
-    @Binding var isGameViewDisappeared: Bool
+    @Binding var gameActionGoldDelta: Int
+    @Binding var tabSwitchPause: Bool
 
     /// 상태를 유지
     @State private var game: LanguageGame
+    @State private var closePause: Bool = false
 
     /// 획득한 골드를 표시하기 위한 효과 라벨 배열
     @State private var effectValues: [(id: UUID, value: Int)] = []
@@ -58,26 +60,34 @@ struct LanguageGameView: View {
     // 광고 팝업 관련
     @Binding var showDrinkAdPopup: Bool
     @Binding var showRewardPopup: Bool
+    @Binding var showExitBonusPopup: Bool
     @Binding var selectedDrinkType: ConsumableType?
     @Binding var resumeGameCallback: (() -> Void)?
+    @Binding var exitGameCallback: (() -> Void)?
 
     init(
         user: User,
         isGameStarted: Binding<Bool>,
-        isGameViewDisappeared: Binding<Bool>,
+        gameActionGoldDelta: Binding<Int>,
+        tabSwitchPause: Binding<Bool>,
         animationSystem: CharacterAnimationSystem? = nil,
         showDrinkAdPopup: Binding<Bool>,
         showRewardPopup: Binding<Bool>,
+        showExitBonusPopup: Binding<Bool>,
         selectedDrinkType: Binding<ConsumableType?>,
-        resumeGameCallback: Binding<(() -> Void)?>
+        resumeGameCallback: Binding<(() -> Void)?>,
+        exitGameCallback: Binding<(() -> Void)?>
     ) {
         self._isGameStarted = isGameStarted
-        self._isGameViewDisappeared = isGameViewDisappeared
+        self._gameActionGoldDelta = gameActionGoldDelta
+        self._tabSwitchPause = tabSwitchPause
         self.user = user
         self._showDrinkAdPopup = showDrinkAdPopup
         self._showRewardPopup = showRewardPopup
+        self._showExitBonusPopup = showExitBonusPopup
         self._selectedDrinkType = selectedDrinkType
         self._resumeGameCallback = resumeGameCallback
+        self._exitGameCallback = exitGameCallback
 
         // 게임 초기화
         let game = LanguageGame(
@@ -113,11 +123,12 @@ struct LanguageGameView: View {
                 resumeGameCallback = { [weak game] in
                     game?.resumeGame()
                 }
+                exitGameCallback = { handleCloseButton() }
             }
             .pauseGameStyle(
-                isGameViewDisappeared: $isGameViewDisappeared,
+                pauseBinding: pauseBinding,
                 height: geometry.size.height,
-                onLeave: { handleCloseButton() },
+                onLeave: { showExitBonusPopup = true },
                 onPause: { game.pauseGame() },
                 onResume: { game.resumeGame() }
             )
@@ -130,7 +141,7 @@ private extension LanguageGameView {
     /// 상단 툴바
     var toolbarSection: some View {
         GameToolBar(
-            closeButtonDidTapHandler: handleCloseButton,
+            closeButtonDidTapHandler: { closePause = true },
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
             feverState: game.feverSystem,
@@ -140,6 +151,16 @@ private extension LanguageGameView {
         )
         .padding(.horizontal, Constant.Padding.horizontal)
         .padding(.bottom, Constant.Padding.toolBarBottom)
+    }
+
+    var pauseBinding: Binding<Bool> {
+        Binding(
+            get: { tabSwitchPause || closePause },
+            set: {
+                tabSwitchPause = $0
+                closePause = $0
+            }
+        )
     }
 
     /// 중앙 언어 아이템 영역
@@ -205,6 +226,7 @@ private extension LanguageGameView {
             if gainedGold <= 0 {
                 HapticService.shared.trigger(.error)
             }
+            gameActionGoldDelta += gainedGold
             showEffectLabel(gainedGold: gainedGold)
         }
     }
@@ -248,11 +270,14 @@ private extension LanguageGameView {
 
 #Preview {
     @Previewable @State var isGameStarted = true
-    @Previewable @State var isGameViewDisappeared = true
+    @Previewable @State var gameActionGoldDelta = 0
+    @Previewable @State var tabSwitchPause = true
     @Previewable @State var showDrinkAdPopup = false
     @Previewable @State var showRewardPopup = false
+    @Previewable @State var showExitBonusPopup = false
     @Previewable @State var selectedDrinkType: ConsumableType?
     @Previewable @State var resumeGameCallback: (() -> Void)?
+    @Previewable @State var exitGameCallback: (() -> Void)?
 
     let user = User(
         nickname: "Test",
@@ -267,11 +292,14 @@ private extension LanguageGameView {
     LanguageGameView(
         user: user,
         isGameStarted: $isGameStarted,
-        isGameViewDisappeared: $isGameViewDisappeared,
+        gameActionGoldDelta: $gameActionGoldDelta,
+        tabSwitchPause: $tabSwitchPause,
         animationSystem: nil,
         showDrinkAdPopup: $showDrinkAdPopup,
         showRewardPopup: $showRewardPopup,
+        showExitBonusPopup: $showExitBonusPopup,
         selectedDrinkType: $selectedDrinkType,
-        resumeGameCallback: $resumeGameCallback
+        resumeGameCallback: $resumeGameCallback,
+        exitGameCallback: $exitGameCallback
     )
 }

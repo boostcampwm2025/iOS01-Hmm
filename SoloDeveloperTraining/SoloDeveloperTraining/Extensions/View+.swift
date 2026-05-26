@@ -21,7 +21,7 @@ extension View {
     }
 
     func pauseGameStyle(
-        isGameViewDisappeared: Binding<Bool>,
+        pauseBinding: Binding<Bool>,
         height: CGFloat,
         onLeave: @escaping () -> Void,
         onPause: @escaping () -> Void,
@@ -29,7 +29,7 @@ extension View {
     ) -> some View {
         self.modifier(
             GamePauseWrapper(
-                isGameViewDisappeared: isGameViewDisappeared,
+                pauseBinding: pauseBinding,
                 height: height,
                 onLeave: onLeave,
                 onPause: onPause,

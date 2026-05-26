@@ -158,11 +158,11 @@ private extension StackGame {
     /// 패널티를 적용합니다 (골드 손실, 피버 감소)
     func applyPenalty() -> Int {
         let goldLost = calculateGold()
-        user.wallet.spendGold(goldLost)
+        let didSpendGold = user.wallet.spendGold(goldLost)
         /// 실패 수 기록
         user.record.record(.stackingFail)
         feverSystem.gainFever(Policy.Fever.Stack.lossPerFailure)
-        return -goldLost
+        return didSpendGold ? -goldLost : 0
         #if DEV_BUILD
             print("💸 골드 손실: \(goldLost), 총액: \(user.wallet.gold)")
         #endif

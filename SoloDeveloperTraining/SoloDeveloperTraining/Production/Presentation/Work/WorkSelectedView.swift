@@ -37,14 +37,17 @@ struct WorkSelectedView: View {
     @State private var showToast: Bool = false
     @State private var toastMessage: String = ""
     @Binding var isGameStarted: Bool
-    @Binding var isGameViewDisappeared: Bool
+    @Binding var gameActionGoldDelta: Int
+    @Binding var tabSwitchPause: Bool
     @Binding var careerSystem: CareerSystem?
 
     // 광고 팝업 관련
     @Binding var showDrinkAdPopup: Bool
     @Binding var showRewardPopup: Bool
+    @Binding var showExitBonusPopup: Bool
     @Binding var selectedDrinkType: ConsumableType?
     @Binding var resumeGameCallback: (() -> Void)?
+    @Binding var exitGameCallback: (() -> Void)?
 
     private let localStorage: KeyValueLocalStorage = UserDefaultsStorage()
 
@@ -52,22 +55,28 @@ struct WorkSelectedView: View {
         user: User,
         animationSystem: CharacterAnimationSystem?,
         isGameStarted: Binding<Bool>,
-        isGameViewDisappeared: Binding<Bool>,
+        gameActionGoldDelta: Binding<Int>,
+        tabSwitchPause: Binding<Bool>,
         careerSystem: Binding<CareerSystem?>,
         showDrinkAdPopup: Binding<Bool>,
         showRewardPopup: Binding<Bool>,
+        showExitBonusPopup: Binding<Bool>,
         selectedDrinkType: Binding<ConsumableType?>,
-        resumeGameCallback: Binding<(() -> Void)?>
+        resumeGameCallback: Binding<(() -> Void)?>,
+        exitGameCallback: Binding<(() -> Void)?>
     ) {
         self.user = user
         self.animationSystem = animationSystem
         self._isGameStarted = isGameStarted
-        self._isGameViewDisappeared = isGameViewDisappeared
+        self._gameActionGoldDelta = gameActionGoldDelta
+        self._tabSwitchPause = tabSwitchPause
         self._careerSystem = careerSystem
         self._showDrinkAdPopup = showDrinkAdPopup
         self._showRewardPopup = showRewardPopup
+        self._showExitBonusPopup = showExitBonusPopup
         self._selectedDrinkType = selectedDrinkType
         self._resumeGameCallback = resumeGameCallback
+        self._exitGameCallback = exitGameCallback
     }
 
     var body: some View {
@@ -185,45 +194,57 @@ private extension WorkSelectedView {
             TapGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
-                isGameViewDisappeared: $isGameViewDisappeared,
+                gameActionGoldDelta: $gameActionGoldDelta,
+                tabSwitchPause: $tabSwitchPause,
                 animationSystem: animationSystem,
                 showDrinkAdPopup: $showDrinkAdPopup,
                 showRewardPopup: $showRewardPopup,
+                showExitBonusPopup: $showExitBonusPopup,
                 selectedDrinkType: $selectedDrinkType,
-                resumeGameCallback: $resumeGameCallback
+                resumeGameCallback: $resumeGameCallback,
+                exitGameCallback: $exitGameCallback
             )
         case 1:
             LanguageGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
-                isGameViewDisappeared: $isGameViewDisappeared,
+                gameActionGoldDelta: $gameActionGoldDelta,
+                tabSwitchPause: $tabSwitchPause,
                 animationSystem: animationSystem,
                 showDrinkAdPopup: $showDrinkAdPopup,
                 showRewardPopup: $showRewardPopup,
+                showExitBonusPopup: $showExitBonusPopup,
                 selectedDrinkType: $selectedDrinkType,
-                resumeGameCallback: $resumeGameCallback
+                resumeGameCallback: $resumeGameCallback,
+                exitGameCallback: $exitGameCallback
             )
         case 2:
             DodgeGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
-                isGameViewDisappeared: $isGameViewDisappeared,
+                gameActionGoldDelta: $gameActionGoldDelta,
+                tabSwitchPause: $tabSwitchPause,
                 animationSystem: animationSystem,
                 showDrinkAdPopup: $showDrinkAdPopup,
                 showRewardPopup: $showRewardPopup,
+                showExitBonusPopup: $showExitBonusPopup,
                 selectedDrinkType: $selectedDrinkType,
-                resumeGameCallback: $resumeGameCallback
+                resumeGameCallback: $resumeGameCallback,
+                exitGameCallback: $exitGameCallback
             )
         case 3:
             StackGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
-                isGameViewDisappeared: $isGameViewDisappeared,
+                gameActionGoldDelta: $gameActionGoldDelta,
+                tabSwitchPause: $tabSwitchPause,
                 animationSystem: animationSystem,
                 showDrinkAdPopup: $showDrinkAdPopup,
                 showRewardPopup: $showRewardPopup,
+                showExitBonusPopup: $showExitBonusPopup,
                 selectedDrinkType: $selectedDrinkType,
-                resumeGameCallback: $resumeGameCallback
+                resumeGameCallback: $resumeGameCallback,
+                exitGameCallback: $exitGameCallback
             )
         default:
             EmptyView()
@@ -261,12 +282,15 @@ private extension WorkSelectedView {
 
 #Preview {
     @Previewable @State var isGameStarted = false
-    @Previewable @State var isGameViewDisappeared = false
+    @Previewable @State var gameActionGoldDelta = 0
+    @Previewable @State var tabSwitchPause = false
     @Previewable @State var careerSystem: CareerSystem?
     @Previewable @State var showDrinkAdPopup = false
     @Previewable @State var showRewardPopup = false
+    @Previewable @State var showExitBonusPopup = false
     @Previewable @State var selectedDrinkType: ConsumableType?
     @Previewable @State var resumeGameCallback: (() -> Void)?
+    @Previewable @State var exitGameCallback: (() -> Void)?
 
     let user = User(
         nickname: "Test",
@@ -279,11 +303,14 @@ private extension WorkSelectedView {
         user: user,
         animationSystem: nil,
         isGameStarted: $isGameStarted,
-        isGameViewDisappeared: $isGameViewDisappeared,
+        gameActionGoldDelta: $gameActionGoldDelta,
+        tabSwitchPause: $tabSwitchPause,
         careerSystem: $careerSystem,
         showDrinkAdPopup: $showDrinkAdPopup,
         showRewardPopup: $showRewardPopup,
+        showExitBonusPopup: $showExitBonusPopup,
         selectedDrinkType: $selectedDrinkType,
-        resumeGameCallback: $resumeGameCallback
+        resumeGameCallback: $resumeGameCallback,
+        exitGameCallback: $exitGameCallback
     )
 }

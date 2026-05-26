@@ -20,11 +20,13 @@ struct TapGameView: View {
     // MARK: - Properties
     /// 게임 시작 상태 (부모 뷰와 바인딩)
     @Binding var isGameStarted: Bool
-    @Binding var isGameViewDisappeared: Bool
+    @Binding var gameActionGoldDelta: Int
+    @Binding var tabSwitchPause: Bool
 
     // MARK: - State
     /// 의존 게임
     @State private var tapGame: TapGame
+    @State private var closePause: Bool = false
     /// 터치한 위치에 표시될 EffectLabel들의 위치와 값
     @State private var effectLabels: [EffectLabelData] = []
     /// 탭 사운드 쓰로틀용 마지막 재생 시각
@@ -33,18 +35,23 @@ struct TapGameView: View {
     // 광고 팝업 관련
     @Binding var showDrinkAdPopup: Bool
     @Binding var showRewardPopup: Bool
+    @Binding var showExitBonusPopup: Bool
     @Binding var selectedDrinkType: ConsumableType?
     @Binding var resumeGameCallback: (() -> Void)?
+    @Binding var exitGameCallback: (() -> Void)?
 
     init(
         user: User,
         isGameStarted: Binding<Bool>,
-        isGameViewDisappeared: Binding<Bool>,
+        gameActionGoldDelta: Binding<Int>,
+        tabSwitchPause: Binding<Bool>,
         animationSystem: CharacterAnimationSystem?,
         showDrinkAdPopup: Binding<Bool>,
         showRewardPopup: Binding<Bool>,
+        showExitBonusPopup: Binding<Bool>,
         selectedDrinkType: Binding<ConsumableType?>,
-        resumeGameCallback: Binding<(() -> Void)?>
+        resumeGameCallback: Binding<(() -> Void)?>,
+        exitGameCallback: Binding<(() -> Void)?>
     ) {
         let tapGame = TapGame(
             user: user,
@@ -53,11 +60,14 @@ struct TapGameView: View {
         )
         self._tapGame = State(initialValue: tapGame)
         self._isGameStarted = isGameStarted
-        self._isGameViewDisappeared = isGameViewDisappeared
+        self._gameActionGoldDelta = gameActionGoldDelta
+        self._tabSwitchPause = tabSwitchPause
         self._showDrinkAdPopup = showDrinkAdPopup
         self._showRewardPopup = showRewardPopup
+        self._showExitBonusPopup = showExitBonusPopup
         self._selectedDrinkType = selectedDrinkType
         self._resumeGameCallback = resumeGameCallback
+        self._exitGameCallback = exitGameCallback
         self.tapGame.startGame()
     }
 
@@ -75,11 +85,12 @@ struct TapGameView: View {
                 resumeGameCallback = { [weak tapGame] in
                     tapGame?.resumeGame()
                 }
+                exitGameCallback = { handleCloseButton() }
             }
             .pauseGameStyle(
-                isGameViewDisappeared: $isGameViewDisappeared,
+                pauseBinding: pauseBinding,
                 height: geometry.size.height,
-                onLeave: { handleCloseButton() },
+                onLeave: { showExitBonusPopup = true },
                 onPause: {
                     tapGame.pauseGame()
                     SoundService.shared.stopAllSFX()
@@ -96,7 +107,7 @@ private extension TapGameView {
     /// 상단 툴바
     var toolbarSection: some View {
         GameToolBar(
-            closeButtonDidTapHandler: handleCloseButton,
+            closeButtonDidTapHandler: { closePause = true },
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
             feverState: tapGame.feverSystem,
@@ -112,6 +123,16 @@ private extension TapGameView {
         )
         .padding(.horizontal, Constant.Padding.horizontal)
         .padding(.bottom, Constant.Padding.toolBarBottom)
+    }
+
+    var pauseBinding: Binding<Bool> {
+        Binding(
+            get: { tabSwitchPause || closePause },
+            set: {
+                tabSwitchPause = $0
+                closePause = $0
+            }
+        )
     }
 
     /// 터치 가능한 게임 영역
@@ -158,6 +179,7 @@ private extension TapGameView {
             lastTapSoundTime = now
         }
         let gainGold = await tapGame.didPerformAction()
+        gameActionGoldDelta += gainGold
         showEffectLabel(at: location, value: gainGold)
     }
 
@@ -207,11 +229,14 @@ private extension TapGameView {
 
 #Preview {
     @Previewable @State var isGameStarted: Bool = true
-    @Previewable @State var isGameViewDisappeared: Bool = true
+    @Previewable @State var gameActionGoldDelta: Int = 0
+    @Previewable @State var tabSwitchPause: Bool = true
     @Previewable @State var showDrinkAdPopup: Bool = false
     @Previewable @State var showRewardPopup: Bool = false
+    @Previewable @State var showExitBonusPopup: Bool = false
     @Previewable @State var selectedDrinkType: ConsumableType?
     @Previewable @State var resumeGameCallback: (() -> Void)?
+    @Previewable @State var exitGameCallback: (() -> Void)?
 
     let user = User(
         nickname: "Preview User",
@@ -232,11 +257,14 @@ private extension TapGameView {
     TapGameView(
         user: user,
         isGameStarted: $isGameStarted,
-        isGameViewDisappeared: $isGameViewDisappeared,
+        gameActionGoldDelta: $gameActionGoldDelta,
+        tabSwitchPause: $tabSwitchPause,
         animationSystem: nil,
         showDrinkAdPopup: $showDrinkAdPopup,
         showRewardPopup: $showRewardPopup,
+        showExitBonusPopup: $showExitBonusPopup,
         selectedDrinkType: $selectedDrinkType,
-        resumeGameCallback: $resumeGameCallback
+        resumeGameCallback: $resumeGameCallback,
+        exitGameCallback: $exitGameCallback
     )
 }

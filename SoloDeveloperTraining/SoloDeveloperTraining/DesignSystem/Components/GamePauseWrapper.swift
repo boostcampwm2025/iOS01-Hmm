@@ -28,7 +28,7 @@ struct GamePauseWrapper: ViewModifier {
     @Environment(\.scenePhase) private var scenePhase
     @State private var isPaused: Bool = false
 
-    @Binding var isGameViewDisappeared: Bool
+    @Binding var pauseBinding: Bool
 
     let height: CGFloat
     let onLeave: () -> Void
@@ -47,9 +47,9 @@ struct GamePauseWrapper: ViewModifier {
         .onChange(of: scenePhase) { oldPhase, newPhase in
             handleScenePhase(oldPhase: oldPhase, newPhase: newPhase)
         }
-        .onChange(of: isGameViewDisappeared) { _, newValue in
+        .onChange(of: pauseBinding) { _, newValue in
             if newValue {
-                handleGameViewDisappeard()
+                handlePauseRequested()
             }
         }
     }
@@ -103,7 +103,7 @@ private extension GamePauseWrapper {
 
 // MARK: - Actions
 private extension GamePauseWrapper {
-    func handleGameViewDisappeard() {
+    func handlePauseRequested() {
         isPaused = true
         onPause()
     }
@@ -111,19 +111,19 @@ private extension GamePauseWrapper {
     func handleScenePhase(oldPhase: ScenePhase, newPhase: ScenePhase) {
         // 앱이 비활성 상태로 갈 때 즉시 일시정지
         if newPhase != .active {
-            handleGameViewDisappeard()
+            handlePauseRequested()
         }
     }
 
     func handleLeave() {
         guard isPaused else { return }
-        isPaused = false
         onLeave()
     }
 
     func handleResume() {
         guard isPaused else { return }
         isPaused = false
+        pauseBinding = false
         onResume()
     }
 }

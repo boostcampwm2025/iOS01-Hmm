@@ -107,7 +107,8 @@ final class BuffSystem {
     /// 남은 시간 계산 (초)
     private func remainingDuration(for type: ConsumableType) -> Int {
         guard let endTime = endTimes[type] else { return 0 }
-        let remaining = endTime - currentTime
+        let referenceTime = pauseStartTime ?? currentTime
+        let remaining = endTime - referenceTime
         return max(0, Int(ceil(remaining)))
     }
 

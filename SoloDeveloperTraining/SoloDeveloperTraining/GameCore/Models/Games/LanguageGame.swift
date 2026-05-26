@@ -141,10 +141,11 @@ final class LanguageGame: Game {
             animationSystem?.playSmile()
             return gainGold
         }
-        user.wallet.spendGold(Int(Double(gainGold) * Policy.Game.Language.incorrectGoldLossMultiplier))
+        let loseGold = Int(Double(gainGold) * Policy.Game.Language.incorrectGoldLossMultiplier)
+        let didSpendGold = user.wallet.spendGold(loseGold)
         /// 오답 횟수 기록
         user.record.record(.languageIncorrect)
-        return Int(Double(gainGold) * Policy.Game.Language.incorrectGoldLossMultiplier) * -1
+        return didSpendGold ? -loseGold : 0
     }
 
     private func languageButtonTapHandler(tappedItemType: LanguageType) -> Bool {

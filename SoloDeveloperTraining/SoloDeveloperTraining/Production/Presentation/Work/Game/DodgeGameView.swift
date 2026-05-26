@@ -39,34 +39,44 @@ struct DodgeGameView: View {
     @State private var goldEffects: [EffectLabelData] = []
     // 일시정지 상태 추가
     @State private var isGamePaused: Bool = false
+    @State private var closePause: Bool = false
     // 게임 초기 설정 완료 여부
     @State private var isGameInitialized: Bool = false
 
     @Binding var isGameStarted: Bool
-    @Binding var isGameViewDisappeared: Bool
+    @Binding var gameActionGoldDelta: Int
+    @Binding var tabSwitchPause: Bool
 
     // 광고 팝업 관련
     @Binding var showDrinkAdPopup: Bool
     @Binding var showRewardPopup: Bool
+    @Binding var showExitBonusPopup: Bool
     @Binding var selectedDrinkType: ConsumableType?
     @Binding var resumeGameCallback: (() -> Void)?
+    @Binding var exitGameCallback: (() -> Void)?
 
     init(
         user: User,
         isGameStarted: Binding<Bool>,
-        isGameViewDisappeared: Binding<Bool>,
+        gameActionGoldDelta: Binding<Int>,
+        tabSwitchPause: Binding<Bool>,
         animationSystem: CharacterAnimationSystem? = nil,
         showDrinkAdPopup: Binding<Bool>,
         showRewardPopup: Binding<Bool>,
+        showExitBonusPopup: Binding<Bool>,
         selectedDrinkType: Binding<ConsumableType?>,
-        resumeGameCallback: Binding<(() -> Void)?>
+        resumeGameCallback: Binding<(() -> Void)?>,
+        exitGameCallback: Binding<(() -> Void)?>
     ) {
         self._isGameStarted = isGameStarted
-        self._isGameViewDisappeared = isGameViewDisappeared
+        self._gameActionGoldDelta = gameActionGoldDelta
+        self._tabSwitchPause = tabSwitchPause
         self._showDrinkAdPopup = showDrinkAdPopup
         self._showRewardPopup = showRewardPopup
+        self._showExitBonusPopup = showExitBonusPopup
         self._selectedDrinkType = selectedDrinkType
         self._resumeGameCallback = resumeGameCallback
+        self._exitGameCallback = exitGameCallback
         self.game = DodgeGame(
             user: user,
             gameAreaSize: CGSize.zero,
@@ -97,11 +107,12 @@ struct DodgeGameView: View {
                     game?.resumeGame()
                     isGamePaused = false
                 }
+                exitGameCallback = { handleCloseButton() }
             }
             .pauseGameStyle(
-                isGameViewDisappeared: $isGameViewDisappeared,
+                pauseBinding: pauseBinding,
                 height: geometry.size.height,
-                onLeave: { handleCloseButton() },
+                onLeave: { showExitBonusPopup = true },
                 onPause: {
                     isGamePaused = true
                     game.pauseGame()
@@ -120,7 +131,7 @@ private extension DodgeGameView {
     /// 상단 툴바
     var toolbarSection: some View {
         GameToolBar(
-            closeButtonDidTapHandler: handleCloseButton,
+            closeButtonDidTapHandler: { closePause = true },
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
             feverState: game.feverSystem,
@@ -130,6 +141,16 @@ private extension DodgeGameView {
         )
         .padding(.horizontal, Constant.Padding.horizontal)
         .padding(.bottom, Constant.Padding.toolBarBottom)
+    }
+
+    var pauseBinding: Binding<Bool> {
+        Binding(
+            get: { tabSwitchPause || closePause },
+            set: {
+                tabSwitchPause = $0
+                closePause = $0
+            }
+        )
     }
 
     /// 게임 영역
@@ -237,6 +258,8 @@ private extension DodgeGameView {
 
     /// 골드 변화 이펙트 표시
     func showGoldChangeEffect(_ goldDelta: Int) {
+        gameActionGoldDelta += goldDelta
+
         let effect = EffectLabelData(
             id: UUID(),
             position: CGPoint(
@@ -266,11 +289,14 @@ private extension DodgeGameView {
 
 #Preview {
     @Previewable @State var isGameStarted = true
-    @Previewable @State var isGameViewDisappeared = true
+    @Previewable @State var gameActionGoldDelta = 0
+    @Previewable @State var tabSwitchPause = true
     @Previewable @State var showDrinkAdPopup = false
     @Previewable @State var showRewardPopup = false
+    @Previewable @State var showExitBonusPopup = false
     @Previewable @State var selectedDrinkType: ConsumableType?
     @Previewable @State var resumeGameCallback: (() -> Void)?
+    @Previewable @State var exitGameCallback: (() -> Void)?
 
     let wallet = Wallet(gold: 1000, diamond: 0)
     let inventory = Inventory(
@@ -301,12 +327,15 @@ private extension DodgeGameView {
             DodgeGameView(
                 user: user,
                 isGameStarted: $isGameStarted,
-                isGameViewDisappeared: $isGameViewDisappeared,
+                gameActionGoldDelta: $gameActionGoldDelta,
+                tabSwitchPause: $tabSwitchPause,
                 animationSystem: nil,
                 showDrinkAdPopup: $showDrinkAdPopup,
                 showRewardPopup: $showRewardPopup,
+                showExitBonusPopup: $showExitBonusPopup,
                 selectedDrinkType: $selectedDrinkType,
-                resumeGameCallback: $resumeGameCallback
+                resumeGameCallback: $resumeGameCallback,
+                exitGameCallback: $exitGameCallback
             )
             .ignoresSafeArea()
             .frame(height: geometry.size.height / 2 - Constant.Size.ground)
