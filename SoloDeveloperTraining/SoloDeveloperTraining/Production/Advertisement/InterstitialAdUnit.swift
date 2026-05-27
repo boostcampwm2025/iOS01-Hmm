@@ -20,7 +20,7 @@ final class InterstitialAdUnit: NSObject, AdUnit {
     }
 
     var isReady: Bool {
-        return interstitialAd != nil
+        return interstitialAd != nil && resultContinuation == nil
     }
 
     func load() async throws {
