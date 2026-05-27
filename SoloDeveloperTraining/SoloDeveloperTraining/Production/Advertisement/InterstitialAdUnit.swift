@@ -15,7 +15,7 @@ final class InterstitialAdUnit: NSObject, AdUnit {
         #if DEBUG
             "ca-app-pub-3940256099942544/4411468910"
         #else
-            "ca-app-pub-xxxxxxxxxxxxxxxx/xxxxxxxxxx"  // 실제 ID
+        Secret.interstitialAdUnitID  // 실제 ID
         #endif
     }
 
