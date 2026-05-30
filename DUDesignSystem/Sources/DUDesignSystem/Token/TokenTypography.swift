@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import CoreText
 
 // MARK: - 폰트 이름 상수
 
@@ -55,37 +54,26 @@ public struct DUTypographyToken: Sendable {
 
     /// ExtraBold, 34pt
     public static let largeTitle:  DUTypographyToken = makeToken(DUFont.extraBold, size: 34)
-
     /// Bold, 28pt
     public static let title:       DUTypographyToken = makeToken(DUFont.bold, size: 28)
-
     /// Bold, 23pt
     public static let title2:      DUTypographyToken = makeToken(DUFont.bold, size: 23)
-
     /// Bold, 20pt
     public static let title3:      DUTypographyToken = makeToken(DUFont.bold, size: 20)
-
     /// ExtraBold, 17pt
     public static let headline:    DUTypographyToken = makeToken(DUFont.extraBold, size: 17)
-
     /// ExtraBold, 15pt
     public static let subheadline: DUTypographyToken = makeToken(DUFont.extraBold, size: 15)
-
     /// Bold, 17pt
     public static let body:        DUTypographyToken = makeToken(DUFont.bold, size: 17)
-
     /// Bold, 16pt
     public static let callout:     DUTypographyToken = makeToken(DUFont.bold, size: 16)
-
     /// Bold, 12pt
     public static let caption:     DUTypographyToken = makeToken(DUFont.bold, size: 12)
-
     /// Bold, 12pt
     public static let caption2:    DUTypographyToken = makeToken(DUFont.bold, size: 12)
-
     /// Bold, 11pt
     public static let label:       DUTypographyToken = makeToken(DUFont.bold, size: 11)
-
     /// Regular, 11pt — 밑줄 포함
     public static let labelline:   DUTypographyToken = makeToken(DUFont.regular, size: 11, underlined: true)
 }
