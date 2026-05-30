@@ -6,14 +6,3 @@
 //
 
 import SwiftUI
-
-public extension View {
-
-    func tokenShadow(_ shadow: TokenShadow.Shadow) -> some View {
-        modifier(TokenShadowModifier(shadow: shadow))
-    }
-
-    func duFont(_ token: Font) -> some View {
-        self.font(token)
-    }
-}
