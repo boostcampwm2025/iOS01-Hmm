@@ -7,58 +7,102 @@
 
 import SwiftUI
 
+/// Figma 디자인 시스템 "개발자 키우기"의 컬러 토큰입니다.
 public extension Color {
 
-    // MARK: White
+    // MARK: - White
+
+    /// `#FFFFFF`
     static let white200 = Color(hex: "#FFFFFF")
+    /// `#FFFFFF`
     static let white300 = Color(hex: "#FFFFFF")
 
-    // MARK: Black
+    // MARK: - Black
+
+    /// `#000000` opacity 20%
     static let black100 = Color(hex: "#000000").opacity(0.2)
+    /// `#000000`
     static let black300 = Color(hex: "#000000")
 
-    // MARK: Gray
+    // MARK: - Gray
+
+    /// `#D9D9D9`
     static let gray100 = Color(hex: "#D9D9D9")
+    /// `#B4B4B4`
     static let gray200 = Color(hex: "#B4B4B4")
+    /// `#8E8E8E`
     static let gray300 = Color(hex: "#8E8E8E")
+    /// `#6A6A6A`
     static let gray400 = Color(hex: "#6A6A6A")
+    /// `#484848`
     static let gray500 = Color(hex: "#484848")
+    /// `#282828`
     static let gray600 = Color(hex: "#282828")
+    /// `#111111`
     static let gray700 = Color(hex: "#111111")
 
-    // MARK: Orange
+    // MARK: - Orange
+
+    /// `#F9D8CF`
     static let orange100 = Color(hex: "#F9D8CF")
+    /// `#F3A487`
     static let orange200 = Color(hex: "#F3A487")
+    /// `#E17B43`
     static let orange300 = Color(hex: "#E17B43")
+    /// `#A45930`
     static let orange400 = Color(hex: "#A45930")
+    /// `#723C1E`
     static let orange500 = Color(hex: "#723C1E")
+    /// `#44210E`
     static let orange600 = Color(hex: "#44210E")
+    /// `#1F0C04`
     static let orange700 = Color(hex: "#1F0C04")
 
-    // MARK: Beige
+    // MARK: - Beige
+
+    /// `#FFF9F0`
     static let beige50  = Color(hex: "#FFF9F0")
+    /// `#FFF9F0`
     static let beige100 = Color(hex: "#FFF9F0")
+    /// `#F4EDE3`
     static let beige200 = Color(hex: "#F4EDE3")
+    /// `#EEE1D5`
     static let beige300 = Color(hex: "#EEE1D5")
+    /// `#BCAEA3`
     static let beige400 = Color(hex: "#BCAEA3")
 
-    // MARK: Light
+    // MARK: - Light
+
+    /// `#4EFF4B`
     static let lightGreen  = Color(hex: "#4EFF4B")
+    /// `#F57C00`
     static let lightOrange = Color(hex: "#F57C00")
 
-    // MARK: Accent
+    // MARK: - Accent
+
+    /// `#598755`
     static let accentGreen  = Color(hex: "#598755")
+    /// `#FBC02D`
     static let accentYellow = Color(hex: "#FBC02D")
+    /// `#D32F2F`
     static let accentRed    = Color(hex: "#D32F2F")
 
-    // MARK: Pastel
+    // MARK: - Pastel
+
+    /// `#FADF9A`
     static let pastelYellow = Color(hex: "#FADF9A")
+    /// `#F69AFA`
     static let pastelPink   = Color(hex: "#F69AFA")
+    /// `#C7CFF8`
     static let pastelBlue   = Color(hex: "#C7CFF8")
+    /// `#B0F8BC`
     static let pastelGreen  = Color(hex: "#B0F8BC")
 }
 
+// MARK: - 내부 헬퍼
+
 private extension Color {
+    /// HEX 문자열로 Color를 생성합니다. `#RRGGBB` 형식을 지원합니다.
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: .alphanumerics.inverted)
         var int: UInt64 = 0

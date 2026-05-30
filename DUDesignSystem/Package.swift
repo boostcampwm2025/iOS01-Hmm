@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "DUDesignSystem",
-    platforms: [.iOS(.v13)],
+    platforms: [.iOS(.v17)],
     products: [
         .library(
             name: "DUDesignSystem",
