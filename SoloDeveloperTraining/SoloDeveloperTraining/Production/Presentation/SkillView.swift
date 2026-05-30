@@ -77,9 +77,6 @@ struct SkillView: View {
         .onAppear {
             AnalyticsService.shared.logScreenView(screenName: "skill")
         }
-        .task {
-            await AdService.shared.loadAd(.interstitial)
-        }
     }
 }
 

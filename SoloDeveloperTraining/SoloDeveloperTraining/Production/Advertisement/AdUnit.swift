@@ -8,6 +8,5 @@
 protocol AdUnit {
     var isReady: Bool { get }
     @MainActor func load() async throws
-    @MainActor func show() async
     @MainActor func showWithResult() async -> Bool
 }
