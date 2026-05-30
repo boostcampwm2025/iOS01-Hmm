@@ -28,7 +28,7 @@ public extension Color {
 
     // MARK: Orange
     static let orange100 = Color(hex: "#F9D8CF")
-    static let orange200 = Color(hex: "#F3A487")  // F3a487 → 대소문자 통일
+    static let orange200 = Color(hex: "#F3A487")
     static let orange300 = Color(hex: "#E17B43")
     static let orange400 = Color(hex: "#A45930")
     static let orange500 = Color(hex: "#723C1E")

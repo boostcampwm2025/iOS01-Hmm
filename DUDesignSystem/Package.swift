@@ -14,7 +14,8 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "DUDesignSystem"
+            name: "DUDesignSystem",
+            resources: [.process("Resources")]
         ),
 
     ]
