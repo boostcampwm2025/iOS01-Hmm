@@ -12,6 +12,8 @@ struct TokenListView: View {
             NavigationLink("Opacity", destination: TokenOpacityView())
             NavigationLink("Elevation", destination: TokenElevationView())
             NavigationLink("Typography", destination: TokenTypographyView())
+            NavigationLink("Radius", destination: TokenRadiusView())
+            NavigationLink("Spacing", destination: TokenSpacingView())
         }
         .navigationTitle("Token")
     }
