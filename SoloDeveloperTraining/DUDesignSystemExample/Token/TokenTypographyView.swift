@@ -11,19 +11,19 @@ struct TokenTypographyView: View {
     @State private var inputText = "개발자 키우기"
     @FocusState private var isFocused: Bool
 
-    private let items: [(String, Font)] = [
-        ("largeTitle",   TokenTypography.largeTitle),
-        ("title",        TokenTypography.title),
-        ("title2",       TokenTypography.title2),
-        ("title3",       TokenTypography.title3),
-        ("headline",     TokenTypography.headline),
-        ("subheadline",  TokenTypography.subheadline),
-        ("body",         TokenTypography.body),
-        ("callout",      TokenTypography.callout),
-        ("caption",      TokenTypography.caption),
-        ("caption2",     TokenTypography.caption2),
-        ("label",        TokenTypography.label),
-        ("labelline",    TokenTypography.labelline),
+    private let items: [(String, DUTypographyToken)] = [
+        ("largeTitle",   .largeTitle),
+        ("title",        .title),
+        ("title2",       .title2),
+        ("title3",       .title3),
+        ("headline",     .headline),
+        ("subheadline",  .subheadline),
+        ("body",         .body),
+        ("callout",      .callout),
+        ("caption",      .caption),
+        ("caption2",     .caption2),
+        ("label",        .label),
+        ("labelline",    .labelline),
     ]
 
     var body: some View {
@@ -31,7 +31,7 @@ struct TokenTypographyView: View {
             Section {
                 HStack(spacing: TokenSpacing.xs) {
                     TextField("미리보기 텍스트 입력", text: $inputText)
-                        .font(TokenTypography.body)
+                        .duFont(.body)
                         .foregroundStyle(Color.gray700)
                         .focused($isFocused)
                     if !inputText.isEmpty {
@@ -51,17 +51,17 @@ struct TokenTypographyView: View {
                 ForEach(items, id: \.0) { name, font in
                     VStack(alignment: .leading, spacing: TokenSpacing.xx) {
                         Text(inputText.isEmpty ? " " : inputText)
-                            .font(font)
+                            .duFont(font)
                             .foregroundStyle(Color.gray700)
                         Text(name)
-                            .font(TokenTypography.caption)
+                            .duFont(.caption)
                             .foregroundStyle(Color.gray400)
                     }
                     .padding(.vertical, TokenSpacing.xs)
                 }
             } header: {
                 Text("폰트 스타일")
-                    .font(TokenTypography.caption)
+                    .duFont(.caption)
                     .foregroundStyle(Color.gray400)
             }
         }

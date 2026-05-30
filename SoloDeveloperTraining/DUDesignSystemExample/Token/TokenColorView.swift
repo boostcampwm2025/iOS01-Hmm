@@ -80,7 +80,7 @@ struct TokenColorView: View {
                     }
                 } header: {
                     Text(title)
-                        .font(TokenTypography.caption)
+                        .duFont(.caption)
                         .foregroundStyle(Color.gray400)
                 }
             }

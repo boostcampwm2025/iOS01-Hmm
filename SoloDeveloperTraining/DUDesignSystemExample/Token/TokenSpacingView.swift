@@ -21,16 +21,18 @@ struct TokenSpacingView: View {
         ("xxxl", TokenSpacing.xxxl),
     ]
 
-    private let barMaxWidth: CGFloat = 160
+    private let trackWidth: CGFloat = 160
 
     var body: some View {
         List(items, id: \.0) { name, spacing in
             HStack(spacing: TokenSpacing.sm) {
                 ZStack(alignment: .leading) {
                     Color.orange100
-                        .frame(width: barMaxWidth, height: 24)
-                    Color.orange300
-                        .frame(width: min(spacing / TokenSpacing.xxxl * barMaxWidth, barMaxWidth), height: 24)
+                        .frame(width: trackWidth, height: 24)
+                    if spacing > 0 {
+                        Color.orange300
+                            .frame(width: min(spacing, trackWidth), height: 24)
+                    }
                 }
                 .clipShape(RoundedRectangle(cornerRadius: TokenRadius.xs))
 
@@ -39,7 +41,7 @@ struct TokenSpacingView: View {
                         .font(.system(.body, design: .monospaced))
                         .foregroundStyle(Color.gray600)
                     Text("\(Int(spacing))pt")
-                        .font(TokenTypography.caption)
+                        .duFont(.caption)
                         .foregroundStyle(Color.gray400)
                 }
             }

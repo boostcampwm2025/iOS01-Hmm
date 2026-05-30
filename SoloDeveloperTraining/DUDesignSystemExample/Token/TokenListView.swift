@@ -33,7 +33,7 @@ struct TokenListView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
 
                             Text(name)
-                                .font(TokenTypography.body)
+                                .duFont(.body)
                                 .foregroundStyle(Color.gray700)
                         }
                         .frame(maxWidth: .infinity)

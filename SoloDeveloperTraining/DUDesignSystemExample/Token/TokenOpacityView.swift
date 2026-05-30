@@ -33,7 +33,7 @@ struct TokenOpacityView: View {
                         .font(.system(.body, design: .monospaced))
                         .foregroundStyle(Color.gray600)
                     Text(String(format: "%.0f%%", value * 100))
-                        .font(TokenTypography.caption)
+                        .duFont(.caption)
                         .foregroundStyle(Color.gray400)
                 }
             }

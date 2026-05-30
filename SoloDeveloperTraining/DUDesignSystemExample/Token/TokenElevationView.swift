@@ -8,12 +8,12 @@ import DUDesignSystem
 
 struct TokenElevationView: View {
 
-    private let items: [(String, TokenShadow.Shadow)] = [
-        ("none",   TokenShadow.none),
-        ("small",  TokenShadow.small),
-        ("medium", TokenShadow.medium),
-        ("large",  TokenShadow.large),
-        ("xLarge", TokenShadow.xLarge),
+    private let items: [(String, TokenShadow)] = [
+        ("none",   .none),
+        ("small",  .small),
+        ("medium", .medium),
+        ("large",  .large),
+        ("xLarge", .xLarge),
     ]
 
     var body: some View {

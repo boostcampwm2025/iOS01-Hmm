@@ -29,7 +29,7 @@ struct TokenRadiusView: View {
                         .font(.system(.body, design: .monospaced))
                         .foregroundStyle(Color.gray600)
                     Text("\(Int(radius))pt")
-                        .font(TokenTypography.caption)
+                        .duFont(.caption)
                         .foregroundStyle(Color.gray400)
                 }
             }

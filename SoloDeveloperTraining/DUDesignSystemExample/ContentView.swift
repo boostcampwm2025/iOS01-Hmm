@@ -15,10 +15,10 @@ struct ContentView: View {
                 VStack(alignment: .leading, spacing: TokenSpacing.lg) {
                     VStack(alignment: .leading, spacing: TokenSpacing.xs) {
                         Text("DUDesignSystem")
-                            .font(TokenTypography.largeTitle)
+                            .duFont(.largeTitle)
                             .foregroundStyle(Color.gray700)
                         Text("개발자 키우기 디자인 시스템")
-                            .font(TokenTypography.body)
+                            .duFont(.body)
                             .foregroundStyle(Color.gray400)
                     }
                     .padding(.horizontal, TokenSpacing.md)
@@ -34,10 +34,10 @@ struct ContentView: View {
 
                             VStack(alignment: .leading, spacing: TokenSpacing.xx) {
                                 Text("Token")
-                                    .font(TokenTypography.headline)
+                                    .duFont(.headline)
                                     .foregroundStyle(Color.gray700)
                                 Text("Color, Typography, Spacing 등 디자인 토큰")
-                                    .font(TokenTypography.caption)
+                                    .duFont(.caption)
                                     .foregroundStyle(Color.gray400)
                             }
 
