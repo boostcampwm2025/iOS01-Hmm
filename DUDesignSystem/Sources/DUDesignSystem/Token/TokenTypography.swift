@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - 폰트 이름 상수
 
-enum DUFont {
+private enum DUFont {
     static let extraBold = "PFStardustExtraBold"
     static let bold      = "PFStardustBold"
     static let regular   = "PFStardust"
