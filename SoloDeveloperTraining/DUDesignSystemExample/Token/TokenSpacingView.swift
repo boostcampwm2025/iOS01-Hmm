@@ -21,27 +21,32 @@ struct TokenSpacingView: View {
         ("xxxl", TokenSpacing.xxxl),
     ]
 
+    private let barMaxWidth: CGFloat = 160
+
     var body: some View {
         List(items, id: \.0) { name, spacing in
-            HStack(spacing: 12) {
+            HStack(spacing: TokenSpacing.sm) {
                 ZStack(alignment: .leading) {
                     Color.orange100
-                        .frame(width: 80, height: 28)
+                        .frame(width: barMaxWidth, height: 24)
                     Color.orange300
-                        .frame(width: max(spacing, 1), height: 28)
+                        .frame(width: min(spacing / TokenSpacing.xxxl * barMaxWidth, barMaxWidth), height: 24)
                 }
-                .clipShape(RoundedRectangle(cornerRadius: 4))
+                .clipShape(RoundedRectangle(cornerRadius: TokenRadius.xs))
 
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: TokenSpacing.xx) {
                     Text(name)
                         .font(.system(.body, design: .monospaced))
+                        .foregroundStyle(Color.gray600)
                     Text("\(Int(spacing))pt")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(TokenTypography.caption)
+                        .foregroundStyle(Color.gray400)
                 }
             }
-            .padding(.vertical, 4)
+            .padding(.vertical, TokenSpacing.xs)
         }
+        .scrollContentBackground(.hidden)
+        .background(Color.beige200)
         .navigationTitle("Spacing")
     }
 }

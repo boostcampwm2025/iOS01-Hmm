@@ -29,9 +29,10 @@ struct TokenTypographyView: View {
     var body: some View {
         List {
             Section {
-                HStack {
+                HStack(spacing: TokenSpacing.xs) {
                     TextField("미리보기 텍스트 입력", text: $inputText)
-                        .font(.body)
+                        .font(TokenTypography.body)
+                        .foregroundStyle(Color.gray700)
                         .focused($isFocused)
                     if !inputText.isEmpty {
                         Button {
@@ -39,26 +40,33 @@ struct TokenTypographyView: View {
                             isFocused = true
                         } label: {
                             Image(systemName: "xmark.circle.fill")
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Color.gray300)
                         }
                         .buttonStyle(.plain)
                     }
                 }
             }
 
-            Section("폰트 스타일") {
+            Section {
                 ForEach(items, id: \.0) { name, font in
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: TokenSpacing.xx) {
                         Text(inputText.isEmpty ? " " : inputText)
                             .font(font)
+                            .foregroundStyle(Color.gray700)
                         Text(name)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(TokenTypography.caption)
+                            .foregroundStyle(Color.gray400)
                     }
-                    .padding(.vertical, 4)
+                    .padding(.vertical, TokenSpacing.xs)
                 }
+            } header: {
+                Text("폰트 스타일")
+                    .font(TokenTypography.caption)
+                    .foregroundStyle(Color.gray400)
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(Color.beige200)
         .navigationTitle("Typography")
     }
 }

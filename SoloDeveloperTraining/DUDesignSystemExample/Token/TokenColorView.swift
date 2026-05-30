@@ -61,24 +61,32 @@ struct TokenColorView: View {
 
     var body: some View {
         List {
-            ForEach(sections, id: \.0) { section in
-                Section(section.0) {
-                    ForEach(section.1, id: \.0) { name, color in
-                        HStack {
-                            RoundedRectangle(cornerRadius: 6)
+            ForEach(sections, id: \.0) { title, colors in
+                Section {
+                    ForEach(colors, id: \.0) { name, color in
+                        HStack(spacing: TokenSpacing.sm) {
+                            RoundedRectangle(cornerRadius: TokenRadius.xs)
                                 .fill(color)
                                 .frame(width: 44, height: 44)
                                 .overlay(
-                                    RoundedRectangle(cornerRadius: 6)
-                                        .strokeBorder(.gray.opacity(0.3), lineWidth: 1)
+                                    RoundedRectangle(cornerRadius: TokenRadius.xs)
+                                        .strokeBorder(Color.gray200.opacity(0.5), lineWidth: 1)
                                 )
                             Text(name)
                                 .font(.system(.body, design: .monospaced))
+                                .foregroundStyle(Color.gray600)
                         }
+                        .padding(.vertical, TokenSpacing.xx)
                     }
+                } header: {
+                    Text(title)
+                        .font(TokenTypography.caption)
+                        .foregroundStyle(Color.gray400)
                 }
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(Color.beige200)
         .navigationTitle("Color")
     }
 }

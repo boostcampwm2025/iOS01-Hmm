@@ -20,20 +20,23 @@ struct TokenRadiusView: View {
 
     var body: some View {
         List(items, id: \.0) { name, radius in
-            HStack(spacing: 16) {
+            HStack(spacing: TokenSpacing.md) {
                 RoundedRectangle(cornerRadius: radius)
                     .fill(Color.orange300)
                     .frame(width: 56, height: 56)
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: TokenSpacing.xx) {
                     Text(name)
                         .font(.system(.body, design: .monospaced))
+                        .foregroundStyle(Color.gray600)
                     Text("\(Int(radius))pt")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(TokenTypography.caption)
+                        .foregroundStyle(Color.gray400)
                 }
             }
-            .padding(.vertical, 4)
+            .padding(.vertical, TokenSpacing.xs)
         }
+        .scrollContentBackground(.hidden)
+        .background(Color.beige200)
         .navigationTitle("Radius")
     }
 }

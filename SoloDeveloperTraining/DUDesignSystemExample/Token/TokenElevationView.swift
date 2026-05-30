@@ -18,16 +18,19 @@ struct TokenElevationView: View {
 
     var body: some View {
         List(items, id: \.0) { name, shadow in
-            HStack {
-                RoundedRectangle(cornerRadius: 8)
+            HStack(spacing: TokenSpacing.sm) {
+                RoundedRectangle(cornerRadius: TokenRadius.sm)
                     .fill(Color.beige50)
-                    .frame(width: 44, height: 44)
+                    .frame(width: 56, height: 56)
                     .tokenShadow(shadow)
                 Text(name)
                     .font(.system(.body, design: .monospaced))
+                    .foregroundStyle(Color.gray600)
             }
-            .padding(.vertical, 4)
+            .padding(.vertical, TokenSpacing.xs)
         }
+        .scrollContentBackground(.hidden)
+        .background(Color.beige200)
         .navigationTitle("Elevation")
     }
 }

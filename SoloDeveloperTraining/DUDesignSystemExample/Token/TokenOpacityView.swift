@@ -20,23 +20,27 @@ struct TokenOpacityView: View {
 
     var body: some View {
         List(items, id: \.0) { name, value in
-            HStack {
-                RoundedRectangle(cornerRadius: 6)
+            HStack(spacing: TokenSpacing.sm) {
+                RoundedRectangle(cornerRadius: TokenRadius.xs)
                     .fill(Color.orange300.opacity(value))
                     .frame(width: 44, height: 44)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 6)
-                            .strokeBorder(.gray.opacity(0.3), lineWidth: 1)
+                        RoundedRectangle(cornerRadius: TokenRadius.xs)
+                            .strokeBorder(Color.gray200.opacity(0.5), lineWidth: 1)
                     )
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: TokenSpacing.xx) {
                     Text(name)
                         .font(.system(.body, design: .monospaced))
+                        .foregroundStyle(Color.gray600)
                     Text(String(format: "%.0f%%", value * 100))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(TokenTypography.caption)
+                        .foregroundStyle(Color.gray400)
                 }
             }
+            .padding(.vertical, TokenSpacing.xx)
         }
+        .scrollContentBackground(.hidden)
+        .background(Color.beige200)
         .navigationTitle("Opacity")
     }
 }
