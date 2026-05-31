@@ -69,7 +69,7 @@ public struct DUTypographyToken: Sendable {
     /// Bold, 16pt
     public static let callout:     DUTypographyToken = makeToken(DUFont.bold, size: 16)
     /// Bold, 12pt
-    public static let caption:     DUTypographyToken = makeToken(DUFont.bold, size: 12)
+    public static let caption:     DUTypographyToken = makeToken(DUFont.extraBold, size: 12)
     /// Bold, 12pt
     public static let caption2:    DUTypographyToken = makeToken(DUFont.bold, size: 12)
     /// Bold, 11pt

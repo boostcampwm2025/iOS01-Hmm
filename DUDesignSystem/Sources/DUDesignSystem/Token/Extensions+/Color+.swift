@@ -13,7 +13,7 @@ public extension Color {
     // MARK: - White
 
     /// `#FFFFFF`
-    static let white200 = Color(hex: "#FFFFFF")
+    static let white200 = Color(hex: "#F7F7F8")
     /// `#FFFFFF`
     static let white300 = Color(hex: "#FFFFFF")
 
