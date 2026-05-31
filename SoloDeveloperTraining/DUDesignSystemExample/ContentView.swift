@@ -9,6 +9,39 @@ import SwiftUI
 import DUDesignSystem
 
 struct ContentView: View {
+
+    @ViewBuilder
+    private func sectionRow(icon: String, title: String, description: String) -> some View {
+        HStack(alignment: .top, spacing: TokenSpacing.sm) {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundStyle(Color.orange300)
+                .frame(width: 44, height: 44)
+                .background(Color.orange100)
+                .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
+
+            VStack(alignment: .leading, spacing: TokenSpacing.xx) {
+                Text(title)
+                    .duFont(.headline)
+                    .foregroundStyle(Color.gray700)
+                Text(description)
+                    .duFont(.caption)
+                    .foregroundStyle(Color.gray400)
+                    .multilineTextAlignment(.leading)
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundStyle(Color.gray300)
+        }
+        .padding(TokenSpacing.md)
+        .background(Color.beige50)
+        .clipShape(RoundedRectangle(cornerRadius: TokenRadius.md))
+        .tokenShadow(TokenShadow.small)
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -23,34 +56,21 @@ struct ContentView: View {
                     }
                     .padding(.horizontal, TokenSpacing.md)
 
-                    NavigationLink(destination: TokenListView()) {
-                        HStack(spacing: TokenSpacing.sm) {
-                            Image(systemName: "swatchpalette")
-                                .font(.title2)
-                                .foregroundStyle(Color.orange300)
-                                .frame(width: 44, height: 44)
-                                .background(Color.orange100)
-                                .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
-
-                            VStack(alignment: .leading, spacing: TokenSpacing.xx) {
-                                Text("Token")
-                                    .duFont(.headline)
-                                    .foregroundStyle(Color.gray700)
-                                Text("Color, Typography, Spacing 등 디자인 토큰")
-                                    .duFont(.caption)
-                                    .foregroundStyle(Color.gray400)
-                            }
-
-                            Spacer()
-
-                            Image(systemName: "chevron.right")
-                                .font(.caption)
-                                .foregroundStyle(Color.gray300)
+                    VStack(spacing: TokenSpacing.sm) {
+                        NavigationLink(destination: TokenListView()) {
+                            sectionRow(
+                                icon: "swatchpalette",
+                                title: "Token",
+                                description: "Color, Typography, Spacing 등 디자인 토큰"
+                            )
                         }
-                        .padding(TokenSpacing.md)
-                        .background(Color.beige50)
-                        .clipShape(RoundedRectangle(cornerRadius: TokenRadius.md))
-                        .tokenShadow(TokenShadow.small)
+                        NavigationLink(destination: ComponentListView()) {
+                            sectionRow(
+                                icon: "square.on.square",
+                                title: "Component",
+                                description: "Icon 등 재사용 가능한 UI 컴포넌트"
+                            )
+                        }
                     }
                     .padding(.horizontal, TokenSpacing.md)
                 }
