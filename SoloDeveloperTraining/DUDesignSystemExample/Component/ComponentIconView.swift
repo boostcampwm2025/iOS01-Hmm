@@ -31,9 +31,10 @@ struct ComponentIconView: View {
                         Button { selectedIcon = icon } label: {
                             HStack(spacing: TokenSpacing.md) {
                                 DUIcon(icon)
+                                    .padding(TokenSpacing.sm)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: TokenRadius.xs)
-                                            .strokeBorder(Color.orange300.opacity(0.5), lineWidth: 1)
+                                            .stroke(Color.orange300.opacity(0.5), style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
                                     )
 
                                 Text(".\(icon)")
