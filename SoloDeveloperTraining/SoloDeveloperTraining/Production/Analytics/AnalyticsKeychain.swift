@@ -9,16 +9,14 @@ import Foundation
 
 enum AnalyticsKeychain {
 
-    /// first_open 이미 로깅됐는지 확인
-    static func hasLoggedFirstOpen(deviceID: String) -> Bool {
-        let key = "first_open_logged_\(deviceID)"
-        return load(key: key) != nil
+    private static let firstOpenKey = "first_open_logged"
+
+    static func hasLoggedFirstOpen() -> Bool {
+        return load(key: firstOpenKey) != nil
     }
 
-    /// first_open 로깅 완료 표시
-    static func markFirstOpenLogged(deviceID: String) {
-        let key = "first_open_logged_\(deviceID)"
-        save(key: key, value: "true")
+    static func markFirstOpenLogged() {
+        save(key: firstOpenKey, value: "true")
     }
 
     // MARK: - Private

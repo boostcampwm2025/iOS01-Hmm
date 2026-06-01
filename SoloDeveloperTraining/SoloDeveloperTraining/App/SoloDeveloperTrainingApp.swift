@@ -137,6 +137,7 @@ private extension SoloDeveloperTrainingApp {
                 if let loadedUser = try await userRepository.load() {
                     await MainActor.run {
                         self.user = loadedUser
+                        checkFirstOpen(user: loadedUser)
                     }
                 }
             } catch {
@@ -242,3 +243,16 @@ private extension SoloDeveloperTrainingApp {
     }
 }
 #endif
+
+// MARK: - Helper
+
+private extension SoloDeveloperTrainingApp {
+
+    // MARK: - Analytics
+
+    func checkFirstOpen(user: User) {
+        guard !AnalyticsKeychain.hasLoggedFirstOpen() else { return }
+        AnalyticsKeychain.markFirstOpenLogged()
+        AnalyticsService.shared.logFirstOpen(level: user.career.level)
+    }
+}

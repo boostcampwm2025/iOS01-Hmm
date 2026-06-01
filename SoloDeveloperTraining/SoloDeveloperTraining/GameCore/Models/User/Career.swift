@@ -131,3 +131,11 @@ extension Career {
         }
     }
 }
+
+// MARK: - Analytics
+extension Career {
+    /// Analytics 이벤트용 레벨 (1부터 시작)
+    var level: Int {
+        (Career.allCases.firstIndex(of: self) ?? 0) + 1
+    }
+}
