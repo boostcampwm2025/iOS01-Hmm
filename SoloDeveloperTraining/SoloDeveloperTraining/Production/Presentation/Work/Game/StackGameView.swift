@@ -81,7 +81,6 @@ struct StackGameView: View {
             .background(AppTheme.backgroundColor)
             .navigationBarBackButtonHidden(true) // 임시로 숨김
             .onAppear {
-                AnalyticsService.shared.logGameStart(gameType: .stack)
                 setupGameCallbacks(with: geometry)
                 // 게임 재개 콜백 설정
                 resumeGameCallback = { [weak scene] in

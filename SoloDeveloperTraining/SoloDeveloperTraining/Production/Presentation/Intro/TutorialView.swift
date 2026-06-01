@@ -137,7 +137,6 @@ private extension TutorialView {
                 }
             } else {
                 MediumButton(title: "시작하기", isFilled: true) {
-                    AnalyticsService.shared.logTutorialComplete()
                     onComplete()
                 }
             }

@@ -118,7 +118,6 @@ struct LanguageGameView: View {
                 Spacer()
             }
             .onAppear {
-                AnalyticsService.shared.logGameStart(gameType: .language)
                 // 게임 재개 콜백 설정
                 resumeGameCallback = { [weak game] in
                     game?.resumeGame()

@@ -80,7 +80,6 @@ struct TapGameView: View {
                 tapAreaSection(geometry: geometry)
             }
             .onAppear {
-                AnalyticsService.shared.logGameStart(gameType: .tap)
                 // 게임 재개 콜백 설정
                 resumeGameCallback = { [weak tapGame] in
                     tapGame?.resumeGame()

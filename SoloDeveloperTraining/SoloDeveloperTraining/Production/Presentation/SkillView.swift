@@ -74,9 +74,6 @@ struct SkillView: View {
         }
         .padding(.bottom)
         .scrollIndicators(.never)
-        .onAppear {
-            AnalyticsService.shared.logScreenView(screenName: "skill")
-        }
     }
 }
 

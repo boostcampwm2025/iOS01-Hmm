@@ -101,7 +101,6 @@ struct QuizGameView: View {
         .background(AppColors.beige100)
         .onAppear {
             if quizGame.state.phase == .ready {
-                AnalyticsService.shared.logScreenView(screenName: "quiz")
                 quizGame.startGame()
             }
         }
