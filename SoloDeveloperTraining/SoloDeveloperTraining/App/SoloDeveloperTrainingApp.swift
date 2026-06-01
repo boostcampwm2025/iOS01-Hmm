@@ -252,6 +252,10 @@ private extension SoloDeveloperTrainingApp {
 
     func checkFirstOpen(user: User) {
         guard !AnalyticsKeychain.hasLoggedFirstOpen() else { return }
+        guard user.nickname.isEmpty else {
+            AnalyticsKeychain.markFirstOpenLogged()
+            return
+        }
         AnalyticsKeychain.markFirstOpenLogged()
         AnalyticsService.shared.logFirstOpen(level: user.career.level)
     }
