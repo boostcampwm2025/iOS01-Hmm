@@ -20,7 +20,7 @@ final class AnalyticsService {
     func logFirstOpen(level: Int) {
         Analytics.logEvent("first_open", parameters: [
             AP.deviceID: AP.deviceIDValue,
-            AP.sessionID: "pending",
+            AP.sessionID: SessionManager.shared.sessionID,
             AP.appVersion: AP.appVersionValue,
             AP.osVersion: AP.osVersionValue,
             AP.deviceModel: AP.deviceModelValue,
