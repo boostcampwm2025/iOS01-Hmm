@@ -195,15 +195,19 @@ private extension SoloDeveloperTrainingApp {
 
                 NicknameSetupView(
                     onStart: { nickname in
-                        user = User(nickname: nickname)
+                        let newUser = User(nickname: nickname)
+                        user = newUser
                         showNicknameSetup = false
+                        checkFirstOpen(user: newUser)
                         withAnimation(.easeOut(duration: Constant.Animation.transitionDuration)) {
                             hasSeenIntro = true
                         }
                     },
                     onTutorial: { nickname in
-                        user = User(nickname: nickname)
+                        let newUser = User(nickname: nickname)
+                        user = newUser
                         showNicknameSetup = false
+                        checkFirstOpen(user: newUser)
                         showTutorial = true
                     }
                 )
@@ -252,10 +256,6 @@ private extension SoloDeveloperTrainingApp {
 
     func checkFirstOpen(user: User) {
         guard !AnalyticsKeychain.hasLoggedFirstOpen() else { return }
-        guard user.nickname.isEmpty else {
-            AnalyticsKeychain.markFirstOpenLogged()
-            return
-        }
         AnalyticsKeychain.markFirstOpenLogged()
         AnalyticsService.shared.logFirstOpen(level: user.career.level)
     }
