@@ -23,6 +23,21 @@ enum AnalyticsProperty {
     static let deviceModel = "device_model"
     /// 현재 사용자 레벨
     static let level = "level"
+    /// 사용자 닉네임
+    static let nickname = "nickname"
+
+    // MARK: - Event Properties
+
+    /// 유입 경로
+    static let entrySource = "entry_source"
+    /// 유입을 만든 원 공유 ID
+    static let referrerShareID = "referrer_share_id"
+    /// 설치 후 딥링크 유입 여부
+    static let isDeferredDeeplink = "is_deferred_deeplink"
+    /// 세션 체류시간
+    static let sessionDurationSec = "session_duration_sec"
+    /// 세션 종료 전 마지막 화면
+    static let lastScreen = "last_screen"
 
 }
 
