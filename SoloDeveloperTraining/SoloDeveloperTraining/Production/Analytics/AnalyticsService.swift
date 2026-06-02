@@ -18,7 +18,7 @@ final class AnalyticsService {
 
     /// device_id 기준 첫 앱 실행 (앱 재설치 시에도 1회만)
     func logFirstOpen(level: Int) {
-        Analytics.logEvent("first_open", parameters: [
+        Analytics.logEvent("my_app_first_open", parameters: [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.appVersion: AP.appVersionValue,
