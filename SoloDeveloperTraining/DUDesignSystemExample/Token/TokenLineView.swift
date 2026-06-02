@@ -1,26 +1,24 @@
 //
-//  TokenElevationView.swift
+//  TokenLineView.swift
 //  DUDesignSystemExample
 //
 
 import SwiftUI
 import DUDesignSystem
 
-struct TokenElevationView: View {
+struct TokenLineView: View {
 
-    private let items: [(String, TokenShadow, String)] = [
-        ("none",    .none,    "0px 0px 0px 0px"),
-        ("dim",     .dim,     "1px 2px 0px 0px · gray/400"),
-        ("default", .`default`, "1px 2px 0px 0px · gray/700"),
+    private let items: [(String, TokenLine, String)] = [
+        ("default", .`default`, "2pt · gray700 · Pop up 카드, 선택된 카드 테두리"),
     ]
 
     var body: some View {
-        List(items, id: \.0) { name, shadow, description in
+        List(items, id: \.0) { name, line, description in
             HStack(spacing: TokenSpacing.sm) {
                 RoundedRectangle(cornerRadius: TokenRadius.sm)
                     .fill(Color.beige50)
                     .frame(width: 56, height: 56)
-                    .tokenShadow(shadow)
+                    .tokenLine(line, cornerRadius: TokenRadius.sm)
                 VStack(alignment: .leading, spacing: TokenSpacing.xx) {
                     Text(name)
                         .font(.system(.body, design: .monospaced))
@@ -34,12 +32,12 @@ struct TokenElevationView: View {
         }
         .scrollContentBackground(.hidden)
         .background(Color.beige200)
-        .navigationTitle("Elevation")
+        .navigationTitle("Line")
     }
 }
 
 #Preview {
     NavigationStack {
-        TokenElevationView()
+        TokenLineView()
     }
 }

@@ -11,6 +11,7 @@ struct TokenListView: View {
     private let items: [(String, String, AnyView)] = [
         ("Color",      "paintpalette",          AnyView(TokenColorView())),
         ("Opacity",    "circle.lefthalf.filled", AnyView(TokenOpacityView())),
+        ("Line",       "line.horizontal.3",      AnyView(TokenLineView())),
         ("Elevation",  "square.stack",           AnyView(TokenElevationView())),
         ("Typography", "textformat",             AnyView(TokenTypographyView())),
         ("Radius",     "rectangle.roundedtop",   AnyView(TokenRadiusView())),
@@ -29,7 +30,7 @@ struct TokenListView: View {
                                 .font(.title2)
                                 .foregroundStyle(Color.orange300)
                                 .frame(width: 48, height: 48)
-                                .background(Color.orange100)
+                                .background(Color.beige100)
                                 .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
 
                             Text(name)
@@ -40,7 +41,7 @@ struct TokenListView: View {
                         .padding(.vertical, TokenSpacing.md)
                         .background(Color.beige50)
                         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.md))
-                        .tokenShadow(TokenShadow.small)
+                        .tokenShadow(TokenShadow.dim)
                     }
                 }
             }

@@ -11,19 +11,15 @@ struct TokenTypographyView: View {
     @State private var inputText = "개발자 키우기"
     @FocusState private var isFocused: Bool
 
-    private let items: [(String, DUTypographyToken)] = [
-        ("largeTitle",   .largeTitle),
-        ("title",        .title),
-        ("title2",       .title2),
-        ("title3",       .title3),
-        ("headline",     .headline),
-        ("subheadline",  .subheadline),
-        ("body",         .body),
-        ("callout",      .callout),
-        ("caption",      .caption),
-        ("caption2",     .caption2),
-        ("label",        .label),
-        ("labelline",    .labelline),
+    private let items: [(String, DUTypographyToken, String)] = [
+        ("title1",      .title1,      "ExtraBold · 24pt"),
+        ("title2",      .title2,      "Bold · 22pt"),
+        ("headline",    .headline,    "ExtraBold · 17pt"),
+        ("subheadline", .subheadline, "ExtraBold · 15pt"),
+        ("body",        .body,        "Bold · 17pt"),
+        ("body2",       .body2,       "Bold · 15pt"),
+        ("caption",     .caption,     "ExtraBold · 12pt"),
+        ("label",       .label,       "Bold · 11pt"),
     ]
 
     var body: some View {
@@ -40,7 +36,7 @@ struct TokenTypographyView: View {
                             isFocused = true
                         } label: {
                             Image(systemName: "xmark.circle.fill")
-                                .foregroundStyle(Color.gray300)
+                                .foregroundStyle(Color.gray400)
                         }
                         .buttonStyle(.plain)
                     }
@@ -48,14 +44,22 @@ struct TokenTypographyView: View {
             }
 
             Section {
-                ForEach(items, id: \.0) { name, font in
+                ForEach(items, id: \.0) { name, font, description in
                     VStack(alignment: .leading, spacing: TokenSpacing.xx) {
                         Text(inputText.isEmpty ? " " : inputText)
                             .duFont(font)
                             .foregroundStyle(Color.gray700)
-                        Text(name)
-                            .duFont(.caption)
-                            .foregroundStyle(Color.gray400)
+                        HStack(spacing: TokenSpacing.xs) {
+                            Text(name)
+                                .duFont(.caption)
+                                .foregroundStyle(Color.gray400)
+                            Text("·")
+                                .duFont(.caption)
+                                .foregroundStyle(Color.gray200)
+                            Text(description)
+                                .duFont(.caption)
+                                .foregroundStyle(Color.gray200)
+                        }
                     }
                     .padding(.vertical, TokenSpacing.xs)
                 }

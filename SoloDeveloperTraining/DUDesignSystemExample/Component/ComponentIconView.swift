@@ -39,7 +39,7 @@ struct ComponentIconView: View {
 
                                 Text(".\(icon)")
                                     .font(.system(.body, design: .monospaced))
-                                    .foregroundStyle(Color.gray600)
+                                    .foregroundStyle(Color.gray400)
                             }
                             .padding(.vertical, TokenSpacing.xs)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -72,9 +72,9 @@ private struct IconFullScreenView: View {
                 VStack(spacing: TokenSpacing.lg) {
                     DUIcon(icon, size: TokenIconSize.size64)
                         .padding(TokenSpacing.xl)
-                        .background(Color.orange100)
+                        .background(Color.beige100)
                         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.xl))
-                        .tokenShadow(TokenShadow.medium)
+                        .tokenShadow(TokenShadow.`default`)
 
                     VStack(spacing: TokenSpacing.xs) {
                         Text(".\(icon)")
@@ -90,7 +90,7 @@ private struct IconFullScreenView: View {
                 .frame(maxWidth: .infinity)
                 .background(Color.beige50)
                 .clipShape(RoundedRectangle(cornerRadius: TokenRadius.xl))
-                .tokenShadow(TokenShadow.small)
+                .tokenShadow(TokenShadow.dim)
                 .padding(.horizontal, TokenSpacing.lg)
 
                 HStack(spacing: TokenSpacing.xxl) {
@@ -118,7 +118,7 @@ private struct IconFullScreenView: View {
                 .padding(TokenSpacing.md)
                 .background(Color.beige50)
                 .clipShape(RoundedRectangle(cornerRadius: TokenRadius.md))
-                .tokenShadow(TokenShadow.small)
+                .tokenShadow(TokenShadow.dim)
                 .padding(.horizontal, TokenSpacing.lg)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -128,11 +128,11 @@ private struct IconFullScreenView: View {
             } label: {
                 Image(systemName: "xmark")
                     .font(.body.weight(.medium))
-                    .foregroundStyle(Color.gray500)
+                    .foregroundStyle(Color.gray400)
                     .padding(TokenSpacing.sm)
                     .background(Color.beige50)
                     .clipShape(Circle())
-                    .tokenShadow(TokenShadow.small)
+                    .tokenShadow(TokenShadow.dim)
             }
             .padding(TokenSpacing.md)
         }

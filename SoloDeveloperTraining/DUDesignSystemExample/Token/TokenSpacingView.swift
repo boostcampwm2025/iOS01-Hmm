@@ -18,7 +18,6 @@ struct TokenSpacingView: View {
         ("lg",   TokenSpacing.lg),
         ("xl",   TokenSpacing.xl),
         ("xxl",  TokenSpacing.xxl),
-        ("xxxl", TokenSpacing.xxxl),
     ]
 
     private let trackWidth: CGFloat = 160
@@ -27,7 +26,7 @@ struct TokenSpacingView: View {
         List(items, id: \.0) { name, spacing in
             HStack(spacing: TokenSpacing.sm) {
                 ZStack(alignment: .leading) {
-                    Color.orange100
+                    Color.beige200
                         .frame(width: trackWidth, height: 24)
                     if spacing > 0 {
                         Color.orange300
@@ -39,10 +38,10 @@ struct TokenSpacingView: View {
                 VStack(alignment: .leading, spacing: TokenSpacing.xx) {
                     Text(name)
                         .font(.system(.body, design: .monospaced))
-                        .foregroundStyle(Color.gray600)
+                        .foregroundStyle(Color.gray400)
                     Text("\(Int(spacing))pt")
                         .duFont(.caption)
-                        .foregroundStyle(Color.gray400)
+                        .foregroundStyle(Color.gray200)
                 }
             }
             .padding(.vertical, TokenSpacing.xs)

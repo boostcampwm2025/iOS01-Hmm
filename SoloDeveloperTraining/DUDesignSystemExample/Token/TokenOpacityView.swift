@@ -31,10 +31,10 @@ struct TokenOpacityView: View {
                 VStack(alignment: .leading, spacing: TokenSpacing.xx) {
                     Text(name)
                         .font(.system(.body, design: .monospaced))
-                        .foregroundStyle(Color.gray600)
-                    Text(String(format: "%.0f%%", value * 100))
-                        .duFont(.caption)
                         .foregroundStyle(Color.gray400)
+                    Text(String(format: "%.0f%%  ·  value: %.1f", value * 100, value))
+                        .duFont(.caption)
+                        .foregroundStyle(Color.gray200)
                 }
             }
             .padding(.vertical, TokenSpacing.xx)
