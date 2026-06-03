@@ -34,6 +34,8 @@ struct SoloDeveloperTrainingApp: App {
         MobileAds.shared.start()
         let kakaoAppKey = Bundle.main.kakaoAppKey
         KakaoSDK.initSDK(appKey: kakaoAppKey)
+        print("KAKAO_APP_KEY:", Bundle.main.kakaoAppKey)
+
     }
 
     @State private var hasSeenIntro = false
