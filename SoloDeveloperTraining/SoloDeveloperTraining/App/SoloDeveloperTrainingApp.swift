@@ -255,8 +255,8 @@ private extension SoloDeveloperTrainingApp {
     // MARK: - Analytics
 
     func checkFirstOpen(user: User) {
-        guard !AnalyticsKeychain.hasLoggedFirstOpen() else { return }
-        AnalyticsKeychain.markFirstOpenLogged()
+        guard AnalyticsKeychain.isNewInstall() else { return }
+        AnalyticsKeychain.getOrCreateDeviceID()
         AnalyticsService.shared.logFirstOpen(level: user.career.level)
     }
 }

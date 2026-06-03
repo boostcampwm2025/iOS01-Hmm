@@ -9,14 +9,22 @@ import Foundation
 
 enum AnalyticsKeychain {
 
-    private static let firstOpenKey = "first_open_logged"
+    private static let deviceIDKey = "analytics_device_id"
 
-    static func hasLoggedFirstOpen() -> Bool {
-        return load(key: firstOpenKey) != nil
+    /// Keychain에 저장된 device_id 반환, 없으면 UUID 생성 후 저장
+    @discardableResult
+    static func getOrCreateDeviceID() -> String {
+        if let existing = load(key: deviceIDKey) {
+            return existing
+        }
+        let newID = UUID().uuidString
+        save(key: deviceIDKey, value: newID)
+        return newID
     }
 
-    static func markFirstOpenLogged() {
-        save(key: firstOpenKey, value: "true")
+    /// Keychain에 device_id가 없었으면 true (신규/재설치 유저)
+    static func isNewInstall() -> Bool {
+        return load(key: deviceIDKey) == nil
     }
 
     // MARK: - Private

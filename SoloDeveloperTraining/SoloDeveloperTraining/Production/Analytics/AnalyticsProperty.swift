@@ -43,9 +43,9 @@ enum AnalyticsProperty {
 
 // MARK: - Device Values
 extension AnalyticsProperty {
-    /// UIDevice.identifierForVendor 기반 기기 고유 식별자
+    /// Keychain 기반 앱 고유 식별자 (UUID)
     static var deviceIDValue: String {
-        UIDevice.current.identifierForVendor?.uuidString ?? "unknown"
+        AnalyticsKeychain.getOrCreateDeviceID()
     }
 
     /// CFBundleShortVersionString 기반 앱 버전
