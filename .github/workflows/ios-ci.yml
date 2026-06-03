@@ -72,6 +72,20 @@ jobs:
       run: |
         echo "🎯 사용할 시뮬레이터: ${{ steps.find-simulator.outputs.simulator_name }}"
         echo "🆔 시뮬레이터 ID: ${{ steps.find-simulator.outputs.simulator_id }}"
+
+    - name: Create xcconfig files
+      env:
+        DEBUG_XCCONFIG: ${{ secrets.DEBUG_XCCONFIG }}
+      run: |
+        CONFIG_DIR="SoloDeveloperTraining/SoloDeveloperTraining/App/Config"
+        mkdir -p "$CONFIG_DIR"
+
+        if [ -z "$DEBUG_XCCONFIG" ]; then
+          echo "❌ DEBUG_XCCONFIG secret is missing."
+          exit 1
+        fi
+
+        printf "%s" "$DEBUG_XCCONFIG" > "$CONFIG_DIR/Debug.xcconfig"
       
     - name: Cache SPM packages
       uses: actions/cache@v4
