@@ -74,9 +74,6 @@ struct ShopView: View {
                 housingView
             }
         }
-        .onAppear {
-            AnalyticsService.shared.logScreenView(screenName: "shop")
-        }
         .darkToast(isShowing: $showAdBonusToast, message: "강화 확률이 높아졌습니다!")
     }
 }

@@ -137,6 +137,7 @@ private extension SoloDeveloperTrainingApp {
                 if let loadedUser = try await userRepository.load() {
                     await MainActor.run {
                         self.user = loadedUser
+                        checkFirstOpen(user: loadedUser)
                     }
                 }
             } catch {
@@ -194,15 +195,19 @@ private extension SoloDeveloperTrainingApp {
 
                 NicknameSetupView(
                     onStart: { nickname in
-                        user = User(nickname: nickname)
+                        let newUser = User(nickname: nickname)
+                        user = newUser
                         showNicknameSetup = false
+                        checkFirstOpen(user: newUser)
                         withAnimation(.easeOut(duration: Constant.Animation.transitionDuration)) {
                             hasSeenIntro = true
                         }
                     },
                     onTutorial: { nickname in
-                        user = User(nickname: nickname)
+                        let newUser = User(nickname: nickname)
+                        user = newUser
                         showNicknameSetup = false
+                        checkFirstOpen(user: newUser)
                         showTutorial = true
                     }
                 )
@@ -242,3 +247,16 @@ private extension SoloDeveloperTrainingApp {
     }
 }
 #endif
+
+// MARK: - Helper
+
+private extension SoloDeveloperTrainingApp {
+
+    // MARK: - Analytics
+
+    func checkFirstOpen(user: User) {
+        guard AnalyticsKeychain.isNewInstall() else { return }
+        AnalyticsKeychain.getOrCreateDeviceID()
+        AnalyticsService.shared.logFirstOpen(level: user.career.level)
+    }
+}

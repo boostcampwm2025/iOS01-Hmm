@@ -281,7 +281,6 @@ private extension MainView {
     }
 
     func setupOnAppear() {
-        AnalyticsService.shared.logScreenView(screenName: "main")
         SoundService.shared.playBGM()
         skillAdRewardNow = Date()
         autoGainSystem.startSystem()

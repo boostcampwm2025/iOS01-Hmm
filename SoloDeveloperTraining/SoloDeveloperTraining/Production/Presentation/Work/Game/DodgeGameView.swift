@@ -98,7 +98,6 @@ struct DodgeGameView: View {
                 // (광고에서 돌아올 때 게임이 자동으로 재개되는 것을 방지)
                 guard !isGameInitialized else { return }
 
-                AnalyticsService.shared.logGameStart(gameType: .dodge)
                 setupGame(with: geometry.size)
                 isGameInitialized = true
 
