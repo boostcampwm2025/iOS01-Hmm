@@ -13,6 +13,7 @@ struct ComponentListView: View {
         ("ItemLabel", "tag", AnyView(ComponentDefaultLabelView())),
         ("EffectLabel", "plus.forwardslash.minus", AnyView(ComponentEffectLabelView())),
         ("ItemButton", "hand.tap", AnyView(ComponentItemButtonView())),
+        ("TextButton", "rectangle.and.hand.point.up.left", AnyView(ComponentTextButtonView())),
     ]
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible())]

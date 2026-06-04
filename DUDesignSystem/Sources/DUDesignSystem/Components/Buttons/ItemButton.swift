@@ -19,7 +19,9 @@ public struct ItemButton: View {
     public var text: String
     public var state: ItemButtonState = .default
     public var action: () -> Void
-    
+
+    @GestureState private var isPressed: Bool = false
+
     public init(text: String, state: ItemButtonState, action: @escaping () -> Void) {
         self.text = text
         self.state = state
@@ -33,37 +35,42 @@ public struct ItemButton: View {
         }
     }
 
+    private var isInteractive: Bool {
+        state != .disabled && state != .locked
+    }
+
     public var body: some View {
-        Button {
-            action()
-        } label: {
-            ZStack {
-                ItemLabel(text: text, icon: .coinBag, size: .small, color: .white)
-                    .opacity(state == .locked ? TokenOpacity.opacity40 : TokenOpacity.opacity100)
-                if state == .locked {
-                    DUIcon(.lock, size: .size15)
-                }
+        ZStack {
+            ItemLabel(text: text, icon: .coinBag, size: .medium, color: .white)
+                .opacity(state == .locked ? TokenOpacity.opacity40 : TokenOpacity.opacity100)
+            if state == .locked {
+                DUIcon(.lock, size: .size15)
             }
-            .frame(width: 80)
-            .padding(.vertical, TokenSpacing.mm)
-            .background(backgroundColor)
-            .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
         }
-        .buttonStyle(ItemButtonStyle(state: state))
-        .disabled(state == .disabled || state == .locked)
+        .frame(width: 80)
+        .padding(.vertical, TokenSpacing.mm)
+        .background(backgroundColor)
+        .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
+        .tokenShadow(isPressed ? .none : .dim)
+        .offset(
+            x: isPressed ? TokenShadow.dim.x : 0,
+            y: isPressed ? TokenShadow.dim.y : 0
+        )
+        .gesture(
+            isInteractive ? DragGesture(minimumDistance: 0)
+                .updating($isPressed) { _, state, _ in state = true }
+                .onEnded { _ in action() } : nil
+        )
+        .animation(nil, value: isPressed)
     }
 }
 
-private struct ItemButtonStyle: ButtonStyle {
-    let state: ItemButton.ItemButtonState
-
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .offset(
-                x: configuration.isPressed ? TokenShadow.dim.x : 0,
-                y: configuration.isPressed ? TokenShadow.dim.y : 0
-            )
-            .tokenShadow(configuration.isPressed ? .none : .dim)
-            .animation(nil, value: configuration.isPressed)
+#Preview {
+    VStack(spacing: 20) {
+        ItemButton(text: "20,000", state: .default) { }
+        ItemButton(text: "20,000", state: .locked) { }
+        ItemButton(text: "20,000", state: .disabled) { }
     }
+    .padding(32)
+    .background(Color.beige200)
 }
