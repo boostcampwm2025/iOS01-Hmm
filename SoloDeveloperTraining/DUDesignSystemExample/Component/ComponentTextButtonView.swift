@@ -52,7 +52,7 @@ struct ComponentTextButtonView: View {
             Section("크기") {
                 Picker("크기", selection: $selectedSize) {
                     Text("Large").tag(TextButton.TextButtonSize.large)
-                    Text("Small").tag(TextButton.TextButtonSize.small)
+                    Text("Medium").tag(TextButton.TextButtonSize.small)
                 }
                 .pickerStyle(.segmented)
             }
