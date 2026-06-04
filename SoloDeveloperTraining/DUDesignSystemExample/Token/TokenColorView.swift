@@ -10,18 +10,18 @@ struct TokenColorView: View {
 
     private let sections: [(String, [(String, Color, String)])] = [
         ("White", [
-            ("white300",    .white300,    "#FFFFFF"),
-            ("white300_80", .white300_80, "#FFFFFF · opacity 80%"),
+            ("white300",          .white300,          "#FFFFFF"),
+            ("white300StatusBar", .white300StatusBar,  "#FFFFFF · opacity 80%"),
         ]),
         ("Black", [
-            ("black300",    .black300,    "#000000"),
-            ("black300_30", .black300_30, "#000000 · opacity 20%"),
-            ("black300_10", .black300_10, "#000000 · opacity 10%"),
+            ("black300",                  .black300,                  "#000000"),
+            ("black300PopUpDimStatusBar", .black300PopUpDimStatusBar, "#000000 · opacity 30%"),
+            ("black300GrayBar",           .black300GrayBar,           "#000000 · opacity 10%"),
         ]),
         ("Gray", [
             ("gray100", .gray100, "#D9D9D9"),
             ("gray200", .gray200, "#B4B4B4"),
-            ("gray400", .gray400, "#8A8A8A"),
+            ("gray400", .gray400, "#6A6A6A"),
             ("gray700", .gray700, "#111111"),
         ]),
         ("Orange", [
@@ -41,7 +41,7 @@ struct TokenColorView: View {
             ("lightOrange", .lightOrange, "#F57C00"),
         ]),
         ("Accent", [
-            ("accentGreen",  .accentGreen,  "#5DB875"),
+            ("accentGreen",  .accentGreen,  "#59B755"),
             ("accentYellow", .accentYellow, "#FBC02D"),
             ("accentRed",    .accentRed,    "#D32F2F"),
         ]),

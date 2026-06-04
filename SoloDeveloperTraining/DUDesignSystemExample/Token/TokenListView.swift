@@ -16,6 +16,7 @@ struct TokenListView: View {
         ("Typography", "textformat",             AnyView(TokenTypographyView())),
         ("Radius",     "rectangle.roundedtop",   AnyView(TokenRadiusView())),
         ("Spacing",    "arrow.left.and.right",   AnyView(TokenSpacingView())),
+        ("Grid",       "square.grid.2x2",        AnyView(TokenGridView())),
     ]
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible())]

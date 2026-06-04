@@ -9,7 +9,7 @@ import DUDesignSystem
 struct TokenLineView: View {
 
     private let items: [(String, TokenLine, String)] = [
-        ("default", .`default`, "2pt · gray700 · Pop up 카드, 선택된 카드 테두리"),
+        ("default", .`default`, "2pt · gray/700"),
     ]
 
     var body: some View {
