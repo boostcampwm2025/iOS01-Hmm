@@ -94,17 +94,17 @@ extension AnalyticsService {
     func logAdWatchClicked(
         adRewardFlowID: String,
         adPlacement: AdPlacementType,
-        rewardType: String,
+        rewardType: AdRewardType,
         rewardAmount: Int
     ) {
         Analytics.logEvent("ad_watch_clicked", parameters: [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.adRewardFlowID: adRewardFlowID,
-            AP.adPlacement: adPlacement,
-            AP.rewardType: rewardType,
+            AP.adPlacement: adPlacement.rawValue,
+            AP.rewardType: rewardType.rawValue,
             AP.rewardAmount: rewardAmount,
-            AP.adFormat: AdType.interstitial,
+            AP.adFormat: AdType.interstitial.rawValue,
             AP.adNetwork: "admob",
             AP.adUnitID: Bundle.main.adMobInterstitialAdUnitID
         ])
@@ -114,7 +114,7 @@ extension AnalyticsService {
     func logAdWatchCompleted(
         adRewardFlowID: String,
         adPlacement: AdPlacementType,
-        rewardType: String,
+        rewardType: AdRewardType,
         rewardAmount: Int,
         adWatchDurationSec: Int
     ) {
@@ -122,13 +122,33 @@ extension AnalyticsService {
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.adRewardFlowID: adRewardFlowID,
-            AP.adPlacement: adPlacement,
-            AP.rewardType: rewardType,
+            AP.adPlacement: adPlacement.rawValue,
+            AP.rewardType: rewardType.rawValue,
             AP.rewardAmount: rewardAmount,
-            AP.adFormat: AdType.interstitial,
+            AP.adFormat: AdType.interstitial.rawValue,
             AP.adNetwork: "admob",
             AP.adUnitID: Bundle.main.adMobInterstitialAdUnitID,
             AP.adWatchDurationSec: adWatchDurationSec
+        ])
+    }
+
+    /// 광고 완료 후 보상이 실제 지급 완료될 때
+    func logAdRewardClaimed(
+        adRewardFlowID: String,
+        adPlacement: AdPlacementType,
+        rewardType: AdRewardType,
+        rewardAmount: Int
+    ) {
+        Analytics.logEvent("ad_reward_claimed", parameters: [
+            AP.deviceID: AP.deviceIDValue,
+            AP.sessionID: SessionManager.shared.sessionID,
+            AP.adRewardFlowID: adRewardFlowID,
+            AP.adPlacement: adPlacement.rawValue,
+            AP.rewardType: rewardType.rawValue,
+            AP.rewardAmount: rewardAmount,
+            AP.adFormat: AdType.interstitial.rawValue,
+            AP.adNetwork: "admob",
+            AP.adUnitID: Bundle.main.adMobInterstitialAdUnitID,
         ])
     }
 }
