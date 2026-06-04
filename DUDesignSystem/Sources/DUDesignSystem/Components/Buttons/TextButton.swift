@@ -100,18 +100,6 @@ public struct TextButton: View {
         )
         .animation(nil, value: isPressed)
         .padding(.horizontal, size == .large ? TokenSpacing.xxl : TokenSpacing.none)
-        .padding(.vertical, TokenSpacing.sm)
         .frame(maxWidth: size == .large ? .infinity : nil)
     }
-}
-
-#Preview {
-    VStack(spacing: 40) {
-        TextButton(text: "시작하기", type: .primary, size: .large, showDiamond: false) { }
-        TextButton(text: "시작하기", type: .primary, size: .large, showDiamond: true) { }
-        TextButton(text: "시작하기", type: .secondary, size: .small, showDiamond: false) { }
-        TextButton(text: "시작하기", type: .primary, size: .large, state: .locked, showDiamond: true) { }
-        TextButton(text: "시작하기", type: .primary, size: .large, state: .disabled) { }
-    }
-    .background(Color.beige200)
 }
