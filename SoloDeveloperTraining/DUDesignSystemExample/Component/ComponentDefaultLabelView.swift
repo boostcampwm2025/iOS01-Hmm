@@ -9,15 +9,15 @@ import DUDesignSystem
 struct ComponentDefaultLabelView: View {
 
     @State private var text: String = "개발자 키우기"
-    @State private var selectedSize: DefaultLabel.LabelSize = .medium
-    @State private var selectedColor: DefaultLabel.LabelColor = .white
+    @State private var selectedSize: ItemLabel.LabelSize = .medium
+    @State private var selectedColor: ItemLabel.LabelColor = .white
     @State private var selectedIcon: DUIconName? = .ad
 
     var body: some View {
         List {
             // MARK: - Preview
             Section {
-                DefaultLabel(text: text, icon: selectedIcon, size: selectedSize, color: selectedColor)
+                ItemLabel(text: text, icon: selectedIcon, size: selectedSize, color: selectedColor)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, TokenSpacing.lg)
                     .background(
@@ -48,9 +48,9 @@ struct ComponentDefaultLabelView: View {
             // MARK: - 크기
             Section("크기") {
                 Picker("크기", selection: $selectedSize) {
-                    Text("Small").tag(DefaultLabel.LabelSize.small)
-                    Text("Medium").tag(DefaultLabel.LabelSize.medium)
-                    Text("Large").tag(DefaultLabel.LabelSize.large)
+                    Text("Small").tag(ItemLabel.LabelSize.small)
+                    Text("Medium").tag(ItemLabel.LabelSize.medium)
+                    Text("Large").tag(ItemLabel.LabelSize.large)
                 }
                 .pickerStyle(.segmented)
             }
@@ -60,8 +60,8 @@ struct ComponentDefaultLabelView: View {
             // MARK: - 색상
             Section("색상") {
                 Picker("색상", selection: $selectedColor) {
-                    Text("White").tag(DefaultLabel.LabelColor.white)
-                    Text("Black").tag(DefaultLabel.LabelColor.black)
+                    Text("White").tag(ItemLabel.LabelColor.white)
+                    Text("Black").tag(ItemLabel.LabelColor.black)
                 }
                 .pickerStyle(.segmented)
             }
