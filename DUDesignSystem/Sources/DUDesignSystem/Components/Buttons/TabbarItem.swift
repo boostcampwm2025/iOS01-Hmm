@@ -52,11 +52,16 @@ public struct TabbarItem: View {
         .padding(.vertical, 4.5)
         .background(backgroundColor)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.xs))
-        .tokenShadow(.default)
+        .tokenShadow(isPressed ? .none : .default)
+        .offset(
+            x: isPressed ? TokenShadow.default.x : 0,
+            y: isPressed ? TokenShadow.default.y : 0
+        )
         .gesture(
             DragGesture(minimumDistance: 0)
                 .updating($isPressed) { _, state, _ in state = true }
                 .onEnded { _ in action() }
         )
+        .animation(nil, value: isPressed)
     }
 }
