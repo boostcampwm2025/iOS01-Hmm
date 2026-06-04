@@ -12,6 +12,9 @@ private typealias AP = AnalyticsProperty
 final class AnalyticsService {
     static let shared = AnalyticsService()
 
+    /// 광고 이벤트별 flow ID 중복 로깅 방지
+    private var loggedAdRewardFlowIDsByEvent: [AdAnalyticsEvent: Set<String>] = [:]
+
     private init() {}
 
     // MARK: - 성장
@@ -77,7 +80,10 @@ extension AnalyticsService {
         rewardType: AdRewardType,
         rewardAmount: Int
     ) {
-        Analytics.logEvent("ad_offer_viewed", parameters: [
+        let event = AdAnalyticsEvent.offerViewed
+        guard shouldLogAdEvent(event, adRewardFlowID: adRewardFlowID) else { return }
+
+        Analytics.logEvent(event.rawValue, parameters: [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.adRewardFlowID: adRewardFlowID,
@@ -97,7 +103,10 @@ extension AnalyticsService {
         rewardType: AdRewardType,
         rewardAmount: Int
     ) {
-        Analytics.logEvent("ad_watch_clicked", parameters: [
+        let event = AdAnalyticsEvent.watchClicked
+        guard shouldLogAdEvent(event, adRewardFlowID: adRewardFlowID) else { return }
+
+        Analytics.logEvent(event.rawValue, parameters: [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.adRewardFlowID: adRewardFlowID,
@@ -118,7 +127,10 @@ extension AnalyticsService {
         rewardAmount: Int,
         adWatchDurationSec: Int
     ) {
-        Analytics.logEvent("ad_watch_completed", parameters: [
+        let event = AdAnalyticsEvent.watchCompleted
+        guard shouldLogAdEvent(event, adRewardFlowID: adRewardFlowID) else { return }
+
+        Analytics.logEvent(event.rawValue, parameters: [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.adRewardFlowID: adRewardFlowID,
@@ -139,7 +151,10 @@ extension AnalyticsService {
         rewardType: AdRewardType,
         rewardAmount: Int
     ) {
-        Analytics.logEvent("ad_reward_claimed", parameters: [
+        let event = AdAnalyticsEvent.rewardClaimed
+        guard shouldLogAdEvent(event, adRewardFlowID: adRewardFlowID) else { return }
+
+        Analytics.logEvent(event.rawValue, parameters: [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.adRewardFlowID: adRewardFlowID,
@@ -160,7 +175,10 @@ extension AnalyticsService {
         rewardAmount: Int,
         dismissReason: AdOfferDismissReasonType
     ) {
-        Analytics.logEvent("ad_offer_dismissed", parameters: [
+        let event = AdAnalyticsEvent.offerDismissed
+        guard shouldLogAdEvent(event, adRewardFlowID: adRewardFlowID) else { return }
+
+        Analytics.logEvent(event.rawValue, parameters: [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.adRewardFlowID: adRewardFlowID,
@@ -169,5 +187,12 @@ extension AnalyticsService {
             AP.rewardAmount: rewardAmount,
             AP.dismissReason: dismissReason.rawValue
         ])
+    }
+
+    private func shouldLogAdEvent(_ event: AdAnalyticsEvent, adRewardFlowID: String) -> Bool {
+        var loggedFlowIDs = loggedAdRewardFlowIDsByEvent[event, default: []]
+        guard loggedFlowIDs.insert(adRewardFlowID).inserted else { return false }
+        loggedAdRewardFlowIDsByEvent[event] = loggedFlowIDs
+        return true
     }
 }
