@@ -1,5 +1,5 @@
 //
-//  DefaultLabel.swift
+//  ItemLabel.swift
 //  DUDesignSystem
 //
 //  Created by SeoJunYoung on 6/4/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct DefaultLabel: View {
+public struct ItemLabel: View {
     
     public enum LabelSize {
         case small
