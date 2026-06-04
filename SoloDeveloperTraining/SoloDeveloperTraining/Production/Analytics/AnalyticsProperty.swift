@@ -39,6 +39,22 @@ enum AnalyticsProperty {
     /// 세션 종료 전 마지막 화면
     static let lastScreen = "last_screen"
 
+    // MARK: - 광고 관련 프로퍼티
+    /// 광고 보상 플로우 식별자
+    static let adRewardFlowID = "ad_reward_flow_id"
+    /// 광고 제안 위치
+    static let adPlacement = "ad_placement"
+    /// 광고 보상 종류
+    static let rewardType = "reward_type"
+    /// 광고 보상량
+    static let rewardAmount = "reward_amount"
+    /// 광고 형식
+    static let adFormat = "ad_format"
+    /// 광고 네트워크
+    static let adNetwork = "ad_network"
+    /// 광고 유닛 ID
+    static let adUnitID = "ad_unit_id"
+
 }
 
 // MARK: - Device Values

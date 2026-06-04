@@ -11,6 +11,16 @@ enum AdType {
     case interstitial
 }
 
+enum AdPlacementType {
+    case consumable
+    case workExit
+    case equipmentEnhance
+    case reselectionReward
+    case skillReward
+    case quizReward
+    case offlineReward
+}
+
 @MainActor
 final class AdService {
     static let shared: AdService = {
