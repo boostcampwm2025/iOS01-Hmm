@@ -33,9 +33,9 @@ public enum DUIconName: String, CaseIterable {
 
 public struct DUIcon: View {
     private let name: DUIconName
-    private let size: CGFloat
+    private let size: TokenIconSize
 
-    public init(_ name: DUIconName, size: CGFloat) {
+    public init(_ name: DUIconName, size: TokenIconSize) {
         self.name = name
         self.size = size
     }
@@ -44,6 +44,6 @@ public struct DUIcon: View {
         Image(name.rawValue, bundle: .module)
             .resizable()
             .scaledToFit()
-            .frame(width: size, height: size)
+            .frame(width: size.rawValue, height: size.rawValue)
     }
 }

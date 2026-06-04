@@ -8,23 +8,15 @@ import DUDesignSystem
 
 struct ComponentIconView: View {
 
-    private let sizes: [CGFloat] = [
-        TokenIconSize.size15,
-        TokenIconSize.size18,
-        TokenIconSize.size24,
-        TokenIconSize.size28,
-        TokenIconSize.size38,
-    ]
-
-    @State private var selectedSize: CGFloat = TokenIconSize.size24
+    @State private var selectedSize: TokenIconSize = .size24
     @State private var selectedIcon: DUIconName?
 
     var body: some View {
         List {
             Section {
                 Picker("크기", selection: $selectedSize) {
-                    ForEach(sizes, id: \.self) { size in
-                        Text("\(Int(size))pt").tag(size)
+                    ForEach(TokenIconSize.allCases, id: \.self) { size in
+                        Text("\(Int(size.rawValue))pt").tag(size)
                     }
                 }
                 .pickerStyle(.segmented)
@@ -37,7 +29,7 @@ struct ComponentIconView: View {
                     Button { selectedIcon = icon } label: {
                         HStack(spacing: TokenSpacing.md) {
                             DUIcon(icon, size: selectedSize)
-                                .frame(width: TokenIconSize.size38, height: TokenIconSize.size38)
+                                .frame(width: TokenIconSize.size38.rawValue, height: TokenIconSize.size38.rawValue)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: TokenRadius.xs)
                                         .stroke(Color.orange300.opacity(0.5), style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
@@ -75,7 +67,7 @@ private struct IconFullScreenView: View {
 
             VStack(spacing: TokenSpacing.xl) {
                 VStack(spacing: TokenSpacing.lg) {
-                    DUIcon(icon, size: 120)
+                    DUIcon(icon, size: .size38)
                         .padding(TokenSpacing.xl)
                         .background(Color.beige100)
                         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.xl))
