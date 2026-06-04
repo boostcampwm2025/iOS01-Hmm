@@ -12,20 +12,20 @@ public extension Color {
 
     // MARK: - White
 
-    static let white300    = Color(hex: "#FFFFFF")
-    static let white300_80 = Color(hex: "#FFFFFF").opacity(0.8)
+    static let white300           = Color(hex: "#FFFFFF")
+    static let white300StatusBar  = Color(hex: "#FFFFFF").opacity(0.8)
 
     // MARK: - Black
 
-    static let black300    = Color(hex: "#000000")
-    static let black300_30 = Color(hex: "#000000").opacity(0.2)
-    static let black300_10 = Color(hex: "#000000").opacity(0.1)
+    static let black300                 = Color(hex: "#000000")
+    static let black300PopUpDimStatusBar = Color(hex: "#000000").opacity(0.3)
+    static let black300GrayBar          = Color(hex: "#000000").opacity(0.1)
 
     // MARK: - Gray
 
     static let gray100 = Color(hex: "#D9D9D9")
     static let gray200 = Color(hex: "#B4B4B4")
-    static let gray400 = Color(hex: "#8A8A8A")
+    static let gray400 = Color(hex: "#6A6A6A")
     static let gray700 = Color(hex: "#111111")
 
     // MARK: - Orange
@@ -49,7 +49,7 @@ public extension Color {
 
     // MARK: - Accent
 
-    static let accentGreen  = Color(hex: "#5DB875")
+    static let accentGreen  = Color(hex: "#59B755")
     static let accentYellow = Color(hex: "#FBC02D")
     static let accentRed    = Color(hex: "#D32F2F")
 }
