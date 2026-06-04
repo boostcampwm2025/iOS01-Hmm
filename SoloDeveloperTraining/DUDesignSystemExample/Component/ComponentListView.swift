@@ -10,6 +10,7 @@ struct ComponentListView: View {
 
     private let items: [(String, String, AnyView)] = [
         ("Icon", "square.on.square", AnyView(ComponentIconView())),
+        ("DefaultLabel", "tag", AnyView(ComponentDefaultLabelView())),
     ]
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible())]
