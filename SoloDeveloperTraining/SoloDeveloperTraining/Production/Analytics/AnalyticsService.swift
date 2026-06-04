@@ -80,20 +80,13 @@ extension AnalyticsService {
         rewardType: AdRewardType,
         rewardAmount: Int
     ) {
-        let event = AdAnalyticsEvent.offerViewed
-        guard shouldLogAdEvent(event, adRewardFlowID: adRewardFlowID) else { return }
-
-        Analytics.logEvent(event.rawValue, parameters: [
-            AP.deviceID: AP.deviceIDValue,
-            AP.sessionID: SessionManager.shared.sessionID,
-            AP.adRewardFlowID: adRewardFlowID,
-            AP.adPlacement: adPlacement.rawValue,
-            AP.rewardType: rewardType.rawValue,
-            AP.rewardAmount: rewardAmount,
-            AP.adFormat: AdType.interstitial.rawValue,
-            AP.adNetwork: "admob",
-            AP.adUnitID: Bundle.main.adMobInterstitialAdUnitID
-        ])
+        logAdEvent(
+            .offerViewed,
+            adRewardFlowID: adRewardFlowID,
+            adPlacement: adPlacement,
+            rewardType: rewardType,
+            rewardAmount: rewardAmount
+        )
     }
 
     /// 광고 보기를 클릭했을 때
@@ -103,20 +96,13 @@ extension AnalyticsService {
         rewardType: AdRewardType,
         rewardAmount: Int
     ) {
-        let event = AdAnalyticsEvent.watchClicked
-        guard shouldLogAdEvent(event, adRewardFlowID: adRewardFlowID) else { return }
-
-        Analytics.logEvent(event.rawValue, parameters: [
-            AP.deviceID: AP.deviceIDValue,
-            AP.sessionID: SessionManager.shared.sessionID,
-            AP.adRewardFlowID: adRewardFlowID,
-            AP.adPlacement: adPlacement.rawValue,
-            AP.rewardType: rewardType.rawValue,
-            AP.rewardAmount: rewardAmount,
-            AP.adFormat: AdType.interstitial.rawValue,
-            AP.adNetwork: "admob",
-            AP.adUnitID: Bundle.main.adMobInterstitialAdUnitID
-        ])
+        logAdEvent(
+            .watchClicked,
+            adRewardFlowID: adRewardFlowID,
+            adPlacement: adPlacement,
+            rewardType: rewardType,
+            rewardAmount: rewardAmount
+        )
     }
 
     /// 광고 시청을 완료했을 때
@@ -127,21 +113,16 @@ extension AnalyticsService {
         rewardAmount: Int,
         adWatchDurationSec: Int
     ) {
-        let event = AdAnalyticsEvent.watchCompleted
-        guard shouldLogAdEvent(event, adRewardFlowID: adRewardFlowID) else { return }
-
-        Analytics.logEvent(event.rawValue, parameters: [
-            AP.deviceID: AP.deviceIDValue,
-            AP.sessionID: SessionManager.shared.sessionID,
-            AP.adRewardFlowID: adRewardFlowID,
-            AP.adPlacement: adPlacement.rawValue,
-            AP.rewardType: rewardType.rawValue,
-            AP.rewardAmount: rewardAmount,
-            AP.adFormat: AdType.interstitial.rawValue,
-            AP.adNetwork: "admob",
-            AP.adUnitID: Bundle.main.adMobInterstitialAdUnitID,
-            AP.adWatchDurationSec: adWatchDurationSec
-        ])
+        logAdEvent(
+            .watchCompleted,
+            adRewardFlowID: adRewardFlowID,
+            adPlacement: adPlacement,
+            rewardType: rewardType,
+            rewardAmount: rewardAmount,
+            additionalParameters: [
+                AP.adWatchDurationSec: adWatchDurationSec
+            ]
+        )
     }
 
     /// 광고 완료 후 보상이 실제 지급 완료될 때
@@ -151,20 +132,13 @@ extension AnalyticsService {
         rewardType: AdRewardType,
         rewardAmount: Int
     ) {
-        let event = AdAnalyticsEvent.rewardClaimed
-        guard shouldLogAdEvent(event, adRewardFlowID: adRewardFlowID) else { return }
-
-        Analytics.logEvent(event.rawValue, parameters: [
-            AP.deviceID: AP.deviceIDValue,
-            AP.sessionID: SessionManager.shared.sessionID,
-            AP.adRewardFlowID: adRewardFlowID,
-            AP.adPlacement: adPlacement.rawValue,
-            AP.rewardType: rewardType.rawValue,
-            AP.rewardAmount: rewardAmount,
-            AP.adFormat: AdType.interstitial.rawValue,
-            AP.adNetwork: "admob",
-            AP.adUnitID: Bundle.main.adMobInterstitialAdUnitID,
-        ])
+        logAdEvent(
+            .rewardClaimed,
+            adRewardFlowID: adRewardFlowID,
+            adPlacement: adPlacement,
+            rewardType: rewardType,
+            rewardAmount: rewardAmount
+        )
     }
 
     /// 사용자가 광고 제안을 닫거나 보지 않기로 선택 시
@@ -175,21 +149,66 @@ extension AnalyticsService {
         rewardAmount: Int,
         dismissReason: AdOfferDismissReasonType
     ) {
-        let event = AdAnalyticsEvent.offerDismissed
-        guard shouldLogAdEvent(event, adRewardFlowID: adRewardFlowID) else { return }
+        logAdEvent(
+            .offerDismissed,
+            adRewardFlowID: adRewardFlowID,
+            adPlacement: adPlacement,
+            rewardType: rewardType,
+            rewardAmount: rewardAmount,
+            includesAdInfo: false,
+            additionalParameters: [
+                AP.dismissReason: dismissReason.rawValue
+            ]
+        )
+    }
 
-        Analytics.logEvent(event.rawValue, parameters: [
+    private func logAdEvent(
+        _ event: AdAnalyticsEvent,
+        adRewardFlowID: String,
+        adPlacement: AdPlacementType,
+        rewardType: AdRewardType? = nil,
+        rewardAmount: Int? = nil,
+        includesReward: Bool = true,
+        includesAdInfo: Bool = true,
+        additionalParameters: [String: Any] = [:]
+    ) {
+        guard registerAdEventOnce(event, adRewardFlowID: adRewardFlowID) else { return }
+
+        var parameters = baseAdEventParameters(
+            adRewardFlowID: adRewardFlowID,
+            adPlacement: adPlacement,
+            includesAdInfo: includesAdInfo
+        )
+        if includesReward, let rewardType, let rewardAmount {
+            parameters[AP.rewardType] = rewardType.rawValue
+            parameters[AP.rewardAmount] = rewardAmount
+        }
+        additionalParameters.forEach { parameters[$0.key] = $0.value }
+
+        Analytics.logEvent(event.rawValue, parameters: parameters)
+    }
+
+    private func baseAdEventParameters(
+        adRewardFlowID: String,
+        adPlacement: AdPlacementType,
+        includesAdInfo: Bool
+    ) -> [String: Any] {
+        var parameters: [String: Any] = [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.adRewardFlowID: adRewardFlowID,
-            AP.adPlacement: adPlacement.rawValue,
-            AP.rewardType: rewardType.rawValue,
-            AP.rewardAmount: rewardAmount,
-            AP.dismissReason: dismissReason.rawValue
-        ])
+            AP.adPlacement: adPlacement.rawValue
+        ]
+
+        if includesAdInfo {
+            parameters[AP.adFormat] = AdType.interstitial.rawValue
+            parameters[AP.adNetwork] = "admob"
+            parameters[AP.adUnitID] = Bundle.main.adMobInterstitialAdUnitID
+        }
+        return parameters
     }
 
-    private func shouldLogAdEvent(_ event: AdAnalyticsEvent, adRewardFlowID: String) -> Bool {
+    private func registerAdEventOnce(_ event: AdAnalyticsEvent, adRewardFlowID: String) -> Bool {
         var loggedFlowIDs = loggedAdRewardFlowIDsByEvent[event, default: []]
         guard loggedFlowIDs.insert(adRewardFlowID).inserted else { return false }
         loggedAdRewardFlowIDsByEvent[event] = loggedFlowIDs
