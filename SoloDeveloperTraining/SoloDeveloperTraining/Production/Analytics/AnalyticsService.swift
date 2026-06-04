@@ -109,4 +109,26 @@ extension AnalyticsService {
             AP.adUnitID: Bundle.main.adMobInterstitialAdUnitID
         ])
     }
+
+    /// 광고 시청을 완료했을 때
+    func logAdWatchCompleted(
+        adRewardFlowID: String,
+        adPlacement: AdPlacementType,
+        rewardType: String,
+        rewardAmount: Int,
+        adWatchDurationSec: Int
+    ) {
+        Analytics.logEvent("ad_watch_completed", parameters: [
+            AP.deviceID: AP.deviceIDValue,
+            AP.sessionID: SessionManager.shared.sessionID,
+            AP.adRewardFlowID: adRewardFlowID,
+            AP.adPlacement: adPlacement,
+            AP.rewardType: rewardType,
+            AP.rewardAmount: rewardAmount,
+            AP.adFormat: AdType.interstitial,
+            AP.adNetwork: "admob",
+            AP.adUnitID: Bundle.main.adMobInterstitialAdUnitID,
+            AP.adWatchDurationSec: adWatchDurationSec
+        ])
+    }
 }

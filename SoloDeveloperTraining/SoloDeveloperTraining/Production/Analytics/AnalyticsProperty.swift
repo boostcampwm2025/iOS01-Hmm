@@ -54,6 +54,8 @@ enum AnalyticsProperty {
     static let adNetwork = "ad_network"
     /// 광고 유닛 ID
     static let adUnitID = "ad_unit_id"
+    /// 광고 시청 시간
+    static let adWatchDurationSec = "ad_watch_duration_sec"
 
 }
 
