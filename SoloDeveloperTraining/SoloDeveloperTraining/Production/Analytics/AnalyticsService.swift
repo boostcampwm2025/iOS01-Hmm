@@ -12,8 +12,6 @@ private typealias AP = AnalyticsProperty
 final class AnalyticsService {
     static let shared = AnalyticsService()
 
-    private var loggedAdOfferFlowIDs: Set<String> = []
-
     private init() {}
 
     // MARK: - 성장
@@ -67,17 +65,39 @@ final class AnalyticsService {
 // MARK: - 광고
 extension AnalyticsService {
 
+    /// 광고 흐름 (광고 제안 → 클릭 → 시작 → 완료 → 보상) 식별자 생성
+    func makeAdRewardFlowID() -> String {
+        "ad_reward_\(UUID().uuidString)"
+    }
+
     /// 광고 보기 버튼/팝업이 사용자에게 노출될 때
     func logAdOfferViewed(
+        adRewardFlowID: String,
+        adPlacement: AdPlacementType,
+        rewardType: AdRewardType,
+        rewardAmount: Int
+    ) {
+        Analytics.logEvent("ad_offer_viewed", parameters: [
+            AP.deviceID: AP.deviceIDValue,
+            AP.sessionID: SessionManager.shared.sessionID,
+            AP.adRewardFlowID: adRewardFlowID,
+            AP.adPlacement: adPlacement.rawValue,
+            AP.rewardType: rewardType.rawValue,
+            AP.rewardAmount: rewardAmount,
+            AP.adFormat: AdType.interstitial.rawValue,
+            AP.adNetwork: "admob",
+            AP.adUnitID: Bundle.main.adMobInterstitialAdUnitID
+        ])
+    }
+
+    /// 광고 보기를 클릭했을 때
+    func logAdWatchClicked(
+        adRewardFlowID: String,
         adPlacement: AdPlacementType,
         rewardType: String,
         rewardAmount: Int
     ) {
-        let adRewardFlowID = "ad_flow_\(UUID())"
-        guard !loggedAdOfferFlowIDs.contains(adRewardFlowID) else { return }
-        loggedAdOfferFlowIDs.insert(adRewardFlowID)
-
-        Analytics.logEvent("ad_offer_viewed", parameters: [
+        Analytics.logEvent("ad_watch_clicked", parameters: [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.adRewardFlowID: adRewardFlowID,

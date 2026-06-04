@@ -7,11 +7,11 @@
 
 import AppTrackingTransparency
 
-enum AdType {
+enum AdType: String {
     case interstitial
 }
 
-enum AdPlacementType {
+enum AdPlacementType: String {
     case consumable
     case workExit
     case equipmentEnhance
@@ -19,6 +19,14 @@ enum AdPlacementType {
     case skillReward
     case quizReward
     case offlineReward
+}
+
+enum AdRewardType: String {
+    case gold
+    case diamond
+    case coffee
+    case energyDrink
+    case reselect
 }
 
 @MainActor
