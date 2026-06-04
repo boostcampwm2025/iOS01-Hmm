@@ -18,6 +18,7 @@ struct ComponentListView: View {
         ("Tabbar", "dock.rectangle", AnyView(ComponentTabbarView())),
         ("SegmentControl", "rectangle.split.2x1", AnyView(ComponentSegmentControlView())),
         ("SmallButton", "smallcircle.filled.circle", AnyView(ComponentSmallButtonView())),
+        ("QuizButton", "questionmark.circle", AnyView(ComponentQuizButtonView())),
     ]
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible())]
