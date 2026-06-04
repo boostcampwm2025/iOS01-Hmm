@@ -41,7 +41,7 @@ public struct ItemButton: View {
 
     public var body: some View {
         ZStack {
-            ItemLabel(text: text, icon: .coinBag, size: .medium, color: .white)
+            ItemLabel(text: text, icon: .coinBag, size: .small, color: .white)
                 .opacity(state == .locked ? TokenOpacity.opacity40 : TokenOpacity.opacity100)
             if state == .locked {
                 DUIcon(.lock, size: .size15)
