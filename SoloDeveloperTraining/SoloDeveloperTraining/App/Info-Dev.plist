@@ -9,14 +9,16 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>kakaod6f5c0d68a627d57b63e11bb0fd21cc8</string>
+				<string>$(KAKAO_URL_SCHEME)</string>
 			</array>
 		</dict>
 	</array>
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-5929488905880864~1052005631</string>
+	<string>$(GAD_APPLICATION_IDENTIFIER)</string>
+	<key>ADMOB_INTERSTITIAL_AD_UNIT_ID</key>
+	<string>$(ADMOB_INTERSTITIAL_AD_UNIT_ID)</string>
 	<key>KAKAO_APP_KEY</key>
-	<string>d6f5c0d68a627d57b63e11bb0fd21cc8</string>
+	<string>$(KAKAO_APP_KEY)</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>kakaokompassauth</string>

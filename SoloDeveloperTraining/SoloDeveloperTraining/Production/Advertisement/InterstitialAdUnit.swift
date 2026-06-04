@@ -12,11 +12,7 @@ final class InterstitialAdUnit: NSObject, AdUnit {
     private var resultContinuation: CheckedContinuation<Bool, Never>?
 
     var adUnitID: String {
-        #if DEBUG
-            "ca-app-pub-3940256099942544/4411468910"
-        #else
-        Secret.interstitialAdUnitID  // 실제 ID
-        #endif
+        Bundle.main.adMobInterstitialAdUnitID
     }
 
     var isReady: Bool {
