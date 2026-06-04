@@ -13,8 +13,6 @@ public enum TokenIconSize {
     public static let size15: CGFloat = 15
     public static let size18: CGFloat = 18
     public static let size24: CGFloat = 24
+    public static let size28: CGFloat = 28
     public static let size38: CGFloat = 38
-    public static let size44: CGFloat = 44
-    public static let size51: CGFloat = 51
-    public static let size64: CGFloat = 64
 }

@@ -7,97 +7,37 @@
 
 import SwiftUI
 
-/// DUDesignSystem 아이콘 열거형입니다.
-///
-/// 새 아이콘 추가 시:
-/// 1. `DUIcons.xcassets/<size>/` 폴더에 imageset 추가
-/// 2. 해당 사이즈 섹션에 케이스 추가
-/// 3. `defaultSize` switch에 케이스 추가
 public enum DUIconName: String, CaseIterable {
-
-    // MARK: - 15pt
-    case coinBag            = "15/icon_coin_bag"
-
-    // MARK: - 18pt
-    case ad                 = "18/icon_ad"
-    case coinStack          = "18/icon_coin_stack"
-    case diamondGreen       = "18/icon_diamond_green"
-    case minus              = "18/icon_minus"
-    case plus               = "18/icon_plus"
-
-    // MARK: - 24pt
-    case cancel             = "24/icon_cancel"
-    case close              = "24/icon_close"
-    case coffee             = "24/icon_coffee"
-    case diamond            = "24/icon_diamond"
-    case diamondPlus        = "24/icon_diamond_plus"
-    case dropBug            = "24/icon_drop_bug"
-    case dropLargeGold      = "24/icon_drop_large_gold"
-    case dropSmallGold      = "24/icon_drop_small_gold"
-    case energyDrink        = "24/icon_energy_drink"
-    case lock               = "24/icon_lock"
-    case mission            = "24/icon_mission"
-    case newBadge           = "24/icon_new_badge"
-    case play               = "24/icon_play"
-    case shop               = "24/icon_shop"
-    case skill              = "24/icon_skill"
-    case work               = "24/icon_work"
-    case xlAd               = "24/icon_xlad"
-
-    // MARK: - 38pt
-    case languageDart       = "38/icon_language_dart"
-    case languageKotlin     = "38/icon_language_kotlin"
-    case languagePython     = "38/icon_language_python"
-    case languageSwift      = "38/icon_language_swift"
-    case profileLockedSmall = "38/icon_profile_locked"
-
-    // MARK: - 44pt
-    case profileComplete    = "44/icon_profile_complete"
-    case profileCurrent     = "44/icon_profile_current"
-    case profileLocked      = "44/icon_profile_locked"
-    case setting            = "44/icon_setting"
-
-    // MARK: - 51pt
-    case quizDogFace        = "51/icon_quiz_dog_face"
-    case quizDogFoot        = "51/icon_quiz_dog_foot"
-
-    // MARK: - 64pt
-    case dodgeCharacter1    = "64/icon_dodge_character1"
-    case dodgeCharacter2    = "64/icon_dodge_character2"
-    case dodgeCharacter3    = "64/icon_dodge_character3"
-}
-
-extension DUIconName {
-    /// size를 생략하면 이 값을 사용합니다.
-    public var defaultSize: CGFloat {
-        switch self {
-        case .coinBag:
-            return TokenIconSize.size15
-        case .ad, .coinStack, .diamondGreen, .minus, .plus:
-            return TokenIconSize.size18
-        case .cancel, .close, .coffee, .diamond, .diamondPlus,
-             .dropBug, .dropLargeGold, .dropSmallGold, .energyDrink,
-             .lock, .mission, .newBadge, .play, .shop, .skill, .work, .xlAd:
-            return TokenIconSize.size24
-        case .languageDart, .languageKotlin, .languagePython, .languageSwift, .profileLockedSmall:
-            return TokenIconSize.size38
-        case .profileComplete, .profileCurrent, .profileLocked, .setting:
-            return TokenIconSize.size44
-        case .quizDogFace, .quizDogFoot:
-            return TokenIconSize.size51
-        case .dodgeCharacter1, .dodgeCharacter2, .dodgeCharacter3:
-            return TokenIconSize.size64
-        }
-    }
+    case coinBag       = "icon_coin_bag"
+    case coinStack     = "icon_coin_stack"
+    case minus         = "icon_minus"
+    case plus          = "icon_plus"
+    case cancel        = "icon_cancel"
+    case close         = "icon_close"
+    case coffee        = "icon_coffee"
+    case diamond       = "icon_diamond"
+    case diamondPlus   = "icon_diamond_plus"
+    case dropBug       = "icon_drop_bug"
+    case dropLargeGold = "icon_drop_large_gold"
+    case dropSmallGold = "icon_drop_small_gold"
+    case energyDrink   = "icon_energy_drink"
+    case lock          = "icon_lock"
+    case mission       = "icon_mission"
+    case newBadge      = "icon_new_badge"
+    case play          = "icon_play"
+    case shop          = "icon_shop"
+    case skill         = "icon_skill"
+    case work          = "icon_work"
+    case ad            = "icon_ad"
 }
 
 public struct DUIcon: View {
     private let name: DUIconName
     private let size: CGFloat
 
-    public init(_ name: DUIconName, size: CGFloat? = nil) {
+    public init(_ name: DUIconName, size: CGFloat) {
         self.name = name
-        self.size = size ?? name.defaultSize
+        self.size = size
     }
 
     public var body: some View {
