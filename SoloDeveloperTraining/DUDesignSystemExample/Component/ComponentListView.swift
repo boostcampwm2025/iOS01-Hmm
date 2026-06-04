@@ -24,7 +24,7 @@ struct ComponentListView: View {
                                 .font(.title2)
                                 .foregroundStyle(Color.orange300)
                                 .frame(width: 48, height: 48)
-                                .background(Color.orange100)
+                                .background(Color.beige100)
                                 .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
 
                             Text(name)
@@ -35,7 +35,7 @@ struct ComponentListView: View {
                         .padding(.vertical, TokenSpacing.md)
                         .background(Color.beige50)
                         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.md))
-                        .tokenShadow(TokenShadow.small)
+                        .tokenShadow(TokenShadow.dim)
                     }
                 }
             }

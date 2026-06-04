@@ -1,37 +1,30 @@
 //
-//  TokenSpacingView.swift
+//  TokenGridView.swift
 //  DUDesignSystemExample
 //
 
 import SwiftUI
 import DUDesignSystem
 
-struct TokenSpacingView: View {
+struct TokenGridView: View {
 
     private let items: [(String, CGFloat)] = [
-        ("none", TokenSpacing.none),
-        ("xx",   TokenSpacing.xx),
-        ("xs",   TokenSpacing.xs),
-        ("sm",   TokenSpacing.sm),
-        ("mm",   TokenSpacing.mm),
-        ("md",   TokenSpacing.md),
-        ("lg",   TokenSpacing.lg),
-        ("xl",   TokenSpacing.xl),
-        ("xxl",  TokenSpacing.xxl),
+        ("paddingSide",   TokenGrid.paddingSide),
+        ("paddingTop",    TokenGrid.paddingTop),
+        ("paddingBottom", TokenGrid.paddingBottom),
+        ("marginPopUp",   TokenGrid.marginPopUp),
     ]
 
     private let trackWidth: CGFloat = 160
 
     var body: some View {
-        List(items, id: \.0) { name, spacing in
+        List(items, id: \.0) { name, value in
             HStack(spacing: TokenSpacing.sm) {
                 ZStack(alignment: .leading) {
                     Color.beige200
                         .frame(width: trackWidth, height: 24)
-                    if spacing > 0 {
-                        Color.orange300
-                            .frame(width: min(spacing, trackWidth), height: 24)
-                    }
+                    Color.orange300
+                        .frame(width: min(value, trackWidth), height: 24)
                 }
                 .clipShape(RoundedRectangle(cornerRadius: TokenRadius.xs))
 
@@ -39,7 +32,7 @@ struct TokenSpacingView: View {
                     Text(name)
                         .font(.system(.body, design: .monospaced))
                         .foregroundStyle(Color.gray400)
-                    Text("\(Int(spacing))pt")
+                    Text("\(Int(value))pt")
                         .duFont(.caption)
                         .foregroundStyle(Color.gray200)
                 }
@@ -48,12 +41,12 @@ struct TokenSpacingView: View {
         }
         .scrollContentBackground(.hidden)
         .background(Color.beige200)
-        .navigationTitle("Spacing")
+        .navigationTitle("Grid")
     }
 }
 
 #Preview {
     NavigationStack {
-        TokenSpacingView()
+        TokenGridView()
     }
 }

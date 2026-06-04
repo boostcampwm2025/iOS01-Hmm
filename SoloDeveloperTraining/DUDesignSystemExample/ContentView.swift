@@ -17,7 +17,7 @@ struct ContentView: View {
                 .font(.title2)
                 .foregroundStyle(Color.orange300)
                 .frame(width: 44, height: 44)
-                .background(Color.orange100)
+                .background(Color.beige100)
                 .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
 
             VStack(alignment: .leading, spacing: TokenSpacing.xx) {
@@ -34,12 +34,12 @@ struct ContentView: View {
 
             Image(systemName: "chevron.right")
                 .font(.caption)
-                .foregroundStyle(Color.gray300)
+                .foregroundStyle(Color.gray400)
         }
         .padding(TokenSpacing.md)
         .background(Color.beige50)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.md))
-        .tokenShadow(TokenShadow.small)
+        .tokenShadow(TokenShadow.dim)
     }
 
     var body: some View {
@@ -48,7 +48,7 @@ struct ContentView: View {
                 VStack(alignment: .leading, spacing: TokenSpacing.lg) {
                     VStack(alignment: .leading, spacing: TokenSpacing.xs) {
                         Text("DUDesignSystem")
-                            .duFont(.largeTitle)
+                            .duFont(.title1)
                             .foregroundStyle(Color.gray700)
                         Text("개발자 키우기 디자인 시스템")
                             .duFont(.body)

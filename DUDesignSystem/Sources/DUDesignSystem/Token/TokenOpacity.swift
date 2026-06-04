@@ -7,18 +7,11 @@
 
 /// Figma 디자인 시스템 "개발자 키우기"의 불투명도 토큰입니다.
 public enum TokenOpacity {
-    /// 완전 투명 `0.0`
     public static let opacity0:   Double = 0.0
-    /// `0.1`
     public static let opacity10:  Double = 0.1
-    /// `0.2`
     public static let opacity20:  Double = 0.2
-    /// `0.4`
     public static let opacity40:  Double = 0.4
-    /// `0.6`
     public static let opacity60:  Double = 0.6
-    /// `0.8`
     public static let opacity80:  Double = 0.8
-    /// 완전 불투명 `1.0`
     public static let opacity100: Double = 1.0
 }

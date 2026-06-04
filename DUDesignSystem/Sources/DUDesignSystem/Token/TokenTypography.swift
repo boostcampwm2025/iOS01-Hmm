@@ -18,7 +18,6 @@ private enum DUFont {
 // MARK: - 폰트 등록
 
 private enum FontRegistrar {
-    /// 앱 번들에서 폰트 파일을 로드하고 시스템에 등록합니다.
     /// Swift `static let`의 특성상 최초 접근 시 단 한 번만 실행됩니다.
     static let register: Void = {
         ["PFStardust-Regular", "PFStardust-Bold", "PFStardust-ExtraBold"].forEach { fileName in
@@ -33,7 +32,6 @@ private enum FontRegistrar {
 
 // MARK: - 내부 헬퍼
 
-/// 폰트 등록을 보장한 뒤 타이포그래피 토큰을 반환합니다.
 private func makeToken(_ name: String, size: CGFloat, underlined: Bool = false) -> DUTypographyToken {
     _ = FontRegistrar.register
     return DUTypographyToken(.custom(name, size: size), underlined: underlined)
@@ -52,30 +50,14 @@ public struct DUTypographyToken: Sendable {
         self.isUnderlined = underlined
     }
 
-    /// ExtraBold, 34pt
-    public static let largeTitle:  DUTypographyToken = makeToken(DUFont.extraBold, size: 34)
-    /// Bold, 28pt
-    public static let title:       DUTypographyToken = makeToken(DUFont.bold, size: 28)
-    /// Bold, 23pt
-    public static let title2:      DUTypographyToken = makeToken(DUFont.bold, size: 23)
-    /// Bold, 20pt
-    public static let title3:      DUTypographyToken = makeToken(DUFont.bold, size: 20)
-    /// ExtraBold, 17pt
+    public static let title1:      DUTypographyToken = makeToken(DUFont.extraBold, size: 24)
+    public static let title2:      DUTypographyToken = makeToken(DUFont.bold,      size: 22)
     public static let headline:    DUTypographyToken = makeToken(DUFont.extraBold, size: 17)
-    /// ExtraBold, 15pt
     public static let subheadline: DUTypographyToken = makeToken(DUFont.extraBold, size: 15)
-    /// Bold, 17pt
-    public static let body:        DUTypographyToken = makeToken(DUFont.bold, size: 17)
-    /// Bold, 16pt
-    public static let callout:     DUTypographyToken = makeToken(DUFont.bold, size: 16)
-    /// Bold, 12pt
+    public static let body:        DUTypographyToken = makeToken(DUFont.bold,      size: 17)
+    public static let body2:       DUTypographyToken = makeToken(DUFont.bold,      size: 15)
     public static let caption:     DUTypographyToken = makeToken(DUFont.extraBold, size: 12)
-    /// Bold, 12pt
-    public static let caption2:    DUTypographyToken = makeToken(DUFont.bold, size: 12)
-    /// Bold, 11pt
-    public static let label:       DUTypographyToken = makeToken(DUFont.bold, size: 11)
-    /// Regular, 11pt — 밑줄 포함
-    public static let labelline:   DUTypographyToken = makeToken(DUFont.regular, size: 11, underlined: true)
+    public static let label:       DUTypographyToken = makeToken(DUFont.bold,      size: 11)
 }
 
 // MARK: - 뷰 모디파이어
@@ -93,11 +75,7 @@ private struct DUFontModifier: ViewModifier {
     }
 }
 
-// MARK: - View 확장
-
 public extension View {
-
-    /// `DUTypographyToken` 토큰을 적용합니다. `labelline`의 경우 밑줄이 자동으로 포함됩니다.
     @available(iOS 16.0, *)
     func duFont(_ token: DUTypographyToken) -> some View {
         modifier(DUFontModifier(token: token))
