@@ -151,4 +151,23 @@ extension AnalyticsService {
             AP.adUnitID: Bundle.main.adMobInterstitialAdUnitID,
         ])
     }
+
+    /// 사용자가 광고 제안을 닫거나 보지 않기로 선택 시
+    func logAdOfferDismissed(
+        adRewardFlowID: String,
+        adPlacement: AdPlacementType,
+        rewardType: AdRewardType,
+        rewardAmount: Int,
+        dismissReason: AdOfferDismissReasonType
+    ) {
+        Analytics.logEvent("ad_offer_dismissed", parameters: [
+            AP.deviceID: AP.deviceIDValue,
+            AP.sessionID: SessionManager.shared.sessionID,
+            AP.adRewardFlowID: adRewardFlowID,
+            AP.adPlacement: adPlacement.rawValue,
+            AP.rewardType: rewardType.rawValue,
+            AP.rewardAmount: rewardAmount,
+            AP.dismissReason: dismissReason.rawValue
+        ])
+    }
 }

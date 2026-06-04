@@ -29,6 +29,12 @@ enum AdRewardType: String {
     case reselect
 }
 
+enum AdOfferDismissReasonType: String {
+    case close
+    case background
+    case unknown
+}
+
 @MainActor
 final class AdService {
     static let shared: AdService = {
