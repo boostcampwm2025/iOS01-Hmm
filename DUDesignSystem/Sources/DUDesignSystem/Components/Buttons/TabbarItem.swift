@@ -14,7 +14,7 @@ public struct TabbarItem: View {
         case selected
     }
 
-    public var iconName: String
+    public var assetName: String
     public var text: String
     public var state: TabbarItemState
     public var action: () -> Void
@@ -22,12 +22,12 @@ public struct TabbarItem: View {
     @GestureState private var isPressed: Bool = false
 
     public init(
-        iconName: String,
+        assetName: String,
         text: String,
         state: TabbarItemState = .default,
         action: @escaping () -> Void
     ) {
-        self.iconName = iconName
+        self.assetName = assetName
         self.text = text
         self.state = state
         self.action = action
@@ -43,7 +43,7 @@ public struct TabbarItem: View {
 
     public var body: some View {
         VStack(spacing: TokenSpacing.none) {
-            Image(iconName, bundle: .module)
+            Image(assetName, bundle: .module)
                 .resizable()
                 .frame(width: TokenIconSize.size24.rawValue, height: TokenIconSize.size24.rawValue)
             ItemLabel(text: text, icon: nil, size: .small, color: labelColor)

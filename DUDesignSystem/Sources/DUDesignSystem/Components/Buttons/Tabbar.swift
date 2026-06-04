@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct Tabbar: View {
 
-    public static let items: [(iconName: String, text: String)] = [
+    public static let items: [(assetName: String, text: String)] = [
         ("work",    "업무"),
         ("skill",   "스킬"),
         ("shop",    "상점"),
@@ -27,7 +27,7 @@ public struct Tabbar: View {
             ForEach(0..<Self.items.count, id: \.self) { index in
                 let item = Self.items[index]
                 TabbarItem(
-                    iconName: item.iconName,
+                    assetName: item.assetName,
                     text: item.text,
                     state: selectedIndex == index ? .selected : .default
                 ) {

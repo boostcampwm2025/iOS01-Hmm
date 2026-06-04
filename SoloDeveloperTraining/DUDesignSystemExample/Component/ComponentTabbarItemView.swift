@@ -9,7 +9,7 @@ import DUDesignSystem
 struct ComponentTabbarItemView: View {
 
     @State private var text: String = "홈"
-    @State private var iconName: String = "work"
+    @State private var assetName: String = "work"
     @State private var selectedState: TabbarItem.TabbarItemState = .default
 
     var body: some View {
@@ -18,7 +18,7 @@ struct ComponentTabbarItemView: View {
             Section {
                 HStack {
                     Spacer()
-                    TabbarItem(iconName: iconName, text: text, state: selectedState) {
+                    TabbarItem(assetName: assetName, text: text, state: selectedState) {
                         selectedState = selectedState == .selected ? .default : .selected
                     }
                     .frame(width: 103)
@@ -56,7 +56,7 @@ struct ComponentTabbarItemView: View {
 
             // MARK: - 이미지명
             Section("이미지명") {
-                Picker("이미지명", selection: $iconName) {
+                Picker("이미지명", selection: $assetName) {
                     Text("work").tag("work")
                     Text("mission").tag("mission")
                     Text("skill").tag("skill")
