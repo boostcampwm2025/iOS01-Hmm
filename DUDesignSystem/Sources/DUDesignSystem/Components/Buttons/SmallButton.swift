@@ -50,7 +50,6 @@ public struct SmallButton: View {
         }
 
         return button
-            .padding(TokenSpacing.md)
             .tokenShadow(isPressed ? .none : .dim)
             .offset(
                 x: isPressed ? TokenShadow.dim.x : 0,
@@ -62,6 +61,7 @@ public struct SmallButton: View {
                     .onEnded { _ in action() }
             )
             .animation(nil, value: isPressed)
+            .padding(TokenSpacing.md)
     }
 }
 
