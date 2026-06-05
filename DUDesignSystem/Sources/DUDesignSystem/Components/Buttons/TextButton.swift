@@ -16,7 +16,7 @@ public struct TextButton: View {
 
     public enum TextButtonSize {
         case large
-        case small
+        case medium
     }
 
     public enum TextButtonState {

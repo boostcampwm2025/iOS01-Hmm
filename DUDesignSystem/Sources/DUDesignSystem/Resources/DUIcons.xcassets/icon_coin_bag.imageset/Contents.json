@@ -1,11 +1,11 @@
 {
   "images" : [
     {
-      "filename" : "icon_coin_bag.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "icon_coin_bag.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
