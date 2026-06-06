@@ -96,4 +96,21 @@ final class AnalyticsService {
             AP.referrerDeviceID: referrerDeviceID
         ])
     }
+
+    /// 딥링크로 앱 실행
+    func logAppOpenedFromDeeplink(
+        entrySource: String,
+        referrerShareID: String,
+        isDeferredDeeplink: Bool,
+        resultID: String
+    ) {
+        Analytics.logEvent("app_opened_from_deeplink", parameters: [
+            AP.deviceID: AP.deviceIDValue,
+            AP.sessionID: SessionManager.shared.sessionID,
+            AP.entrySource: entrySource,
+            AP.referrerShareID: referrerShareID,
+            AP.isDeferredDeeplink: isDeferredDeeplink,
+            AP.resultID: resultID
+        ])
+    }
 }
