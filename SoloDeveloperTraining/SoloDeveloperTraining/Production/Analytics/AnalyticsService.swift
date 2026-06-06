@@ -113,4 +113,23 @@ final class AnalyticsService {
             AP.resultID: resultID
         ])
     }
+
+    /// 앱 설치 후 딥링크 유입
+    func logDeferredDeeplinkOpened(
+        entrySource: String,
+        referrerShareID: String,
+        referrerDeviceID: String,
+        isDeferredDeeplink: Bool,
+        resultID: String
+    ) {
+        Analytics.logEvent("deferred_deeplink_opened", parameters: [
+            AP.deviceID: AP.deviceIDValue,
+            AP.sessionID: SessionManager.shared.sessionID,
+            AP.entrySource: entrySource,
+            AP.referrerShareID: referrerShareID,
+            AP.referrerDeviceID: referrerDeviceID,
+            AP.isDeferredDeeplink: isDeferredDeeplink,
+            AP.resultID: resultID
+        ])
+    }
 }
