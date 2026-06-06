@@ -10,6 +10,15 @@ struct ComponentListView: View {
 
     private let items: [(String, String, AnyView)] = [
         ("Icon", "square.on.square", AnyView(ComponentIconView())),
+        ("ItemLabel", "tag", AnyView(ComponentDefaultLabelView())),
+        ("EffectLabel", "plus.forwardslash.minus", AnyView(ComponentEffectLabelView())),
+        ("ItemButton", "hand.tap", AnyView(ComponentItemButtonView())),
+        ("TextButton", "rectangle.and.hand.point.up.left", AnyView(ComponentTextButtonView())),
+        ("TabbarItem", "menubar.rectangle", AnyView(ComponentTabbarItemView())),
+        ("Tabbar", "dock.rectangle", AnyView(ComponentTabbarView())),
+        ("SegmentControl", "rectangle.split.2x1", AnyView(ComponentSegmentControlView())),
+        ("SmallButton", "smallcircle.filled.circle", AnyView(ComponentSmallButtonView())),
+        ("QuizButton", "questionmark.circle", AnyView(ComponentQuizButtonView())),
     ]
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible())]
