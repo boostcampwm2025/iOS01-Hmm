@@ -44,6 +44,8 @@ enum AnalyticsProperty {
     static let resultID = "result_id"
     /// 공유 채널
     static let shareChannel = "share_channel"
+    /// 유입을 만든 원 기기 ID
+    static let referrerDeviceID = "referrer_device_id"
 
 }
 

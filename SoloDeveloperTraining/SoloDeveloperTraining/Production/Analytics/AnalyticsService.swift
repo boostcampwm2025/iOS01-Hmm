@@ -77,4 +77,23 @@ final class AnalyticsService {
             AP.shareChannel: shareChannel
         ])
     }
+
+    /// 공유 완료 감지
+    func logShareCompleted(
+        shareID: String,
+        shareChannel: String,
+        resultID: String,
+        referrerShareID: String,
+        referrerDeviceID: String
+    ) {
+        Analytics.logEvent("share_completed", parameters: [
+            AP.deviceID: AP.deviceIDValue,
+            AP.sessionID: SessionManager.shared.sessionID,
+            AP.shareID: shareID,
+            AP.shareChannel: shareChannel,
+            AP.resultID: resultID,
+            AP.referrerShareID: referrerShareID,
+            AP.referrerDeviceID: referrerDeviceID
+        ])
+    }
 }
