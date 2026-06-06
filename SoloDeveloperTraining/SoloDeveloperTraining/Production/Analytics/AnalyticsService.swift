@@ -60,4 +60,21 @@ final class AnalyticsService {
             AP.level: level
         ])
     }
+
+    // MARK: - 공유
+
+    /// 공유 버튼 클릭
+    func logShareButtonClicked(
+        shareID: String,
+        resultID: String,
+        shareChannel: String
+    ) {
+        Analytics.logEvent("share_button_clicked", parameters: [
+            AP.deviceID: AP.deviceIDValue,
+            AP.sessionID: SessionManager.shared.sessionID,
+            AP.shareID: shareID,
+            AP.resultID: resultID,
+            AP.shareChannel: shareChannel
+        ])
+    }
 }
