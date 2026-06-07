@@ -23,6 +23,7 @@ struct ComponentListView: View {
         ("Toast", "text.bubble", AnyView(ComponentToastView())),
         ("Popup", "rectangle.on.rectangle", AnyView(ComponentPopupView())),
         ("ProgressBar", "chart.bar", AnyView(ComponentProgressBarView())),
+        ("GameToolBar", "gamecontroller", AnyView(ComponentGameToolBarView())),
     ]
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible())]
