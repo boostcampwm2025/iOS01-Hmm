@@ -71,7 +71,7 @@ public struct TextButton: View {
     public var body: some View {
         ZStack(alignment: .topTrailing) {
             ZStack {
-                ItemLabel(text: text, icon: nil, size: .large, color: labelColor)
+                ItemLabel(text: text, icon: nil, size: size == .large ? .large : .medium, color: labelColor)
                     .opacity(state == .locked ? TokenOpacity.opacity40 : TokenOpacity.opacity100)
                 if state == .locked {
                     DUIcon(.lock, size: .size15)
@@ -80,7 +80,7 @@ public struct TextButton: View {
             .frame(maxWidth: size == .large ? .infinity : 200)
             .padding(.vertical, TokenSpacing.mm)
             .background(backgroundColor)
-            .clipShape(RoundedRectangle(cornerRadius: TokenRadius.md))
+            .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
             .tokenShadow(isPressed ? .none : .dim)
             .gesture(
                 isInteractive ? DragGesture(minimumDistance: 0)
