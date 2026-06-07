@@ -28,35 +28,34 @@ struct ComponentInputFieldView: View {
     }
 
     var body: some View {
-        List {
-            // MARK: - Preview
-            Section {
+        VStack(spacing: 0) {
+            // MARK: - Preview Area
+            PreviewArea {
                 InputField(text: $text, placeholder: placeholder, state: inputFieldState)
-                    .padding(.vertical, TokenSpacing.lg)
+                    .frame(maxWidth: .infinity)
             }
-            .listRowBackground(Color.clear)
-            .listRowInsets(.init(top: 0, leading: TokenSpacing.md, bottom: 0, trailing: TokenSpacing.md))
 
-            // MARK: - 상태
-            Section("상태") {
-                Picker("상태", selection: $selectedState) {
-                    ForEach(StateOption.allCases, id: \.self) { option in
-                        Text(option.rawValue).tag(option)
+            // MARK: - Controls
+            List {
+                Section("상태") {
+                    Picker("상태", selection: $selectedState) {
+                        ForEach(StateOption.allCases, id: \.self) { option in
+                            Text(option.rawValue).tag(option)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+                .listRowBackground(Color.clear)
+                .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+
+                if selectedState == .error {
+                    Section("에러 메시지") {
+                        TextField("에러 메시지 입력", text: $errorMessage)
                     }
                 }
-                .pickerStyle(.segmented)
             }
-            .listRowBackground(Color.clear)
-            .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-
-            // MARK: - 에러 메시지
-            if selectedState == .error {
-                Section("에러 메시지") {
-                    TextField("에러 메시지 입력", text: $errorMessage)
-                }
-            }
+            .scrollContentBackground(.hidden)
         }
-        .scrollContentBackground(.hidden)
         .background(Color.beige200)
         .navigationTitle("InputField")
         .navigationSubtitle("상태 변경 및 유효성 검사는 비즈니스 로직으로, 예시 앱에서는 반영되지 않아요")
