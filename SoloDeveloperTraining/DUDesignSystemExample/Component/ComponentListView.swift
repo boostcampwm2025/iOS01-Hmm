@@ -19,6 +19,7 @@ struct ComponentListView: View {
         ("SegmentControl", "rectangle.split.2x1", AnyView(ComponentSegmentControlView())),
         ("SmallButton", "smallcircle.filled.circle", AnyView(ComponentSmallButtonView())),
         ("QuizButton", "questionmark.circle", AnyView(ComponentQuizButtonView())),
+        ("InputField", "text.cursor", AnyView(ComponentInputFieldView())),
     ]
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible())]
