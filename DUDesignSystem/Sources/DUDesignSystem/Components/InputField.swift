@@ -43,17 +43,17 @@ public struct InputField: View {
         VStack(alignment: .trailing, spacing: TokenSpacing.xs) {
             HStack {
                 ZStack(alignment: .leading) {
-                    if text.isEmpty && !isFocused {
-                        Text(placeholder)
-                            .duFont(.body)
-                            .foregroundStyle(Color.gray200)
-                    }
+                    Text(placeholder)
+                        .duFont(.body)
+                        .foregroundStyle(Color.gray200)
+                        .opacity(text.isEmpty && !isFocused ? 1 : 0)
                     TextField("", text: $text)
                         .duFont(.body)
                         .foregroundStyle(Color.black300)
                         .tint(Color.black300)
                         .focused($isFocused)
                 }
+                .frame(height: 24)
 
                 if case .error = state {
                     Image(systemName: "exclamationmark.circle.fill")
