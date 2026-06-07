@@ -13,49 +13,45 @@ struct ComponentSegmentControlView: View {
     @State private var trailing: String = "부동산"
 
     var body: some View {
-        VStack(spacing: TokenSpacing.lg) {
-            SegmentControl(leading: leading, trailing: trailing, selectedIndex: $selectedIndex)
-                .padding(.horizontal, TokenGrid.paddingSide)
-
-            VStack(alignment: .leading, spacing: TokenSpacing.sm) {
-                Text("선택된 탭: \(selectedIndex == 0 ? leading : trailing)")
-                    .duFont(.caption)
-                    .foregroundStyle(Color.gray400)
-
-                Picker("선택", selection: $selectedIndex) {
-                    Text(leading).tag(0)
-                    Text(trailing).tag(1)
-                }
-                .pickerStyle(.segmented)
+        VStack(spacing: 0) {
+            // MARK: - Preview Area
+            PreviewArea {
+                SegmentControl(leading: leading, trailing: trailing, selectedIndex: $selectedIndex)
+                    .frame(maxWidth: .infinity)
             }
-            .padding(.horizontal, TokenGrid.paddingSide)
 
-            VStack(spacing: TokenSpacing.xs) {
-                HStack {
-                    Text("앞")
-                        .duFont(.caption)
-                        .foregroundStyle(Color.gray400)
-                        .frame(width: 24)
-                    TextField("앞 텍스트", text: $leading)
-                        .textFieldStyle(.roundedBorder)
+            // MARK: - Controls
+            List {
+                Section("앞 텍스트") {
+                    HStack {
+                        TextField("앞 텍스트", text: $leading)
+                        if !leading.isEmpty {
+                            Button { leading = "" } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(Color.gray400)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
                 }
-                HStack {
-                    Text("뒤")
-                        .duFont(.caption)
-                        .foregroundStyle(Color.gray400)
-                        .frame(width: 24)
-                    TextField("뒤 텍스트", text: $trailing)
-                        .textFieldStyle(.roundedBorder)
+
+                Section("뒤 텍스트") {
+                    HStack {
+                        TextField("뒤 텍스트", text: $trailing)
+                        if !trailing.isEmpty {
+                            Button { trailing = "" } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(Color.gray400)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
                 }
             }
-            .padding(.horizontal, TokenGrid.paddingSide)
-
-            Spacer()
+            .scrollContentBackground(.hidden)
         }
-        .padding(.top, TokenSpacing.lg)
         .background(Color.beige200)
         .navigationTitle("SegmentControl")
-        .navigationBarTitleDisplayMode(.large)
     }
 }
 

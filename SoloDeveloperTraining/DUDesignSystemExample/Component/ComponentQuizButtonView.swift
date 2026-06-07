@@ -12,37 +12,44 @@ struct ComponentQuizButtonView: View {
     @State private var selectedState: QuizButton.QuizButtonState = .default
 
     var body: some View {
-        VStack(spacing: TokenSpacing.lg) {
-            QuizButton(text: text, state: selectedState) {
-                selectedState = selectedState == .selected ? .default : .selected
+        VStack(spacing: 0) {
+            // MARK: - Preview Area
+            PreviewArea {
+                QuizButton(text: text, state: selectedState) {
+                    selectedState = selectedState == .selected ? .default : .selected
+                }
+                .frame(maxWidth: .infinity)
             }
-            .padding(.horizontal, TokenGrid.paddingSide)
 
-            Picker("상태", selection: $selectedState) {
-                Text("Default").tag(QuizButton.QuizButtonState.default)
-                Text("Selected").tag(QuizButton.QuizButtonState.selected)
-            }
-            .pickerStyle(.segmented)
-            .padding(.horizontal, TokenGrid.paddingSide)
-
-            HStack {
-                TextField("텍스트 입력", text: $text)
-                    .textFieldStyle(.roundedBorder)
-                if !text.isEmpty {
-                    Button { text = "" } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(Color.gray400)
+            // MARK: - Controls
+            List {
+                Section("텍스트") {
+                    HStack {
+                        TextField("텍스트 입력", text: $text)
+                        if !text.isEmpty {
+                            Button { text = "" } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(Color.gray400)
+                            }
+                            .buttonStyle(.plain)
+                        }
                     }
                 }
-            }
-            .padding(.horizontal, TokenGrid.paddingSide)
 
-            Spacer()
+                Section("상태") {
+                    Picker("상태", selection: $selectedState) {
+                        Text("Default").tag(QuizButton.QuizButtonState.default)
+                        Text("Selected").tag(QuizButton.QuizButtonState.selected)
+                    }
+                    .pickerStyle(.segmented)
+                }
+                .listRowBackground(Color.clear)
+                .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+            }
+            .scrollContentBackground(.hidden)
         }
-        .padding(.top, TokenSpacing.lg)
         .background(Color.beige200)
         .navigationTitle("QuizButton")
-        .navigationBarTitleDisplayMode(.large)
     }
 }
 
