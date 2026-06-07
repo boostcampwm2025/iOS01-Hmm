@@ -9,8 +9,8 @@ import DUDesignSystem
 struct ComponentStatusBarView: View {
 
     @State private var careerProgress: Double = 0.4
-    @State private var gold: Int = 20000
-    @State private var diamond: Int = 20
+    @State private var gold: String = "20,000"
+    @State private var diamond: String = "20"
 
     var body: some View {
         VStack(spacing: 0) {
@@ -35,8 +35,16 @@ struct ComponentStatusBarView: View {
                 }
 
                 Section("재화") {
-                    Stepper("골드: \(gold)", value: $gold, in: 0...99999, step: 1000)
-                    Stepper("다이아: \(diamond)", value: $diamond, in: 0...999)
+                    HStack {
+                        Text("골드")
+                        TextField("골드", text: $gold)
+                            .multilineTextAlignment(.trailing)
+                    }
+                    HStack {
+                        Text("다이아")
+                        TextField("다이아", text: $diamond)
+                            .multilineTextAlignment(.trailing)
+                    }
                 }
 
                 Section {

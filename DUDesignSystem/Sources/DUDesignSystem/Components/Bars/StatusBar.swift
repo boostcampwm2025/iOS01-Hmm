@@ -12,15 +12,15 @@ public struct StatusBar: View {
     public var imageName: String
     public var careerNickname: String
     public var careerProgress: Double
-    public var gold: Int
-    public var diamond: Int
+    public var gold: String
+    public var diamond: String
 
     public init(
         imageName: String,
         careerNickname: String,
         careerProgress: Double,
-        gold: Int,
-        diamond: Int
+        gold: String,
+        diamond: String
     ) {
         self.imageName = imageName
         self.careerNickname = careerNickname
@@ -57,8 +57,8 @@ public struct StatusBar: View {
             Spacer()
 
             HStack(spacing: TokenSpacing.xs) {
-                ItemLabel(text: "\(gold)", icon: .coinBag, size: .small, color: .black)
-                ItemLabel(text: "\(diamond)", icon: .diamond, size: .small, color: .black)
+                ItemLabel(text: gold, icon: .coinBag, size: .small, color: .black)
+                ItemLabel(text: diamond, icon: .diamond, size: .small, color: .black)
             }
         }
     }
@@ -83,15 +83,15 @@ public struct StatusBar: View {
             imageName: "icon_coffee",
             careerNickname: "개발자 지망생 소피아",
             careerProgress: 0.3,
-            gold: 20000,
-            diamond: 20
+            gold: "20,000",
+            diamond: "20"
         )
         StatusBar(
             imageName: "icon_coffee",
             careerNickname: "개발자 지망생 소피아",
             careerProgress: 0.7,
-            gold: 20000,
-            diamond: 20
+            gold: "20,000",
+            diamond: "20"
         )
     }
     .padding(TokenSpacing.lg)
