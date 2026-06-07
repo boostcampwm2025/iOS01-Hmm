@@ -22,6 +22,7 @@ struct ComponentListView: View {
         ("InputField", "text.cursor", AnyView(ComponentInputFieldView())),
         ("Toast", "text.bubble", AnyView(ComponentToastView())),
         ("Popup", "rectangle.on.rectangle", AnyView(ComponentPopupView())),
+        ("ProgressBar", "chart.bar", AnyView(ComponentProgressBarView())),
     ]
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible())]
