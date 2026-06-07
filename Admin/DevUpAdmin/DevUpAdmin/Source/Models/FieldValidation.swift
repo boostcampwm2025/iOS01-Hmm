@@ -7,6 +7,7 @@ enum ValidationRule {
     case nonNegativeInt        // 정수, ≥ 0
     case positiveDouble        // 실수, > 0
     case nonNegativeDouble     // 실수, ≥ 0
+    case negativeDouble        // 실수, < 0
     case percent               // 실수, 0 < x ≤ 100
     case zeroToOne             // 실수, 0 < x ≤ 1 (성공률 등)
     case spawnRate             // 정수, ≥ 0 (생성률)
@@ -24,6 +25,8 @@ enum ValidationRule {
             if value <= 0  { return "0보다 큰 값이어야 합니다." }
         case .nonNegativeDouble:
             if value < 0   { return "0 이상의 값이어야 합니다." }
+        case .negativeDouble:
+            if value >= 0 { return "0보다 작은 값이어야 합니다." }
         case .percent:
             if value <= 0  { return "0보다 큰 값이어야 합니다." }
             if value > 100 { return "100 이하여야 합니다." }
@@ -43,6 +46,7 @@ enum ValidationRule {
         case .nonNegativeInt:    return "0 이상 정수"
         case .positiveDouble:    return "양수"
         case .nonNegativeDouble: return "0 이상"
+        case .negativeDouble:    return "0 미만"
         case .percent:           return "0 초과 ~ 100 이하"
         case .zeroToOne:         return "0 초과 ~ 1 이하"
         case .spawnRate:         return "0 이상 정수"
@@ -75,7 +79,7 @@ extension PolicyFieldMeta {
         rules["career.worldClassDeveloper"] = .positiveInt
 
         // 피버 기본
-        rules["fever.maxPercent"]       = .percent
+        rules["fever.maxPercent"]       = .positiveDouble
         rules["fever.decreaseInterval"] = .positiveDouble
 
         // 피버 단계 임계값 (0~100 퍼센트)
@@ -91,25 +95,25 @@ extension PolicyFieldMeta {
         rules["fever.multiplier.stage3"] = .positiveDouble
 
         // 피버 탭
-        rules["fever.tap.decreasePercent"] = .percent
+        rules["fever.tap.decreasePercent"] = .positiveDouble
         rules["fever.tap.gainPerTap"]      = .positiveDouble
 
         // 피버 언어
-        rules["fever.language.decreasePercent"]  = .percent
+        rules["fever.language.decreasePercent"]  = .positiveDouble
         rules["fever.language.gainPerCorrect"]   = .positiveDouble
-        rules["fever.language.lossPerIncorrect"] = .positiveDouble
+        rules["fever.language.lossPerIncorrect"] = .negativeDouble
 
         // 피버 닷지
-        rules["fever.dodge.decreasePercent"]  = .percent
+        rules["fever.dodge.decreasePercent"]  = .positiveDouble
         rules["fever.dodge.gainPerSmallGold"] = .positiveDouble
         rules["fever.dodge.gainPerLargeGold"] = .positiveDouble
         rules["fever.dodge.gainPerBugDodge"]  = .positiveDouble
-        rules["fever.dodge.lossPerBugHit"]    = .positiveDouble
+        rules["fever.dodge.lossPerBugHit"]    = .negativeDouble
 
         // 피버 스택
-        rules["fever.stack.decreasePercent"] = .percent
+        rules["fever.stack.decreasePercent"] = .positiveDouble
         rules["fever.stack.gainPerSuccess"]  = .positiveDouble
-        rules["fever.stack.lossPerFailure"]  = .positiveDouble
+        rules["fever.stack.lossPerFailure"]  = .negativeDouble
 
         // 게임 언어
         rules["game.language.incorrectGoldLossMultiplier"] = .positiveDouble
@@ -142,9 +146,9 @@ extension PolicyFieldMeta {
         // 스킬 레벨 범위
         rules["skill.beginnerMinLevel"]     = .positiveInt
         rules["skill.beginnerMaxLevel"]     = .positiveInt
-        rules["skill.intermediateMinLevel"] = .positiveInt
+        rules["skill.intermediateMinLevel"] = .nonNegativeInt
         rules["skill.intermediateMaxLevel"] = .positiveInt
-        rules["skill.advancedMinLevel"]     = .positiveInt
+        rules["skill.advancedMinLevel"]     = .nonNegativeInt
         rules["skill.advancedMaxLevel"]     = .positiveInt
 
         // 스킬 필드 공통 생성 함수
@@ -236,12 +240,10 @@ struct CrossFieldValidation {
             }
         }
 
-        // 스킬 레벨 범위: beginnerMax < intermediateMin < intermediateMax < advancedMin < advancedMax
+        // 스킬 레벨 범위: 각 티어 내 Min < Max
         let skillOrder: [(String, String)] = [
             ("skill.beginnerMinLevel", "skill.beginnerMaxLevel"),
-            ("skill.beginnerMaxLevel", "skill.intermediateMinLevel"),
             ("skill.intermediateMinLevel", "skill.intermediateMaxLevel"),
-            ("skill.intermediateMaxLevel", "skill.advancedMinLevel"),
             ("skill.advancedMinLevel", "skill.advancedMaxLevel"),
         ]
         let skillLabels: [String: String] = [
