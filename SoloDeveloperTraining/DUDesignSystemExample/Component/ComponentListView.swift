@@ -25,6 +25,7 @@ struct ComponentListView: View {
         ("ProgressBar", "chart.bar", AnyView(ComponentProgressBarView())),
         ("GameToolBar", "gamecontroller", AnyView(ComponentGameToolBarView())),
         ("StatusBar", "person.crop.rectangle", AnyView(ComponentStatusBarView())),
+        ("MissionCard", "trophy", AnyView(ComponentMissionCardView())),
     ]
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible())]
