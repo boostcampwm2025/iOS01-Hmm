@@ -25,6 +25,7 @@ struct ComponentListView: View {
         ("ProgressBar", "chart.bar", AnyView(ComponentProgressBarView())),
         ("GameToolBar", "gamecontroller", AnyView(ComponentGameToolBarView())),
         ("StatusBar", "person.crop.rectangle", AnyView(ComponentStatusBarView())),
+        ("ItemRow", "list.bullet.rectangle", AnyView(ComponentItemRowView())),
         ("MissionCard", "trophy", AnyView(ComponentMissionCardView())),
         ("HousingCard", "house", AnyView(ComponentHousingCardView())),
         ("WorkItemCard", "rectangle.fill", AnyView(ComponentWorkItemCardView())),
