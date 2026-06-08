@@ -7,7 +7,7 @@
 
 import AppTrackingTransparency
 
-enum AdType {
+enum AdType: String {
     case interstitial
 }
 
