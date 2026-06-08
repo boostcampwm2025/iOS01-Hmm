@@ -63,6 +63,78 @@ final class AnalyticsService {
             AP.level: level
         ])
     }
+
+    // MARK: - 공유
+
+    /// 공유 버튼 클릭
+    func logShareButtonClicked(
+        shareID: String,
+        resultID: String,
+        shareChannel: String
+    ) {
+        Analytics.logEvent("share_button_clicked", parameters: [
+            AP.deviceID: AP.deviceIDValue,
+            AP.sessionID: SessionManager.shared.sessionID,
+            AP.shareID: shareID,
+            AP.resultID: resultID,
+            AP.shareChannel: shareChannel
+        ])
+    }
+
+    /// 공유 완료 감지
+    func logShareCompleted(
+        shareID: String,
+        shareChannel: String,
+        resultID: String,
+        referrerShareID: String,
+        referrerDeviceID: String
+    ) {
+        Analytics.logEvent("share_completed", parameters: [
+            AP.deviceID: AP.deviceIDValue,
+            AP.sessionID: SessionManager.shared.sessionID,
+            AP.shareID: shareID,
+            AP.shareChannel: shareChannel,
+            AP.resultID: resultID,
+            AP.referrerShareID: referrerShareID,
+            AP.referrerDeviceID: referrerDeviceID
+        ])
+    }
+
+    /// 딥링크로 앱 실행
+    func logAppOpenedFromDeeplink(
+        entrySource: String,
+        referrerShareID: String,
+        isDeferredDeeplink: Bool,
+        resultID: String
+    ) {
+        Analytics.logEvent("app_opened_from_deeplink", parameters: [
+            AP.deviceID: AP.deviceIDValue,
+            AP.sessionID: SessionManager.shared.sessionID,
+            AP.entrySource: entrySource,
+            AP.referrerShareID: referrerShareID,
+            AP.isDeferredDeeplink: isDeferredDeeplink,
+            AP.resultID: resultID
+        ])
+    }
+
+    /// 앱 설치 후 딥링크 유입
+    func logDeferredDeeplinkOpened(
+        entrySource: String,
+        referrerShareID: String,
+        referrerDeviceID: String,
+        isDeferredDeeplink: Bool,
+        resultID: String
+    ) {
+        Analytics.logEvent("deferred_deeplink_opened", parameters: [
+            AP.deviceID: AP.deviceIDValue,
+            AP.sessionID: SessionManager.shared.sessionID,
+            AP.entrySource: entrySource,
+            AP.referrerShareID: referrerShareID,
+            AP.referrerDeviceID: referrerDeviceID,
+            AP.isDeferredDeeplink: isDeferredDeeplink,
+            AP.resultID: resultID
+        ])
+    }
 }
 
 // MARK: - 광고

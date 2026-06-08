@@ -38,6 +38,14 @@ enum AnalyticsProperty {
     static let sessionDurationSec = "session_duration_sec"
     /// 세션 종료 전 마지막 화면
     static let lastScreen = "last_screen"
+    /// 공유 1건 식별자
+    static let shareID = "share_id"
+    /// 엔딩/결과 식별자
+    static let resultID = "result_id"
+    /// 공유 채널
+    static let shareChannel = "share_channel"
+    /// 유입을 만든 원 기기 ID
+    static let referrerDeviceID = "referrer_device_id"
 
     // MARK: - 광고 관련 프로퍼티
     /// 광고 보상 플로우 식별자
