@@ -27,6 +27,8 @@ struct ComponentListView: View {
         ("StatusBar", "person.crop.rectangle", AnyView(ComponentStatusBarView())),
         ("MissionCard", "trophy", AnyView(ComponentMissionCardView())),
         ("HousingCard", "house", AnyView(ComponentHousingCardView())),
+        ("WorkItemCard", "rectangle.fill", AnyView(ComponentWorkItemCardView())),
+        ("WorkSegmentControl", "rectangle.grid.2x2", AnyView(ComponentWorkSegmentControlView())),
     ]
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible())]
