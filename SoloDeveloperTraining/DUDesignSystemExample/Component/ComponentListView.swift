@@ -24,7 +24,16 @@ struct ComponentListView: View {
         ("Popup", "rectangle.on.rectangle", AnyView(ComponentPopupView())),
         ("ProgressBar", "chart.bar", AnyView(ComponentProgressBarView())),
         ("GameToolBar", "gamecontroller", AnyView(ComponentGameToolBarView())),
+        ("GamePauseWrapper", "pause.circle", AnyView(ComponentGamePauseWrapperView())),
         ("StatusBar", "person.crop.rectangle", AnyView(ComponentStatusBarView())),
+        ("LanguageItem", "swift", AnyView(ComponentLanguageItemView())),
+        ("LanguageItemButton", "hand.tap", AnyView(ComponentLanguageItemButtonView())),
+        ("ItemRow", "list.bullet.rectangle", AnyView(ComponentItemRowView())),
+        ("CareerRow", "person.crop.rectangle.stack", AnyView(ComponentCareerRowView())),
+        ("MissionCard", "trophy", AnyView(ComponentMissionCardView())),
+        ("HousingCard", "house", AnyView(ComponentHousingCardView())),
+        ("WorkItemCard", "rectangle.fill", AnyView(ComponentWorkItemCardView())),
+        ("WorkSegmentControl", "rectangle.grid.2x2", AnyView(ComponentWorkSegmentControlView())),
     ]
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible())]

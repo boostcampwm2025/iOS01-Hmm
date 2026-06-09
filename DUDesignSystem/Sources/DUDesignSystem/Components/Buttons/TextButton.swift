@@ -61,7 +61,10 @@ public struct TextButton: View {
     }
 
     private var labelColor: ItemLabel.LabelColor {
-        type == .primary ? .white : .black
+        switch state {
+        case .disabled, .locked: return .white
+        default: return type == .primary ? .white : .black
+        }
     }
 
     private var isInteractive: Bool {
