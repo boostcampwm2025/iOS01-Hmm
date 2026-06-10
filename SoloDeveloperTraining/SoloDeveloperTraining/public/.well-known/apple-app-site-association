@@ -3,7 +3,11 @@
     "apps": [],
     "details": [
       {
-        "appID": "B3PWYBKFUK.kr.codesquad.boostcamp10.SoloDeveloperTraining",
+        "appID": "QBLK6726G4.kr.codesquad.boostcamp10.SoloDeveloperTraining",
+        "paths": ["*"]
+      },
+      {
+        "appID": "QBLK6726G4.com.devup.dev",
         "paths": ["*"]
       }
     ]
