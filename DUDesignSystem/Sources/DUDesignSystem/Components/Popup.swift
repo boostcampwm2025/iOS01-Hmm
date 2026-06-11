@@ -74,33 +74,18 @@ public struct Popup: View {
         }
     }
 
-    private var isBodyLeadingAligned: Bool {
-        if case .confirm = type { return false }
-        return true
-    }
-
     public var body: some View {
         VStack(spacing: TokenSpacing.lg) {
-            Text(titleText)
-                .duFont(.title2)
-                .foregroundStyle(Color.black300)
-                .multilineTextAlignment(.center)
+            ItemLabel(text: titleText, font: .title2, color: .black300)
+                .frame(maxWidth: .infinity, alignment: .center)
 
-            Text(bodyText)
-                .duFont(.body)
-                .foregroundStyle(Color.black300)
-                .multilineTextAlignment(isBodyLeadingAligned ? .leading : .center)
-                .frame(maxWidth: .infinity, alignment: isBodyLeadingAligned ? .leading : .center)
+            ItemLabel(text: bodyText, font: .body, color: .black300)
+                .frame(maxWidth: .infinity, alignment: .center)
 
             if case .reward(_, _, let leading, let icon, let trailing, _, _) = type {
-                HStack(spacing: TokenSpacing.xs) {
-                    Text(leading)
-                        .duFont(.body)
-                        .foregroundStyle(Color.black300)
-                    DUIcon(icon, size: .size18)
-                    Text(trailing)
-                        .duFont(.body)
-                        .foregroundStyle(Color.black300)
+                HStack(spacing: TokenSpacing.mm) {
+                    ItemLabel(text: leading, font: .body, color: .black300)
+                    ItemLabel(text: trailing, icon: icon, iconSize: .size24, font: .body, color: .black300)
                 }
             }
 

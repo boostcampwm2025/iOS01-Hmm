@@ -19,8 +19,6 @@ public struct TabbarItem: View {
     public var state: TabbarItemState
     public var action: () -> Void
 
-    @GestureState private var isPressed: Bool = false
-
     public init(
         assetName: String,
         text: String,
@@ -37,31 +35,22 @@ public struct TabbarItem: View {
         state == .selected ? Color.orange300 : Color.beige300
     }
 
-    private var labelColor: ItemLabel.LabelColor {
-        state == .selected ? .white : .black
+    private var labelColor: Color {
+        state == .selected ? .white300 : .orange500
     }
 
     public var body: some View {
         VStack(spacing: TokenSpacing.none) {
             Image(assetName, bundle: .module)
                 .resizable()
-                .frame(width: TokenIconSize.size24.rawValue, height: TokenIconSize.size24.rawValue)
-            ItemLabel(text: text, icon: nil, size: .small, color: labelColor)
+                .frame(width: 24, height: 24)
+            ItemLabel(text: text, font: .caption, color: labelColor)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 4.5)
+        .padding(.vertical, TokenSpacing.xs)
         .background(backgroundColor)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.xs))
-        .tokenShadow(isPressed ? .none : .default)
-        .offset(
-            x: isPressed ? TokenShadow.default.x : 0,
-            y: isPressed ? TokenShadow.default.y : 0
-        )
-        .gesture(
-            DragGesture(minimumDistance: 0)
-                .updating($isPressed) { _, state, _ in state = true }
-                .onEnded { _ in action() }
-        )
-        .animation(nil, value: isPressed)
+        .tokenShadow(.default)
+        .onTapGesture { action() }
     }
 }
