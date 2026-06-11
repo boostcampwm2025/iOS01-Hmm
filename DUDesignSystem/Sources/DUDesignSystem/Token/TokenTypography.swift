@@ -12,8 +12,6 @@ import SwiftUI
 private enum DUFont {
     static let extraBold = "PFStardustExtraBold"
     static let bold      = "PFStardustBold"
-    static let regular   = "PFStardust"
-    // regular 제거
 }
 
 // MARK: - 폰트 등록
@@ -21,7 +19,7 @@ private enum DUFont {
 private enum FontRegistrar {
     /// Swift `static let`의 특성상 최초 접근 시 단 한 번만 실행됩니다.
     static let register: Void = {
-        ["PFStardust-Regular", "PFStardust-Bold", "PFStardust-ExtraBold"].forEach { fileName in
+        ["PFStardust-Bold", "PFStardust-ExtraBold"].forEach { fileName in
             guard let url = Bundle.module.url(forResource: fileName, withExtension: "ttf") else {
                 assertionFailure("[DUDesignSystem] 폰트 파일을 찾을 수 없습니다: \(fileName).ttf")
                 return
