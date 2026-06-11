@@ -42,7 +42,7 @@ public struct ItemRow: View {
                 .clipShape(RoundedRectangle(cornerRadius: TokenRadius.ss))
 
             VStack(alignment: .leading, spacing: 4) {
-                ItemLabel(text: title, icon: nil, size: .medium, color: .black)
+                ItemLabel(text: title, font: .subheadline, color: .black300)
                 Text(description)
                     .duFont(.label)
                     .foregroundStyle(Color.black300)

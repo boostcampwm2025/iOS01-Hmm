@@ -19,6 +19,7 @@ public struct TextButton: View {
         case medium
     }
 
+    // pressed 분리
     public enum TextButtonState {
         case `default`
         case pressed
@@ -60,10 +61,10 @@ public struct TextButton: View {
         }
     }
 
-    private var labelColor: ItemLabel.LabelColor {
+    private var labelColor: Color {
         switch state {
-        case .disabled, .locked: return .white
-        default: return type == .primary ? .white : .black
+        case .disabled, .locked: return .white300
+        default: return type == .primary ? .white300 : .black300
         }
     }
 
@@ -74,10 +75,10 @@ public struct TextButton: View {
     public var body: some View {
         ZStack(alignment: .topTrailing) {
             ZStack {
-                ItemLabel(text: text, icon: nil, size: size == .large ? .large : .medium, color: labelColor)
+                ItemLabel(text: text, font: size == .large ? .headline : .subheadline, color: labelColor)
                     .opacity(state == .locked ? TokenOpacity.opacity40 : TokenOpacity.opacity100)
                 if state == .locked {
-                    DUIcon(.lock, size: .size15)
+                    DUIcon(.lock, size: .size16)
                 }
             }
             .frame(maxWidth: size == .large ? .infinity : 200)
@@ -85,6 +86,7 @@ public struct TextButton: View {
             .background(backgroundColor)
             .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
             .tokenShadow(isPressed ? .none : .dim)
+            // figma 기준으로 그림자 수정
             .gesture(
                 isInteractive ? DragGesture(minimumDistance: 0)
                     .updating($isPressed) { _, state, _ in state = true }

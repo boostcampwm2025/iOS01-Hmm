@@ -37,19 +37,22 @@ public struct TabbarItem: View {
         state == .selected ? Color.orange300 : Color.beige300
     }
 
-    private var labelColor: ItemLabel.LabelColor {
-        state == .selected ? .white : .black
+    private var labelColor: Color {
+        state == .selected ? .white300 : .black300
     }
+    // 색상 수정 필요 brown임 ㅇㅇ
 
     public var body: some View {
         VStack(spacing: TokenSpacing.none) {
             Image(assetName, bundle: .module)
                 .resizable()
                 .frame(width: TokenIconSize.size24.rawValue, height: TokenIconSize.size24.rawValue)
-            ItemLabel(text: text, icon: nil, size: .small, color: labelColor)
+            //token 24 사용 말고 24로 고정 상수 사용
+            ItemLabel(text: text, font: .caption, color: labelColor)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 4.5)
+        // padding 4로 수정 -> xs
         .background(backgroundColor)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.xs))
         .tokenShadow(isPressed ? .none : .default)
@@ -62,6 +65,7 @@ public struct TabbarItem: View {
                 .updating($isPressed) { _, state, _ in state = true }
                 .onEnded { _ in action() }
         )
+        // 누르는 모션 제거
         .animation(nil, value: isPressed)
     }
 }

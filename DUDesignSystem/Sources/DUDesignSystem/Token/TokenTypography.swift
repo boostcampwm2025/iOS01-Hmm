@@ -42,7 +42,7 @@ private func makeToken(_ name: String, size: CGFloat, underlined: Bool = false) 
 
 /// Figma 디자인 시스템 "개발자 키우기"의 타이포그래피 토큰입니다.
 /// PF 스타더스트 폰트 기반이며, 첫 접근 시 자동으로 폰트가 등록됩니다.
-public struct DUTypographyToken: Sendable {
+public struct DUTypographyToken: Sendable, Hashable {
     public let font: Font
     public let isUnderlined: Bool
 

@@ -62,7 +62,7 @@ public struct HousingCard: View {
             // 상단 텍스트
             VStack(alignment: .leading, spacing: TokenSpacing.xs) {
                 HStack(spacing: TokenSpacing.xs) {
-                    ItemLabel(text: title, icon: nil, size: .medium, color: .black)
+                    ItemLabel(text: title, font: .subheadline, color: .black300)
                     Text(price)
                         .duFont(.label)
                         .foregroundStyle(Color.black300)

@@ -57,8 +57,8 @@ public struct StatusBar: View {
             Spacer()
 
             HStack(spacing: TokenSpacing.xs) {
-                ItemLabel(text: gold, icon: .coinBag, size: .small, color: .black)
-                ItemLabel(text: diamond, icon: .diamond, size: .small, color: .black)
+                ItemLabel(text: gold, icon: .coinBag, iconSize: .size16, font: .caption, color: .black300)
+                ItemLabel(text: diamond, icon: .diamond, iconSize: .size16, font: .caption, color: .black300)
             }
         }
     }

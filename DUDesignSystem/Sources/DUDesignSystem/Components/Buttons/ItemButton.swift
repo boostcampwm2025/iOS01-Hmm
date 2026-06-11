@@ -8,6 +8,7 @@
 import SwiftUI
 
 public struct ItemButton: View {
+    // isPressed 상태 분리
 
     public enum ItemButtonState {
         case `default`
@@ -41,10 +42,10 @@ public struct ItemButton: View {
 
     public var body: some View {
         ZStack {
-            ItemLabel(text: text, icon: .coinBag, size: .small, color: .white)
+            ItemLabel(text: text, icon: .coinBag, iconSize: .size16, font: .caption, color: .white300)
                 .opacity(state == .locked ? TokenOpacity.opacity40 : TokenOpacity.opacity100)
             if state == .locked {
-                DUIcon(.lock, size: .size15)
+                DUIcon(.lock, size: .size16)
             }
         }
         .frame(width: 80)
@@ -52,6 +53,7 @@ public struct ItemButton: View {
         .background(backgroundColor)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
         .tokenShadow(isPressed ? .none : .dim)
+        // 그림자 토큰 사용해서 피그마 기준으로 변경
         .offset(
             x: isPressed ? TokenShadow.dim.x : 0,
             y: isPressed ? TokenShadow.dim.y : 0
