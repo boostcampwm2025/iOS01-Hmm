@@ -36,7 +36,7 @@ jobs:
         id: version
         run: |
           VERSION=$(xcodebuild \
-            -project SoloDeveloperTraining/SoloDeveloperTraining.xcodeproj \
+            -workspace SoloDeveloperTraining.xcworkspace \
             -scheme DUDesignSystemExample \
             -showBuildSettings 2>/dev/null \
             | grep '^\s*MARKETING_VERSION' \
@@ -101,7 +101,7 @@ jobs:
           PROFILE_NAME: ${{ secrets.PROVISIONING_PROFILE_NAME }}
         run: |
           xcodebuild archive \
-            -project SoloDeveloperTraining/SoloDeveloperTraining.xcodeproj \
+            -workspace SoloDeveloperTraining.xcworkspace \
             -scheme DUDesignSystemExample \
             -configuration Release \
             -archivePath build/DUDesignSystemExample.xcarchive \
