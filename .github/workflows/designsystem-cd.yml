@@ -106,6 +106,7 @@ jobs:
             -configuration Release \
             -archivePath build/DUDesignSystemExample.xcarchive \
             CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            DEVELOPMENT_TEAM=QBLK6726G4 \
             CODE_SIGN_STYLE=Manual \
             "CODE_SIGN_IDENTITY=Apple Distribution" \
             "PROVISIONING_PROFILE_SPECIFIER=$PROFILE_NAME"
