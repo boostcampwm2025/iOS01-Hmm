@@ -26,7 +26,7 @@ public struct EffectLabel: View {
             Text(type == .plus ? "+" : "-")
                 .duFont(.subheadline)
                 .foregroundStyle(type == .plus ? Color.lightGreen : Color.accentRed)
-            DUIcon(.coinStack, size: .size18)
+            DUIcon(.coinStack, size: .size20)
             Text(text)
                 .duFont(.subheadline)
                 .foregroundStyle(type == .plus ? Color.lightGreen : Color.accentRed)
