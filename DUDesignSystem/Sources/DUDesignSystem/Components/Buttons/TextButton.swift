@@ -27,6 +27,7 @@ public struct TextButton: View {
     }
 
     public var text: String
+    public var icon: DUIconName?
     public var type: TextButtonType
     public var size: TextButtonSize
     public var state: TextButtonState
@@ -37,6 +38,7 @@ public struct TextButton: View {
 
     public init(
         text: String,
+        icon: DUIconName? = nil,
         type: TextButtonType,
         size: TextButtonSize = .large,
         state: TextButtonState = .default,
@@ -44,6 +46,7 @@ public struct TextButton: View {
         action: @escaping () -> Void
     ) {
         self.text = text
+        self.icon = icon
         self.type = type
         self.size = size
         self.state = state
