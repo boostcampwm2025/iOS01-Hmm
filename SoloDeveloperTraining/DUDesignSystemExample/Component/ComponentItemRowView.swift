@@ -30,7 +30,7 @@ struct ComponentItemRowView: View {
                 Section("버튼 상태") {
                     Picker("버튼 상태", selection: $buttonState) {
                         Text("Default").tag(ItemButton.ItemButtonState.default)
-                        Text("Pressed").tag(ItemButton.ItemButtonState.pressed)
+
                         Text("Disabled").tag(ItemButton.ItemButtonState.disabled)
                         Text("Locked").tag(ItemButton.ItemButtonState.locked)
                     }

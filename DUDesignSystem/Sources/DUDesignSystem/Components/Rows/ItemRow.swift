@@ -57,7 +57,7 @@ public struct ItemRow: View {
 #Preview {
     VStack(spacing: TokenSpacing.sm) {
         ItemRow(imageName: "", title: "아이템 이름", description: "항목 설명 설명 설명 설명 설명 설명", buttonText: "28.71M", buttonState: .default, action: {})
-        ItemRow(imageName: "", title: "아이템 이름", description: "항목 설명 설명 설명 설명 설명 설명", buttonText: "28.71M", buttonState: .pressed, action: {})
+        ItemRow(imageName: "", title: "아이템 이름", description: "항목 설명 설명 설명 설명 설명 설명", buttonText: "28.71M", buttonState: .default, action: {})
         ItemRow(imageName: "", title: "아이템 이름", description: "항목 설명 설명 설명 설명 설명 설명", buttonText: "28.71M", buttonState: .disabled, action: {})
         ItemRow(imageName: "", title: "아이템 이름", description: "항목 설명 설명 설명 설명 설명 설명", buttonText: "28.71M", buttonState: .locked, action: {})
     }

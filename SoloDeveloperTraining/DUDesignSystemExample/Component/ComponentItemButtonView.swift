@@ -12,17 +12,8 @@ struct ComponentItemButtonView: View {
     @State private var selectedState: ItemButton.ItemButtonState = .default
     @State private var isPressed: Bool = false
 
-    private var displayState: ItemButton.ItemButtonState {
-        isPressed ? .pressed : selectedState
-    }
-
     private var stateLabel: String {
-        switch displayState {
-        case .default:  return "default"
-        case .pressed:  return "pressed"
-        case .locked:   return "locked"
-        case .disabled: return "disabled"
-        }
+        "isPressed: \(isPressed)"
     }
 
     var body: some View {
@@ -34,7 +25,7 @@ struct ComponentItemButtonView: View {
                         .duFont(.caption)
                         .foregroundStyle(Color.gray400)
 
-                    ItemButton(text: text, state: displayState) { }
+                    ItemButton(text: text, state: selectedState) { }
                         .simultaneousGesture(
                             DragGesture(minimumDistance: 0)
                                 .onChanged { _ in isPressed = true }

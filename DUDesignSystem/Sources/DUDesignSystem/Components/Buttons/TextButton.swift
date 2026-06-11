@@ -12,6 +12,7 @@ public struct TextButton: View {
     public enum TextButtonType {
         case primary
         case secondary
+        case priority
     }
 
     public enum TextButtonSize {
@@ -19,10 +20,8 @@ public struct TextButton: View {
         case medium
     }
 
-    // pressed 분리
     public enum TextButtonState {
         case `default`
-        case pressed
         case disabled
         case locked
     }
@@ -54,8 +53,12 @@ public struct TextButton: View {
 
     private var backgroundColor: Color {
         switch state {
-        case .default, .pressed:
-            return type == .primary ? Color.orange500 : Color.gray100
+        case .default:
+            switch type {
+            case .primary:  return Color.orange500
+            case .secondary: return Color.gray100
+            case .priority: return Color.orange300
+            }
         case .disabled, .locked:
             return Color.beige400
         }
@@ -64,7 +67,7 @@ public struct TextButton: View {
     private var labelColor: Color {
         switch state {
         case .disabled, .locked: return .white300
-        default: return type == .primary ? .white300 : .black300
+        default: return type == .secondary ? .black300 : .white300
         }
     }
 
@@ -85,8 +88,7 @@ public struct TextButton: View {
             .padding(.vertical, TokenSpacing.mm)
             .background(backgroundColor)
             .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
-            .tokenShadow(isPressed ? .none : .dim)
-            // figma 기준으로 그림자 수정
+            .tokenShadow(isPressed ? .none : (state == .default ? .default : .dim))
             .gesture(
                 isInteractive ? DragGesture(minimumDistance: 0)
                     .updating($isPressed) { _, state, _ in state = true }
@@ -100,11 +102,10 @@ public struct TextButton: View {
             }
         }
         .offset(
-            x: isPressed ? TokenShadow.dim.x : 0,
-            y: isPressed ? TokenShadow.dim.y : 0
+            x: isPressed ? TokenShadow.default.x : 0,
+            y: isPressed ? TokenShadow.default.y : 0
         )
         .animation(nil, value: isPressed)
-        .padding(.horizontal, size == .large ? TokenSpacing.xxl : TokenSpacing.none)
         .frame(maxWidth: size == .large ? .infinity : nil)
     }
 }

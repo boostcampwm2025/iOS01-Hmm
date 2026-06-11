@@ -8,11 +8,8 @@
 import SwiftUI
 
 public struct ItemButton: View {
-    // isPressed 상태 분리
-
     public enum ItemButtonState {
         case `default`
-        case pressed
         case locked
         case disabled
     }
@@ -31,7 +28,7 @@ public struct ItemButton: View {
 
     private var backgroundColor: Color {
         switch state {
-        case .default, .pressed: return Color.orange500
+        case .default: return Color.orange500
         case .locked, .disabled: return Color.beige400
         }
     }
@@ -52,11 +49,10 @@ public struct ItemButton: View {
         .padding(.vertical, TokenSpacing.mm)
         .background(backgroundColor)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
-        .tokenShadow(isPressed ? .none : .dim)
-        // 그림자 토큰 사용해서 피그마 기준으로 변경
+        .tokenShadow(isPressed ? .none : (state == .default ? .default : .dim))
         .offset(
-            x: isPressed ? TokenShadow.dim.x : 0,
-            y: isPressed ? TokenShadow.dim.y : 0
+            x: isPressed ? TokenShadow.default.x : 0,
+            y: isPressed ? TokenShadow.default.y : 0
         )
         .gesture(
             isInteractive ? DragGesture(minimumDistance: 0)
