@@ -95,10 +95,26 @@ jobs:
           echo "$API_KEY_CONTENT" \
             > ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
 
-      - name: Archive
+      - name: Set provisioning profile in project
         if: steps.check.outputs.deploy == 'true'
         env:
           PROFILE_NAME: ${{ secrets.PROVISIONING_PROFILE_NAME }}
+        run: |
+          python3 - << 'PYEOF'
+          import re, os
+          pbxproj = "SoloDeveloperTraining/SoloDeveloperTraining.xcodeproj/project.pbxproj"
+          profile = os.environ["PROFILE_NAME"]
+          with open(pbxproj, "r") as f:
+              content = f.read()
+          # DUDesignSystemExample Release config(088F6A942FCAA7E500E14BA2) 에만 적용
+          pattern = r'(088F6A942FCAA7E500E14BA2 /\* Release \*/ = \{.*?PROVISIONING_PROFILE_SPECIFIER = )"[^"]*"'
+          content = re.sub(pattern, f'\\1"{profile}"', content, flags=re.DOTALL)
+          with open(pbxproj, "w") as f:
+              f.write(content)
+          PYEOF
+
+      - name: Archive
+        if: steps.check.outputs.deploy == 'true'
         run: |
           xcodebuild archive \
             -workspace SoloDeveloperTraining.xcworkspace \
@@ -108,8 +124,7 @@ jobs:
             CURRENT_PROJECT_VERSION=${{ github.run_number }} \
             DEVELOPMENT_TEAM=QBLK6726G4 \
             CODE_SIGN_STYLE=Manual \
-            "CODE_SIGN_IDENTITY=Apple Distribution" \
-            "PROVISIONING_PROFILE_SPECIFIER=$PROFILE_NAME"
+            "CODE_SIGN_IDENTITY=Apple Distribution"
 
       - name: Upload to TestFlight
         if: steps.check.outputs.deploy == 'true'
