@@ -11,13 +11,12 @@ import SwiftUI
 public struct TokenShadow: Sendable {
 
     public let color: Color
-    public let radius: CGFloat
     public let x: CGFloat
     public let y: CGFloat
 
-    public static let none      = TokenShadow(color: .clear,   radius: 0, x: 0, y: 0)
-    public static let dim       = TokenShadow(color: .gray400,  radius: 0, x: 1, y: 2)
-    public static let `default` = TokenShadow(color: .gray700, radius: 0, x: 1, y: 2)
+    public static let none      = TokenShadow(color: .clear,   x: 0, y: 0)
+    public static let dim       = TokenShadow(color: .gray400,  x: 1, y: 2)
+    public static let `default` = TokenShadow(color: .gray700, x: 1, y: 2)
 }
 
 // MARK: - 뷰 모디파이어
@@ -26,7 +25,7 @@ public struct TokenShadowModifier: ViewModifier {
     let shadow: TokenShadow
 
     public func body(content: Content) -> some View {
-        content.shadow(color: shadow.color, radius: shadow.radius, x: shadow.x, y: shadow.y)
+        content.shadow(color: shadow.color, radius: 0, x: shadow.x, y: shadow.y)
     }
 }
 

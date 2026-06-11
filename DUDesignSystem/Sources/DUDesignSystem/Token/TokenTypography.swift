@@ -13,6 +13,7 @@ private enum DUFont {
     static let extraBold = "PFStardustExtraBold"
     static let bold      = "PFStardustBold"
     static let regular   = "PFStardust"
+    // regular 제거
 }
 
 // MARK: - 폰트 등록
@@ -51,13 +52,13 @@ public struct DUTypographyToken: Sendable {
     }
 
     public static let title1:      DUTypographyToken = makeToken(DUFont.extraBold, size: 24)
-    public static let title2:      DUTypographyToken = makeToken(DUFont.bold,      size: 22)
-    public static let headline:    DUTypographyToken = makeToken(DUFont.extraBold, size: 17)
-    public static let subheadline: DUTypographyToken = makeToken(DUFont.extraBold, size: 15)
-    public static let body:        DUTypographyToken = makeToken(DUFont.bold,      size: 17)
-    public static let body2:       DUTypographyToken = makeToken(DUFont.bold,      size: 15)
+    public static let title2:      DUTypographyToken = makeToken(DUFont.bold,      size: 20)
+    public static let headline:    DUTypographyToken = makeToken(DUFont.extraBold, size: 16)
+    public static let subheadline: DUTypographyToken = makeToken(DUFont.extraBold, size: 14)
+    public static let body:        DUTypographyToken = makeToken(DUFont.bold,      size: 16)
+    public static let body2:       DUTypographyToken = makeToken(DUFont.bold,      size: 14)
     public static let caption:     DUTypographyToken = makeToken(DUFont.extraBold, size: 12)
-    public static let label:       DUTypographyToken = makeToken(DUFont.bold,      size: 11)
+    public static let label:       DUTypographyToken = makeToken(DUFont.bold,      size: 12)
 }
 
 // MARK: - 뷰 모디파이어

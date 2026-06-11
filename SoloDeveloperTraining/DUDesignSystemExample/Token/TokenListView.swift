@@ -11,7 +11,6 @@ struct TokenListView: View {
     private let items: [(String, String, AnyView)] = [
         ("Color",      "paintpalette",          AnyView(TokenColorView())),
         ("Opacity",    "circle.lefthalf.filled", AnyView(TokenOpacityView())),
-        ("Line",       "line.horizontal.3",      AnyView(TokenLineView())),
         ("Elevation",  "square.stack",           AnyView(TokenElevationView())),
         ("Typography", "textformat",             AnyView(TokenTypographyView())),
         ("Radius",     "rectangle.roundedtop",   AnyView(TokenRadiusView())),
