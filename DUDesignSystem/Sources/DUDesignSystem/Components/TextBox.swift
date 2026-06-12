@@ -18,8 +18,7 @@ public struct TextBox: View {
         Text(text).duFont(.body2).foregroundStyle(Color.black300)
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 18)
-        .padding(.horizontal, TokenSpacing.md)
+        .padding(.all, TokenSpacing.md)
         .background(Color.white300)
         .overlay {
             RoundedRectangle(cornerRadius: TokenRadius.ss)
