@@ -51,11 +51,11 @@ public struct MissionCard: View {
     public var body: some View {
         VStack(spacing: TokenSpacing.xs) {
             // 타이틀
-            ItemLabel(text: title, icon: nil, size: .medium, color: .black)
+            ItemLabel(text: title, font: .subheadline, color: .black300)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             // 보상
-            ItemLabel(text: rewardText, icon: .diamond, size: .small, color: .black)
+            ItemLabel(text: rewardText, icon: .diamond, iconSize: .size16, font: .caption, color: .black300)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             // 이미지

@@ -25,7 +25,7 @@ public struct QuizButton: View {
     }
 
     private var backgroundColor: Color {
-        state == .selected ? Color.orange300 : Color.gray100
+        state == .selected ? Color.orange300 : Color.beige200
     }
 
     private var textColor: Color {
@@ -33,10 +33,8 @@ public struct QuizButton: View {
     }
 
     public var body: some View {
-        Text(text)
-            .duFont(.body2)
-            .foregroundStyle(textColor)
-            .frame(maxWidth: .infinity)
+        ItemLabel(text: text, font: .body2, color: textColor)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.vertical, TokenSpacing.md)
             .padding(.horizontal, TokenSpacing.mm)
             .background(backgroundColor)

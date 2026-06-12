@@ -18,6 +18,7 @@ public extension Color {
     // MARK: - Black
 
     static let black300                 = Color(hex: "#000000")
+    static let black300EventDim         = Color(hex: "#000000").opacity(0.9)
     static let black300PopUpDimStatusBar = Color(hex: "#000000").opacity(0.3)
     static let black300GrayBar          = Color(hex: "#000000").opacity(0.1)
 

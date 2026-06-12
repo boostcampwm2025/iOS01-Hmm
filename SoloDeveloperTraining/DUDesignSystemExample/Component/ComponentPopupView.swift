@@ -38,7 +38,7 @@ struct ComponentPopupView: View {
                         Popup(type: .reward(
                             title: "팝업 타이틀",
                             body: "팝업 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용\n내용 내용",
-                            rewardLeadingText: "직득한 다이아 : ",
+                            rewardLeadingText: "획득한 다이아 :",
                             rewardIcon: .diamond,
                             rewardTrailingText: "20",
                             buttonText: "닫기",

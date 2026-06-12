@@ -8,19 +8,20 @@
 import SwiftUI
 
 public enum DUIconName: String, CaseIterable {
-    case coinBag     = "icon_coin_bag"
-    case coinStack   = "icon_coin_stack"
-    case minus       = "icon_minus"
-    case plus        = "icon_plus"
-    case cancel      = "icon_cancel"
-    case close       = "icon_close"
-    case coffee      = "icon_coffee"
-    case diamond     = "icon_diamond"
-    case diamondPlus = "icon_diamond_plus"
-    case energyDrink = "icon_energy_drink"
-    case lock        = "icon_lock"
-    case play        = "icon_play"
-    case ad          = "icon_ad"
+    case coinBag     = "iconCoinBag"
+    case coinStack   = "iconCoinStack"
+    case minus       = "iconMinus"
+    case plus        = "iconPlus"
+    case cancel      = "iconCancel"
+    case close       = "iconClose"
+    case coffee      = "iconCoffee"
+    case diamond     = "iconDiamond"
+    case diamondPlus = "iconDiamondPlus"
+    case energyDrink = "iconEnergyDrink"
+    case lock        = "iconLock"
+    case play        = "iconPlay"
+    case ad          = "iconAd"
+    case new         = "iconNew"
 }
 
 public struct DUIcon: View {

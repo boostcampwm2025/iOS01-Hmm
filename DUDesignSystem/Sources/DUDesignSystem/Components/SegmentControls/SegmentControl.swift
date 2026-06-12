@@ -32,16 +32,10 @@ public struct SegmentControl: View {
     @ViewBuilder
     private func segmentButton(title: String, index: Int) -> some View {
         let isSelected = selectedIndex == index
-        Text(title)
-            .duFont(.caption)
-            .foregroundStyle(isSelected ? Color.white300 : Color.orange500)
+        ItemLabel(text: title, font: .caption, color: isSelected ? .white300 : .orange500)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
-            .background(
-                isSelected
-                    ? RoundedRectangle(cornerRadius: TokenRadius.xs).fill(Color.orange300)
-                    : nil
-            )
+            .padding(.vertical, TokenSpacing.sm)
+            .background(isSelected ? Color.orange300 : Color.clear)
             .contentShape(Rectangle())
             .onTapGesture { selectedIndex = index }
     }

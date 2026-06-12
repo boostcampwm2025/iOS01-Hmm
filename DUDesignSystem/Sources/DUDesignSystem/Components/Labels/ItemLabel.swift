@@ -8,45 +8,37 @@
 import SwiftUI
 
 public struct ItemLabel: View {
-    
-    public enum LabelSize {
-        case small
-        case medium
-        case large
-    }
-    
-    public enum LabelColor {
-        case white
-        case black
-    }
-    
+
     public var text: String
     public var icon: DUIconName?
-    public var size: LabelSize
-    public var color: LabelColor
-    
-    public init(text: String, icon: DUIconName? = nil, size: LabelSize, color: LabelColor) {
+    public var iconSize: TokenIconSize?
+    public var font: DUTypographyToken
+    public var color: Color
+
+    public init(text: String, font: DUTypographyToken, color: Color) {
         self.text = text
-        self.icon = icon
-        self.size = size
+        self.icon = nil
+        self.iconSize = nil
+        self.font = font
         self.color = color
     }
-    
+
+    public init(text: String, icon: DUIconName, iconSize: TokenIconSize, font: DUTypographyToken, color: Color) {
+        self.text = text
+        self.icon = icon
+        self.iconSize = iconSize
+        self.font = font
+        self.color = color
+    }
+
     public var body: some View {
         HStack(spacing: TokenSpacing.xs) {
-            if let icon = icon {
-                switch size {
-                case .small:
-                    DUIcon(icon, size: .size15)
-                case .medium:
-                    DUIcon(icon, size: .size18)
-                case .large:
-                    DUIcon(icon, size: .size24)
-                }
+            if let icon = icon, let iconSize = iconSize {
+                DUIcon(icon, size: iconSize)
             }
             Text(text)
-                .duFont(size == .large ? .headline : size == .medium ? .subheadline : .caption)
-                .foregroundStyle(color == .white ? Color.white300 : Color.black300)
+                .duFont(font)
+                .foregroundStyle(color)
         }
     }
 }

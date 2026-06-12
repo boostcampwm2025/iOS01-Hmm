@@ -41,6 +41,7 @@ struct ComponentTextButtonView: View {
                     Picker("타입", selection: $selectedType) {
                         Text("Primary").tag(TextButton.TextButtonType.primary)
                         Text("Secondary").tag(TextButton.TextButtonType.secondary)
+                        Text("Priority").tag(TextButton.TextButtonType.priority)
                     }
                     .pickerStyle(.segmented)
                 }

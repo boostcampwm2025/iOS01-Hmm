@@ -37,7 +37,7 @@ public struct WorkItemCard: View {
             Color.beige100
 
             VStack(spacing: 0) {
-                ItemLabel(text: title, icon: nil, size: .medium, color: .black)
+                ItemLabel(text: title, font: .subheadline, color: .black300)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.top, TokenSpacing.md)
 

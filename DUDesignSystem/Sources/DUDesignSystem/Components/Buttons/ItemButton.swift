@@ -8,10 +8,8 @@
 import SwiftUI
 
 public struct ItemButton: View {
-
     public enum ItemButtonState {
         case `default`
-        case pressed
         case locked
         case disabled
     }
@@ -30,7 +28,7 @@ public struct ItemButton: View {
 
     private var backgroundColor: Color {
         switch state {
-        case .default, .pressed: return Color.orange500
+        case .default: return Color.orange500
         case .locked, .disabled: return Color.beige400
         }
     }
@@ -41,20 +39,20 @@ public struct ItemButton: View {
 
     public var body: some View {
         ZStack {
-            ItemLabel(text: text, icon: .coinBag, size: .small, color: .white)
+            ItemLabel(text: text, icon: .coinBag, iconSize: .size16, font: .caption, color: .white300)
                 .opacity(state == .locked ? TokenOpacity.opacity40 : TokenOpacity.opacity100)
             if state == .locked {
-                DUIcon(.lock, size: .size15)
+                DUIcon(.lock, size: .size16)
             }
         }
         .frame(width: 80)
         .padding(.vertical, TokenSpacing.mm)
         .background(backgroundColor)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
-        .tokenShadow(isPressed ? .none : .dim)
+        .tokenShadow(isPressed ? .none : (state == .default ? .default : .dim))
         .offset(
-            x: isPressed ? TokenShadow.dim.x : 0,
-            y: isPressed ? TokenShadow.dim.y : 0
+            x: isPressed ? TokenShadow.default.x : 0,
+            y: isPressed ? TokenShadow.default.y : 0
         )
         .gesture(
             isInteractive ? DragGesture(minimumDistance: 0)

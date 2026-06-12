@@ -8,7 +8,7 @@
 import SwiftUI
 
 public struct SmallButton: View {
-
+    
     public enum SmallButtonType: Hashable {
         case quiz
         case setting
@@ -28,15 +28,13 @@ public struct SmallButton: View {
         let button: AnyView = switch type {
         case .quiz:
             AnyView(
-                Text("퀴즈")
-                    .duFont(.subheadline)
-                    .foregroundStyle(Color.white300)
+                ItemLabel(text: "퀴즈", font: .subheadline, color: .white300)
                     .frame(width: 44, height: 44)
                     .background(Color.lightOrange)
                     .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
                     .overlay(alignment: .topTrailing) {
                         DUIcon(.diamondPlus, size: .size24)
-                            .offset(x: 10, y: -12)
+                            .offset(x: 8, y: -12)
                             .allowsHitTesting(false)
                     }
             )
@@ -50,10 +48,10 @@ public struct SmallButton: View {
         }
 
         return button
-            .tokenShadow(isPressed ? .none : .dim)
+            .tokenShadow(isPressed ? .none : .default)
             .offset(
-                x: isPressed ? TokenShadow.dim.x : 0,
-                y: isPressed ? TokenShadow.dim.y : 0
+                x: isPressed ? TokenShadow.default.x : 0,
+                y: isPressed ? TokenShadow.default.y : 0
             )
             .gesture(
                 DragGesture(minimumDistance: 0)

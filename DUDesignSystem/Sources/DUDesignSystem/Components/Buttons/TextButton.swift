@@ -12,6 +12,7 @@ public struct TextButton: View {
     public enum TextButtonType {
         case primary
         case secondary
+        case priority
     }
 
     public enum TextButtonSize {
@@ -21,7 +22,6 @@ public struct TextButton: View {
 
     public enum TextButtonState {
         case `default`
-        case pressed
         case disabled
         case locked
     }
@@ -53,17 +53,21 @@ public struct TextButton: View {
 
     private var backgroundColor: Color {
         switch state {
-        case .default, .pressed:
-            return type == .primary ? Color.orange500 : Color.gray100
+        case .default:
+            switch type {
+            case .primary:  return Color.orange500
+            case .secondary: return Color.gray100
+            case .priority: return Color.orange300
+            }
         case .disabled, .locked:
             return Color.beige400
         }
     }
 
-    private var labelColor: ItemLabel.LabelColor {
+    private var labelColor: Color {
         switch state {
-        case .disabled, .locked: return .white
-        default: return type == .primary ? .white : .black
+        case .disabled, .locked: return .white300
+        default: return type == .secondary ? .black300 : .white300
         }
     }
 
@@ -74,17 +78,17 @@ public struct TextButton: View {
     public var body: some View {
         ZStack(alignment: .topTrailing) {
             ZStack {
-                ItemLabel(text: text, icon: nil, size: size == .large ? .large : .medium, color: labelColor)
+                ItemLabel(text: text, font: size == .large ? .headline : .subheadline, color: labelColor)
                     .opacity(state == .locked ? TokenOpacity.opacity40 : TokenOpacity.opacity100)
                 if state == .locked {
-                    DUIcon(.lock, size: .size15)
+                    DUIcon(.lock, size: .size16)
                 }
             }
             .frame(maxWidth: size == .large ? .infinity : 200)
             .padding(.vertical, TokenSpacing.mm)
             .background(backgroundColor)
             .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
-            .tokenShadow(isPressed ? .none : .dim)
+            .tokenShadow(isPressed ? .none : (state == .default ? .default : .dim))
             .gesture(
                 isInteractive ? DragGesture(minimumDistance: 0)
                     .updating($isPressed) { _, state, _ in state = true }
@@ -98,11 +102,10 @@ public struct TextButton: View {
             }
         }
         .offset(
-            x: isPressed ? TokenShadow.dim.x : 0,
-            y: isPressed ? TokenShadow.dim.y : 0
+            x: isPressed ? TokenShadow.default.x : 0,
+            y: isPressed ? TokenShadow.default.y : 0
         )
         .animation(nil, value: isPressed)
-        .padding(.horizontal, size == .large ? TokenSpacing.xxl : TokenSpacing.none)
         .frame(maxWidth: size == .large ? .infinity : nil)
     }
 }

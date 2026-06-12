@@ -83,9 +83,9 @@ public struct ProgressBar: View {
                 bar
                 VStack(spacing: 1) {
                     HStack {
-                        ItemLabel(text: currentText, icon: .coinBag, size: .small, color: .black)
+                        ItemLabel(text: currentText, icon: .coinBag, iconSize: .size16, font: .caption, color: .black300)
                         Spacer()
-                        ItemLabel(text: goalText, icon: .coinBag, size: .small, color: .black)
+                        ItemLabel(text: goalText, icon: .coinBag, iconSize: .size16, font: .caption, color: .black300)
                     }
                     HStack {
                         Text(currentSubText)
