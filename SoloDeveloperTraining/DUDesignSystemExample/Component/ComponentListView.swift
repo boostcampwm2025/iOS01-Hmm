@@ -35,6 +35,7 @@ struct ComponentListView: View {
         ("MissionCard", "trophy", AnyView(ComponentMissionCardView())),
         ("HousingCard", "house", AnyView(ComponentHousingCardView())),
         ("WorkItemCard", "rectangle.fill", AnyView(ComponentWorkItemCardView())),
+        ("StoryCard", "square.stack", AnyView(ComponentStoryCardView())),
         ("WorkSegmentControl", "rectangle.grid.2x2", AnyView(ComponentWorkSegmentControlView())),
     ]
 
