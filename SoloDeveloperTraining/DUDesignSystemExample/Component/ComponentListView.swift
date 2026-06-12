@@ -14,6 +14,7 @@ struct ComponentListView: View {
         ("EffectLabel", "plus.forwardslash.minus", AnyView(ComponentEffectLabelView())),
         ("ItemButton", "hand.tap", AnyView(ComponentItemButtonView())),
         ("TextButton", "rectangle.and.hand.point.up.left", AnyView(ComponentTextButtonView())),
+        ("EventButton", "bolt.circle", AnyView(ComponentEventButtonView())),
         ("TabbarItem", "menubar.rectangle", AnyView(ComponentTabbarItemView())),
         ("Tabbar", "dock.rectangle", AnyView(ComponentTabbarView())),
         ("SegmentControl", "rectangle.split.2x1", AnyView(ComponentSegmentControlView())),
