@@ -62,6 +62,11 @@ struct MainView: View {
     @State private var showOfflineRewardConfirmPopup: Bool = false
     @State private var hasCheckedOfflineReward: Bool = false
 
+    // 레벨업 이펙트 관련
+    @State private var isCareerSystemInitialized: Bool = false
+    @State private var showLevelUpEffect: Bool = false
+    @State private var leveledUpCareer: Career? = nil
+
     private var autoGainSystem: AutoGainSystem
     private let user: User
     private let scene: CharacterScene
@@ -110,6 +115,8 @@ struct MainView: View {
             .fullScreenCover(isPresented: $showQuizView) {
                 QuizGameView(user: user)
             }
+
+            LevelUpEffectView(isPresented: $showLevelUpEffect, career: leveledUpCareer)
         }
         .darkToast(
             isShowing: workGameSession.exitBonusToastBinding,
@@ -293,8 +300,14 @@ private extension MainView {
         Task {
             if careerSystem == nil {
                 careerSystem = await CareerSystem(user: user)
+                isCareerSystemInitialized = true
                 careerSystem?.onCareerChanged = { [weak scene] newCareer in
                     scene?.updateCareerAppearance(to: newCareer)
+                    
+                    leveledUpCareer = newCareer
+                    withAnimation(.spring()) {
+                        showLevelUpEffect = true
+                    }
                 }
             }
         }
