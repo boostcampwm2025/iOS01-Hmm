@@ -22,6 +22,7 @@ struct ComponentListView: View {
         ("QuizButton", "questionmark.circle", AnyView(ComponentQuizButtonView())),
         ("InputField", "text.cursor", AnyView(ComponentInputFieldView())),
         ("Toast", "text.bubble", AnyView(ComponentToastView())),
+        ("TextBox", "text.justify.left", AnyView(ComponentTextBoxView())),
         ("Popup", "rectangle.on.rectangle", AnyView(ComponentPopupView())),
         ("ProgressBar", "chart.bar", AnyView(ComponentProgressBarView())),
         ("GameToolBar", "gamecontroller", AnyView(ComponentGameToolBarView())),
