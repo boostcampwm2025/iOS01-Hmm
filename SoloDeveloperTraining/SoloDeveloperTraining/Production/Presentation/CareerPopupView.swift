@@ -27,17 +27,6 @@ struct CareerPopupView: View {
                 totalEarnedMoney: user.record.totalEarnedMoney,
                 progress: careerSystem.careerProgress
             )
-            #if DEBUG
-            .onTapGesture {
-                if let nextCareer = careerSystem.currentCareer.nextCareer {
-                    let currentWealth = user.record.totalEarnedMoney
-                    let nextRequirement = nextCareer.requiredWealth
-                    if nextRequirement > currentWealth {
-                        user.record.record(.earnMoney(nextRequirement - currentWealth))
-                    }
-                }
-            }
-            #endif
             .padding(.bottom, Constant.progressBarBottomPadding)
             .padding(.top, Constant.progressBarTopPadding)
 
@@ -48,6 +37,15 @@ struct CareerPopupView: View {
                             career: career,
                             userCareer: careerSystem.currentCareer
                         )
+                        #if DEBUG
+                        .onTapGesture {
+                            let currentWealth = user.record.totalEarnedMoney
+                            let targetRequirement = career.requiredWealth
+                            if targetRequirement > currentWealth {
+                                user.record.record(.earnMoney(targetRequirement - currentWealth))
+                            }
+                        }
+                        #endif
                     }
                 }
             }
