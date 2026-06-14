@@ -57,6 +57,7 @@ struct ScenarioStoryView: View {
                         imageName: manager.currentScenario?.career.scenarioImagePrefix ?? ""
                     )
                     .id("ending")
+                    .padding(.horizontal, TokenSpacing.lg)
                 } else if let page = manager.currentPage {
                     StoryCard(
                         type: .levelUp,
