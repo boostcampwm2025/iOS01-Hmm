@@ -10,63 +10,84 @@ import DUDesignSystem
 
 struct ScenarioStoryView: View {
     let manager: ScenarioManager
+    let repository: ScenarioRepository
+    let record: Record
     let onComplete: () -> Void
 
     @State private var currentPageIndex: Int = 0
+    @State private var selected: String = ""
+    @State private var finalEnding: Ending? = nil
 
     var body: some View {
         ZStack {
             Color.black300EventDim.ignoresSafeArea()
             VStack(spacing: TokenSpacing.lg) {
-                if let page = manager.currentPage {
+                if let ending = finalEnding {
+                    // 1. 최종 결과 확정 시: 엔딩 카드 (타이틀 + 결과 설명)
                     StoryCard(
-                        type: storyCardType(for: page),
+                        type: .ending(title: ending.type.title),
+                        text: ending.type.description,
+                        imageName: manager.currentScenario?.career.scenarioImagePrefix ?? ""
+                    )
+                } else if let page = manager.currentPage {
+                    // 2. 시나리오 진행 중 (인트로, 스토리, 선택): 일반 카드 (텍스트만)
+                    StoryCard(
+                        type: .levelUp,
                         text: page.text,
                         imageName: manager.currentScenario?.career.scenarioImagePrefix ?? ""
                     )
-                    .id(currentPageIndex)
                 }
-                if let page = manager.currentPage {
-                    eventButtonView(for: page)
+
+                Group {
+                    if finalEnding != nil {
+                        // 3. 엔딩 전용 버튼 (저장/공유/환생)
+                        EventButton(type: .ending(
+                            onSave: { /* 이미지 저장 로직 */ },
+                            onShare: { /* 공유 로직 */ },
+                            onRebirth: {
+                                record.resetForRebirth()
+                                onComplete()
+                            }
+                        ))
+                    } else if let page = manager.currentPage {
+                        // 4. 일반 진행 버튼 (다음/선택/다시선택)
+                        eventButtonView(for: page)
+                    }
                 }
+                .padding(.horizontal, TokenSpacing.lg)
             }
         }
     }
 }
 
 private extension ScenarioStoryView {
-    /// 페이지 타입에 따른 StoryCard 타입 결정
-    func storyCardType(for page: ScenarioPage) -> StoryCard.StoryCardType {
-        let careerName = manager.currentScenario?.career.rawValue ?? ""
-        let isFinal = manager.currentScenario?.scenarioType == .final
-
-        if isFinal {
-            // 엔딩 시나리오인 경우 (타이틀 노출)
-            return .ending(title: careerName)
-        } else {
-            // 일반 레벨업 시나리오인 경우 (TextBox만 노출)
-            return .levelUp
-        }
-    }
-
     /// 페이지 타입에 따른 EventButton 뷰 생성
     @ViewBuilder
     func eventButtonView(for page: ScenarioPage) -> some View {
-        Group {
-            switch page.pageType {
-            case .story, .result:
-                // 일반 스토리나 결과 페이지는 '다음으로' 버튼
-                EventButton(type: .next)
-
-            case .choice(let choice):
-                // 선택지 페이지는 '선택' 버튼
-                EventButton(
-                    type: .choice,
-                    firstChoice: choice.optionA,
-                    secondChoice: choice.optionB,
+        switch page.pageType {
+        case .story:
+            EventButton(type: .next(action: { handleNextTap() }))
+        case .choice(let choice):
+            EventButton(
+                type: .choice(
+                    optionA: choice.optionA,
+                    optionB: choice.optionB,
+                    selected: selected,
+                    onSelect: { selection in
+                        selected = selection
+                        handleChoice(
+                            selection == choice.optionA ? .optionA : .optionB
+                        )
+                    }
                 )
-            }
-        }.padding(.horizontal, TokenSpacing.lg)
+            )
+        case .result:
+            EventButton(type: .reselect(onReselect: {
+                // 시나리오 처음으로 (필요 시 구현)
+            }, onComplete: {
+                handleNextTap()
+            }))
+        }
     }
 
     func handleNextTap() {
@@ -79,8 +100,35 @@ private extension ScenarioStoryView {
     }
 
     func handleChoice(_ result: ChoiceResult) {
-        manager.selectChoice(result)
-        updatePage()
+        if let career = manager.currentScenario?.career {
+            record.choiceHistory[career] = result
+        }
+
+        if manager.currentScenario?.scenarioType == .final {
+            // 최종 엔딩 계산 및 화면 전환
+            calculateAndShowEnding(with: result)
+        } else {
+            manager.selectChoice(result)
+            updatePage()
+        }
+    }
+
+    func calculateAndShowEnding(with finalChoice: ChoiceResult) {
+        let evt01 = record.choiceHistory[.juniorDeveloper] ?? .optionA
+        let evt02 = record.choiceHistory[.nightOwlDeveloper] ?? .optionA
+        let evt03 = record.choiceHistory[.famousDeveloper] ?? .optionA
+        let evt04 = finalChoice
+
+        let ending = repository.calculateEnding(
+            evt01: evt01,
+            evt02: evt02,
+            evt03: evt03,
+            evt04: evt04
+        )
+
+        withAnimation(.spring()) {
+            finalEnding = ending
+        }
     }
 
     func updatePage() {

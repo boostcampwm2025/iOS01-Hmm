@@ -284,7 +284,11 @@ private extension MainView {
     @ViewBuilder
     var scenarioOverlayView: some View {
         if showScenarioView, let manager = scenarioManager {
-            ScenarioStoryView(manager: manager) {
+            ScenarioStoryView(
+                manager: manager,
+                repository: scenarioRepository,
+                record: user.record
+            ) {
                 withAnimation {
                     showScenarioView = false
                 }
