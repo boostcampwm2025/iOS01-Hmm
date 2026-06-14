@@ -14,7 +14,6 @@ public struct HousingCard: View {
         case selected
         case equipped
         case locked
-        // locked
     }
 
     public var title: String
@@ -60,7 +59,6 @@ public struct HousingCard: View {
 
     public var body: some View {
         VStack(spacing: TokenSpacing.md) {
-            // 상단 텍스트
             VStack(alignment: .leading, spacing: TokenSpacing.xs) {
                 HStack(spacing: TokenSpacing.sm) {
                     ItemLabel(text: title, font: .subheadline, color: .black300)
@@ -74,7 +72,6 @@ public struct HousingCard: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, TokenSpacing.md)
 
-            // 이미지 (좌우 패딩 없음)
             Image(imageName, bundle: .module)
                 .resizable()
                 .scaledToFill()
@@ -82,7 +79,6 @@ public struct HousingCard: View {
                 .clipped()
                 .opacity(state == .locked ? TokenOpacity.opacity60 : TokenOpacity.opacity100)
 
-            // 버튼
             TextButton(text: buttonText, type: buttonType, size: .medium, state: buttonState, action: onButtonTap)
                 .padding(.horizontal, TokenSpacing.lg)
         }

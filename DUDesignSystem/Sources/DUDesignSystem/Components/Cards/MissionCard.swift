@@ -51,28 +51,23 @@ public struct MissionCard: View {
     public var body: some View {
         VStack(spacing: TokenSpacing.sm) {
             VStack(spacing: TokenSpacing.xs) {
-                // 타이틀
                 ItemLabel(text: title, font: .subheadline, color: .black300)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                // 보상
                 ItemLabel(text: rewardText, icon: .diamond, iconSize: .size16, font: .caption, color: .black300)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            // 이미지
             Image(trophy.rawValue, bundle: .module)
                 .resizable()
                 .scaledToFill()
                 .frame(width: 97.5, height: 71)
                 .opacity(state == .claimed ? TokenOpacity.opacity60 : TokenOpacity.opacity100)
 
-            // 조건
             ItemLabel(text: condition, font: .label, color: .black300)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
 
-            // 상태 바
             stateBar
         }
         .padding(.top, TokenSpacing.mm)
