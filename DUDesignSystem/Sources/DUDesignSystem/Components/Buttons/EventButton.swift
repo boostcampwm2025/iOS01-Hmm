@@ -74,7 +74,7 @@ public struct EventButton: View {
             case .ending:
                 endingButtonView
             }
-        }.padding(.horizontal, TokenSpacing.lg)
+        }
     }
 }
 

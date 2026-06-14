@@ -46,7 +46,8 @@ private extension StoryCard {
     var cardContent: some View {
         Image(imageName, bundle: .module)
             .resizable()
-            .scaledToFill()
+            .scaledToFit()
+            .frame(maxWidth: .infinity)
             .overlay(alignment: .bottom) {
                 TextBox(text: text)
                     .padding([.horizontal, .bottom], TokenSpacing.lg)
