@@ -20,6 +20,8 @@ struct ScenarioStoryView: View {
 
     // 공유하기
     @State private var isShareSheetPresented = false
+    // 환생하기
+    @State private var isRebirthConfirmPopupPresented = false
 
     init(manager: ScenarioManager, record: Record, repository: ScenarioRepository, onComplete: @escaping () -> Void) {
         self.manager = manager
@@ -34,6 +36,20 @@ struct ScenarioStoryView: View {
         ZStack {
             Color.black300EventDim.ignoresSafeArea()
             VStack(spacing: TokenSpacing.lg) {
+                if finalEnding != nil {
+                    HStack(spacing: TokenSpacing.sm) {
+                        Image(.story)
+                            .resizable()
+                            .frame(width: 30, height: 30)
+                        Text("엔딩 결과").duFont(.title1).foregroundStyle(Color.white300)
+                        Spacer()
+                        Button(action: onComplete) {
+                            DUIcon(.close, size: .size28)
+                        }
+                    }
+                    .padding(.horizontal, TokenSpacing.lg)
+                }
+
                 if let ending = finalEnding {
                     StoryCard(
                         type: .ending(title: ending.type.title),
@@ -59,8 +75,7 @@ struct ScenarioStoryView: View {
                                 isShareSheetPresented = true
                             },
                             onRebirth: {
-                                record.resetForRebirth()
-                                onComplete()
+                                isRebirthConfirmPopupPresented = true
                             }
                         ))
                     } else if let page = manager.currentPage {
@@ -78,6 +93,10 @@ struct ScenarioStoryView: View {
                     urlString: "\(ShareService.baseURL)/\(ending.type.webURLSlug)"
                 )
             }
+
+            if isRebirthConfirmPopupPresented {
+                rebirthConfirmPopupView
+            }
         }
         .onAppear {
             restoreEndingIfNeeded()
@@ -86,10 +105,18 @@ struct ScenarioStoryView: View {
 }
 
 private extension ScenarioStoryView {
-    func restoreEndingIfNeeded() {
-        guard manager.currentScenario?.scenarioType == .final,
-              let finalChoice = record.choiceHistory[.worldClassDeveloper] else { return }
-        calculateAndShowEnding(with: finalChoice)
+    var rebirthConfirmPopupView: some View {
+        DUDesignSystem.Popup(type: .confirm(
+            title: "환생하기",
+            body: "전생의 기억은 모두 잃고 새로 태어나게됩니다.\n환생하시겠습니까?",
+            cancelText: "이대로 살기",
+            confirmText: "환생하기",
+            cancelAction: onComplete,
+            confirmAction: {
+                record.resetForRebirth()
+                onComplete()
+            }
+        ))
     }
 
     @ViewBuilder
@@ -113,11 +140,17 @@ private extension ScenarioStoryView {
             )
         case .result:
             EventButton(type: .reselect(onReselect: {
-                // 필요 시 처음으로 이동 로직 추가
+                // TODO: 재선택 로직 추가
             }, onComplete: {
                 handleNextTap()
             }))
         }
+    }
+
+    func restoreEndingIfNeeded() {
+        guard manager.currentScenario?.scenarioType == .final,
+              let finalChoice = record.choiceHistory[.worldClassDeveloper] else { return }
+        calculateAndShowEnding(with: finalChoice)
     }
 
     func handleNextTap() {
