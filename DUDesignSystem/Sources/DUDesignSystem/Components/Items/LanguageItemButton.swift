@@ -27,11 +27,11 @@ public struct LanguageItemButton: View {
         .padding(.vertical, TokenSpacing.sm)
         .frame(width: 64)
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
-        .tokenShadow(isPressed ? .none : .dim)
+        .clipShape(RoundedRectangle(cornerRadius: TokenRadius.md))
+        .tokenShadow(isPressed ? .none : .default)
         .offset(
-            x: isPressed ? TokenShadow.dim.x : 0,
-            y: isPressed ? TokenShadow.dim.y : 0
+            x: isPressed ? TokenShadow.default.x : 0,
+            y: isPressed ? TokenShadow.default.y : 0
         )
         .gesture(
             DragGesture(minimumDistance: 0)
