@@ -77,13 +77,15 @@ public struct TextButton: View {
 
     public var body: some View {
         ZStack(alignment: .topTrailing) {
-            ZStack {
-                ItemLabel(text: text, font: size == .large ? .headline : .subheadline, color: labelColor)
-                    .opacity(state == .locked ? TokenOpacity.opacity40 : TokenOpacity.opacity100)
-                if state == .locked {
-                    DUIcon(.lock, size: .size16)
-                }
-            }
+            ItemLabel(text: text, font: size == .large ? .headline : .subheadline, color: labelColor)
+                .opacity(state == .locked ? TokenOpacity.opacity40 : TokenOpacity.opacity100)
+                .overlay(
+                    Group {
+                        if state == .locked {
+                            DUIcon(.lock, size: .size16)
+                        }
+                    }
+                )
             .frame(maxWidth: size == .large ? .infinity : 200)
             .padding(.vertical, TokenSpacing.mm)
             .background(backgroundColor)

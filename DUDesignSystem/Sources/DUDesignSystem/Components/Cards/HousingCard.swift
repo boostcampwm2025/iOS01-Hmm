@@ -13,7 +13,8 @@ public struct HousingCard: View {
         case `default`
         case selected
         case equipped
-        case disabled
+        case locked
+        // locked
     }
 
     public var title: String
@@ -45,15 +46,15 @@ public struct HousingCard: View {
     private var buttonType: TextButton.TextButtonType {
         switch state {
         case .default, .selected: return .primary
-        case .equipped, .disabled: return .secondary
+        case .equipped, .locked: return .secondary
         }
     }
 
     private var buttonState: TextButton.TextButtonState {
         switch state {
         case .default, .selected: return .default
-        case .equipped: return .disabled
-        case .disabled: return .locked
+        case .equipped: return .locked
+        case .locked: return .locked
         }
     }
 
@@ -61,15 +62,14 @@ public struct HousingCard: View {
         VStack(spacing: TokenSpacing.md) {
             // 상단 텍스트
             VStack(alignment: .leading, spacing: TokenSpacing.xs) {
-                HStack(spacing: TokenSpacing.xs) {
+                HStack(spacing: TokenSpacing.sm) {
                     ItemLabel(text: title, font: .subheadline, color: .black300)
-                    Text(price)
-                        .duFont(.label)
-                        .foregroundStyle(Color.black300)
+                    ItemLabel(text: price, font: .label, color: .black300)
                 }
-                Text(rewardPerSecond)
-                    .duFont(.label)
-                    .foregroundStyle(Color.black300)
+                HStack(spacing: TokenSpacing.xs) {
+                    ItemLabel(text: "초당 재화 획득량", font: .label, color: .black300)
+                    ItemLabel(text: rewardPerSecond, font: .label, color: .black300)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, TokenSpacing.md)
@@ -78,9 +78,9 @@ public struct HousingCard: View {
             Image(imageName, bundle: .module)
                 .resizable()
                 .scaledToFill()
-                .frame(width: 230, height: 162)
+                .frame(width: 230)
                 .clipped()
-                .opacity(state == .disabled ? TokenOpacity.opacity60 : TokenOpacity.opacity100)
+                .opacity(state == .locked ? TokenOpacity.opacity60 : TokenOpacity.opacity100)
 
             // 버튼
             TextButton(text: buttonText, type: buttonType, size: .medium, state: buttonState, action: onButtonTap)
@@ -88,7 +88,7 @@ public struct HousingCard: View {
         }
         .padding(.vertical, TokenSpacing.md)
         .frame(width: 230)
-        .background(Color.beige100)
+        .background(state == .selected ? Color.beige50 : Color.beige100)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
         .overlay(
             Group {
@@ -106,7 +106,7 @@ public struct HousingCard: View {
         case .default: return "이사하기"
         case .selected: return "이사하기"
         case .equipped: return "장착중"
-        case .disabled: return "이사하기"
+        case .locked: return "이사하기"
         }
     }
 }
@@ -145,7 +145,7 @@ public struct HousingCard: View {
             price: "₩10,000,000",
             rewardPerSecond: "초당 1 골드 획득",
             imageName: "housing_street",
-            state: .disabled,
+            state: .locked,
             onTap: {},
             onButtonTap: {}
         )
