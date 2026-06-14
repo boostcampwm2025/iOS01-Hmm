@@ -38,7 +38,6 @@ struct LevelUpEffectView: View {
                     }
                 }
             }
-            .zIndex(100) // 최상단 보장
         }
     }
 }

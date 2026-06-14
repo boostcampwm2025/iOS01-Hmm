@@ -334,7 +334,7 @@ private extension MainView {
 
                     leveledUpCareer = newCareer
                     withAnimation(.spring()) {
-                        showLevelUpEffect = true
+                        showLevelUpEffect = newCareer != .unemployed
                     }
                 }
             }
@@ -350,11 +350,11 @@ private extension MainView {
     func checkPendingLevelUp() {
         // 이미 시나리오가 떠 있거나 레벨업 이펙트가 진행 중이면 리턴
         guard !showScenarioView && !showLevelUpEffect else { return }
-        
+
         // 큐에 대기 중인 레벨업 커리어가 있다면 이펙트 다시 표시
         if let pendingCareer = user.record.scenarioProgress.levelupQueue.first {
             leveledUpCareer = pendingCareer
-            showLevelUpEffect = true
+            showLevelUpEffect = pendingCareer != .unemployed
         }
     }
 

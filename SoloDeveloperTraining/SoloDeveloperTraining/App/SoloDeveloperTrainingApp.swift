@@ -202,6 +202,8 @@ private extension SoloDeveloperTrainingApp {
                         withAnimation(.easeOut(duration: Constant.Animation.transitionDuration)) {
                             hasSeenIntro = true
                         }
+                        user?.record.scenarioProgress
+                            .enqueueLevelUp(.unemployed)
                     },
                     onTutorial: { nickname in
                         let newUser = User(nickname: nickname)
@@ -209,6 +211,7 @@ private extension SoloDeveloperTrainingApp {
                         showNicknameSetup = false
                         checkFirstOpen(user: newUser)
                         showTutorial = true
+                        user?.record.scenarioProgress.enqueueLevelUp(.unemployed)
                     }
                 )
                 .padding(.horizontal, Constant.Padding.nicknamePopupHorizontal)
