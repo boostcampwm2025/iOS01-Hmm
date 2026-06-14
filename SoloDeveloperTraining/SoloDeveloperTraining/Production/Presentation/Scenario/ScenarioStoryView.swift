@@ -70,7 +70,14 @@ struct ScenarioStoryView: View {
                     if finalEnding != nil {
                         // 3. 엔딩 전용 버튼 (저장/공유/환생)
                         EventButton(type: .ending(
-                            onSave: { /* 이미지 저장 로직 */ },
+                            onSave: {
+                                guard let ending = finalEnding,
+                                      let image = renderEndingImage(ending) else {
+                                    return
+                                }
+
+                                PhotoLibraryService.saveImageToPhotoLibrary(image)
+                            },
                             onShare: {
                                 isShareSheetPresented = true
                             },
@@ -198,5 +205,25 @@ private extension ScenarioStoryView {
             manager.moveToNextPage()
             currentPageIndex = manager.currentPageIndex
         }
+    }
+
+    @MainActor
+    func renderEndingImage(_ ending: Ending) -> UIImage? {
+        let targetView = makeEndingCard(for: ending)
+
+        let renderer = ImageRenderer(content: targetView)
+        renderer.scale = UIScreen.main.scale
+        renderer.isOpaque = false
+        return renderer.uiImage
+    }
+
+    func makeEndingCard(for ending: Ending) -> some View {
+        StoryCard(
+            type: .ending(title: ending.type.title),
+            text: ending.type.description,
+            imageName: manager.currentScenario?.career.scenarioImagePrefix ?? ""
+        )
+        .frame(width: 400)
+        .clipShape(RoundedRectangle(cornerRadius: TokenRadius.lg, style: .continuous))
     }
 }
