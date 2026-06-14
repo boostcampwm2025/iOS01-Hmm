@@ -13,6 +13,7 @@ struct ComponentListView: View {
         ("ItemLabel", "tag", AnyView(ComponentDefaultLabelView())),
         ("EffectLabel", "plus.forwardslash.minus", AnyView(ComponentEffectLabelView())),
         ("ItemButton", "hand.tap", AnyView(ComponentItemButtonView())),
+        ("IconButton", "star.square.on.square", AnyView(ComponentIconButtonView())),
         ("TextButton", "rectangle.and.hand.point.up.left", AnyView(ComponentTextButtonView())),
         ("EventButton", "bolt.circle", AnyView(ComponentEventButtonView())),
         ("TabbarItem", "menubar.rectangle", AnyView(ComponentTabbarItemView())),
