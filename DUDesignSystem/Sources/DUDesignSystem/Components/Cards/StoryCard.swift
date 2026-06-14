@@ -25,19 +25,17 @@ public struct StoryCard: View {
     }
 
     public var body: some View {
-        Group {
-            switch type {
-            case .levelUp:
-                cardContent
+        switch type {
+        case .levelUp:
+            cardContent
 
-            case .ending(let title):
-                VStack(spacing: TokenSpacing.none) {
-                    headerView(title: title)
-                    cardContent
-                }
+        case .ending(let title):
+            VStack(spacing: TokenSpacing.none) {
+                headerView(title: title)
+                cardContent
             }
+            .clipShape(RoundedRectangle(cornerRadius: TokenRadius.lg))
         }
-        .clipShape(RoundedRectangle(cornerRadius: TokenRadius.lg))
     }
 }
 
