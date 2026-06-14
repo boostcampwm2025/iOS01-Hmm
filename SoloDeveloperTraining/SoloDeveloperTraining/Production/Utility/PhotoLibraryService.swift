@@ -13,15 +13,12 @@ enum PhotoLibraryService {
         PHPhotoLibrary.authorizationStatus(for: .addOnly)
     }
 
-    static func requestPhotoPermission(
+    private static func requestPhotoPermission(
         completion: @escaping (Bool) -> Void
     ) {
         PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
             DispatchQueue.main.async {
-                completion(
-                    status == .authorized ||
-                    status == .limited
-                )
+                completion(status == .authorized || status == .limited)
             }
         }
     }
@@ -30,11 +27,18 @@ enum PhotoLibraryService {
         _ image: UIImage,
         completion: @escaping (Bool) -> Void
     ) {
-        PHPhotoLibrary.shared().performChanges {
-            PHAssetChangeRequest.creationRequestForAsset(from: image)
-        } completionHandler: { success, error in
-            DispatchQueue.main.async {
-                completion(success)
+        requestPhotoPermission { granted in
+            guard granted else {
+                completion(false)
+                return
+            }
+
+            PHPhotoLibrary.shared().performChanges {
+                PHAssetChangeRequest.creationRequestForAsset(from: image)
+            } completionHandler: { success, _ in
+                DispatchQueue.main.async {
+                    completion(success)
+                }
             }
         }
     }

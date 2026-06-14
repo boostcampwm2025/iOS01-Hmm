@@ -81,13 +81,11 @@ struct ScenarioStoryView: View {
                                 PhotoLibraryService.saveImageToPhotoLibrary(image) { success in
                                     showSaveCompletedToast = true
                                     showSaveCompletedToastMessage = success ? "이미지 저장에 성공했습니다." : "이미지 저장에 실패했습니다."
-                                    if success {
-                                        onComplete()
-                                    }
                                 }
                             },
                             onShare: {
-                                isShareSheetPresented = true                            },
+                                isShareSheetPresented = true
+                            },
                             onRebirth: {
                                 isRebirthConfirmPopupPresented = true
                             }
@@ -240,6 +238,6 @@ private extension ScenarioStoryView {
             imageName: manager.currentScenario?.career.scenarioImagePrefix ?? ""
         )
         .frame(width: 400)
-        .clipShape(RoundedRectangle(cornerRadius: TokenRadius.lg, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: TokenRadius.lg))
     }
 }
