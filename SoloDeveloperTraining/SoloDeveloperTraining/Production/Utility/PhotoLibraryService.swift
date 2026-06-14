@@ -26,14 +26,16 @@ enum PhotoLibraryService {
         }
     }
 
-    static func saveImageToPhotoLibrary(_ image: UIImage) {
-        UIImageWriteToSavedPhotosAlbum(
-            image,
-            nil,
-            nil,
-            nil
-        )
+    static func saveImageToPhotoLibrary(
+        _ image: UIImage,
+        completion: @escaping (Bool) -> Void
+    ) {
+        PHPhotoLibrary.shared().performChanges {
+            PHAssetChangeRequest.creationRequestForAsset(from: image)
+        } completionHandler: { success, error in
+            DispatchQueue.main.async {
+                completion(success)
+            }
+        }
     }
 }
-
-

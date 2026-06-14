@@ -22,6 +22,9 @@ struct ScenarioStoryView: View {
     @State private var isShareSheetPresented = false
     // 환생하기
     @State private var isRebirthConfirmPopupPresented = false
+    // 저장하기
+    @State private var showSaveCompletedToast = false
+    @State private var showSaveCompletedToastMessage = ""
 
     init(manager: ScenarioManager, record: Record, repository: ScenarioRepository, onComplete: @escaping () -> Void) {
         self.manager = manager
@@ -75,12 +78,16 @@ struct ScenarioStoryView: View {
                                       let image = renderEndingImage(ending) else {
                                     return
                                 }
-
-                                PhotoLibraryService.saveImageToPhotoLibrary(image)
+                                PhotoLibraryService.saveImageToPhotoLibrary(image) { success in
+                                    showSaveCompletedToast = true
+                                    showSaveCompletedToastMessage = success ? "이미지 저장에 성공했습니다." : "이미지 저장에 실패했습니다."
+                                    if success {
+                                        onComplete()
+                                    }
+                                }
                             },
                             onShare: {
-                                isShareSheetPresented = true
-                            },
+                                isShareSheetPresented = true                            },
                             onRebirth: {
                                 isRebirthConfirmPopupPresented = true
                             }
@@ -108,6 +115,10 @@ struct ScenarioStoryView: View {
         .onAppear {
             restoreEndingIfNeeded()
         }
+        .darkToast(
+            isShowing: $showSaveCompletedToast,
+            message: showSaveCompletedToastMessage
+        )
     }
 }
 
