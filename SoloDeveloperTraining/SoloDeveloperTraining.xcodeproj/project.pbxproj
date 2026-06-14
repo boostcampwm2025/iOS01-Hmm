@@ -10,6 +10,8 @@
 		088F6AA02FCAA8A600E14BA2 /* DUDesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 088F6A9F2FCAA8A600E14BA2 /* DUDesignSystem */; };
 		283B980E2FAB24750033B924 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 283B980D2FAB24750033B924 /* GoogleMobileAds */; };
 		283B9A432FAB36020033B924 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 283B9A422FAB36020033B924 /* GoogleMobileAds */; };
+		28AC32C92FDEB29600D0126E /* DUDesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 28AC32C82FDEB29600D0126E /* DUDesignSystem */; };
+		28AC32CB2FDEB2A600D0126E /* DUDesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 28AC32CA2FDEB2A600D0126E /* DUDesignSystem */; };
 		28F3C5072FB37EDA0077B77A /* KakaoSDKShare in Frameworks */ = {isa = PBXBuildFile; productRef = 28F3C5062FB37EDA0077B77A /* KakaoSDKShare */; };
 		28F3C7C32FB73B6E0077B77A /* KakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 28F3C7C22FB73B6E0077B77A /* KakaoSDK */; };
 		28F3C7C52FB73B7B0077B77A /* KakaoSDKShare in Frameworks */ = {isa = PBXBuildFile; productRef = 28F3C7C42FB73B7B0077B77A /* KakaoSDKShare */; };
@@ -168,6 +170,7 @@
 			files = (
 				283B980E2FAB24750033B924 /* GoogleMobileAds in Frameworks */,
 				BC1933712F8FC7110033A27E /* FirebaseCore in Frameworks */,
+				28AC32C92FDEB29600D0126E /* DUDesignSystem in Frameworks */,
 				BC19336F2F8FC7110033A27E /* FirebaseAnalytics in Frameworks */,
 				28FB12B02F9B5EA8004FCBB3 /* FirebaseFirestore in Frameworks */,
 				28F3C7C52FB73B7B0077B77A /* KakaoSDKShare in Frameworks */,
@@ -189,6 +192,7 @@
 			files = (
 				283B9A432FAB36020033B924 /* GoogleMobileAds in Frameworks */,
 				BCC0EAD02F8FE90D00D7A84A /* FirebaseCore in Frameworks */,
+				28AC32CB2FDEB2A600D0126E /* DUDesignSystem in Frameworks */,
 				28F3C5072FB37EDA0077B77A /* KakaoSDKShare in Frameworks */,
 				BCC0EACE2F8FE90700D7A84A /* FirebaseAnalytics in Frameworks */,
 				28FB12B22F9B5EB1004FCBB3 /* FirebaseFirestore in Frameworks */,
@@ -272,6 +276,7 @@
 				283B980D2FAB24750033B924 /* GoogleMobileAds */,
 				28F3C7C42FB73B7B0077B77A /* KakaoSDKShare */,
 				28F3C7C62FB73B820077B77A /* KakaoSDK */,
+				28AC32C82FDEB29600D0126E /* DUDesignSystem */,
 			);
 			productName = SoloDeveloperTraining;
 			productReference = 08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */;
@@ -324,6 +329,7 @@
 				283B9A422FAB36020033B924 /* GoogleMobileAds */,
 				28F3C5062FB37EDA0077B77A /* KakaoSDKShare */,
 				28F3C7C22FB73B6E0077B77A /* KakaoSDK */,
+				28AC32CA2FDEB2A600D0126E /* DUDesignSystem */,
 			);
 			productName = SoloDeveloperTraining;
 			productReference = 2896AE422F100CD600D38732 /* SoloDeveloperTraining-Dev.app */;
@@ -387,6 +393,7 @@
 				BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				283B95DB2FA9D44B0033B924 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 				28F3C5032FB37EA70077B77A /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
+				28AC32CC2FDEB4BD00D0126E /* XCLocalSwiftPackageReference "../DUDesignSystem" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 08267F2C2F0D06BC005A0066 /* Products */;
@@ -1004,6 +1011,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		28AC32CC2FDEB4BD00D0126E /* XCLocalSwiftPackageReference "../DUDesignSystem" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../DUDesignSystem;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		283B95DB2FA9D44B0033B924 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -1045,6 +1059,14 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 283B95DB2FA9D44B0033B924 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
 			productName = GoogleMobileAds;
+		};
+		28AC32C82FDEB29600D0126E /* DUDesignSystem */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DUDesignSystem;
+		};
+		28AC32CA2FDEB2A600D0126E /* DUDesignSystem */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DUDesignSystem;
 		};
 		28F3C5062FB37EDA0077B77A /* KakaoSDKShare */ = {
 			isa = XCSwiftPackageProductDependency;
