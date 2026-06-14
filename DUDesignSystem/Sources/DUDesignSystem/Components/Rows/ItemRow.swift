@@ -38,14 +38,11 @@ public struct ItemRow: View {
                 .resizable()
                 .scaledToFill()
                 .frame(width: 38, height: 38)
-                .background(Color.black)
-                .clipShape(RoundedRectangle(cornerRadius: TokenRadius.ss))
+                .clipped()
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: TokenSpacing.xs) {
                 ItemLabel(text: title, font: .subheadline, color: .black300)
-                Text(description)
-                    .duFont(.label)
-                    .foregroundStyle(Color.black300)
+                ItemLabel(text: description, font: .label, color: .black300)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 

@@ -43,24 +43,22 @@ public struct InputField: View {
         VStack(alignment: .trailing, spacing: TokenSpacing.xs) {
             HStack {
                 ZStack(alignment: .leading) {
-                    Text(placeholder)
-                        .duFont(.body)
-                        .foregroundStyle(Color.gray200)
-                        .opacity(text.isEmpty && !isFocused ? 1 : 0)
+                    ItemLabel(text: placeholder, font: .body, color: .black300)
+                        .opacity(text.isEmpty && !isFocused ? TokenOpacity.opacity20 : 0)
+                        .frame(height: 16)
                     TextField("", text: $text)
                         .duFont(.body)
                         .foregroundStyle(Color.black300)
                         .tint(Color.black300)
                         .focused($isFocused)
+                        .frame(height: 16)
                 }
-                .frame(height: 24)
 
                 if case .error = state {
-                    Image(systemName: "exclamationmark.circle.fill")
+                    Image("errorNotice", bundle: .module)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 16, height: 16)
-                        .foregroundStyle(Color.accentRed)
                 }
             }
             .padding(.vertical, TokenSpacing.mm)
@@ -73,9 +71,7 @@ public struct InputField: View {
             )
 
             if case .error(let message) = state {
-                Text(message)
-                    .duFont(.label)
-                    .foregroundStyle(Color.accentRed)
+                ItemLabel(text: message, font: .label, color: .accentRed)
                     .padding(.trailing, TokenSpacing.xs)
             }
         }

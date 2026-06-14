@@ -34,7 +34,7 @@ public struct LanguageItem: View {
         switch state {
         case .completed: return 38
         case .upcoming:  return 38
-        case .active:    return 51
+        case .active:    return 52
         }
     }
 

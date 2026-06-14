@@ -93,9 +93,7 @@ public struct GameToolBar: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 if feverMultiplier > 0 {
-                    Text(String(format: "Fever %.1fx !!", feverMultiplier))
-                        .duFont(.caption)
-                        .foregroundStyle(Color.white300)
+                    ItemLabel(text: String(format: "Fever %.1fx !!", feverMultiplier), font: .caption, color: .white300)
                 }
             }
         }
@@ -104,12 +102,7 @@ public struct GameToolBar: View {
 
     private func itemButton(icon: DUIconName, count: Int, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            HStack(spacing: TokenSpacing.xs) {
-                DUIcon(icon, size: .size24)
-                Text("\(count)")
-                    .duFont(.caption)
-                    .foregroundStyle(Color.black300)
-            }
+            ItemLabel(text: "\(count)", icon: icon, iconSize: .size24, font: .caption, color: .black300)
         }
     }
 }

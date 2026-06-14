@@ -34,7 +34,7 @@ public struct WorkItemCard: View {
 
     public var body: some View {
         ZStack(alignment: .top) {
-            Color.beige100
+            state == .selected ? Color.beige50 : Color.beige100
 
             VStack(spacing: 0) {
                 ItemLabel(text: title, font: .subheadline, color: .black300)
