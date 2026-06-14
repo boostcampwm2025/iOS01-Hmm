@@ -16,15 +16,14 @@ public struct Toast: View {
     }
 
     public var body: some View {
-        Text(message)
-            .duFont(.body)
-            .foregroundStyle(Color.white300)
+        ItemLabel(text: message, font: .body2, color: .white300)
             .frame(maxWidth: .infinity)
             .padding(.vertical, TokenSpacing.mm)
             .background(Color.black300.opacity(0.8))
             .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
             .tokenShadow(.dim)
-            .padding(.horizontal, TokenSpacing.lg)
+            .padding(.horizontal, TokenGrid.marginPopUp)
+        
     }
 }
 

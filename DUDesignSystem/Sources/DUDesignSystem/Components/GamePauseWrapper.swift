@@ -54,12 +54,12 @@ public struct GamePauseWrapper: ViewModifier {
     private var pauseOverlay: some View {
         ZStack {
             Rectangle()
-                .fill(.white.opacity(0.5))
+                .fill(Color.white300StatusBar)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .contentShape(Rectangle())
                 .onTapGesture { }
 
-            HStack(spacing: 50) {
+            HStack(spacing: TokenSpacing.xl) {
                 pauseButton(title: "나가기", icon: .cancel, action: handleLeave)
                 pauseButton(title: "계속하기", icon: .play, action: handleResume)
             }
@@ -69,12 +69,8 @@ public struct GamePauseWrapper: ViewModifier {
 
     private func pauseButton(title: String, icon: DUIconName, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            HStack(spacing: TokenSpacing.sm) {
-                DUIcon(icon, size: .size28)
-                Text(title)
-                    .duFont(.title2)
-                    .foregroundStyle(Color.black300)
-            }
+            ItemLabel(text: title, icon: icon, iconSize: .size28, font: .title2, color: .black300)
+                .padding(TokenSpacing.sm)
         }
     }
 

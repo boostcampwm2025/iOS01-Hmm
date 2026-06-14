@@ -32,8 +32,12 @@ public struct CareerRow: View {
         self.state = state
     }
 
-    private var textColor: Color {
-        state == .achieved ? Color.gray200 : Color.black300
+    private var textOpacity: Double {
+        switch state {
+        case .achieved:  return TokenOpacity.opacity20
+        case .current:   return TokenOpacity.opacity100
+        case .upcoming:  return TokenOpacity.opacity80
+        }
     }
 
     public var body: some View {
@@ -42,25 +46,19 @@ public struct CareerRow: View {
                 .resizable()
                 .scaledToFill()
                 .frame(width: 44, height: 44)
-                .background(Color.black)
                 .clipped()
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: TokenSpacing.xs) {
                 HStack(alignment: .top) {
-                    Text(title)
-                        .duFont(.subheadline)
-                        .foregroundStyle(textColor)
+                    ItemLabel(text: title, font: .subheadline, color: .black300)
                     Spacer()
                     if state == .achieved {
-                        Text("완료")
-                            .duFont(.label)
-                            .foregroundStyle(Color.gray200)
+                        ItemLabel(text: "완료", font: .label, color: .black300)
                     }
                 }
-                Text(description)
-                    .duFont(.label)
-                    .foregroundStyle(textColor)
+                ItemLabel(text: description, font: .label, color: .black300)
             }
+            .opacity(textOpacity)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
