@@ -42,6 +42,7 @@ final class CareerSystem {
         if currentCareer != newCareer {
             currentCareer = newCareer
             user.updateCareer(to: newCareer)
+            user.record.scenarioProgress.enqueueLevelUp(newCareer) // 시나리오 큐에 추가
             onCareerChanged?(newCareer)
 
             if newCareer == .juniorDeveloper {

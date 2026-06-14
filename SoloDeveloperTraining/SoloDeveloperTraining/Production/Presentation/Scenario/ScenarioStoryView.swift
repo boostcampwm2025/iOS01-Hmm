@@ -10,32 +10,41 @@ import DUDesignSystem
 
 struct ScenarioStoryView: View {
     let manager: ScenarioManager
-    let repository: ScenarioRepository
     let record: Record
+    let repository: ScenarioRepository
     let onComplete: () -> Void
 
-    @State private var currentPageIndex: Int = 0
+    @State private var currentPageIndex: Int
     @State private var selected: String = ""
     @State private var finalEnding: Ending? = nil
+
+    init(manager: ScenarioManager, record: Record, repository: ScenarioRepository, onComplete: @escaping () -> Void) {
+        self.manager = manager
+        self.record = record
+        self.repository = repository
+        self.onComplete = onComplete
+        // 저장된 인덱스로 초기화하여 앱 재시작 시 해당 페이지부터 시작하게 함
+        self._currentPageIndex = State(initialValue: manager.currentPageIndex)
+    }
 
     var body: some View {
         ZStack {
             Color.black300EventDim.ignoresSafeArea()
             VStack(spacing: TokenSpacing.lg) {
                 if let ending = finalEnding {
-                    // 1. 최종 결과 확정 시: 엔딩 카드 (타이틀 + 결과 설명)
                     StoryCard(
                         type: .ending(title: ending.type.title),
                         text: ending.type.description,
                         imageName: manager.currentScenario?.career.scenarioImagePrefix ?? ""
                     )
+                    .id("ending")
                 } else if let page = manager.currentPage {
-                    // 2. 시나리오 진행 중 (인트로, 스토리, 선택): 일반 카드 (텍스트만)
                     StoryCard(
                         type: .levelUp,
                         text: page.text,
                         imageName: manager.currentScenario?.career.scenarioImagePrefix ?? ""
                     )
+                    .id(currentPageIndex)
                 }
 
                 Group {
@@ -54,14 +63,21 @@ struct ScenarioStoryView: View {
                         eventButtonView(for: page)
                     }
                 }
-                .padding(.horizontal, TokenSpacing.lg)
             }
+        }
+        .onAppear {
+            restoreEndingIfNeeded()
         }
     }
 }
 
 private extension ScenarioStoryView {
-    /// 페이지 타입에 따른 EventButton 뷰 생성
+    func restoreEndingIfNeeded() {
+        guard manager.currentScenario?.scenarioType == .final,
+              let finalChoice = record.choiceHistory[.worldClassDeveloper] else { return }
+        calculateAndShowEnding(with: finalChoice)
+    }
+
     @ViewBuilder
     func eventButtonView(for page: ScenarioPage) -> some View {
         switch page.pageType {
@@ -83,7 +99,7 @@ private extension ScenarioStoryView {
             )
         case .result:
             EventButton(type: .reselect(onReselect: {
-                // 시나리오 처음으로 (필요 시 구현)
+                // 필요 시 처음으로 이동 로직 추가
             }, onComplete: {
                 handleNextTap()
             }))
@@ -105,7 +121,6 @@ private extension ScenarioStoryView {
         }
 
         if manager.currentScenario?.scenarioType == .final {
-            // 최종 엔딩 계산 및 화면 전환
             calculateAndShowEnding(with: result)
         } else {
             manager.selectChoice(result)

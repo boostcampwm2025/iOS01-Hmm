@@ -286,8 +286,8 @@ private extension MainView {
         if showScenarioView, let manager = scenarioManager {
             ScenarioStoryView(
                 manager: manager,
-                repository: scenarioRepository,
-                record: user.record
+                record: user.record,
+                repository: scenarioRepository
             ) {
                 withAnimation {
                     showScenarioView = false
@@ -331,12 +331,48 @@ private extension MainView {
                 isCareerSystemInitialized = true
                 careerSystem?.onCareerChanged = { [weak scene] newCareer in
                     scene?.updateCareerAppearance(to: newCareer)
+
                     leveledUpCareer = newCareer
                     withAnimation(.spring()) {
                         showLevelUpEffect = true
                     }
                 }
             }
+
+            // 저장된 시나리오 복구 체크
+            await restoreScenarioIfNeeded()
+            // 대기 중인 레벨업 이펙트 복구 체크
+            checkPendingLevelUp()
+        }
+    }
+
+    @MainActor
+    func checkPendingLevelUp() {
+        // 이미 시나리오가 떠 있거나 레벨업 이펙트가 진행 중이면 리턴
+        guard !showScenarioView && !showLevelUpEffect else { return }
+        
+        // 큐에 대기 중인 레벨업 커리어가 있다면 이펙트 다시 표시
+        if let pendingCareer = user.record.scenarioProgress.levelupQueue.first {
+            leveledUpCareer = pendingCareer
+            showLevelUpEffect = true
+        }
+    }
+
+    @MainActor
+    func restoreScenarioIfNeeded() async {
+        guard !showScenarioView, let career = user.record.scenarioProgress.currentCareer else { return }
+
+        do {
+            if let scenario = try await scenarioRepository.fetchScenario(for: career) {
+                let manager = ScenarioManager(record: user.record)
+                manager.restoreScenario(scenario)
+                self.scenarioManager = manager
+                withAnimation {
+                    showScenarioView = true
+                }
+            }
+        } catch {
+            print("Failed to restore scenario: \(error)")
         }
     }
 
@@ -360,7 +396,7 @@ private extension MainView {
 
         do {
             if let scenario = try await scenarioRepository.fetchScenario(for: career) {
-                let manager = ScenarioManager(progress: user.record.scenarioProgress)
+                let manager = ScenarioManager(record: user.record)
                 manager.startScenario(scenario)
                 self.scenarioManager = manager
                 withAnimation {
