@@ -53,14 +53,12 @@ public struct InputField: View {
                         .tint(Color.black300)
                         .focused($isFocused)
                 }
-                .frame(height: 24)
 
                 if case .error = state {
-                    Image(systemName: "exclamationmark.circle.fill")
+                    Image("errorNotice", bundle: .module)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 16, height: 16)
-                        .foregroundStyle(Color.accentRed)
                 }
             }
             .padding(.vertical, TokenSpacing.mm)
@@ -73,9 +71,7 @@ public struct InputField: View {
             )
 
             if case .error(let message) = state {
-                Text(message)
-                    .duFont(.label)
-                    .foregroundStyle(Color.accentRed)
+                ItemLabel(text: message, font: .label, color: .accentRed)
                     .padding(.trailing, TokenSpacing.xs)
             }
         }
