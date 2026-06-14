@@ -22,6 +22,8 @@ public enum DUIconName: String, CaseIterable {
     case play        = "iconPlay"
     case ad          = "iconAd"
     case new         = "iconNew"
+    case image       = "iconImage"
+    case share       = "iconShare"
 }
 
 public struct DUIcon: View {
