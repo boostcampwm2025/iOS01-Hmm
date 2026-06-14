@@ -86,12 +86,17 @@ struct ScenarioStoryView: View {
                 .padding(.horizontal, TokenSpacing.lg)
             }
 
+            if isRebirthConfirmPopupPresented || isShareSheetPresented {
+                Color.black300PopUpDimStatusBar.ignoresSafeArea()
+            }
+
             if isShareSheetPresented, let ending = finalEnding {
                 ShareSheetView(
                     isPresented: $isShareSheetPresented,
                     kakaoMessageTemplateID: ending.type.kakaoMessageTemplateID,
                     urlString: "\(ShareService.baseURL)/\(ending.type.webURLSlug)"
                 )
+                .padding(.horizontal, TokenSpacing.lg)
             }
 
             if isRebirthConfirmPopupPresented {
