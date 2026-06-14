@@ -109,9 +109,10 @@ private extension EventButton {
         onComplete: @escaping () -> Void
     ) -> some View {
         VStack(spacing: TokenSpacing.md) {
-            TextButton(
+            IconButton(
                 text: "다시 선택",
-                type: .primary,
+                icon: .ad,
+                size: .large,
                 action: onReselect
             )
 
@@ -130,15 +131,17 @@ private extension EventButton {
     ) -> some View {
         VStack(spacing: TokenSpacing.md) {
             HStack(spacing: TokenSpacing.sm) {
-                TextButton(
-                    text: "저장하기",
-                    type: .primary,
+                IconButton(
+                    text: "이미지 저장",
+                    icon: .image,
+                    size: .medium,
                     action: onSave
                 )
 
-                TextButton(
+                IconButton(
                     text: "공유하기",
-                    type: .primary,
+                    icon: .share,
+                    size: .medium,
                     action: onShare
                 )
             }
