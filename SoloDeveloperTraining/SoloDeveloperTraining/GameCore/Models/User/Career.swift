@@ -74,6 +74,10 @@ enum Career: String, CaseIterable, Codable {
         }
     }
 
+    var scenarioImagePrefix: String {
+        return "scenario_levelup_normal_developer" // TODO: 수정
+    }
+
     /// 다음 단계로 업그레이드하기 위해 필요한 누적 재산
     var requiredWealth: Int {
         switch self {

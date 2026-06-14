@@ -67,6 +67,11 @@ struct MainView: View {
     @State private var showLevelUpEffect: Bool = false
     @State private var leveledUpCareer: Career? = nil
 
+    // 시나리오 관련
+    @State private var scenarioManager: ScenarioManager?
+    @State private var showScenarioView: Bool = false
+    private let scenarioRepository: ScenarioRepository = DefaultScenarioRepository()
+
     private var autoGainSystem: AutoGainSystem
     private let user: User
     private let scene: CharacterScene
@@ -112,6 +117,13 @@ struct MainView: View {
                 await careerSystem?.updateCareer()
             }
             .overlay { overlayView }
+            .onChange(of: showLevelUpEffect) { oldValue, newValue in
+                if oldValue == true && newValue == false {
+                    Task {
+                        await checkAndStartScenario()
+                    }
+                }
+            }
             .fullScreenCover(isPresented: $showQuizView) {
                 QuizGameView(user: user)
             }
@@ -265,6 +277,18 @@ private extension MainView {
             exitBonusPopupOverlayView
             offlineRewardPopupOverlayView
             offlineRewardConfirmPopupOverlayView
+            scenarioOverlayView
+        }
+    }
+
+    @ViewBuilder
+    var scenarioOverlayView: some View {
+        if showScenarioView, let manager = scenarioManager {
+            ScenarioStoryView(manager: manager) {
+                withAnimation {
+                    showScenarioView = false
+                }
+            }
         }
     }
 
@@ -303,7 +327,6 @@ private extension MainView {
                 isCareerSystemInitialized = true
                 careerSystem?.onCareerChanged = { [weak scene] newCareer in
                     scene?.updateCareerAppearance(to: newCareer)
-                    
                     leveledUpCareer = newCareer
                     withAnimation(.spring()) {
                         showLevelUpEffect = true
@@ -324,6 +347,24 @@ private extension MainView {
         } else if newValue == .inactive || newValue == .background {
             skillAdRewardNow = Date()
             autoGainSystem.stopSystem()
+        }
+    }
+
+    @MainActor
+    func checkAndStartScenario() async {
+        guard let career = user.record.scenarioProgress.dequeueLevelUp() else { return }
+
+        do {
+            if let scenario = try await scenarioRepository.fetchScenario(for: career) {
+                let manager = ScenarioManager(progress: user.record.scenarioProgress)
+                manager.startScenario(scenario)
+                self.scenarioManager = manager
+                withAnimation {
+                    showScenarioView = true
+                }
+            }
+        } catch {
+            print("❌ 시나리오 fetch 실패: \(error)")
         }
     }
 
