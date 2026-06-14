@@ -58,10 +58,10 @@ private extension StoryCard {
         HStack {
             ItemLabel(
                 text: "개발자 키우기",
-                icon: .new,
+                icon: .logo,
                 iconSize: .size20,
                 font: .subheadline,
-                color: .orange300
+                color: .lightOrange
             )
 
             Spacer()

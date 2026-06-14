@@ -63,6 +63,7 @@ struct ScenarioStoryView: View {
                         eventButtonView(for: page)
                     }
                 }
+                .padding(.horizontal, TokenSpacing.lg)
             }
         }
         .onAppear {
