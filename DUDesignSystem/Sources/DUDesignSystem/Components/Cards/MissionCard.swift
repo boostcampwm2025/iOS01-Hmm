@@ -79,7 +79,7 @@ public struct MissionCard: View {
         .padding(.horizontal, TokenSpacing.sm)
         .padding(.bottom, TokenSpacing.sm)
         .frame(maxWidth: .infinity)
-        .background(Color.beige100)
+        .background(state == .claimable ? Color.beige50 : Color.beige100)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
         .onTapGesture { action() }
     }
