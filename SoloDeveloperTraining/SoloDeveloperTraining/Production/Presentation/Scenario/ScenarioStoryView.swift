@@ -18,6 +18,9 @@ struct ScenarioStoryView: View {
     @State private var selected: String = ""
     @State private var finalEnding: Ending? = nil
 
+    // 공유하기
+    @State private var isShareSheetPresented = false
+
     init(manager: ScenarioManager, record: Record, repository: ScenarioRepository, onComplete: @escaping () -> Void) {
         self.manager = manager
         self.record = record
@@ -52,7 +55,9 @@ struct ScenarioStoryView: View {
                         // 3. 엔딩 전용 버튼 (저장/공유/환생)
                         EventButton(type: .ending(
                             onSave: { /* 이미지 저장 로직 */ },
-                            onShare: { /* 공유 로직 */ },
+                            onShare: {
+                                isShareSheetPresented = true
+                            },
                             onRebirth: {
                                 record.resetForRebirth()
                                 onComplete()
@@ -64,6 +69,14 @@ struct ScenarioStoryView: View {
                     }
                 }
                 .padding(.horizontal, TokenSpacing.lg)
+            }
+
+            if isShareSheetPresented, let ending = finalEnding {
+                ShareSheetView(
+                    isPresented: $isShareSheetPresented,
+                    kakaoMessageTemplateID: ending.type.kakaoMessageTemplateID,
+                    urlString: "\(ShareService.baseURL)/\(ending.type.webURLSlug)"
+                )
             }
         }
         .onAppear {
