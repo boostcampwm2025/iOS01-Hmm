@@ -80,7 +80,7 @@ struct ScenarioStoryView: View {
                                 }
                                 PhotoLibraryService.saveImageToPhotoLibrary(image) { success in
                                     showSaveCompletedToast = true
-                                    showSaveCompletedToastMessage = success ? "이미지 저장에 성공했습니다." : "이미지 저장에 실패했습니다."
+                                    showSaveCompletedToastMessage = success ? "이미지가 저장되었습니다." : "이미지 저장에 실패했습니다."
                                 }
                             },
                             onShare: {
@@ -118,7 +118,8 @@ struct ScenarioStoryView: View {
         .onAppear {
             restoreEndingIfNeeded()
         }
-        .darkToast(
+
+        .duToast(
             isShowing: $showSaveCompletedToast,
             message: showSaveCompletedToastMessage
         )
