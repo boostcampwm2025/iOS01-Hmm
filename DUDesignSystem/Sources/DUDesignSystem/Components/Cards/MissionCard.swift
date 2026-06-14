@@ -8,7 +8,7 @@
 import SwiftUI
 
 public struct MissionCard: View {
-    
+
     public enum MissionTrophyType: String, CaseIterable {
         case gold    = "mission_trophy_gold"
         case silver  = "mission_trophy_silver"
@@ -49,14 +49,16 @@ public struct MissionCard: View {
     }
 
     public var body: some View {
-        VStack(spacing: TokenSpacing.xs) {
-            // 타이틀
-            ItemLabel(text: title, font: .subheadline, color: .black300)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(spacing: TokenSpacing.sm) {
+            VStack(spacing: TokenSpacing.xs) {
+                // 타이틀
+                ItemLabel(text: title, font: .subheadline, color: .black300)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-            // 보상
-            ItemLabel(text: rewardText, icon: .diamond, iconSize: .size16, font: .caption, color: .black300)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                // 보상
+                ItemLabel(text: rewardText, icon: .diamond, iconSize: .size16, font: .caption, color: .black300)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
 
             // 이미지
             Image(trophy.rawValue, bundle: .module)
@@ -66,12 +68,9 @@ public struct MissionCard: View {
                 .opacity(state == .claimed ? TokenOpacity.opacity60 : TokenOpacity.opacity100)
 
             // 조건
-            Text(condition)
-                .duFont(.label)
-                .foregroundStyle(Color.black300)
+            ItemLabel(text: condition, font: .label, color: .black300)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
-                .frame(height: 30)
 
             // 상태 바
             stateBar
@@ -79,7 +78,7 @@ public struct MissionCard: View {
         .padding(.top, TokenSpacing.mm)
         .padding(.horizontal, TokenSpacing.sm)
         .padding(.bottom, TokenSpacing.sm)
-        .frame(width: 113.5)
+        .frame(maxWidth: .infinity)
         .background(Color.beige100)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
         .onTapGesture { action() }
@@ -89,43 +88,38 @@ public struct MissionCard: View {
     private var stateBar: some View {
         switch state {
         case .default(let current, let total):
-            Text("\(current) / \(total)")
-                .duFont(.label)
-                .foregroundStyle(Color.black300)
-                .frame(maxWidth: .infinity)
-                .frame(height: 15)
-                .background(Color.black300GrayBar)
+            ZStack {
+                Color.black300GrayBar
+                ItemLabel(text: "\(current) / \(total)", font: .label, color: .black300)
+            }
+            .frame(maxWidth: .infinity, minHeight: 16, maxHeight: 16)
 
         case .inProgress(let current, let total):
             let progress = total > 0 ? Double(current) / Double(total) : 0
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Color.black300GrayBar
-                    Color.orange300
+                    Color.orange200
                         .frame(width: geo.size.width * progress)
-                    Text("\(current) / \(total)")
-                        .duFont(.label)
-                        .foregroundStyle(Color.black300)
+                    ItemLabel(text: "\(current) / \(total)", font: .label, color: .black300)
                         .frame(maxWidth: .infinity)
                 }
             }
-            .frame(height: 15)
+            .frame(height: 16)
 
         case .claimable:
-            Text("획득하기")
-                .duFont(.label)
-                .foregroundStyle(Color.black300)
-                .frame(maxWidth: .infinity)
-                .frame(height: 15)
-                .background(Color.accentGreen)
+            ZStack {
+                Color.accentGreen
+                ItemLabel(text: "획득하기", font: .label, color: .black300)
+            }
+            .frame(maxWidth: .infinity, minHeight: 16, maxHeight: 16)
 
         case .claimed:
-            Text("달성완료")
-                .duFont(.label)
-                .foregroundStyle(Color.white300)
-                .frame(maxWidth: .infinity)
-                .frame(height: 15)
-                .background(Color.beige400)
+            ZStack {
+                Color.beige400
+                ItemLabel(text: "달성완료", font: .label, color: .white300)
+            }
+            .frame(maxWidth: .infinity, minHeight: 16, maxHeight: 16)
         }
     }
 }
