@@ -203,7 +203,7 @@ private extension SoloDeveloperTrainingApp {
                             hasSeenIntro = true
                         }
                         user?.record.scenarioProgress
-                            .enqueueLevelUp(.unemployed)
+                            .startScenario(career: .unemployed)
                     },
                     onTutorial: { nickname in
                         let newUser = User(nickname: nickname)
@@ -211,7 +211,8 @@ private extension SoloDeveloperTrainingApp {
                         showNicknameSetup = false
                         checkFirstOpen(user: newUser)
                         showTutorial = true
-                        user?.record.scenarioProgress.enqueueLevelUp(.unemployed)
+                        user?.record.scenarioProgress
+                            .startScenario(career: .unemployed)
                     }
                 )
                 .padding(.horizontal, Constant.Padding.nicknamePopupHorizontal)
