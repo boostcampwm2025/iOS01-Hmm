@@ -26,7 +26,7 @@ public struct LanguageItemButton: View {
         }
         .padding(.vertical, TokenSpacing.sm)
         .frame(width: 64)
-        .background(Color.white)
+        .background(Color.white300)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.md))
         .tokenShadow(isPressed ? .none : .default)
         .offset(
