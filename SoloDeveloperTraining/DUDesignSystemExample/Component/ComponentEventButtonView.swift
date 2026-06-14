@@ -8,17 +8,49 @@ import DUDesignSystem
 
 struct ComponentEventButtonView: View {
 
-    @State private var selectedType: EventButton.EventButtonType = .next
+    private enum EventButtonPreviewType: String, CaseIterable {
+        case next
+        case choice
+        case reselect
+        case ending
+    }
+
+    @State private var selectedType: EventButtonPreviewType = .next
+    @State private var selectedOption: String = ""
+
+    private var eventButtonType: EventButton.EventButtonType {
+        switch selectedType {
+        case .next:
+            return .next(action: {})
+
+        case .choice:
+            return .choice(
+                optionA: "1. 선택지",
+                optionB: "2. 선택지",
+                selected: selectedOption,
+                onSelect: { selection in selectedOption = selection }
+            )
+
+        case .reselect:
+            return .reselect(
+                onReselect: {},
+                onComplete: {}
+            )
+
+        case .ending:
+            return .ending(
+                onSave: {},
+                onShare: {},
+                onRebirth: {}
+            )
+        }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             // MARK: - Preview Area
             PreviewArea {
-                EventButton(
-                    type: selectedType,
-                    firstChoice: "선택지 A",
-                    secondChoice: "선택지 B"
-                )
+                EventButton(type: eventButtonType)
                 .frame(maxWidth: .infinity, alignment: .center)
             }
 
@@ -26,11 +58,12 @@ struct ComponentEventButtonView: View {
             List {
                 Section("타입") {
                     Picker("타입", selection: $selectedType) {
-                        Text("Next").tag(EventButton.EventButtonType.next)
-                        Text("Choice").tag(EventButton.EventButtonType.choice)
-                        Text("Reselect").tag(EventButton.EventButtonType.reselect)
-                        Text("Ending").tag(EventButton.EventButtonType.ending)
+                        Text("Next").tag(EventButtonPreviewType.next)
+                        Text("Choice").tag(EventButtonPreviewType.choice)
+                        Text("Reselect").tag(EventButtonPreviewType.reselect)
+                        Text("Ending").tag(EventButtonPreviewType.ending)
                     }
+                    .pickerStyle(.segmented)
                     .pickerStyle(.segmented)
                 }
                 .listRowBackground(Color.clear)
