@@ -39,7 +39,7 @@ public struct IconButton: View {
                 text: text,
                 icon: icon,
                 iconSize: size == .large ? .size24 : .size20,
-                font: .headline,
+                font: size == .large ? .headline : .subheadline,
                 color: .white300
             )
             .frame(maxWidth: size == .large ? .infinity : 200)
