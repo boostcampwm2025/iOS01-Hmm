@@ -15,7 +15,7 @@ public struct StatusBar: View {
     public var careerProgress: Double
     public var gold: String
     public var diamond: String
-    public var time: String
+    public var time: String?
 
     public init(
         imageName: String,
@@ -24,7 +24,7 @@ public struct StatusBar: View {
         careerProgress: Double,
         gold: String,
         diamond: String,
-        time: String = ""
+        time: String? = nil
     ) {
         self.imageName = imageName
         self.careerName = careerName
@@ -61,7 +61,7 @@ public struct StatusBar: View {
                     ItemLabel(text: gold, icon: .coinBag, iconSize: .size16, font: .caption, color: .black300)
                     ItemLabel(text: diamond, icon: .diamond, iconSize: .size16, font: .caption, color: .black300)
                 }
-                if !time.isEmpty {
+                if let time {
                     HStack(spacing: TokenSpacing.xs) {
                         ItemLabel(text: "업무 효율 대박: ", font: .caption, color: .black300)
                         ItemLabel(text: time, font: .caption, color: .black300)
@@ -80,6 +80,7 @@ public struct StatusBar: View {
                     .fill(Color.lightOrange)
                     .frame(width: geo.size.width * careerProgress)
             }
+            .clipShape(Capsule())
         }
         .frame(height: 10)
     }
