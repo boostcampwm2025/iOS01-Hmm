@@ -338,7 +338,6 @@ private extension MainView {
                     }
                 }
             }
-
             // 저장된 시나리오 복구 체크
             await restoreScenarioIfNeeded()
             // 대기 중인 레벨업 이펙트 복구 체크
@@ -365,6 +364,7 @@ private extension MainView {
         do {
             if let scenario = try await scenarioRepository.fetchScenario(for: career) {
                 let manager = ScenarioManager(record: user.record)
+
                 manager.restoreScenario(scenario)
                 self.scenarioManager = manager
                 withAnimation {
