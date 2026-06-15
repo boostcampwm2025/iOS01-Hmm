@@ -608,6 +608,7 @@ private extension MainView {
     }
 
     func checkOfflineReward() async {
+        guard !AdService.shared.isShowing else { return }
         guard !hasCheckedOfflineReward else { return }
 
         hasCheckedOfflineReward = true
