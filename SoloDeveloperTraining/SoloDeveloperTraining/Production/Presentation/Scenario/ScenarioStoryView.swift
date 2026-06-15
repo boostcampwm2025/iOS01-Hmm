@@ -17,6 +17,7 @@ struct ScenarioStoryView: View {
     @State private var currentPageIndex: Int
     @State private var selected: String = ""
     @State private var finalEnding: Ending? = nil
+    @State private var isShowingAd = false
 
     // 공유하기
     @State private var isShareSheetPresented = false
@@ -146,7 +147,17 @@ private extension ScenarioStoryView {
             )
         case .result:
             EventButton(type: .reselect(onReselect: {
-                // TODO: 재선택 로직 추가
+                guard !isShowingAd else { return }
+                isShowingAd = true
+                Task {
+                    let success = await AdService.shared.showAdWithResult(.interstitial)
+                    isShowingAd = false
+                    if success {
+                        selected = ""
+                        manager.reselectChoice()
+                        currentPageIndex = manager.currentPageIndex
+                    }
+                }
             }, onComplete: {
                 handleNextTap()
             }))
