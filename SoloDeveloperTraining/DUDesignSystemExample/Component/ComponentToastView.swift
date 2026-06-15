@@ -9,13 +9,17 @@ import DUDesignSystem
 struct ComponentToastView: View {
 
     @State private var message: String = "토스트 안내 메시지입니다."
+    @State private var showToast = false
 
     var body: some View {
         VStack(spacing: 0) {
             // MARK: - Preview Area
             PreviewArea {
-                Toast(message: message)
-                    .frame(maxWidth: .infinity)
+                Button("토스트 표시") {
+                    showToast = true
+                }
+                .frame(maxWidth: .infinity)
+                .duToast(isShowing: $showToast, message: message)
             }
 
             // MARK: - Controls
