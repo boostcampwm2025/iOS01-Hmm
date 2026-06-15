@@ -31,11 +31,6 @@ private enum Constant {
         static let title: String = "커리어"
         static let maxHeight: CGFloat = 650
     }
-
-    enum TopButton {
-        static let top: CGFloat = 128
-        static let horizontal: CGFloat = 16
-    }
 }
 
 struct MainView: View {
@@ -122,14 +117,8 @@ struct MainView: View {
 
 private extension MainView {
     var topAreaContent: some View {
-        ZStack(alignment: .top) {
-            topAreaMainContent
-            topButtonOverlay
-        }
-    }
-
-    var topAreaMainContent: some View {
         VStack(spacing: TokenSpacing.none) {
+            // StatusBar Area
             ZStack(alignment: .top) {
                 Color.white300StatusBar
                     .frame(height: 113)
@@ -146,9 +135,23 @@ private extension MainView {
                 .padding(.horizontal, TokenGrid.paddingSide)
                 .padding(.top, TokenGrid.paddingTop)
             }
+            // SettingButton, QuizButton Area
+            HStack {
+                SmallButton(type: .setting) {
+                    showSettingsView = true
+                }
+                Spacer()
+                if !workGameSession.isInProgress {
+                    SmallButton(type: .quiz) {
+                        showQuizView = true
+                    }
+                }
+            }
             Spacer()
-            characterSceneView
-
+            // character Area
+            SpriteView(scene: scene, options: [.allowsTransparency])
+                .frame(width: Constant.spriteViewSize.width, height: Constant.spriteViewSize.height)
+                .background(Color.clear)
         }
     }
 
@@ -163,35 +166,10 @@ private extension MainView {
         )
     }
 
-    var characterSceneView: some View {
-        SpriteView(scene: scene, options: [.allowsTransparency])
-            .frame(width: Constant.spriteViewSize.width, height: Constant.spriteViewSize.height)
-            .background(Color.clear)
-    }
-
     var housingBackgroundView: some View {
         Image(user.inventory.housing.imageName)
             .resizable()
             .aspectRatio(contentMode: .fill)
-    }
-
-    var topButtonOverlay: some View {
-        VStack {
-            HStack {
-                SmallButton(title: "설정", image: Image(.iconSetting)) {
-                    showSettingsView = true
-                }
-                Spacer()
-                if !workGameSession.isInProgress {
-                    SmallButton(title: "퀴즈", hasBadge: true) {
-                        showQuizView = true
-                    }
-                }
-            }
-            .padding(.top, Constant.TopButton.top)
-            .padding(.horizontal, Constant.TopButton.horizontal)
-            Spacer()
-        }
     }
 
     var tabContentView: some View {
