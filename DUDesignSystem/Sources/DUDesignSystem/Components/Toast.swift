@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct ToastModifier: ViewModifier {
+public struct Toast: ViewModifier {
 
     @Binding var isShowing: Bool
     public let message: String
@@ -31,7 +31,13 @@ public struct ToastModifier: ViewModifier {
                 VStack {
                     Spacer()
 
-                    Toast(message: message)
+                    ItemLabel(text: message, font: .body2, color: .white300)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, TokenSpacing.mm)
+                        .background(Color.black300.opacity(0.8))
+                        .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
+                        .tokenShadow(.dim)
+                        .padding(.horizontal, TokenGrid.marginPopUp)
                         .opacity(opacity)
                         .padding(.bottom, TokenSpacing.xxl)
                         .frame(maxWidth: .infinity)
@@ -63,33 +69,6 @@ public struct ToastModifier: ViewModifier {
 
 public extension View {
     func duToast(isShowing: Binding<Bool>, message: String) -> some View {
-        modifier(ToastModifier(isShowing: isShowing, message: message))
+        modifier(Toast(isShowing: isShowing, message: message))
     }
-}
-
-struct Toast: View {
-   var message: String
-
-    init(message: String) {
-        self.message = message
-    }
-
-    var body: some View {
-        ItemLabel(text: message, font: .body2, color: .white300)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, TokenSpacing.mm)
-            .background(Color.black300.opacity(0.8))
-            .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
-            .tokenShadow(.dim)
-            .padding(.horizontal, TokenGrid.marginPopUp)
-        
-    }
-}
-
-#Preview {
-    VStack(spacing: TokenSpacing.md) {
-        Toast(message: "토스트 안내 메시지입니다.")
-        Toast(message: "저장되었습니다.")
-    }
-    .background(Color.beige200)
 }
