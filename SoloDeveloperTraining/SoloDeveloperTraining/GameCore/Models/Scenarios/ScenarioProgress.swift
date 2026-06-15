@@ -44,6 +44,12 @@ struct ScenarioProgress {
         currentPageIndex += 1
     }
 
+    /// 이전 선택 페이지로 이동 (재선택용)
+    mutating func moveToPreviousChoicePage() {
+        guard currentPageIndex > 0 else { return }
+        currentPageIndex -= 1
+    }
+
     /// 시나리오 완료
     mutating func completeScenario() {
         guard let career = currentCareer else { return }
