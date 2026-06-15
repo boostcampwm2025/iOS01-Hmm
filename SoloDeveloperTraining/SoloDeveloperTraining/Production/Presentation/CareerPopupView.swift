@@ -37,6 +37,15 @@ struct CareerPopupView: View {
                             career: career,
                             userCareer: careerSystem.currentCareer
                         )
+                        #if DEBUG
+                        .onTapGesture {
+                            let currentWealth = user.record.totalEarnedMoney
+                            let targetRequirement = career.requiredWealth
+                            if targetRequirement > currentWealth {
+                                user.record.record(.earnMoney(targetRequirement - currentWealth))
+                            }
+                        }
+                        #endif
                     }
                 }
             }

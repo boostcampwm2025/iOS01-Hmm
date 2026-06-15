@@ -62,6 +62,16 @@ struct MainView: View {
     @State private var showOfflineRewardConfirmPopup: Bool = false
     @State private var hasCheckedOfflineReward: Bool = false
 
+    // 레벨업 이펙트 관련
+    @State private var isCareerSystemInitialized: Bool = false
+    @State private var showLevelUpEffect: Bool = false
+    @State private var leveledUpCareer: Career? = nil
+
+    // 시나리오 관련
+    @State private var scenarioManager: ScenarioManager?
+    @State private var showScenarioView: Bool = false
+    private let scenarioRepository: ScenarioRepository = DefaultScenarioRepository()
+
     private var autoGainSystem: AutoGainSystem
     private let user: User
     private let scene: CharacterScene
@@ -107,9 +117,18 @@ struct MainView: View {
                 await careerSystem?.updateCareer()
             }
             .overlay { overlayView }
+            .onChange(of: showLevelUpEffect) { oldValue, newValue in
+                if oldValue == true && newValue == false {
+                    Task {
+                        await checkAndStartScenario()
+                    }
+                }
+            }
             .fullScreenCover(isPresented: $showQuizView) {
                 QuizGameView(user: user)
             }
+
+            LevelUpEffectView(isPresented: $showLevelUpEffect, career: leveledUpCareer)
         }
         .darkToast(
             isShowing: workGameSession.exitBonusToastBinding,
@@ -258,6 +277,22 @@ private extension MainView {
             exitBonusPopupOverlayView
             offlineRewardPopupOverlayView
             offlineRewardConfirmPopupOverlayView
+            scenarioOverlayView
+        }
+    }
+
+    @ViewBuilder
+    var scenarioOverlayView: some View {
+        if showScenarioView, let manager = scenarioManager {
+            ScenarioStoryView(
+                manager: manager,
+                record: user.record,
+                repository: scenarioRepository
+            ) {
+                withAnimation {
+                    showScenarioView = false
+                }
+            }
         }
     }
 
@@ -293,10 +328,51 @@ private extension MainView {
         Task {
             if careerSystem == nil {
                 careerSystem = await CareerSystem(user: user)
+                isCareerSystemInitialized = true
                 careerSystem?.onCareerChanged = { [weak scene] newCareer in
                     scene?.updateCareerAppearance(to: newCareer)
+
+                    leveledUpCareer = newCareer
+                    withAnimation(.spring()) {
+                        showLevelUpEffect = newCareer != .unemployed
+                    }
                 }
             }
+            // 저장된 시나리오 복구 체크
+            await restoreScenarioIfNeeded()
+            // 대기 중인 레벨업 이펙트 복구 체크
+            checkPendingLevelUp()
+        }
+    }
+
+    @MainActor
+    func checkPendingLevelUp() {
+        // 이미 시나리오가 떠 있거나 레벨업 이펙트가 진행 중이면 리턴
+        guard !showScenarioView && !showLevelUpEffect else { return }
+
+        // 큐에 대기 중인 레벨업 커리어가 있다면 이펙트 다시 표시
+        if let pendingCareer = user.record.scenarioProgress.levelupQueue.first {
+            leveledUpCareer = pendingCareer
+            showLevelUpEffect = pendingCareer != .unemployed
+        }
+    }
+
+    @MainActor
+    func restoreScenarioIfNeeded() async {
+        guard !showScenarioView, let career = user.record.scenarioProgress.currentCareer else { return }
+
+        do {
+            if let scenario = try await scenarioRepository.fetchScenario(for: career) {
+                let manager = ScenarioManager(record: user.record)
+
+                manager.restoreScenario(scenario)
+                self.scenarioManager = manager
+                withAnimation {
+                    showScenarioView = true
+                }
+            }
+        } catch {
+            print("Failed to restore scenario: \(error)")
         }
     }
 
@@ -311,6 +387,24 @@ private extension MainView {
         } else if newValue == .inactive || newValue == .background {
             skillAdRewardNow = Date()
             autoGainSystem.stopSystem()
+        }
+    }
+
+    @MainActor
+    func checkAndStartScenario() async {
+        guard let career = user.record.scenarioProgress.dequeueLevelUp() else { return }
+
+        do {
+            if let scenario = try await scenarioRepository.fetchScenario(for: career) {
+                let manager = ScenarioManager(record: user.record)
+                manager.startScenario(scenario)
+                self.scenarioManager = manager
+                withAnimation {
+                    showScenarioView = true
+                }
+            }
+        } catch {
+            print("❌ 시나리오 fetch 실패: \(error)")
         }
     }
 
