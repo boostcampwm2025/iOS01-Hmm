@@ -154,8 +154,10 @@ private extension ScenarioStoryView {
                     isShowingAd = false
                     if success {
                         selected = ""
-                        manager.reselectChoice()
-                        currentPageIndex = manager.currentPageIndex
+                        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                            manager.reselectChoice()
+                            currentPageIndex = manager.currentPageIndex
+                        }
                     }
                 }
             }, onComplete: {
