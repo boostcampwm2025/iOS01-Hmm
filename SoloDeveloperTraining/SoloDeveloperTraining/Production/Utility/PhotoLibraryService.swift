@@ -9,10 +9,6 @@ import UIKit
 import Photos
 
 enum PhotoLibraryService {
-    static var authorizationStatus: PHAuthorizationStatus {
-        PHPhotoLibrary.authorizationStatus(for: .addOnly)
-    }
-
     private static func requestPhotoPermission(
         completion: @escaping (Bool) -> Void
     ) {
