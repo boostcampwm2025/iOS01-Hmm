@@ -8,6 +8,8 @@
 import SwiftUI
 import SpriteKit
 
+import DUDesignSystem
+
 enum AppTheme {
     static let backgroundColor: Color = AppColors.beige200
 }
@@ -127,18 +129,26 @@ private extension MainView {
     }
 
     var topAreaMainContent: some View {
-        VStack(spacing: 0) {
-            StatusBar(
-                career: careerSystem?.currentCareer ?? .unemployed,
-                nickname: user.nickname,
-                careerProgress: careerSystem?.careerProgress ?? 0.0,
-                gold: user.wallet.gold,
-                diamond: user.wallet.diamond,
-                skillAdRewardRemainingText: SkillAdRewardManager.remainingTimeText(user: user, now: skillAdRewardNow)
-            )
-            .onTapGesture { showCareerPopup() }
+        VStack(spacing: TokenSpacing.none) {
+            ZStack(alignment: .top) {
+                Color.white300StatusBar
+                    .frame(height: 113)
+                StatusBar(
+                    imageName: careerSystem?.currentCareer.imageName ?? "",
+                    careerName: careerSystem?.currentCareer.rawValue ?? "",
+                    nickname: user.nickname,
+                    careerProgress: careerSystem?.careerProgress ?? 0,
+                    gold: user.wallet.gold.formatted,
+                    diamond: user.wallet.diamond.formatted,
+                    time: SkillAdRewardManager.remainingTimeText(user: user, now: skillAdRewardNow)
+                )
+                .onTapGesture { showCareerPopup() }
+                .padding(.horizontal, TokenGrid.paddingSide)
+                .padding(.top, TokenGrid.paddingTop)
+            }
             Spacer()
             characterSceneView
+
         }
     }
 

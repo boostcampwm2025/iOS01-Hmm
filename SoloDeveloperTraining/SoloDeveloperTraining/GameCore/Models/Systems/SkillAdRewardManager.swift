@@ -50,7 +50,7 @@ enum SkillAdRewardManager {
 
         let minutes = remainingSeconds / 60
         let seconds = remainingSeconds % 60
-        return String(format: "업무 효율 대박: %02d:%02d", minutes, seconds)
+        return String(format: "%02d:%02d", minutes, seconds)
     }
 }
 

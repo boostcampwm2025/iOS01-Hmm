@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		087484A42FDFD401009888A6 /* DUDesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 087484A32FDFD401009888A6 /* DUDesignSystem */; };
 		088F6AA02FCAA8A600E14BA2 /* DUDesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 088F6A9F2FCAA8A600E14BA2 /* DUDesignSystem */; };
 		283B980E2FAB24750033B924 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 283B980D2FAB24750033B924 /* GoogleMobileAds */; };
 		283B9A432FAB36020033B924 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 283B9A422FAB36020033B924 /* GoogleMobileAds */; };
@@ -168,6 +169,7 @@
 			files = (
 				283B980E2FAB24750033B924 /* GoogleMobileAds in Frameworks */,
 				BC1933712F8FC7110033A27E /* FirebaseCore in Frameworks */,
+				087484A42FDFD401009888A6 /* DUDesignSystem in Frameworks */,
 				BC19336F2F8FC7110033A27E /* FirebaseAnalytics in Frameworks */,
 				28FB12B02F9B5EA8004FCBB3 /* FirebaseFirestore in Frameworks */,
 				28F3C7C52FB73B7B0077B77A /* KakaoSDKShare in Frameworks */,
@@ -272,6 +274,7 @@
 				283B980D2FAB24750033B924 /* GoogleMobileAds */,
 				28F3C7C42FB73B7B0077B77A /* KakaoSDKShare */,
 				28F3C7C62FB73B820077B77A /* KakaoSDK */,
+				087484A32FDFD401009888A6 /* DUDesignSystem */,
 			);
 			productName = SoloDeveloperTraining;
 			productReference = 08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */;
@@ -1032,6 +1035,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		087484A32FDFD401009888A6 /* DUDesignSystem */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DUDesignSystem;
+		};
 		088F6A9F2FCAA8A600E14BA2 /* DUDesignSystem */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DUDesignSystem;
