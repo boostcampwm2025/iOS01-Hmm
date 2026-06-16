@@ -663,6 +663,8 @@
 				INFOPLIST_FILE = SoloDeveloperTraining/App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "개발자 키우기";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "이미지를 사진 앨범에 저장하기 위해 권한이 필요합니다.";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "개인화된 광고 제공 목적으로 사용됩니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
@@ -711,6 +713,8 @@
 				INFOPLIST_FILE = SoloDeveloperTraining/App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "개발자 키우기";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "이미지를 사진 앨범에 저장하기 위해 권한이 필요합니다.";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "개인화된 광고 제공 목적으로 사용됩니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";

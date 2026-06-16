@@ -2,8 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>이미지를 사진 앨범에 저장하기 위해 권한이 필요합니다.</string>
+	<key>ADMOB_INTERSTITIAL_AD_UNIT_ID</key>
+	<string>$(ADMOB_INTERSTITIAL_AD_UNIT_ID)</string>
+	<key>APPSFLYER_DEV_KEY</key>
+	<string>$(APPSFLYER_DEV_KEY)</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -21,6 +23,8 @@
 			</array>
 		</dict>
 	</array>
+	<key>GADApplicationIdentifier</key>
+	<string>$(GAD_APPLICATION_IDENTIFIER)</string>
 	<key>KAKAO_APP_KEY</key>
 	<string>$(KAKAO_APP_KEY)</string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -29,18 +33,6 @@
 		<string>kakaotalk</string>
 		<string>kakaolink</string>
 	</array>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>개인화된 광고 제공 목적으로 사용됩니다.</string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>PFStardust-Regular.ttf</string>
-		<string>PFStardust-Bold.ttf</string>
-		<string>PFStardust-ExtraBold.ttf</string>
-	</array>
-	<key>GADApplicationIdentifier</key>
-	<string>$(GAD_APPLICATION_IDENTIFIER)</string>
-	<key>ADMOB_INTERSTITIAL_AD_UNIT_ID</key>
-	<string>$(ADMOB_INTERSTITIAL_AD_UNIT_ID)</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
@@ -243,6 +235,12 @@
 			<key>SKAdNetworkIdentifier</key>
 			<string>3qcr597p9d.skadnetwork</string>
 		</dict>
+	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>PFStardust-Regular.ttf</string>
+		<string>PFStardust-Bold.ttf</string>
+		<string>PFStardust-ExtraBold.ttf</string>
 	</array>
 </dict>
 </plist>
