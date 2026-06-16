@@ -125,18 +125,10 @@ final class ScenarioTestViewModel {
     // MARK: - Actions
 
     func startScenario() {
-        Task {
-            do {
-                if let scenario = try await repository.fetchScenario(for: selectedCareer) {
-                    await MainActor.run {
-                        currentScenario = scenario
-                        scenarioManager.startScenario(scenario)
-                        updateCurrentPage()
-                    }
-                }
-            } catch {
-                print("❌ 시나리오 로드 실패: \(error)")
-            }
+        if let scenario = repository.fetchScenario(for: selectedCareer) {
+            currentScenario = scenario
+            scenarioManager.startScenario(scenario)
+            updateCurrentPage()
         }
     }
 

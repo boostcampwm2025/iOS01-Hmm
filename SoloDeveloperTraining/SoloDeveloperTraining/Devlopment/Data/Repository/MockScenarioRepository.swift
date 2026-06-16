@@ -13,12 +13,8 @@ import Foundation
 /// Mock 시나리오 저장소 (하드코딩된 데이터)
 final class MockScenarioRepository: ScenarioRepository {
 
-    func fetchScenario(for career: Career) async throws -> Scenario? {
+    func fetchScenario(for career: Career) -> Scenario? {
         return allScenarios.first { $0.career == career }
-    }
-
-    func fetchAllScenario() async throws -> [Scenario] {
-        return allScenarios
     }
 
     // MARK: - Ending Calculation
@@ -358,7 +354,7 @@ final class MockScenarioRepository: ScenarioRepository {
     // MARK: - Rebirth Story
 
     /// 환생 스토리 3장 반환
-    func fetchRebirthStory() -> [ScenarioPage] {
+    func fetchRebirthScenarioPages() -> [ScenarioPage] {
         return [
             ScenarioPage(
                 text: """

@@ -394,17 +394,13 @@ private extension MainView {
     func checkAndStartScenario() async {
         guard let career = user.record.scenarioProgress.dequeueLevelUp() else { return }
 
-        do {
-            if let scenario = try await scenarioRepository.fetchScenario(for: career) {
-                let manager = ScenarioManager(record: user.record)
-                manager.startScenario(scenario)
-                self.scenarioManager = manager
-                withAnimation {
-                    showScenarioView = true
-                }
+        if let scenario = scenarioRepository.fetchScenario(for: career) {
+            let manager = ScenarioManager(record: user.record)
+            manager.startScenario(scenario)
+            self.scenarioManager = manager
+            withAnimation {
+                showScenarioView = true
             }
-        } catch {
-            print("❌ 시나리오 fetch 실패: \(error)")
         }
     }
 

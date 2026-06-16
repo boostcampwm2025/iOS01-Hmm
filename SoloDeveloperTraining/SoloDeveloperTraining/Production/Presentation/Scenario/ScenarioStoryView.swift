@@ -131,6 +131,7 @@ struct ScenarioStoryView: View {
     }
 }
 
+// MARK: - 서브 뷰
 private extension ScenarioStoryView {
     var rebirthConfirmPopupView: some View {
         NoticePopup(
@@ -138,10 +139,7 @@ private extension ScenarioStoryView {
                 cancelText: "그냥 살기",
                 confirmText: "환생하기",
                 cancelAction: onComplete,
-                confirmAction: {
-                    record.resetForRebirth()
-                    onComplete()
-                }
+                confirmAction: { handleRebirthScenario() }
             ),
             title: "환생하기",
             text: "전생의 기억은 모두 잃고 새로 태어나게됩니다.\n환생하시겠습니까?"
@@ -187,7 +185,10 @@ private extension ScenarioStoryView {
             }))
         }
     }
+}
 
+// MARK: - 헬퍼
+private extension ScenarioStoryView {
     func restoreEndingIfNeeded() {
         guard manager.currentScenario?.scenarioType == .final,
               let finalChoice = record.choiceHistory[.worldClassDeveloper] else { return }
@@ -216,6 +217,13 @@ private extension ScenarioStoryView {
         }
     }
 
+    func updatePage() {
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+            manager.moveToNextPage()
+            currentPageIndex = manager.currentPageIndex
+        }
+    }
+
     func calculateAndShowEnding(with finalChoice: ChoiceResult) {
         let evt01 = record.choiceHistory[.juniorDeveloper] ?? .optionA
         let evt02 = record.choiceHistory[.nightOwlDeveloper] ?? .optionA
@@ -234,11 +242,25 @@ private extension ScenarioStoryView {
         }
     }
 
-    func updatePage() {
-        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
-            manager.moveToNextPage()
-            currentPageIndex = manager.currentPageIndex
-        }
+    func handleRebirthScenario() {
+        record.resetForRebirth()
+
+        let pages = repository.fetchRebirthScenarioPages()
+
+        let rebirthScenario = Scenario(
+            id: "rebirth",
+            career: .unemployed,
+            scenarioType: .normal,
+            pages: pages
+        )
+
+        manager.startScenario(rebirthScenario)
+
+        currentPageIndex = manager.currentPageIndex
+        selected = ""
+        finalEnding = nil
+
+        isRebirthConfirmPopupPresented = false
     }
 }
 
