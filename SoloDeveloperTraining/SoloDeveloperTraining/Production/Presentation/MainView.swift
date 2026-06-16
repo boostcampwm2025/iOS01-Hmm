@@ -13,7 +13,6 @@ import DUDesignSystem
 private enum Constant {
     static let characterSceneSize = CGSize(width: 100, height: 100)
     static let spriteViewSize = CGSize(width: 200, height: 200)
-    static let topAreaHeightRatio: CGFloat = 0.5
 
     enum Padding {
         static let horizontalPadding: CGFloat = 25
@@ -79,30 +78,25 @@ struct MainView: View {
     }
 
     var body: some View {
-        GeometryReader { geometry in
-            VStack(spacing: TokenSpacing.none) {
-                topAreaContent
-                    .frame(height: geometry.size.height * Constant.topAreaHeightRatio)
-                    .background(housingBackgroundView)
-                tabBar
-                tabContentView
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            }
-            .ignoresSafeArea(edges: [.top, .bottom])
-            .background(Color.beige200)
-            .onAppear(perform: setupOnAppear)
-            .task {
-                await updateSkillAdRewardTimer()
-            }
-            .onDisappear { SoundService.shared.stopBGM() }
-            .onChange(of: scenePhase, handleScenePhaseChange)
-            .task(id: user.record.totalEarnedMoney) {
-                await careerSystem?.updateCareer()
-            }
-            .overlay { overlayView }
-            .fullScreenCover(isPresented: $showQuizView) {
-                QuizGameView(user: user)
-            }
+        VStack(spacing: TokenSpacing.none) {
+            gameViewport
+            tabBar
+            contentsPanel
+        }
+        .ignoresSafeArea(edges: [.top, .bottom])
+        .background(Color.beige200)
+        .onAppear(perform: setupOnAppear)
+        .task {
+            await updateSkillAdRewardTimer()
+        }
+        .onDisappear { SoundService.shared.stopBGM() }
+        .onChange(of: scenePhase, handleScenePhaseChange)
+        .task(id: user.record.totalEarnedMoney) {
+            await careerSystem?.updateCareer()
+        }
+        .overlay { overlayView }
+        .fullScreenCover(isPresented: $showQuizView) {
+            QuizGameView(user: user)
         }
         .darkToast(
             isShowing: workGameSession.exitBonusToastBinding,
@@ -112,7 +106,7 @@ struct MainView: View {
 }
 
 private extension MainView {
-    var topAreaContent: some View {
+    var gameViewport: some View {
         VStack(spacing: TokenSpacing.none) {
             // StatusBar Area
             StatusBar(
@@ -144,6 +138,8 @@ private extension MainView {
                 .frame(width: Constant.spriteViewSize.width, height: Constant.spriteViewSize.height)
                 .background(Color.clear)
         }
+        .background(housingBackgroundView)
+        .clipped()
     }
 
     var tabBar: some View {
@@ -154,7 +150,7 @@ private extension MainView {
             ),
             hasCompletedMission: user.record.missionSystem.hasCompletedMission
         )
-        .padding(.top, TokenSpacing.md)
+        .padding(.vertical, TokenSpacing.md)
         .padding(.horizontal, TokenGrid.paddingSide)
     }
 
@@ -164,7 +160,7 @@ private extension MainView {
             .aspectRatio(contentMode: .fill)
     }
 
-    var tabContentView: some View {
+    var contentsPanel: some View {
         ZStack {
             if workGameSession.isInProgress {
                 workGameOverlayView
