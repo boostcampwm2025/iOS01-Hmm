@@ -63,22 +63,29 @@ final class DefaultScenarioRepository: ScenarioRepository {
         return [
             ScenarioPage(
                 text: """
-                당신의 개발자 여정이 끝났습니다.
-                하지만 끝은 또 다른 시작입니다.
+                내가 태어난 곳은
+                문명과 거리가 먼 산촌한 항구리
                 """,
                 pageType: .story
             ),
             ScenarioPage(
                 text: """
-                모든 경험과 기억을 간직한 채,
-                새로운 도전을 시작할 수 있습니다.
+                특별한 것 없이 무난하게 성장해왔고,
+                그냥 그러저럭 살아왔다.
                 """,
                 pageType: .story
             ),
             ScenarioPage(
                 text: """
-                환생을 통해 더 나은 개발자로
-                다시 태어나세요!
+                그럭저럭 살다보니
+                어느덧 대학교를 졸업했고
+                """,
+                pageType: .story
+            ),
+            ScenarioPage(
+                text: """
+                나는 그렇게...
+                '백수'가 되었다.
                 """,
                 pageType: .story
             )
