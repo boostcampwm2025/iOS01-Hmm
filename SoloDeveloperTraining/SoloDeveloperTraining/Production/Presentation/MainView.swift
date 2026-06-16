@@ -35,6 +35,7 @@ struct MainView: View {
     @State private var workGameSession = WorkGameSession()
 
     @State private var popupContent: PopupConfiguration?
+    @State private var showCareerPopup: Bool = false
     @State private var careerSystem: CareerSystem?
     @State private var showQuizView: Bool = false
     @State private var showSettingsView: Bool = false
@@ -119,7 +120,7 @@ private extension MainView {
                 time: SkillAdRewardManager.remainingTimeText(user: user, now: skillAdRewardNow)
             )
             .background(Color.white300StatusBar)
-            .onTapGesture { showCareerPopup() }
+            .onTapGesture { showCareerPopup = true }
             // SettingButton, QuizButton Area
             HStack {
                 SmallButton(type: .setting) {
@@ -228,6 +229,7 @@ private extension MainView {
     var overlayView: some View {
         ZStack {
             popupOverlayView
+                .ignoresSafeArea()
             settingsOverlayView
             drinkAdPopupOverlayView
             drinkRewardPopupOverlayView
@@ -243,6 +245,11 @@ private extension MainView {
             modalOverlay(onBackgroundTap: { self.popupContent = nil }) {
                 Popup(title: popupContent.title, contentView: popupContent.content)
                     .frame(maxHeight: popupContent.maxHeight)
+            }
+        }
+        if let careerSystem, showCareerPopup {
+            CareerPopupView(careerSystem: careerSystem, user: user) {
+                showCareerPopup = false
             }
         }
     }
@@ -338,23 +345,6 @@ private extension MainView {
         selectedTab = newTab
     }
 
-    func showCareerPopup() {
-        guard let careerSystem else { return }
-
-        popupContent = PopupConfiguration(
-            title: Constant.CareerPopup.title,
-            maxHeight: Constant.CareerPopup.maxHeight
-        ) {
-            CareerPopupView(
-                careerSystem: careerSystem,
-                user: user,
-                onClose: {
-                    popupContent = nil
-                }
-            )
-        }
-    }
-
     @ViewBuilder
     var drinkAdPopupOverlayView: some View {
         if showDrinkAdPopup, let drinkType = selectedDrinkType {
@@ -397,8 +387,7 @@ private extension MainView {
         @ViewBuilder content: () -> Content
     ) -> some View {
         ZStack {
-            Constant.Color.overlay
-                .ignoresSafeArea()
+            Color.black300PopUpDimStatusBar
                 .onTapGesture {
                     onBackgroundTap?()
                 }
