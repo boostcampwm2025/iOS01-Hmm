@@ -21,6 +21,7 @@ struct ScenarioStoryView: View {
 
     // 공유하기
     @State private var isShareSheetPresented = false
+    @State private var currentShareID = UUID().uuidString
     // 환생하기
     @State private var isRebirthConfirmPopupPresented = false
     // 저장하기
@@ -86,6 +87,7 @@ struct ScenarioStoryView: View {
                                 }
                             },
                             onShare: {
+                                currentShareID = UUID().uuidString
                                 isShareSheetPresented = true
                             },
                             onRebirth: {
@@ -108,7 +110,7 @@ struct ScenarioStoryView: View {
                 ShareSheetView(
                     isPresented: $isShareSheetPresented,
                     kakaoMessageTemplateID: ending.type.kakaoMessageTemplateID,
-                    urlString: "\(ShareService.baseURL)/\(ending.type.webURLSlug)"
+                    urlString: "\(ShareService.baseURL)/\(ending.type.webURLSlug)?share_id=\(currentShareID)&device_id=\(AnalyticsProperty.deviceIDValue)&result_id=\(ending.id)"
                 )
                 .padding(.horizontal, TokenSpacing.lg)
             }

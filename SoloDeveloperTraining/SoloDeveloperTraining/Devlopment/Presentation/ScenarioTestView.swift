@@ -241,6 +241,7 @@ final class ScenarioTestViewModel {
 struct ScenarioTestView: View {
     @State private var viewModel = ScenarioTestViewModel()
     @State private var isShareSheetPresented = false
+    @State private var currentShareID = UUID().uuidString
 
     var shareSheetOverlay: some View {
         ZStack {
@@ -250,7 +251,7 @@ struct ScenarioTestView: View {
             ShareSheetView(
                 isPresented: $isShareSheetPresented,
                 kakaoMessageTemplateID: viewModel.kakaoMessageTemplateID,
-                urlString: "\(ShareService.baseURL)/\(viewModel.finalEnding?.type.webURLSlug ?? "")"
+                urlString: "\(ShareService.baseURL)/\(viewModel.finalEnding?.type.webURLSlug ?? "")?share_id=\(currentShareID)&device_id=\(AnalyticsProperty.deviceIDValue)&result_id=\(viewModel.finalEnding?.id ?? "")"
             )
         }
     }
@@ -460,6 +461,7 @@ struct ScenarioTestView: View {
                         if viewModel.isFinalChoiceComplete {
                             VStack(spacing: 8) {
                                 Button {
+                                    currentShareID = UUID().uuidString
                                     isShareSheetPresented = true
                                 } label: {
                                     HStack {

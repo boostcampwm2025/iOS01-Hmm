@@ -24,7 +24,7 @@ struct ShareSheetView: View {
                     image: .shareLink,
                     title: "링크 복사",
                     action: {
-                        ShareService.copyLink(urlString)
+                        ShareService.copyLink(urlString + "&entry_source=link_copy")
                         isCopied = true
                     }
                 )
@@ -44,7 +44,7 @@ struct ShareSheetView: View {
                     image: .shareEtc,
                     title: "기타 공유",
                     action: {
-                        ShareService.defaultLinkShare(urlString)
+                        ShareService.defaultLinkShare(urlString + "&entry_source=other")
                     }
                 )
             }
