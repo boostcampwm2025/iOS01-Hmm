@@ -35,7 +35,7 @@ private enum Constant {
 
 struct MainView: View {
     @Environment(\.scenePhase) var scenePhase
-    @State private var selectedTab: TabItem = .work
+    @State private var selectedTab: AppTab = .work
     // 게임 세션 관리
     @State private var workGameSession = WorkGameSession()
 
@@ -84,7 +84,7 @@ struct MainView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            VStack(spacing: 0) {
+            VStack(spacing: TokenSpacing.none) {
                 topAreaContent
                     .frame(height: geometry.size.height * Constant.topAreaHeightRatio)
                     .background(housingBackgroundView)
@@ -119,22 +119,17 @@ private extension MainView {
     var topAreaContent: some View {
         VStack(spacing: TokenSpacing.none) {
             // StatusBar Area
-            ZStack(alignment: .top) {
-                Color.white300StatusBar
-                    .frame(height: 113)
-                StatusBar(
-                    imageName: careerSystem?.currentCareer.imageName ?? "",
-                    careerName: careerSystem?.currentCareer.rawValue ?? "",
-                    nickname: user.nickname,
-                    careerProgress: careerSystem?.careerProgress ?? 0,
-                    gold: user.wallet.gold.formatted,
-                    diamond: user.wallet.diamond.formatted,
-                    time: SkillAdRewardManager.remainingTimeText(user: user, now: skillAdRewardNow)
-                )
-                .onTapGesture { showCareerPopup() }
-                .padding(.horizontal, TokenGrid.paddingSide)
-                .padding(.top, TokenGrid.paddingTop)
-            }
+            StatusBar(
+                imageName: careerSystem?.currentCareer.imageName ?? "",
+                careerName: careerSystem?.currentCareer.rawValue ?? "",
+                nickname: user.nickname,
+                careerProgress: careerSystem?.careerProgress ?? 0,
+                gold: user.wallet.gold.formatted,
+                diamond: user.wallet.diamond.formatted,
+                time: SkillAdRewardManager.remainingTimeText(user: user, now: skillAdRewardNow)
+            )
+            .background(Color.white300StatusBar)
+            .onTapGesture { showCareerPopup() }
             // SettingButton, QuizButton Area
             HStack {
                 SmallButton(type: .setting) {
@@ -156,14 +151,15 @@ private extension MainView {
     }
 
     var tabBar: some View {
-        TabBar(
-            selectedTab: Binding(
-                get: { selectedTab },
-                set: { handleTabTap($0) }
+        Tabbar(
+            selectedIndex: Binding(
+                get: { AppTab.allCases.firstIndex(of: selectedTab) ?? 0 },
+                set: { handleTabTap(AppTab.allCases[$0]) }
             ),
-            hasCompletedMisson: user.record
-                .missionSystem.hasCompletedMission
+            hasCompletedMission: user.record.missionSystem.hasCompletedMission
         )
+        .padding(.top, TokenSpacing.md)
+        .padding(.horizontal, TokenGrid.paddingSide)
     }
 
     var housingBackgroundView: some View {
@@ -339,7 +335,7 @@ private extension MainView {
         )
     }
 
-    func handleTabTap(_ newTab: TabItem) {
+    func handleTabTap(_ newTab: AppTab) {
         guard selectedTab != newTab else { return }
 
         if workGameSession.isInProgress && selectedTab == .work && newTab != .work {
