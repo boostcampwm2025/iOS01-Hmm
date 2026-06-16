@@ -9,8 +9,8 @@ import SwiftUI
 import DUDesignSystem
 
 struct ScenarioStoryView: View {
+    let user: User
     let manager: ScenarioManager
-    let record: Record
     let repository: ScenarioRepository
     let onComplete: () -> Void
 
@@ -27,9 +27,9 @@ struct ScenarioStoryView: View {
     // 환생하기
     @State private var isRebirthConfirmPopupPresented = false
 
-    init(manager: ScenarioManager, record: Record, repository: ScenarioRepository, onComplete: @escaping () -> Void) {
+    init(user: User, manager: ScenarioManager, repository: ScenarioRepository, onComplete: @escaping () -> Void) {
+        self.user = user
         self.manager = manager
-        self.record = record
         self.repository = repository
         self.onComplete = onComplete
         // 저장된 인덱스로 초기화하여 앱 재시작 시 해당 페이지부터 시작하게 함
@@ -191,7 +191,7 @@ private extension ScenarioStoryView {
 private extension ScenarioStoryView {
     func restoreEndingIfNeeded() {
         guard manager.currentScenario?.scenarioType == .final,
-              let finalChoice = record.choiceHistory[.worldClassDeveloper] else { return }
+              let finalChoice = user.record.choiceHistory[.worldClassDeveloper] else { return }
         calculateAndShowEnding(with: finalChoice)
     }
 
@@ -206,7 +206,7 @@ private extension ScenarioStoryView {
 
     func handleChoice(_ result: ChoiceResult) {
         if let career = manager.currentScenario?.career {
-            record.choiceHistory[career] = result
+            user.record.choiceHistory[career] = result
         }
 
         if manager.currentScenario?.scenarioType == .final {
@@ -225,9 +225,9 @@ private extension ScenarioStoryView {
     }
 
     func calculateAndShowEnding(with finalChoice: ChoiceResult) {
-        let evt01 = record.choiceHistory[.juniorDeveloper] ?? .optionA
-        let evt02 = record.choiceHistory[.nightOwlDeveloper] ?? .optionA
-        let evt03 = record.choiceHistory[.famousDeveloper] ?? .optionA
+        let evt01 = user.record.choiceHistory[.juniorDeveloper] ?? .optionA
+        let evt02 = user.record.choiceHistory[.nightOwlDeveloper] ?? .optionA
+        let evt03 = user.record.choiceHistory[.famousDeveloper] ?? .optionA
         let evt04 = finalChoice
 
         let ending = repository.calculateEnding(
@@ -243,24 +243,25 @@ private extension ScenarioStoryView {
     }
 
     func handleRebirthScenario() {
-        record.resetForRebirth()
+        if let ending = finalEnding {
+            user.resetForRebirth(ending: ending)
+            let pages = repository.fetchRebirthScenarioPages()
 
-        let pages = repository.fetchRebirthScenarioPages()
+            let rebirthScenario = Scenario(
+                id: "rebirth",
+                career: .unemployed,
+                scenarioType: .normal,
+                pages: pages
+            )
 
-        let rebirthScenario = Scenario(
-            id: "rebirth",
-            career: .unemployed,
-            scenarioType: .normal,
-            pages: pages
-        )
+            manager.startScenario(rebirthScenario)
 
-        manager.startScenario(rebirthScenario)
+            currentPageIndex = manager.currentPageIndex
+            selected = ""
+            finalEnding = nil
 
-        currentPageIndex = manager.currentPageIndex
-        selected = ""
-        finalEnding = nil
-
-        isRebirthConfirmPopupPresented = false
+            isRebirthConfirmPopupPresented = false
+        }
     }
 }
 
