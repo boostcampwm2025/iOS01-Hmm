@@ -31,9 +31,9 @@ private enum FontRegistrar {
 
 // MARK: - 내부 헬퍼
 
-private func makeToken(_ name: String, size: CGFloat, underlined: Bool = false) -> DUTypographyToken {
+private func makeToken(_ name: String, size: CGFloat, lineHeight: CGFloat, underlined: Bool = false) -> DUTypographyToken {
     _ = FontRegistrar.register
-    return DUTypographyToken(.custom(name, size: size), underlined: underlined)
+    return DUTypographyToken(.custom(name, size: size), underlined: underlined, lineHeight: lineHeight)
 }
 
 // MARK: - 타이포그래피 토큰
@@ -43,20 +43,22 @@ private func makeToken(_ name: String, size: CGFloat, underlined: Bool = false) 
 public struct DUTypographyToken: Sendable, Hashable {
     public let font: Font
     public let isUnderlined: Bool
+    public let lineHeight: CGFloat
 
-    init(_ font: Font, underlined: Bool = false) {
+    init(_ font: Font, underlined: Bool = false, lineHeight: CGFloat) {
         self.font = font
         self.isUnderlined = underlined
+        self.lineHeight = lineHeight
     }
 
-    public static let title1:      DUTypographyToken = makeToken(DUFont.extraBold, size: 24)
-    public static let title2:      DUTypographyToken = makeToken(DUFont.bold,      size: 20)
-    public static let headline:    DUTypographyToken = makeToken(DUFont.extraBold, size: 16)
-    public static let subheadline: DUTypographyToken = makeToken(DUFont.extraBold, size: 14)
-    public static let body:        DUTypographyToken = makeToken(DUFont.bold,      size: 16)
-    public static let body2:       DUTypographyToken = makeToken(DUFont.bold,      size: 14)
-    public static let caption:     DUTypographyToken = makeToken(DUFont.extraBold, size: 12)
-    public static let label:       DUTypographyToken = makeToken(DUFont.bold,      size: 12)
+    public static let title1:      DUTypographyToken = makeToken(DUFont.extraBold, size: 24, lineHeight: 32)
+    public static let title2:      DUTypographyToken = makeToken(DUFont.bold,      size: 20, lineHeight: 28)
+    public static let headline:    DUTypographyToken = makeToken(DUFont.extraBold, size: 16, lineHeight: 24)
+    public static let subheadline: DUTypographyToken = makeToken(DUFont.extraBold, size: 14, lineHeight: 20)
+    public static let body:        DUTypographyToken = makeToken(DUFont.bold,      size: 16, lineHeight: 24)
+    public static let body2:       DUTypographyToken = makeToken(DUFont.bold,      size: 14, lineHeight: 20)
+    public static let caption:     DUTypographyToken = makeToken(DUFont.extraBold, size: 12, lineHeight: 16)
+    public static let label:       DUTypographyToken = makeToken(DUFont.bold,      size: 12, lineHeight: 16)
 }
 
 // MARK: - 뷰 모디파이어
@@ -67,9 +69,14 @@ private struct DUFontModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         if token.isUnderlined {
-            content.font(token.font).underline()
+            content
+                .font(token.font)
+                .underline()
+                .frame(minHeight: token.lineHeight)
         } else {
-            content.font(token.font)
+            content
+                .font(token.font)
+                .frame(minHeight: token.lineHeight)
         }
     }
 }

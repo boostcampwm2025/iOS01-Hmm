@@ -9,11 +9,11 @@
 final class ScenarioManager {
     /// 현재 진행 중인 시나리오
     private(set) var currentScenario: Scenario?
-    /// 진행 상태 참조
-    private var progress: ScenarioProgress
+    /// 진행 상태가 저장되는 참조 타입 레코드
+    private let record: Record
 
-    init(progress: ScenarioProgress) {
-        self.progress = progress
+    init(record: Record) {
+        self.record = record
     }
 
     // MARK: - Scenario Control
@@ -21,21 +21,26 @@ final class ScenarioManager {
     /// 시나리오 시작
     func startScenario(_ scenario: Scenario) {
         currentScenario = scenario
-        progress.startScenario(career: scenario.career)
+        record.scenarioProgress.startScenario(career: scenario.career)
+    }
+
+    /// 시나리오 복구 (저장된 상태로부터)
+    func restoreScenario(_ scenario: Scenario) {
+        currentScenario = scenario
     }
 
     /// 현재 페이지
     var currentPage: ScenarioPage? {
         guard let scenario = currentScenario,
-              progress.currentPageIndex < scenario.pages.count else {
+              record.scenarioProgress.currentPageIndex < scenario.pages.count else {
             return nil
         }
-        return scenario.pages[progress.currentPageIndex]
+        return scenario.pages[record.scenarioProgress.currentPageIndex]
     }
 
     /// 현재 페이지 인덱스
     var currentPageIndex: Int {
-        progress.currentPageIndex
+        record.scenarioProgress.currentPageIndex
     }
 
     /// 전체 페이지 수
@@ -46,7 +51,7 @@ final class ScenarioManager {
     /// 마지막 페이지 여부
     var isLastPage: Bool {
         guard let scenario = currentScenario else { return false }
-        return progress.currentPageIndex == scenario.pages.count - 1
+        return record.scenarioProgress.currentPageIndex == scenario.pages.count - 1
     }
 
     // MARK: - Navigation
@@ -54,12 +59,24 @@ final class ScenarioManager {
     /// 다음 페이지로 이동
     func moveToNextPage() {
         guard !isLastPage else { return }
-        progress.moveToNextPage()
+        record.scenarioProgress.moveToNextPage()
+    }
+
+    /// 선택 취소 후 이전 선택 페이지로 이동 (재선택용)
+    func reselectChoice() {
+        guard let career = currentScenario?.career,
+              let scenario = currentScenario,
+              let choiceIndex = scenario.pages.firstIndex(where: {
+                  if case .choice = $0.pageType { return true }
+                  return false
+              }) else { return }
+        record.choiceHistory.removeValue(forKey: career)
+        record.scenarioProgress.currentPageIndex = choiceIndex
     }
 
     /// 시나리오 완료
     func completeScenario() {
-        progress.completeScenario()
+        record.scenarioProgress.completeScenario()
         currentScenario = nil
     }
 
@@ -74,7 +91,7 @@ final class ScenarioManager {
         }
 
         if let index = scenario.findResultPageIndex(for: choice) {
-            progress.currentPageIndex = index
+            record.scenarioProgress.currentPageIndex = index
         }
     }
 
@@ -82,11 +99,11 @@ final class ScenarioManager {
 
     /// 특정 커리어 완료 여부
     func isComplete(_ career: Career) -> Bool {
-        progress.isComplete(career)
+        record.scenarioProgress.isComplete(career)
     }
 
     /// 진행 중 여부
     var isInProgress: Bool {
-        progress.isInProgress
+        record.scenarioProgress.isInProgress
     }
 }

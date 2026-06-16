@@ -19,7 +19,7 @@ final class ScenarioTestViewModel {
     var currentPage: ScenarioPage?
 
     init() {
-        self.scenarioManager = ScenarioManager(progress: ScenarioProgress())
+        self.scenarioManager = ScenarioManager(record: Record())
     }
 
     // MARK: - Computed Properties
@@ -199,7 +199,7 @@ final class ScenarioTestViewModel {
     }
 
     func resetAll() {
-        scenarioManager = ScenarioManager(progress: ScenarioProgress())
+        scenarioManager = ScenarioManager(record: Record())
         choiceHistory.removeAll()
         completedCareers.removeAll()
         currentScenario = nil

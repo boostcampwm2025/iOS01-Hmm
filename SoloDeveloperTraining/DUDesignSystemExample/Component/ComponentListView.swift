@@ -13,7 +13,9 @@ struct ComponentListView: View {
         ("ItemLabel", "tag", AnyView(ComponentDefaultLabelView())),
         ("EffectLabel", "plus.forwardslash.minus", AnyView(ComponentEffectLabelView())),
         ("ItemButton", "hand.tap", AnyView(ComponentItemButtonView())),
+        ("IconButton", "star.square.on.square", AnyView(ComponentIconButtonView())),
         ("TextButton", "rectangle.and.hand.point.up.left", AnyView(ComponentTextButtonView())),
+        ("EventButton", "bolt.circle", AnyView(ComponentEventButtonView())),
         ("TabbarItem", "menubar.rectangle", AnyView(ComponentTabbarItemView())),
         ("Tabbar", "dock.rectangle", AnyView(ComponentTabbarView())),
         ("SegmentControl", "rectangle.split.2x1", AnyView(ComponentSegmentControlView())),
@@ -21,6 +23,7 @@ struct ComponentListView: View {
         ("QuizButton", "questionmark.circle", AnyView(ComponentQuizButtonView())),
         ("InputField", "text.cursor", AnyView(ComponentInputFieldView())),
         ("Toast", "text.bubble", AnyView(ComponentToastView())),
+        ("TextBox", "text.justify.left", AnyView(ComponentTextBoxView())),
         ("Popup", "rectangle.on.rectangle", AnyView(ComponentPopupView())),
         ("ProgressBar", "chart.bar", AnyView(ComponentProgressBarView())),
         ("GameToolBar", "gamecontroller", AnyView(ComponentGameToolBarView())),
@@ -33,6 +36,7 @@ struct ComponentListView: View {
         ("MissionCard", "trophy", AnyView(ComponentMissionCardView())),
         ("HousingCard", "house", AnyView(ComponentHousingCardView())),
         ("WorkItemCard", "rectangle.fill", AnyView(ComponentWorkItemCardView())),
+        ("StoryCard", "square.stack", AnyView(ComponentStoryCardView())),
         ("WorkSegmentControl", "rectangle.grid.2x2", AnyView(ComponentWorkSegmentControlView())),
     ]
 

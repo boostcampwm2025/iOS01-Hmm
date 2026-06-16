@@ -20,7 +20,7 @@ final class AdService {
     private let factory: AdFactory
     private var loadedAds: [AdType: AdUnit] = [:]
     private var loadingTasks: [AdType: Task<AdUnit?, Never>] = [:]
-    private var isShowing = false
+    private(set) var isShowing = false
 
     init(factory: AdFactory) {
         self.factory = factory
