@@ -69,6 +69,9 @@ public struct StatusBar: View {
                 }
             }
         }
+        .padding(.top, TokenGrid.paddingTop)
+        .padding(.horizontal, TokenGrid.paddingSide)
+        .padding(.bottom, TokenSpacing.lg)
     }
 
     private var careerProgressBar: some View {
