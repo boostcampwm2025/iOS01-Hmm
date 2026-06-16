@@ -62,6 +62,18 @@ final class ScenarioManager {
         record.scenarioProgress.moveToNextPage()
     }
 
+    /// 선택 취소 후 이전 선택 페이지로 이동 (재선택용)
+    func reselectChoice() {
+        guard let career = currentScenario?.career,
+              let scenario = currentScenario,
+              let choiceIndex = scenario.pages.firstIndex(where: {
+                  if case .choice = $0.pageType { return true }
+                  return false
+              }) else { return }
+        record.choiceHistory.removeValue(forKey: career)
+        record.scenarioProgress.currentPageIndex = choiceIndex
+    }
+
     /// 시나리오 완료
     func completeScenario() {
         record.scenarioProgress.completeScenario()
