@@ -10,10 +10,6 @@ import SpriteKit
 
 import DUDesignSystem
 
-enum AppTheme {
-    static let backgroundColor: Color = AppColors.beige200
-}
-
 private enum Constant {
     static let characterSceneSize = CGSize(width: 100, height: 100)
     static let spriteViewSize = CGSize(width: 200, height: 200)
@@ -93,7 +89,7 @@ struct MainView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
             .ignoresSafeArea(edges: [.top, .bottom])
-            .background(AppTheme.backgroundColor)
+            .background(Color.beige200)
             .onAppear(perform: setupOnAppear)
             .task {
                 await updateSkillAdRewardTimer()
