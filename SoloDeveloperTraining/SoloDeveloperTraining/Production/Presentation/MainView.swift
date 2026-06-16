@@ -13,19 +13,6 @@ import DUDesignSystem
 private enum Constant {
     static let characterSceneSize = CGSize(width: 100, height: 100)
     static let spriteViewSize = CGSize(width: 200, height: 200)
-
-    enum Padding {
-        static let horizontalPadding: CGFloat = 25
-    }
-
-    enum Color {
-        static let overlay = SwiftUI.Color.black.opacity(0.4)
-    }
-
-    enum CareerPopup {
-        static let title: String = "커리어"
-        static let maxHeight: CGFloat = 650
-    }
 }
 
 struct MainView: View {
@@ -486,7 +473,6 @@ private extension MainView {
                 }
 
             content()
-                .padding(.horizontal, Constant.Padding.horizontalPadding)
         }
     }
 
@@ -561,11 +547,19 @@ private extension MainView {
     var offlineRewardPopupOverlayView: some View {
         if showOfflineRewardPopup {
             modalOverlay {
-                OfflineRewardPopupView(
-                    gold: offlineRewardGold,
-                    hoursElapsed: offlineRewardHours,
-                    onWatchAd: { Task { await handleOfflineRewardWatchAd() } },
-                    onSkip: handleOfflineRewardSkip
+                NoticePopup(
+                    type: .ad(
+                        cancelText: "안받기",
+                        adText: "보상 받기",
+                        cancelAction: {
+                            handleOfflineRewardSkip()
+                        },
+                        adAction: {
+                            Task { await handleOfflineRewardWatchAd() }
+                        }
+                    ),
+                    title: "보상 획득",
+                    text: "당신이 없는 동안 '\(user.nickname)'가 일을 했습니다.\n일한 보상을 받을까요?"
                 )
             }
         }
