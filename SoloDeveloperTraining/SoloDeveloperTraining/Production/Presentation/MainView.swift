@@ -113,8 +113,8 @@ struct MainView: View {
             }
             .onDisappear { SoundService.shared.stopBGM() }
             .onChange(of: scenePhase, handleScenePhaseChange)
-            .task(id: user.record.totalEarnedMoney) {
-                await careerSystem?.updateCareer()
+            .onChange(of: user.record.totalEarnedMoney) {
+                careerSystem?.updateCareer()
             }
             .overlay { overlayView }
             .onChange(of: showLevelUpEffect) { oldValue, newValue in
@@ -325,9 +325,8 @@ private extension MainView {
             await checkOfflineReward()
         }
 
-        Task {
             if careerSystem == nil {
-                careerSystem = await CareerSystem(user: user)
+                careerSystem = CareerSystem(user: user)
                 isCareerSystemInitialized = true
                 careerSystem?.onCareerChanged = { [weak scene] newCareer in
                     scene?.updateCareerAppearance(to: newCareer)
@@ -339,10 +338,9 @@ private extension MainView {
                 }
             }
             // 저장된 시나리오 복구 체크
-            await restoreScenarioIfNeeded()
+            restoreScenarioIfNeeded()
             // 대기 중인 레벨업 이펙트 복구 체크
             checkPendingLevelUp()
-        }
     }
 
     @MainActor
@@ -358,21 +356,17 @@ private extension MainView {
     }
 
     @MainActor
-    func restoreScenarioIfNeeded() async {
+    func restoreScenarioIfNeeded() {
         guard !showScenarioView, let career = user.record.scenarioProgress.currentCareer else { return }
 
-        do {
-            if let scenario = try await scenarioRepository.fetchScenario(for: career) {
-                let manager = ScenarioManager(record: user.record)
+        if let scenario = scenarioRepository.fetchScenario(for: career) {
+            let manager = ScenarioManager(record: user.record)
 
-                manager.restoreScenario(scenario)
-                self.scenarioManager = manager
-                withAnimation {
-                    showScenarioView = true
-                }
+            manager.restoreScenario(scenario)
+            self.scenarioManager = manager
+            withAnimation {
+                showScenarioView = true
             }
-        } catch {
-            print("Failed to restore scenario: \(error)")
         }
     }
 
