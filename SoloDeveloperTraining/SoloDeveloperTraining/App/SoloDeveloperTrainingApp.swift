@@ -5,6 +5,7 @@
 //  Created by SeoJunYoung on 1/6/26.
 //
 
+import AppsFlyerLib
 import SwiftUI
 import FirebaseCore
 import GoogleMobileAds
@@ -28,12 +29,18 @@ private enum Constant {
 @main
 struct SoloDeveloperTrainingApp: App {
 
-    // Firebase 초기화
     init() {
         FirebaseApp.configure()
+
         MobileAds.shared.start()
+
         let kakaoAppKey = Bundle.main.kakaoAppKey
         KakaoSDK.initSDK(appKey: kakaoAppKey)
+
+        AppsFlyerLib.shared().initialize(
+            devKey: Bundle.main.appsFlyerDevKey,
+            appId: "6758282441"
+        )
     }
 
     @State private var hasSeenIntro = false
