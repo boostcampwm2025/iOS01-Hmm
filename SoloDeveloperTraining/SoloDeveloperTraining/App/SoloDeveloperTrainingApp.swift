@@ -41,6 +41,8 @@ struct SoloDeveloperTrainingApp: App {
             devKey: Bundle.main.appsFlyerDevKey,
             appId: "6758282441"
         )
+        AppsFlyerLib.shared().delegate = AppsFlyerDelegate.shared
+        AppsFlyerLib.shared().start()
     }
 
     @State private var hasSeenIntro = false
