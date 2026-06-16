@@ -110,6 +110,8 @@ struct ScenarioStoryView: View {
                 ShareSheetView(
                     isPresented: $isShareSheetPresented,
                     kakaoMessageTemplateID: ending.type.kakaoMessageTemplateID,
+                    shareID: currentShareID,
+                    resultID: ending.id,
                     urlString: "\(ShareService.baseURL)/\(ending.type.webURLSlug)?share_id=\(currentShareID)&device_id=\(AnalyticsProperty.deviceIDValue)&result_id=\(ending.id)"
                 )
                 .padding(.horizontal, TokenSpacing.lg)

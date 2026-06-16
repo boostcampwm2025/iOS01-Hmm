@@ -38,14 +38,14 @@ enum ShareService {
         topVC.present(activityVC, animated: true)
     }
 
-    static func shareToKakao(messageTemplateID: String) {
+    static func shareToKakao(messageTemplateID: String, templateArgs: [String: String]) {
         guard let templateID = Int64(messageTemplateID) else {
             print("❌ 잘못된 카카오 템플릿 ID: \(messageTemplateID)")
             return
         }
 
         if ShareApi.isKakaoTalkSharingAvailable() {
-            ShareApi.shared.shareCustom(templateId: templateID) { (sharingResult, error) in
+            ShareApi.shared.shareCustom(templateId: templateID, templateArgs: templateArgs) { (sharingResult, error) in
                 if let error = error {
                     print("❌ 카카오 공유 실패: \(error)")
                 } else if let sharingResult = sharingResult {
@@ -53,8 +53,7 @@ enum ShareService {
                 }
             }
         } else {
-            // 카카오톡 미설치 시 웹 브라우저 공유
-            if let url = ShareApi.shared.makeCustomUrl(templateId: templateID) {
+            if let url = ShareApi.shared.makeCustomUrl(templateId: templateID, templateArgs: templateArgs) {
                 UIApplication.shared.open(url)
             }
         }

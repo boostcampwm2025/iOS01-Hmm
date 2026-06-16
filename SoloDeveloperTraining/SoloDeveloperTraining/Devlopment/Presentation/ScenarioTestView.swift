@@ -251,7 +251,12 @@ struct ScenarioTestView: View {
             ShareSheetView(
                 isPresented: $isShareSheetPresented,
                 kakaoMessageTemplateID: viewModel.kakaoMessageTemplateID,
-                urlString: "\(ShareService.baseURL)/\(viewModel.finalEnding?.type.webURLSlug ?? "")?share_id=\(currentShareID)&device_id=\(AnalyticsProperty.deviceIDValue)&result_id=\(viewModel.finalEnding?.id ?? "")"
+                shareID: currentShareID,
+                resultID: viewModel.finalEnding?.id ?? "",
+                urlString: "\(ShareService.baseURL)/\(viewModel.finalEnding?.type.webURLSlug ?? "")"
+                    + "?share_id=\(currentShareID)"
+                    + "&device_id=\(AnalyticsProperty.deviceIDValue)"
+                    + "&result_id=\(viewModel.finalEnding?.id ?? "")"
             )
         }
     }
