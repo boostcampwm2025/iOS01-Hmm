@@ -250,7 +250,8 @@ struct ScenarioTestView: View {
             ShareSheetView(
                 isPresented: $isShareSheetPresented,
                 kakaoMessageTemplateID: viewModel.kakaoMessageTemplateID,
-                urlString: "\(ShareService.baseURL)/\(viewModel.finalEnding?.type.webURLSlug ?? "")"
+                urlString: "\(ShareService.baseURL)/\(viewModel.finalEnding?.type.webURLSlug ?? "")",
+                onLinkCopied: {}
             )
         }
     }

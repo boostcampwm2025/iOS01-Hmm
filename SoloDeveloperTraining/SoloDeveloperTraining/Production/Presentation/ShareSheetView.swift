@@ -10,10 +10,10 @@ import DUDesignSystem
 
 struct ShareSheetView: View {
     @Binding var isPresented: Bool
-    @State private var isCopied = false
 
     let kakaoMessageTemplateID: String
     let urlString: String
+    let onLinkCopied: () -> Void
 
     var body: some View {
         VStack(spacing: TokenSpacing.xxl) {
@@ -25,7 +25,7 @@ struct ShareSheetView: View {
                     title: "링크 복사",
                     action: {
                         ShareService.copyLink(urlString)
-                        isCopied = true
+                        onLinkCopied()
                     }
                 )
 
@@ -57,7 +57,6 @@ struct ShareSheetView: View {
             RoundedRectangle(cornerRadius: TokenRadius.lg)
                 .stroke(Color.gray700, lineWidth: 2)
         }
-        .darkToast(isShowing: $isCopied, message: "링크가 복사되었습니다.")
     }
 }
 
@@ -98,6 +97,7 @@ private extension ShareSheetView {
     ShareSheetView(
         isPresented: $bindingIsPresented,
         kakaoMessageTemplateID: "",
-        urlString: ""
+        urlString: "",
+        onLinkCopied: {}
     )
 }

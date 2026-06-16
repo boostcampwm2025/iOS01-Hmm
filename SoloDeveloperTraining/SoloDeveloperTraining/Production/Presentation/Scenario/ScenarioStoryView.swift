@@ -19,13 +19,13 @@ struct ScenarioStoryView: View {
     @State private var finalEnding: Ending? = nil
     @State private var isShowingAd = false
 
+    // 토스트 상태
+    @State private var showCompletedToast = false
+    @State private var showCompletedToastMessage = ""
     // 공유하기
     @State private var isShareSheetPresented = false
     // 환생하기
     @State private var isRebirthConfirmPopupPresented = false
-    // 저장하기
-    @State private var showSaveCompletedToast = false
-    @State private var showSaveCompletedToastMessage = ""
 
     init(manager: ScenarioManager, record: Record, repository: ScenarioRepository, onComplete: @escaping () -> Void) {
         self.manager = manager
@@ -81,8 +81,8 @@ struct ScenarioStoryView: View {
                                     return
                                 }
                                 PhotoLibraryService.saveImageToPhotoLibrary(image) { success in
-                                    showSaveCompletedToast = true
-                                    showSaveCompletedToastMessage = success ? "이미지가 저장되었습니다." : "이미지 저장에 실패했습니다."
+                                    showCompletedToast = true
+                                    showCompletedToastMessage = success ? "이미지가 저장되었습니다." : "이미지 저장에 실패했습니다."
                                 }
                             },
                             onShare: {
@@ -108,7 +108,11 @@ struct ScenarioStoryView: View {
                 ShareSheetView(
                     isPresented: $isShareSheetPresented,
                     kakaoMessageTemplateID: ending.type.kakaoMessageTemplateID,
-                    urlString: "\(ShareService.baseURL)/\(ending.type.webURLSlug)"
+                    urlString: "\(ShareService.baseURL)/\(ending.type.webURLSlug)",
+                    onLinkCopied: {
+                        showCompletedToast = true
+                        showCompletedToastMessage = "링크가 복사되었습니다."
+                    }
                 )
                 .padding(.horizontal, TokenSpacing.lg)
             }
@@ -120,10 +124,9 @@ struct ScenarioStoryView: View {
         .onAppear {
             restoreEndingIfNeeded()
         }
-
         .duToast(
-            isShowing: $showSaveCompletedToast,
-            message: showSaveCompletedToastMessage
+            isShowing: $showCompletedToast,
+            message: showCompletedToastMessage
         ).padding(.bottom, TokenGrid.paddingBottom)
     }
 }
@@ -132,7 +135,7 @@ private extension ScenarioStoryView {
     var rebirthConfirmPopupView: some View {
         NoticePopup(
             type: .confirm(
-                cancelText: "이대로 살기",
+                cancelText: "그냥 살기",
                 confirmText: "환생하기",
                 cancelAction: onComplete,
                 confirmAction: {
@@ -237,7 +240,10 @@ private extension ScenarioStoryView {
             currentPageIndex = manager.currentPageIndex
         }
     }
+}
 
+// MARK: - 엔딩 이미지 카드 저장
+private extension ScenarioStoryView {
     @MainActor
     func renderEndingImage(_ ending: Ending) -> UIImage? {
         let targetView = makeEndingCard(for: ending)
