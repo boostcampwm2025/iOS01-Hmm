@@ -129,17 +129,19 @@ struct ScenarioStoryView: View {
 
 private extension ScenarioStoryView {
     var rebirthConfirmPopupView: some View {
-        DUDesignSystem.Popup(type: .confirm(
+        NoticePopup(
+            type: .confirm(
+                cancelText: "이대로 살기",
+                confirmText: "환생하기",
+                cancelAction: onComplete,
+                confirmAction: {
+                    record.resetForRebirth()
+                    onComplete()
+                }
+            ),
             title: "환생하기",
-            body: "전생의 기억은 모두 잃고 새로 태어나게됩니다.\n환생하시겠습니까?",
-            cancelText: "이대로 살기",
-            confirmText: "환생하기",
-            cancelAction: onComplete,
-            confirmAction: {
-                record.resetForRebirth()
-                onComplete()
-            }
-        ))
+            text: "전생의 기억은 모두 잃고 새로 태어나게됩니다.\n환생하시겠습니까?"
+        )
     }
 
     @ViewBuilder
