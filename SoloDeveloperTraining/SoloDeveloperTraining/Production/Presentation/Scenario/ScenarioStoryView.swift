@@ -58,7 +58,7 @@ struct ScenarioStoryView: View {
                     StoryCard(
                         type: .ending(title: ending.type.title),
                         text: ending.type.description,
-                        imageName: manager.currentScenario?.career.scenarioImagePrefix ?? ""
+                        imageName: ending.type.imageName
                     )
                     .id("ending")
                     .padding(.horizontal, TokenSpacing.lg)
@@ -66,7 +66,7 @@ struct ScenarioStoryView: View {
                     StoryCard(
                         type: .levelUp,
                         text: page.text,
-                        imageName: manager.currentScenario?.career.scenarioImagePrefix ?? ""
+                        imageName: page.imageName ?? ""
                     )
                     .id(currentPageIndex)
                 }
@@ -258,7 +258,7 @@ private extension ScenarioStoryView {
         StoryCard(
             type: .ending(title: ending.type.title),
             text: ending.type.description,
-            imageName: manager.currentScenario?.career.scenarioImagePrefix ?? ""
+            imageName: ending.type.imageName
         )
         .frame(width: 400)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.lg))
