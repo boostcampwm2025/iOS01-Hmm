@@ -474,6 +474,7 @@ private extension MainView {
 
             content()
         }
+        .ignoresSafeArea()
     }
 
     func handleWatchAdInMainView() async {
@@ -614,9 +615,13 @@ private extension MainView {
     var offlineRewardConfirmPopupOverlayView: some View {
         if showOfflineRewardConfirmPopup {
             modalOverlay {
-                OfflineRewardConfirmPopupView(
-                    gold: offlineRewardGold,
-                    onConfirm: handleOfflineRewardConfirm
+                NoticePopup(
+                    type: .default(
+                        buttonText: "확인",
+                        action: handleOfflineRewardConfirm
+                    ),
+                    title: "보상 지급 완료!",
+                    text: "💰 골드 \(offlineRewardGold.formatted)를 받았습니다!"
                 )
             }
         }

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-088F6AA02FCAA8A600E14BA2 /* DUDesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 088F6A9F2FCAA8A600E14BA2 /* DUDesignSystem */; };
+		088F6AA02FCAA8A600E14BA2 /* DUDesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 088F6A9F2FCAA8A600E14BA2 /* DUDesignSystem */; };
 		283B980E2FAB24750033B924 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 283B980D2FAB24750033B924 /* GoogleMobileAds */; };
 		283B9A432FAB36020033B924 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 283B9A422FAB36020033B924 /* GoogleMobileAds */; };
 		28AC32C92FDEB29600D0126E /* DUDesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 28AC32C82FDEB29600D0126E /* DUDesignSystem */; };
@@ -110,8 +110,6 @@
 				Production/Presentation/MainView.swift,
 				Production/Presentation/MissionView.swift,
 				Production/Presentation/MultiTouchView.swift,
-				Production/Presentation/OfflineRewardConfirmPopupView.swift,
-				Production/Presentation/OfflineRewardPopupView.swift,
 				Production/Presentation/ShopView.swift,
 				Production/Presentation/SkillView.swift,
 				Production/Presentation/Work/Game/DodgeGameView.swift,
