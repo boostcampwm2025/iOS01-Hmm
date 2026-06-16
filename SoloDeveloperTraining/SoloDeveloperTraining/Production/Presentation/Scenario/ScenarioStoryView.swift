@@ -245,6 +245,7 @@ private extension ScenarioStoryView {
     func handleRebirthScenario() {
         if let ending = finalEnding {
             user.resetForRebirth(ending: ending)
+
             let pages = repository.fetchRebirthScenarioPages()
 
             let rebirthScenario = Scenario(
