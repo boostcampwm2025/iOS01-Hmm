@@ -132,6 +132,7 @@ struct MainView: View {
 
             if showLevelUpEffect {
                 LevelUpEffectView(isPresented: $showLevelUpEffect, career: leveledUpCareer)
+                    .transition(.opacity.animation(.easeIn))
             }
         }
         .darkToast(
@@ -302,6 +303,7 @@ private extension MainView {
                     hasSeenIntro = false
                 }
             }
+            .transition(.opacity.animation(.easeIn))
         }
     }
 

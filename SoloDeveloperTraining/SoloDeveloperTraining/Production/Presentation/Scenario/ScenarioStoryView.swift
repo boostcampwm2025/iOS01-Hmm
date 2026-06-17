@@ -8,6 +8,10 @@
 import SwiftUI
 import DUDesignSystem
 
+private enum Animation {
+    static let standard = SwiftUI.Animation.easeInOut(duration: 0.25)
+}
+
 struct ScenarioStoryView: View {
     let user: User
     let manager: ScenarioManager
@@ -174,7 +178,7 @@ private extension ScenarioStoryView {
                     isShowingAd = false
                     if success {
                         selected = ""
-                        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                        withAnimation(Animation.standard) {
                             manager.reselectChoice()
                             currentPageIndex = manager.currentPageIndex
                         }
@@ -217,7 +221,7 @@ private extension ScenarioStoryView {
     }
 
     func updatePage() {
-        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+        withAnimation(Animation.standard) {
             manager.moveToNextPage()
             currentPageIndex = manager.currentPageIndex
         }
@@ -236,7 +240,7 @@ private extension ScenarioStoryView {
             evt04: evt04
         )
 
-        withAnimation(.spring()) {
+        withAnimation(Animation.standard) {
             finalEnding = ending
         }
     }
