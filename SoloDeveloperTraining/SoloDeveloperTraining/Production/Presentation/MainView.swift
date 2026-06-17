@@ -130,7 +130,9 @@ struct MainView: View {
                 QuizGameView(user: user)
             }
 
-            LevelUpEffectView(isPresented: $showLevelUpEffect, career: leveledUpCareer)
+            if showLevelUpEffect {
+                LevelUpEffectView(isPresented: $showLevelUpEffect, career: leveledUpCareer)
+            }
         }
         .darkToast(
             isShowing: workGameSession.exitBonusToastBinding,

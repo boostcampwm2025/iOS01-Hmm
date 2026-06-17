@@ -12,29 +12,27 @@ struct LevelUpEffectView: View {
     let career: Career?
 
     var body: some View {
-        if isPresented {
-            ZStack {
-                // 배경 디밍
-                Color.black.opacity(0.6)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        withAnimation {
-                            isPresented = false
-                        }
+        ZStack {
+            // 배경 디밍
+            Color.black.opacity(0.8)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    withAnimation {
+                        isPresented = false
                     }
+                }
 
-                // 컨텐츠
-                VStack(spacing: 20) {
-                    Text("LEVEL UP! (터치하면 넘어갑니다)")
-                        .font(.largeTitle)
-                        .foregroundColor(.yellow)
-                    if let career = career {
-                        VStack(spacing: 10) {
-                            Text(career.rawValue)
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .foregroundColor(.white)
-                        }
+            // 컨텐츠
+            VStack(spacing: 20) {
+                Text("LEVEL UP! (터치하면 넘어갑니다)")
+                    .font(.largeTitle)
+                    .foregroundColor(.yellow)
+                if let career = career {
+                    VStack(spacing: 10) {
+                        Text(career.rawValue)
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
                     }
                 }
             }
