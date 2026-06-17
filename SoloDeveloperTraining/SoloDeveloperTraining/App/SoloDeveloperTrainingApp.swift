@@ -5,7 +5,9 @@
 //  Created by SeoJunYoung on 1/6/26.
 //
 
+#if canImport(AppsFlyerLib)
 import AppsFlyerLib
+#endif
 import SwiftUI
 import FirebaseCore
 import GoogleMobileAds
@@ -37,12 +39,14 @@ struct SoloDeveloperTrainingApp: App {
         let kakaoAppKey = Bundle.main.kakaoAppKey
         KakaoSDK.initSDK(appKey: kakaoAppKey)
 
+#if canImport(AppsFlyerLib)
         AppsFlyerLib.shared().initialize(
             devKey: Bundle.main.appsFlyerDevKey,
             appId: "6758282441"
         )
         AppsFlyerLib.shared().delegate = AppsFlyerDelegate.shared
         AppsFlyerLib.shared().start()
+#endif
     }
 
     @State private var hasSeenIntro = false

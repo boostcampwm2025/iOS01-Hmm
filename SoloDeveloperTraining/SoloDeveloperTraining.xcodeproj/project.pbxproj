@@ -97,6 +97,7 @@
 				"App/Info-Dev.plist",
 				App/Info.plist,
 				firebase.json,
+				Production/Analytics/AppsFlyerDelegate.swift,
 				"Production/Error/PurchasingError+UserReadableError.swift",
 				"Production/Error/SkillError+UserReadableError.swift",
 				Production/Error/UserReadableError.swift,
