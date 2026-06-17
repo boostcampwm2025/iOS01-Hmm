@@ -197,7 +197,6 @@ private extension ScenarioStoryView {
 
     func handleNextTap() {
         if manager.isLastPage {
-            manager.completeScenario()
             onComplete()
         } else {
             updatePage()

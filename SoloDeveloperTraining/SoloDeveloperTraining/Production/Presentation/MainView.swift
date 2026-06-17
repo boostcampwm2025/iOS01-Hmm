@@ -38,6 +38,7 @@ private enum Constant {
 
 struct MainView: View {
     @Environment(\.scenePhase) var scenePhase
+    @Binding var hasSeenIntro: Bool
     @State private var selectedTab: TabItem = .work
     // 게임 세션 관리
     @State private var workGameSession = WorkGameSession()
@@ -77,7 +78,8 @@ struct MainView: View {
     private let scene: CharacterScene
     private let animationSystem: CharacterAnimationSystem
 
-    init(user: User) {
+    init(user: User, hasSeenIntro: Binding<Bool>) {
+        self._hasSeenIntro = hasSeenIntro
         self.autoGainSystem = AutoGainSystem(user: user)
         self.user = user
 
@@ -289,8 +291,14 @@ private extension MainView {
                 manager: manager,
                 repository: scenarioRepository
             ) {
+                let isRebirth = manager.currentScenario?.id == "rebirth"
+                manager.completeScenario()
+
                 withAnimation {
                     showScenarioView = false
+                }
+                if isRebirth {
+                    hasSeenIntro = false
                 }
             }
         }
@@ -686,5 +694,5 @@ private extension MainView {
             .init(key: SkillKey(game: .stack, tier: .beginner), level: 1)
         ]
     )
-    MainView(user: user)
+    MainView(user: user, hasSeenIntro: .constant(true))
 }
