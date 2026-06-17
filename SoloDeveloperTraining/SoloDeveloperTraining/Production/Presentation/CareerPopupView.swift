@@ -25,17 +25,18 @@ struct CareerPopupView: View {
     }
 
     private var popup: some View {
-        VStack(spacing: TokenSpacing.lg) {
-            ItemLabel(text: "커리어", font: .title2, color: .black300)
-            progressSection
-            careerList
+        VStack(spacing: TokenSpacing.xxl) {
+            VStack(spacing: TokenSpacing.lg) {
+                ItemLabel(text: "커리어", font: .title2, color: .black300)
+                progressSection
+                careerList
+            }
             TextButton(text: "닫기", type: .primary, size: .medium, action: onClose)
         }
         .padding(TokenSpacing.lg)
         .background(Color.white300)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.lg))
         .overlay(RoundedRectangle(cornerRadius: TokenRadius.lg).stroke(Color.gray700, lineWidth: 2))
-        .frame(height: 630)
         .padding(.horizontal, TokenGrid.marginPopUp)
     }
 
@@ -69,6 +70,7 @@ struct CareerPopupView: View {
             }
         }
         .scrollIndicators(.never)
+        .frame(height: 300)
     }
 
     private func rowState(for career: Career) -> CareerRow.CareerRowState {
