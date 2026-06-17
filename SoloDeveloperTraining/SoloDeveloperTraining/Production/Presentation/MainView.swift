@@ -39,8 +39,10 @@ struct MainView: View {
     @State private var showOfflineRewardPopup: Bool = false
     @State private var offlineRewardGold: Int = 0
     @State private var offlineRewardHours: Double = 0.0
-    @State private var showOfflineRewardConfirmPopup: Bool = false
+    @State private var showOfflineRewardToast: Bool = false
+    @State private var offlineRewardToastMessage: String = ""
     @State private var hasCheckedOfflineReward: Bool = false
+    @State private var tabbarAnchorY: CGFloat = 0
 
     // 레벨업 이펙트 관련
     @State private var isCareerSystemInitialized: Bool = false
@@ -108,6 +110,11 @@ struct MainView: View {
             isShowing: workGameSession.exitBonusToastBinding,
             message: workGameSession.exitBonusToastMessage
         )
+        .duToast(
+            isShowing: $showOfflineRewardToast,
+            message: offlineRewardToastMessage,
+            anchorY: tabbarAnchorY
+        )
     }
 }
 
@@ -158,6 +165,11 @@ private extension MainView {
         )
         .padding(.vertical, TokenSpacing.md)
         .padding(.horizontal, TokenGrid.paddingSide)
+        .background(GeometryReader { geo in
+            Color.clear.onAppear {
+                tabbarAnchorY = geo.frame(in: .global).minY
+            }
+        })
     }
 
     var housingBackgroundView: some View {
@@ -240,7 +252,6 @@ private extension MainView {
             drinkRewardPopupOverlayView
             exitBonusPopupOverlayView
             offlineRewardPopupOverlayView
-            offlineRewardConfirmPopupOverlayView
             scenarioOverlayView
         }
     }
@@ -560,7 +571,7 @@ private extension MainView {
                         }
                     ),
                     title: "보상 획득",
-                    text: "당신이 없는 동안 '\(user.nickname)'가 일을 했습니다.\n일한 보상을 받을까요?"
+                    text: "잠자는 시간 동안 '\(user.nickname)'가 일을 했습니다.\n일한 보상을 받을까요?"
                 )
             }
         }
@@ -594,12 +605,11 @@ private extension MainView {
 
         if success {
             user.wallet.addGold(offlineRewardGold)
-            showOfflineRewardConfirmPopup = true
-        } else {
-            // 광고 실패 시 데이터 초기화
-            offlineRewardGold = 0
-            offlineRewardHours = 0.0
+            offlineRewardToastMessage = "잠자는 시간에 일한 보상 획득!"
+            showOfflineRewardToast = true
         }
+        offlineRewardGold = 0
+        offlineRewardHours = 0.0
     }
 
     func handleOfflineRewardSkip() {
@@ -611,30 +621,6 @@ private extension MainView {
         hasCheckedOfflineReward = false
     }
 
-    @ViewBuilder
-    var offlineRewardConfirmPopupOverlayView: some View {
-        if showOfflineRewardConfirmPopup {
-            modalOverlay {
-                NoticePopup(
-                    type: .default(
-                        buttonText: "확인",
-                        action: handleOfflineRewardConfirm
-                    ),
-                    title: "보상 지급 완료!",
-                    text: "💰 골드 \(offlineRewardGold.formatted)를 받았습니다!"
-                )
-            }
-        }
-    }
-
-    func handleOfflineRewardConfirm() {
-        showOfflineRewardConfirmPopup = false
-        // 데이터 초기화
-        offlineRewardGold = 0
-        offlineRewardHours = 0.0
-        // 다음 체크를 위해 플래그 리셋
-        hasCheckedOfflineReward = false
-    }
 }
 
 #Preview {
