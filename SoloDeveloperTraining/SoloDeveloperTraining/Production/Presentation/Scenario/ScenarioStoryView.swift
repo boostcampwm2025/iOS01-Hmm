@@ -254,7 +254,7 @@ private extension ScenarioStoryView {
             let rebirthScenario = Scenario(
                 id: "rebirth",
                 career: .unemployed,
-                scenarioType: .normal,
+                scenarioType: .rebirth,
                 pages: pages
             )
 

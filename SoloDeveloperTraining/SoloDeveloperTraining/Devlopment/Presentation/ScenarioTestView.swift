@@ -553,6 +553,8 @@ extension ScenarioType {
             return "이벤트"
         case .final:
             return "최종"
+        case .rebirth:
+            return "환생"
         }
     }
 
@@ -564,6 +566,8 @@ extension ScenarioType {
             return "event"
         case .final:
             return "final"
+        case .rebirth:
+            return "rebirth"
         }
     }
 }

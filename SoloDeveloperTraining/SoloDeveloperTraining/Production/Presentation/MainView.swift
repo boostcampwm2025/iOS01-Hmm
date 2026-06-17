@@ -294,7 +294,7 @@ private extension MainView {
                 manager: manager,
                 repository: scenarioRepository
             ) {
-                let isRebirth = manager.currentScenario?.id == "rebirth"
+                let isRebirth = manager.currentScenario?.scenarioType == .rebirth
                 manager.completeScenario()
 
                 showScenarioView = false
