@@ -296,9 +296,8 @@ private extension MainView {
                 let isRebirth = manager.currentScenario?.id == "rebirth"
                 manager.completeScenario()
 
-                withAnimation {
-                    showScenarioView = false
-                }
+                showScenarioView = false
+
                 if isRebirth {
                     hasSeenIntro = false
                 }
@@ -335,22 +334,20 @@ private extension MainView {
             await checkOfflineReward()
         }
 
-            if careerSystem == nil {
-                careerSystem = CareerSystem(user: user)
-                isCareerSystemInitialized = true
-                careerSystem?.onCareerChanged = { [weak scene] newCareer in
-                    scene?.updateCareerAppearance(to: newCareer)
+        if careerSystem == nil {
+            careerSystem = CareerSystem(user: user)
+            isCareerSystemInitialized = true
+            careerSystem?.onCareerChanged = { [weak scene] newCareer in
+                scene?.updateCareerAppearance(to: newCareer)
+                leveledUpCareer = newCareer
 
-                    leveledUpCareer = newCareer
-                    withAnimation(.spring()) {
-                        showLevelUpEffect = newCareer != .unemployed
-                    }
-                }
+                showLevelUpEffect = newCareer != .unemployed
             }
-            // 저장된 시나리오 복구 체크
-            restoreScenarioIfNeeded()
-            // 대기 중인 레벨업 이펙트 복구 체크
-            checkPendingLevelUp()
+        }
+        // 저장된 시나리오 복구 체크
+        restoreScenarioIfNeeded()
+        // 대기 중인 레벨업 이펙트 복구 체크
+        checkPendingLevelUp()
     }
 
     @MainActor
@@ -374,9 +371,7 @@ private extension MainView {
 
             manager.restoreScenario(scenario)
             self.scenarioManager = manager
-            withAnimation {
-                showScenarioView = true
-            }
+            showScenarioView = true
         }
     }
 
@@ -402,9 +397,7 @@ private extension MainView {
             let manager = ScenarioManager(record: user.record)
             manager.startScenario(scenario)
             self.scenarioManager = manager
-            withAnimation {
-                showScenarioView = true
-            }
+            showScenarioView = true
         }
     }
 
