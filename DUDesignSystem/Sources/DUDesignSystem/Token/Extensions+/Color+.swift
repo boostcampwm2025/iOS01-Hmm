@@ -39,7 +39,7 @@ public extension Color {
 
     static let beige50  = Color(hex: "#FFFAF3")
     static let beige100 = Color(hex: "#FFF9F0")
-    static let beige200 = Color(hex: "#FFF1E7")
+    static let beige200 = Color(hex: "#F7F1E7")
     static let beige300 = Color(hex: "#EDE0D5")
     static let beige400 = Color(hex: "#BCAEA3")
 
