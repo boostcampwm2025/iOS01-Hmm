@@ -27,7 +27,7 @@ struct MissionView: View {
 
     var body: some View {
         VStack(spacing: Constant.vertical) {
-            ProgressBar(
+            OldProgressBar(
                 maxValue: Double(missionSystem.allCount),
                 currentValue: Double(missionSystem.claimedCount),
                 text: "\(missionSystem.claimedCount) / \(missionSystem.allCount)"

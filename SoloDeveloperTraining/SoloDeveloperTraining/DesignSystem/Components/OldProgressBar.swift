@@ -11,7 +11,7 @@ private enum Constants {
     static let height: CGFloat = 20
 }
 
-struct ProgressBar: View {
+struct OldProgressBar: View {
     let maxValue: Double
     let currentValue: Double
     let text: String
@@ -40,9 +40,9 @@ struct ProgressBar: View {
 }
 
 #Preview {
-    ProgressBar(maxValue: 60, currentValue: 10, text: "10 s")
-    ProgressBar(maxValue: 60, currentValue: 30, text: "30 s")
-    ProgressBar(maxValue: 60, currentValue: 40, text: "40 s")
-    ProgressBar(maxValue: 60, currentValue: 59, text: "59 s")
-    ProgressBar(maxValue: 60, currentValue: 60, text: "제한 시간 종료")
+    OldProgressBar(maxValue: 60, currentValue: 10, text: "10 s")
+    OldProgressBar(maxValue: 60, currentValue: 30, text: "30 s")
+    OldProgressBar(maxValue: 60, currentValue: 40, text: "40 s")
+    OldProgressBar(maxValue: 60, currentValue: 59, text: "59 s")
+    OldProgressBar(maxValue: 60, currentValue: 60, text: "제한 시간 종료")
 }

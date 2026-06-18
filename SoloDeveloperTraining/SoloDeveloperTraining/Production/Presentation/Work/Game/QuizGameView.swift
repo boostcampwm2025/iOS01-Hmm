@@ -234,7 +234,7 @@ private struct QuizHeaderView: View {
             .padding(.bottom, Constant.Padding.quizCountBottom)
 
             // Progress
-            ProgressBar(
+            OldProgressBar(
                 maxValue: Double(Policy.Game.Quiz.secondsPerQuestion),
                 currentValue: Double(remainingSeconds),
                 text: remainingSeconds > 0 ? "\(remainingSeconds)s" : "제한 시간 종료"
