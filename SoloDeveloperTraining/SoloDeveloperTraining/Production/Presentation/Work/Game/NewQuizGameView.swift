@@ -12,6 +12,9 @@ import DUDesignSystem
 struct NewQuizGameView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var quizGame: QuizGame
+    @State private var showQuizAdPopup: Bool = false
+    @State private var showQuizRewardPopup: Bool = false
+    @State private var finalDiamondsEarned: Int = 0
 
     init(user: User) {
         _quizGame = State(initialValue: QuizGame(user: user))
@@ -42,9 +45,20 @@ struct NewQuizGameView: View {
                               font: .label,
                               color: .black300)
                     Spacer()
-                    ItemLabel(text: "\(quizGame.remainingSeconds)s",
-                              font: .label,
-                              color: .black300)
+                    if quizGame.remainingSeconds > 0 {
+                        HStack(spacing: TokenSpacing.xs) {
+                            ItemLabel(text: "\(quizGame.remainingSeconds)",
+                                      font: .label,
+                                      color: .black300)
+                            ItemLabel(text: "s",
+                                      font: .label,
+                                      color: .black300)
+                        }
+                    } else {
+                        ItemLabel(text: "제한 시간 종료",
+                                  font: .label,
+                                  color: .black300)
+                    }
                 }
                 ProgressBar(progress: quizGame.state.timerProgress)
             }
@@ -70,13 +84,15 @@ struct NewQuizGameView: View {
             .padding(.bottom, TokenSpacing.xl)
 
             // 해설
-            HStack(spacing: 0) {
-                ItemLabel(text: quizGame.currentAnswerResult?.isCorrect == true ?
-                          "정답\n\(quizGame.currentQuestion?.explanation ?? "")" :
-                          "오답\n\(quizGame.currentQuestion?.explanation ?? "")",
-                          font: .label,
-                          color: .accentGreen)
-                Spacer()
+            if quizGame.phase == .showingExplanation {
+                HStack(spacing: 0) {
+                    ItemLabel(text: quizGame.currentAnswerResult?.isCorrect == true ?
+                              "정답\n\(quizGame.currentQuestion?.explanation ?? "")" :
+                              "오답\n\(quizGame.currentQuestion?.explanation ?? "")",
+                              font: .label,
+                              color: quizGame.currentAnswerResult?.isCorrect == true ? .accentGreen : .accentRed)
+                    Spacer()
+                }
             }
 
             Spacer()
@@ -85,9 +101,8 @@ struct NewQuizGameView: View {
             VStack(spacing: TokenSpacing.md) {
                 ForEach((quizGame.currentQuestion?.options ?? []).indices, id: \.self) { index in
                     let options = quizGame.currentQuestion?.options ?? []
-                    QuizButton(text: "\(index + 1)",
-                               state: quizGame.selectedAnswerIndex == index ? .selected : .default)
-                    {
+                    QuizButton(text: "\(index + 1). \(options[index])",
+                               state: quizGame.selectedAnswerIndex == index ? .selected : .default) {
                         if quizGame.selectedAnswerIndex == index {
                             quizGame.deselectAnswer()
                         } else {
@@ -106,7 +121,11 @@ struct NewQuizGameView: View {
                        state: quizGame.state.isSubmitEnabled || quizGame.phase == .showingExplanation ? .default : .disabled
             ) {
                 if quizGame.phase == .showingExplanation {
-                    quizGame.proceedToNextQuestion()
+                    if quizGame.state.nextButtonTitle == "보상받기" {
+                        showQuizAdPopup = true
+                    } else {
+                        quizGame.proceedToNextQuestion()
+                    }
                 } else {
                     quizGame.submitSelectedAnswer()
                 }
@@ -114,8 +133,11 @@ struct NewQuizGameView: View {
             .padding(.bottom, TokenGrid.paddingBottom)
         }
         .padding(.horizontal, TokenGrid.paddingSide)
+        .background(Color.beige50)
         .onAppear {
-            quizGame.startGame()
+            if quizGame.phase == .ready {
+                quizGame.startGame()
+            }
         }
         .onChange(of: quizGame.remainingSeconds) { _, newValue in
             if newValue == 3 {
@@ -127,7 +149,65 @@ struct NewQuizGameView: View {
         .onDisappear {
             SoundService.shared.stopAllSFX()
         }
-        .background(Color.beige50)
+        .overlay {
+            if showQuizAdPopup {
+                ZStack {
+                    Color.black300PopUpDimStatusBar.ignoresSafeArea()
+                    DiamondPopup(
+                        type: .ad(
+                            cancelText: "닫기",
+                            adText: "2배 얻기",
+                            cancelAction: {
+                                showQuizAdPopup = false
+                                quizGame.completeGame(multiplier: 1.0)
+                                dismiss()
+                            },
+                            adAction: {
+                                Task { await handleWatchAd() }
+                            }
+                        ),
+                        title: "보너스",
+                        text: "퀴즈 풀이를 완료했습니다!\n진정한 개발자에 한 걸음 더 가까워졌습니다.",
+                        diamond: quizGame.state.totalDiamondsEarned
+                    )
+                }
+            }
+        }
+        .overlay {
+            if showQuizRewardPopup {
+                ZStack {
+                    Color.black300PopUpDimStatusBar.ignoresSafeArea()
+                    DiamondPopup(
+                        type: .default(
+                            buttonText: "확인",
+                            action: {
+                                showQuizRewardPopup = false
+                                dismiss()
+                            }
+                        ),
+                        title: "보상 지급 완료!",
+                        text: "다이아를 2배로 받았습니다!",
+                        diamond: finalDiamondsEarned
+                    )
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Helper
+private extension NewQuizGameView {
+    func handleWatchAd() async {
+        showQuizAdPopup = false
+        let success = await AdService.shared.showAdWithResult(.interstitial)
+        if success {
+            finalDiamondsEarned = quizGame.state.totalDiamondsEarned * 2
+            quizGame.completeGame(multiplier: 2.0)
+            showQuizRewardPopup = true
+        } else {
+            quizGame.completeGame(multiplier: 1.0)
+            dismiss()
+        }
     }
 }
 
