@@ -70,6 +70,7 @@ struct NewQuizGameView: View {
                     ItemLabel(text: quizGame.currentQuestion?.question ?? "",
                               font: .body,
                               color: .black300)
+                    .fixedSize(horizontal: false, vertical: true)
                     Spacer()
                 }
                 HStack(spacing: 0) {
