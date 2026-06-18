@@ -78,7 +78,7 @@ struct StackGameView: View {
                 // 게임 영역 (SpriteKit 씬, 골드 이펙트)
                 gameAreaSection
             }
-            .background(AppTheme.backgroundColor)
+            .background(Color.beige200)
             .navigationBarBackButtonHidden(true) // 임시로 숨김
             .onAppear {
                 setupGameCallbacks(with: geometry)

@@ -11,16 +11,19 @@ public struct Toast: ViewModifier {
 
     @Binding var isShowing: Bool
     public let message: String
+    public let anchorY: CGFloat
 
     @State private var showContent: Bool = false
     @State private var opacity: Double = 0
 
     public init(
         isShowing: Binding<Bool>,
-        message: String
+        message: String,
+        anchorY: CGFloat = 0
     ) {
         self._isShowing = isShowing
         self.message = message
+        self.anchorY = anchorY
     }
 
     public func body(content: Content) -> some View {
@@ -28,19 +31,24 @@ public struct Toast: ViewModifier {
             content
 
             if showContent {
-                VStack {
-                    Spacer()
-
+                GeometryReader { geo in
                     ItemLabel(text: message, font: .body2, color: .white300)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, TokenSpacing.mm)
-                        .background(Color.black300.opacity(0.8))
-                        .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
-                        .tokenShadow(.dim)
-                        .padding(.horizontal, TokenGrid.marginPopUp)
+                        .background(
+                            LinearGradient(
+                                stops: [
+                                    .init(color: Color.black300.opacity(0.2), location: 0),
+                                    .init(color: Color.black300.opacity(0.7), location: 0.5),
+                                    .init(color: Color.black300.opacity(0.2), location: 1)
+                                ],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
                         .opacity(opacity)
-                        .padding(.bottom, TokenSpacing.xxl)
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                        .padding(.bottom, anchorY > 0 ? geo.size.height - anchorY + geo.frame(in: .global).minY : 0)
                 }
             }
         }
@@ -68,7 +76,7 @@ public struct Toast: ViewModifier {
 }
 
 public extension View {
-    func duToast(isShowing: Binding<Bool>, message: String) -> some View {
-        modifier(Toast(isShowing: isShowing, message: message))
+    func duToast(isShowing: Binding<Bool>, message: String, anchorY: CGFloat = 0) -> some View {
+        modifier(Toast(isShowing: isShowing, message: message, anchorY: anchorY))
     }
 }
