@@ -19,7 +19,7 @@ private enum Constant {
     }
 }
 
-struct QuizButton: View {
+struct OldQuizButton: View {
     @State private var isPressed: Bool = false
 
     let style: QuizButtonStyle
@@ -65,7 +65,7 @@ struct QuizButton: View {
 }
 
 // MARK: - Helper
-extension QuizButton {
+extension OldQuizButton {
     enum QuizButtonStyle {
         case option      // 선택지 버튼용
         case submit      // 제출 버튼용
@@ -122,7 +122,7 @@ extension QuizButton {
         var body: some View {
             VStack(spacing: 20) {
                 // 선택지 버튼들 (토글 가능)
-                QuizButton(
+                OldQuizButton(
                     style: .option,
                     isSelected: selectedIndex == 0,
                     title: "1. (함께 코드를 보며) 이 부분 빨리 수정 가능할까요?"
@@ -131,7 +131,7 @@ extension QuizButton {
                     selectedIndex = selectedIndex == 0 ? nil : 0
                 }
 
-                QuizButton(
+                OldQuizButton(
                     style: .option,
                     isSelected: selectedIndex == 1,
                     title: "2. (함께 코드를 보며) 이 부분 빨리 수정 가능할까요?"
@@ -139,7 +139,7 @@ extension QuizButton {
                     selectedIndex = selectedIndex == 1 ? nil : 1
                 }
 
-                QuizButton(
+                OldQuizButton(
                     style: .option,
                     isSelected: selectedIndex == 2,
                     title: "3. (함께 코드를 보며) 이 부분 빨리 수정 가능할까요?"
@@ -147,7 +147,7 @@ extension QuizButton {
                     selectedIndex = selectedIndex == 2 ? nil : 2
                 }
 
-                QuizButton(
+                OldQuizButton(
                     style: .option,
                     isSelected: selectedIndex == 3,
                     title: "4. (함께 코드를 보며) 이 부분 빨리 수정 가능할까요?"
@@ -156,7 +156,7 @@ extension QuizButton {
                 }
 
                 // 제출 버튼
-                QuizButton(
+                OldQuizButton(
                     style: .submit,
                     isEnabled: selectedIndex != nil,
                     title: "제출하기"

@@ -307,7 +307,7 @@ private struct QuizOptionsView: View {
             // 선지
             VStack(spacing: Constant.Spacing.quizButton) {
                 ForEach(options.indices, id: \.self) { index in
-                    QuizButton(
+                    OldQuizButton(
                         isSelected: selectedIndex == index,
                         title: "\(index + 1). \(options[index])"
                     ) {
@@ -319,7 +319,7 @@ private struct QuizOptionsView: View {
             .padding(.bottom, Constant.Padding.optionsBottom)
 
             // 제출 버튼
-            QuizButton(
+            OldQuizButton(
                 style: .submit,
                 isEnabled: isShowingExplanation ? true : selectedIndex != nil,
                 title: submitButtonTitle
