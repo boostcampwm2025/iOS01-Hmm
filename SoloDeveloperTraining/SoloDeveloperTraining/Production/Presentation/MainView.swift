@@ -125,7 +125,7 @@ struct MainView: View {
                 }
             }
             .fullScreenCover(isPresented: $showQuizView) {
-                NewQuizGameView(user: user)
+                QuizGameView(user: user)
             }
 
             LevelUpEffectView(isPresented: $showLevelUpEffect, career: leveledUpCareer)
