@@ -13,6 +13,8 @@ struct ShareSheetView: View {
     @State private var isCopied = false
 
     let kakaoMessageTemplateID: String
+    let shareID: String
+    let resultID: String
     let urlString: String
 
     var body: some View {
@@ -24,7 +26,7 @@ struct ShareSheetView: View {
                     image: .shareLink,
                     title: "링크 복사",
                     action: {
-                        ShareService.copyLink(urlString)
+                        ShareService.copyLink(urlString + "&entry_source=link_copy")
                         isCopied = true
                     }
                 )
@@ -33,10 +35,15 @@ struct ShareSheetView: View {
                     image: .shareKakao,
                     title: "카카오톡",
                     action: {
-                        ShareService
-                            .shareToKakao(
-                                messageTemplateID: kakaoMessageTemplateID
-                            )
+                        ShareService.shareToKakao(
+                            messageTemplateID: kakaoMessageTemplateID,
+                            templateArgs: [
+                                "share_id": shareID,
+                                "device_id": AnalyticsProperty.deviceIDValue,
+                                "result_id": resultID,
+                                "entry_source": "kakao"
+                            ]
+                        )
                     }
                 )
 
@@ -44,7 +51,7 @@ struct ShareSheetView: View {
                     image: .shareEtc,
                     title: "기타 공유",
                     action: {
-                        ShareService.defaultLinkShare(urlString)
+                        ShareService.defaultLinkShare(urlString + "&entry_source=other")
                     }
                 )
             }
@@ -98,6 +105,8 @@ private extension ShareSheetView {
     ShareSheetView(
         isPresented: $bindingIsPresented,
         kakaoMessageTemplateID: "",
+        shareID: "",
+        resultID: "",
         urlString: ""
     )
 }

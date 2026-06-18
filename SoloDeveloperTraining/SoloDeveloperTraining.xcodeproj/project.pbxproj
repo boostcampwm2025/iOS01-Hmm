@@ -20,6 +20,7 @@
 		28FB12B22F9B5EB1004FCBB3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 28FB12B12F9B5EB1004FCBB3 /* FirebaseFirestore */; };
 		BC19336F2F8FC7110033A27E /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BC19336E2F8FC7110033A27E /* FirebaseAnalytics */; };
 		BC1933712F8FC7110033A27E /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = BC1933702F8FC7110033A27E /* FirebaseCore */; };
+		BC4C62982FE18C3C00570653 /* AppsFlyerLib in Frameworks */ = {isa = PBXBuildFile; productRef = BC4C62972FE18C3C00570653 /* AppsFlyerLib */; };
 		BCC0EACE2F8FE90700D7A84A /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BCC0EACD2F8FE90700D7A84A /* FirebaseAnalytics */; };
 		BCC0EAD02F8FE90D00D7A84A /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = BCC0EACF2F8FE90D00D7A84A /* FirebaseCore */; };
 /* End PBXBuildFile section */
@@ -96,6 +97,7 @@
 				"App/Info-Dev.plist",
 				App/Info.plist,
 				firebase.json,
+				Production/Analytics/AppsFlyerDelegate.swift,
 				"Production/Error/PurchasingError+UserReadableError.swift",
 				"Production/Error/SkillError+UserReadableError.swift",
 				Production/Error/UserReadableError.swift,
@@ -169,6 +171,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				283B980E2FAB24750033B924 /* GoogleMobileAds in Frameworks */,
+				BC4C62982FE18C3C00570653 /* AppsFlyerLib in Frameworks */,
 				BC1933712F8FC7110033A27E /* FirebaseCore in Frameworks */,
 				28AC32C92FDEB29600D0126E /* DUDesignSystem in Frameworks */,
 				BC19336F2F8FC7110033A27E /* FirebaseAnalytics in Frameworks */,
@@ -277,6 +280,7 @@
 				28F3C7C42FB73B7B0077B77A /* KakaoSDKShare */,
 				28F3C7C62FB73B820077B77A /* KakaoSDK */,
 				28AC32C82FDEB29600D0126E /* DUDesignSystem */,
+				BC4C62972FE18C3C00570653 /* AppsFlyerLib */,
 			);
 			productName = SoloDeveloperTraining;
 			productReference = 08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */;
@@ -394,6 +398,7 @@
 				283B95DB2FA9D44B0033B924 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 				28F3C5032FB37EA70077B77A /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
 				28AC32CC2FDEB4BD00D0126E /* XCLocalSwiftPackageReference "../DUDesignSystem" */,
+				BC4C62962FE18C3C00570653 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 08267F2C2F0D06BC005A0066 /* Products */;
@@ -1043,6 +1048,14 @@
 				minimumVersion = 12.12.0;
 			};
 		};
+		BC4C62962FE18C3C00570653 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AppsFlyerSDK/AppsFlyerFramework";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1107,6 +1120,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseCore;
+		};
+		BC4C62972FE18C3C00570653 /* AppsFlyerLib */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC4C62962FE18C3C00570653 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */;
+			productName = AppsFlyerLib;
 		};
 		BCC0EACD2F8FE90700D7A84A /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
