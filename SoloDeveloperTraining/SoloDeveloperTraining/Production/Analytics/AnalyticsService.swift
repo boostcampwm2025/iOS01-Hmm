@@ -10,6 +10,10 @@ import FirebaseAnalytics
 private typealias AP = AnalyticsProperty
 
 final class AnalyticsService {
+    enum ShareChannel: String  {
+        case link, kakao, os, unknown
+    }
+
     static let shared = AnalyticsService()
 
     /// 광고 이벤트별 flow ID 중복 로깅 방지
@@ -70,14 +74,14 @@ final class AnalyticsService {
     func logShareButtonClicked(
         shareID: String,
         resultID: String,
-        shareChannel: String
+        shareChannel: ShareChannel
     ) {
         Analytics.logEvent("share_button_clicked", parameters: [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.shareID: shareID,
             AP.resultID: resultID,
-            AP.shareChannel: shareChannel
+            AP.shareChannel: shareChannel.rawValue
         ])
     }
 

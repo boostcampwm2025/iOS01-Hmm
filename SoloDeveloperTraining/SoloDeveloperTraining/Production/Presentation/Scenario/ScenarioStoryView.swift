@@ -73,12 +73,12 @@ struct ScenarioStoryView: View {
                 }
 
                 Group {
-                    if finalEnding != nil {
+                    if let ending = finalEnding {
                         // 3. 엔딩 전용 버튼 (저장/공유/환생)
-                        EventButton(type: .ending(
+                        EventButton(
+type: .ending(
                             onSave: {
-                                guard let ending = finalEnding,
-                                      let image = renderEndingImage(ending) else {
+                                guard let image = renderEndingImage(ending) else {
                                     return
                                 }
                                 PhotoLibraryService.saveImageToPhotoLibrary(image) { success in
@@ -87,13 +87,21 @@ struct ScenarioStoryView: View {
                                 }
                             },
                             onShare: {
+                                AnalyticsService.shared
+                                    .logShareButtonClicked(
+                                        shareID: currentShareID,
+                                        resultID: ending.id,
+                                        shareChannel: .unknown
+                                    )
+
                                 currentShareID = UUID().uuidString
                                 isShareSheetPresented = true
                             },
                             onRebirth: {
                                 isRebirthConfirmPopupPresented = true
                             }
-                        ))
+                        )
+)
                     } else if let page = manager.currentPage {
                         // 4. 일반 진행 버튼 (다음/선택/다시선택)
                         eventButtonView(for: page)
