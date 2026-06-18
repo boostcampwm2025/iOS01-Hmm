@@ -1,8 +1,8 @@
 //
-//  NewQuizGameView.swift
+//  QuizGameView.swift
 //  SoloDeveloperTraining
 //
-//  Created by 김성훈 on 6/18/26.
+//  Created by 김성훈 on 1/22/26.
 //
 
 import SwiftUI
@@ -225,7 +225,7 @@ private extension QuizGameView {
 
 #Preview {
     QuizGameView(user: User(
-        nickname: "Preview",
+        nickname: "Preview User",
         wallet: Wallet(),
         inventory: Inventory(),
         record: Record()
