@@ -38,12 +38,12 @@ enum EndingType: Codable {
 
     var imageName: String {
         switch self {
-        case .aceDeveloper: return "ending_ace_developer"
-        case .startupCEO: return "ending_startup_ceo"
-        case .techInfluencer: return "ending_tech_influencer"
-        case .geniusHacker: return "ending_genius_hacker"
-        case .digitalNomad: return "ending_digital_nomad"
-        case .darkWebAgent: return "ending_dark_web_agent"
+        case .aceDeveloper: return "aceDeveloper"
+        case .startupCEO: return "startupCEO"
+        case .techInfluencer: return "techInfluencer"
+        case .geniusHacker: return "geniusHacker"
+        case .digitalNomad: return "digitalNomad"
+        case .darkWebAgent: return "darkWebAgent"
         }
     }
 
