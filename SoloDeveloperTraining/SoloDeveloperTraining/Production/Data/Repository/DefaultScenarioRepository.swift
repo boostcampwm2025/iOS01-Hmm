@@ -16,7 +16,7 @@ final class DefaultScenarioRepository: ScenarioRepository {
     func fetchRebirthScenarioPages() -> [ScenarioPage] {
         return [
             ScenarioPage(
-                imageName: "rebirth_story_1",
+                imageName: "rebirthStory1",
                 text: """
                 내가 태어난 곳은
                 문명과 거리가 먼 산촌한 항구리
@@ -24,7 +24,7 @@ final class DefaultScenarioRepository: ScenarioRepository {
                 pageType: .story
             ),
             ScenarioPage(
-                imageName: "rebirth_story_2",
+                imageName: "rebirthStory2",
                 text: """
                 특별한 것 없이 무난하게 성장해왔고,
                 그냥 그러저럭 살아왔다.
@@ -32,7 +32,7 @@ final class DefaultScenarioRepository: ScenarioRepository {
                 pageType: .story
             ),
             ScenarioPage(
-                imageName: "rebirth_story_3",
+                imageName: "rebirthStory3",
                 text: """
                 그럭저럭 살다보니
                 어느덧 대학교를 졸업했고
@@ -40,7 +40,7 @@ final class DefaultScenarioRepository: ScenarioRepository {
                 pageType: .story
             ),
             ScenarioPage(
-                imageName: "rebirth_story_4",
+                imageName: "rebirthStory4",
                 text: """
                 나는 그렇게...
                 '백수'가 되었다.

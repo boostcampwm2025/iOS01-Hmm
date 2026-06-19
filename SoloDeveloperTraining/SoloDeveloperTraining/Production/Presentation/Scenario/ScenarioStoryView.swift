@@ -120,9 +120,7 @@ struct ScenarioStoryView: View {
 private extension ScenarioStoryView {
     var endingResultView: some View {
         HStack(spacing: TokenSpacing.sm) {
-            Image(.story)
-                .resizable()
-                .frame(width: 30, height: 30)
+            DUIcon(.movieSlate, size: .size28)
             Text("엔딩 결과").duFont(.title1).foregroundStyle(Color.white300)
             Spacer()
             Button(action: onComplete) {
