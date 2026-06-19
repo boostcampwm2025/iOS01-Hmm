@@ -440,10 +440,15 @@ private extension MainView {
     var drinkAdPopupOverlayView: some View {
         if showDrinkAdPopup, let drinkType = selectedDrinkType {
             modalOverlay {
-                DrinkAdPopupView(
-                    drinkType: drinkType,
-                    onWatchAd: { Task { await handleWatchAdInMainView() } },
-                    onSkip: handleSkipAdInMainView
+                NoticePopup(
+                    type: .ad(
+                        cancelText: "그냥 하기",
+                        adText: "음료 받기",
+                        cancelAction: handleSkipAdInMainView,
+                        adAction: { Task { await handleWatchAdInMainView() } }
+                    ),
+                    title: drinkType == .coffee ? "커피 없음" : "박하스 없음",
+                    text: "대신에 광고를 보고\n카페인을 보충할까요?"
                 )
             }
         }
@@ -453,9 +458,13 @@ private extension MainView {
     var drinkRewardPopupOverlayView: some View {
         if showRewardPopup, let drinkType = selectedDrinkType {
             modalOverlay {
-                DrinkRewardPopupView(
-                    drinkType: drinkType,
-                    onConfirm: handleRewardConfirmInMainView
+                NoticePopup(
+                    type: .default(
+                        buttonText: "확인",
+                        action: handleRewardConfirmInMainView
+                    ),
+                    title: "보상 지급 완료!",
+                    text: drinkType == .coffee ? "커피 1개를 받았습니다!" : "박하스 1개를 받았습니다!"
                 )
             }
         }
@@ -465,9 +474,15 @@ private extension MainView {
     var exitBonusPopupOverlayView: some View {
         if workGameSession.showsExitBonusPopup {
             modalOverlay {
-                WorkExitBonusPopupView(
-                    onWatchAd: { Task { await handleExitBonusAd() } },
-                    onLeave: handleExitWithoutBonus
+                NoticePopup(
+                    type: .ad(
+                        cancelText: "그냥 나가기",
+                        adText: "보너스 받기",
+                        cancelAction: handleExitWithoutBonus,
+                        adAction: { Task { await handleExitBonusAd() } }
+                    ),
+                    title: "보너스",
+                    text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다"
                 )
             }
         }

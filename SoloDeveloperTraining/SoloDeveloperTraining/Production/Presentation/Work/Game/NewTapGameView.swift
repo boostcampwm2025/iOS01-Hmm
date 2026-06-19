@@ -31,12 +31,31 @@ struct NewTapGameView: View {
     /// 탭 전환으로 인한 일시정지
     @Binding var tabSwitchPause: Bool
 
+    /// 광고 시청 후 음료 지급 팝업 표시 여부
+    @Binding var showDrinkAdPopup: Bool
+    /// 광고 보상 팝업 표시 여부
+    @Binding var showRewardPopup: Bool
+    /// 나가기 보너스 팝업 표시 여부
+    @Binding var showExitBonusPopup: Bool
+    /// 광고 팝업에서 선택된 음료 타입
+    @Binding var selectedDrinkType: ConsumableType?
+    /// 팝업에서 게임 재개 시 호출되는 콜백
+    @Binding var resumeGameCallback: (() -> Void)?
+    /// 팝업에서 게임 종료 시 호출되는 콜백
+    @Binding var exitGameCallback: (() -> Void)?
+
     init(
         user: User,
         isGameStarted: Binding<Bool>,
         gameActionGoldDelta: Binding<Int>,
         tabSwitchPause: Binding<Bool>,
-        animationSystem: CharacterAnimationSystem?
+        animationSystem: CharacterAnimationSystem?,
+        showDrinkAdPopup: Binding<Bool>,
+        showRewardPopup: Binding<Bool>,
+        showExitBonusPopup: Binding<Bool>,
+        selectedDrinkType: Binding<ConsumableType?>,
+        resumeGameCallback: Binding<(() -> Void)?>,
+        exitGameCallback: Binding<(() -> Void)?>
     ) {
         let tapGame = TapGame(
             user: user,
@@ -48,14 +67,24 @@ struct NewTapGameView: View {
         _isGameStarted = isGameStarted
         _gameActionGoldDelta = gameActionGoldDelta
         _tabSwitchPause = tabSwitchPause
+        _showDrinkAdPopup = showDrinkAdPopup
+        _showRewardPopup = showRewardPopup
+        _showExitBonusPopup = showExitBonusPopup
+        _selectedDrinkType = selectedDrinkType
+        _resumeGameCallback = resumeGameCallback
+        _exitGameCallback = exitGameCallback
     }
 
     var body: some View {
-        GeometryReader { geometry in
-            VStack(spacing: 0) {
-                toolbarSection
-                tapAreaSection(geometry: geometry)
+        VStack(spacing: 0) {
+            toolbarSection
+            tapAreaSection
+        }
+        .onAppear {
+            resumeGameCallback = { [weak tapGame] in
+                tapGame?.resumeGame()
             }
+            exitGameCallback = { handleCloseButton() }
         }
     }
 }
@@ -90,7 +119,7 @@ private extension NewTapGameView {
         .padding(.bottom, TokenSpacing.md)
     }
 
-    func tapAreaSection(geometry: GeometryProxy) -> some View {
+    var tapAreaSection: some View {
         ZStack {
             // TODO: DUAssets에서 불러오기
             Image(.tapBackground)
@@ -110,7 +139,7 @@ private extension NewTapGameView {
         }
         .gamePauseWrapper(
             pauseBinding: pauseBinding,
-            onLeave: { },
+            onLeave: { showExitBonusPopup = true },
             onPause: {
                 tapGame.pauseGame()
                 SoundService.shared.stopAllSFX()
@@ -170,6 +199,10 @@ private extension NewTapGameView {
                 tapGame.buffSystem.useConsumableItem(type: type)
                 tapGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
             }
+        } else {
+            selectedDrinkType = type
+            showDrinkAdPopup = true
+            tapGame.pauseGame()
         }
     }
 }
