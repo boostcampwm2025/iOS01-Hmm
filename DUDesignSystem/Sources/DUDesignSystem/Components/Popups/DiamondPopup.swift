@@ -59,10 +59,8 @@ public struct DiamondPopup: View {
             ItemLabel(text: title, font: .title2, color: .black300)
                 .frame(maxWidth: .infinity, alignment: .center)
 
-            Text(text)
-                .duFont(.body)
-                .foregroundStyle(Color.black300)
-                .multilineTextAlignment(.center)
+            ItemLabel(text: text, font: .body, color: .black300)
+                .frame(maxWidth: .infinity, alignment: .center)
 
             HStack(spacing: TokenSpacing.mm) {
                 ItemLabel(text: "획득한 다이아 : ", font: .body, color: .black300)

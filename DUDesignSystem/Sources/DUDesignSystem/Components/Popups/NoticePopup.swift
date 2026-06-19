@@ -67,10 +67,8 @@ public struct NoticePopup: View {
             ItemLabel(text: title, font: .title2, color: .black300)
                 .frame(maxWidth: .infinity, alignment: .center)
 
-            Text(text)
-                .duFont(.body)
-                .foregroundStyle(Color.black300)
-                .multilineTextAlignment(.center)
+            ItemLabel(text: text, font: .body, color: .black300)
+                .frame(maxWidth: .infinity, alignment: .center)
 
             buttonSection
                 .padding(.top, TokenSpacing.xxl - TokenSpacing.lg)

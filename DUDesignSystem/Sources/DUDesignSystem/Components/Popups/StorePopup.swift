@@ -68,10 +68,8 @@ public struct StorePopup: View {
             ItemLabel(text: title, font: .title2, color: .black300)
                 .frame(maxWidth: .infinity, alignment: .center)
 
-            Text("\(itemName)를\n\(price)를 사용하여\n구매하시겠습니까?")
-                .duFont(.body)
-                .foregroundStyle(Color.black300)
-                .multilineTextAlignment(.center)
+            ItemLabel(text: "\(itemName)를\n\(price)를 사용하여\n구매하시겠습니까?", font: .body, color: .black300)
+                .frame(maxWidth: .infinity, alignment: .center)
 
             if case .ad(let successRate, _, _, _, _, _, _, _) = type {
                 ItemLabel(text: "(성공 확률: \(successRate)%)", font: .body, color: .accentRed)
