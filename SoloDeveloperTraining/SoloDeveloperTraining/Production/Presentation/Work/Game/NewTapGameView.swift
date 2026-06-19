@@ -9,6 +9,11 @@ import SwiftUI
 
 import DUDesignSystem
 
+private enum Constant {
+    /// 탭 사운드 최소 재생 간격 (초)
+    static let tapSoundThrottleInterval: TimeInterval = 0.05
+}
+
 struct NewTapGameView: View {
     /// 코드짜기 게임 모델
     @State private var tapGame: TapGame
@@ -100,7 +105,7 @@ private extension NewTapGameView {
             }
 
             MultiTouchView { location in
-                addEffectLabel(at: location)
+                Task { await handleTap(at: location) }
             }
         }
     }
@@ -108,8 +113,22 @@ private extension NewTapGameView {
 
 // MARK: - Helper
 private extension NewTapGameView {
-    func addEffectLabel(at location: CGPoint) {
-        let data = EffectLabelData(id: UUID(), position: location, value: 0)
+
+    @MainActor
+    func handleTap(at location: CGPoint) async {
+        let now = Date()
+        if !tapGame.isPaused,
+           now.timeIntervalSince(lastTapSoundTime) >= Constant.tapSoundThrottleInterval {
+            SoundService.shared.trigger(.tapGameTyping)
+            lastTapSoundTime = now
+        }
+        let gainGold = await tapGame.didPerformAction()
+        gameActionGoldDelta += gainGold
+        showEffectLabel(at: location, value: gainGold)
+    }
+
+    func showEffectLabel(at location: CGPoint, value: Int) {
+        let data = EffectLabelData(id: UUID(), position: location, value: value)
         effectLabels.append(data)
     }
 
