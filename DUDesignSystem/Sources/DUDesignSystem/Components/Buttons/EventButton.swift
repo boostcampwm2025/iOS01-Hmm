@@ -38,32 +38,35 @@ public struct EventButton: View {
     }
 
     public var body: some View {
-        switch type {
+        Group {
+            switch type {
 
-        case .next(let action):
-            nextButtonView(action: action)
+            case .next(let action):
+                nextButtonView(action: action)
 
-        case let .choice(optionA, optionB, selected, onSelect):
-            choiceButtonView(
-                optionA: optionA,
-                optionB: optionB,
-                selected: selected,
-                onSelect: onSelect
-            )
+            case let .choice(optionA, optionB, selected, onSelect):
+                choiceButtonView(
+                    optionA: optionA,
+                    optionB: optionB,
+                    selected: selected,
+                    onSelect: onSelect
+                )
 
-        case let .reselect(onReselect, onComplete):
-            reselectButtonView(
-                onReselect: onReselect,
-                onComplete: onComplete
-            )
+            case let .reselect(onReselect, onComplete):
+                reselectButtonView(
+                    onReselect: onReselect,
+                    onComplete: onComplete
+                )
 
-        case let .ending(onSave, onShare, onRebirth):
-            endingButtonView(
-                onSave: onSave,
-                onShare: onShare,
-                onRebirth: onRebirth
-            )
+            case let .ending(onSave, onShare, onRebirth):
+                endingButtonView(
+                    onSave: onSave,
+                    onShare: onShare,
+                    onRebirth: onRebirth
+                )
+            }
         }
+        .padding(.horizontal, TokenSpacing.lg)
     }
 }
 

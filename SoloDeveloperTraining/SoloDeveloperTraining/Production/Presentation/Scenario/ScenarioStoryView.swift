@@ -66,32 +66,28 @@ struct ScenarioStoryView: View {
                     .id(currentPageIndex)
                 }
 
-                Group {
-                    if isEnding {
-                        EventButton(type: .ending(
-                            onSave: {
-                                guard let ending = finalEnding,
-                                      let image = renderEndingImage(ending) else {
-                                    return
-                                }
-                                PhotoLibraryService.saveImageToPhotoLibrary(image) { success in
-                                    showCompletedToast = true
-                                    showCompletedToastMessage = success ? "이미지가 저장되었습니다." : "이미지 저장에 실패했습니다."
-                                }
-                            },
-                            onShare: {
-                                isShareSheetPresented = true
-                            },
-                            onRebirth: {
-                                isRebirthConfirmPopupPresented = true
+                if isEnding {
+                    EventButton(type: .ending(
+                        onSave: {
+                            guard let ending = finalEnding,
+                                  let image = renderEndingImage(ending) else {
+                                return
                             }
-                        ))
-                    } else if let page = manager.currentPage {
-                        // 4. 일반 진행 버튼 (다음/선택/다시선택)
-                        eventButtonView(for: page)
-                    }
+                            PhotoLibraryService.saveImageToPhotoLibrary(image) { success in
+                                showCompletedToast = true
+                                showCompletedToastMessage = success ? "이미지가 저장되었습니다." : "이미지 저장에 실패했습니다."
+                            }
+                        },
+                        onShare: {
+                            isShareSheetPresented = true
+                        },
+                        onRebirth: {
+                            isRebirthConfirmPopupPresented = true
+                        }
+                    ))
+                } else if let page = manager.currentPage {
+                    eventButtonView(for: page)
                 }
-                .padding(.horizontal, TokenSpacing.lg)
             }
             .frame(maxHeight: .infinity, alignment: isEnding ? .top : .center)
 
@@ -199,9 +195,7 @@ private extension ScenarioStoryView {
                         }
                     }
                 }
-            }, onComplete: {
-                handleNextTap()
-            }))
+            }, onComplete: handleNextTap))
         }
     }
 }
