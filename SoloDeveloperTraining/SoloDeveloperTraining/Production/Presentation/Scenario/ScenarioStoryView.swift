@@ -40,23 +40,14 @@ struct ScenarioStoryView: View {
         self._currentPageIndex = State(initialValue: manager.currentPageIndex)
     }
 
+    var isEnding: Bool { finalEnding != nil }
+
     var body: some View {
         ZStack {
-            Color.black300EventDim.ignoresSafeArea()
-            VStack(spacing: TokenSpacing.lg) {
-                if finalEnding != nil {
-                    HStack(spacing: TokenSpacing.sm) {
-                        Image(.story)
-                            .resizable()
-                            .frame(width: 30, height: 30)
-                        Text("엔딩 결과").duFont(.title1).foregroundStyle(Color.white300)
-                        Spacer()
-                        Button(action: onComplete) {
-                            DUIcon(.close, size: .size28)
-                        }
-                    }
-                    .padding(.horizontal, TokenSpacing.lg)
-                }
+            Color.black300EventDim
+
+            VStack(spacing: isEnding ? TokenSpacing.xl : TokenSpacing.lg) {
+                if isEnding { endingResultView }
 
                 if let ending = finalEnding {
                     StoryCard(
@@ -76,8 +67,7 @@ struct ScenarioStoryView: View {
                 }
 
                 Group {
-                    if finalEnding != nil {
-                        // 3. 엔딩 전용 버튼 (저장/공유/환생)
+                    if isEnding {
                         EventButton(type: .ending(
                             onSave: {
                                 guard let ending = finalEnding,
@@ -103,28 +93,24 @@ struct ScenarioStoryView: View {
                 }
                 .padding(.horizontal, TokenSpacing.lg)
             }
+            .frame(maxHeight: .infinity, alignment: isEnding ? .top : .center)
 
             if isRebirthConfirmPopupPresented || isShareSheetPresented {
                 Color.black300PopUpDimStatusBar.ignoresSafeArea()
             }
 
             if isShareSheetPresented, let ending = finalEnding {
-                ShareSheetView(
-                    isPresented: $isShareSheetPresented,
+                shareSheetView(
                     kakaoMessageTemplateID: ending.type.kakaoMessageTemplateID,
-                    urlString: "\(ShareService.baseURL)/\(ending.type.webURLSlug)",
-                    onLinkCopied: {
-                        showCompletedToast = true
-                        showCompletedToastMessage = "링크가 복사되었습니다."
-                    }
+                    webURLSlug: ending.type.webURLSlug
                 )
-                .padding(.horizontal, TokenSpacing.lg)
             }
 
             if isRebirthConfirmPopupPresented {
                 rebirthConfirmPopupView
             }
         }
+        .ignoresSafeArea()
         .onAppear {
             restoreEndingIfNeeded()
         }
@@ -137,6 +123,22 @@ struct ScenarioStoryView: View {
 
 // MARK: - 서브 뷰
 private extension ScenarioStoryView {
+    var endingResultView: some View {
+        HStack(spacing: TokenSpacing.sm) {
+            Image(.story)
+                .resizable()
+                .frame(width: 30, height: 30)
+            Text("엔딩 결과").duFont(.title1).foregroundStyle(Color.white300)
+            Spacer()
+            Button(action: onComplete) {
+                DUIcon(.close, size: .size28)
+            }
+        }
+        .frame(height: 30)
+        .padding(.top, TokenGrid.paddingTop)
+        .padding([.bottom, .horizontal], TokenSpacing.lg)
+    }
+
     var rebirthConfirmPopupView: some View {
         NoticePopup(
             type: .confirm(
@@ -148,6 +150,19 @@ private extension ScenarioStoryView {
             title: "환생하기",
             text: "전생의 기억은 모두 잃고 새로 태어나게됩니다.\n환생하시겠습니까?"
         )
+    }
+
+    func shareSheetView(kakaoMessageTemplateID: String, webURLSlug: String) -> some View {
+        ShareSheetView(
+            isPresented: $isShareSheetPresented,
+            kakaoMessageTemplateID: kakaoMessageTemplateID,
+            urlString: "\(ShareService.baseURL)/\(webURLSlug)",
+            onLinkCopied: {
+                showCompletedToast = true
+                showCompletedToastMessage = "링크가 복사되었습니다."
+            }
+        )
+        .padding(.horizontal, TokenSpacing.lg)
     }
 
     @ViewBuilder
