@@ -32,13 +32,6 @@ private enum Constant {
     }
 }
 
-/// EffectLabel 데이터 모델
-struct EffectLabelData: Identifiable {
-    let id: UUID
-    let position: CGPoint
-    let value: Int
-}
-
 struct OldEffectLabel: View {
     let value: Int
     let onComplete: () -> Void
