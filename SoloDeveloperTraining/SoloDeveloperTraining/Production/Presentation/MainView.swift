@@ -108,10 +108,6 @@ struct MainView: View {
         .fullScreenCover(isPresented: $showQuizView) {
             QuizGameView(user: user)
         }
-        .darkToast(
-            isShowing: workGameSession.exitBonusToastBinding,
-            message: workGameSession.exitBonusToastMessage
-        )
         .duToast(
             isShowing: $showOfflineRewardToast,
             message: offlineRewardToastMessage,
@@ -546,8 +542,10 @@ private extension MainView {
             user.wallet.addGold(bonusGold)
             user.record.record(.earnMoney(bonusGold))
         }
-        workGameSession.exitBonusToastMessage = bonusGold > 0 ? "업무 보너스 \(bonusGold.formatted) 골드를 받았습니다!" : "업무 보너스를 받을 재화가 없습니다."
-        workGameSession.showsExitBonusToast = true
+        rewardToastMessage = bonusGold > 0 ?
+                             "업무에서 얻은 보상 2배 획득!" :
+                             "업무 보너스를 받을 재화가 없습니다."
+        showRewardToast = true
     }
 
     func exitWorkGame() {
