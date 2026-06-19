@@ -42,14 +42,18 @@ public struct StoryCard: View {
 // MARK: - Subviews
 private extension StoryCard {
     var cardContent: some View {
-        Image(imageName, bundle: .module)
-            .resizable()
-            .scaledToFit()
-            .frame(maxWidth: .infinity)
-            .overlay(alignment: .bottom) {
-                TextBox(text: text)
-                    .padding([.horizontal, .bottom], TokenSpacing.lg)
-            }
+        GeometryReader { geo in
+            Image(imageName, bundle: .module)
+                .resizable()
+                .scaledToFill()
+                .frame(width: geo.size.width)
+                .clipped()
+                .overlay(alignment: .bottom) {
+                    TextBox(text: text)
+                        .padding([.horizontal, .bottom], TokenSpacing.lg)
+                }
+        }
+        .frame(height: type == .levelUp ? 560 : 408)
     }
 
     func headerView(title: String) -> some View {
@@ -71,6 +75,7 @@ private extension StoryCard {
             )
         }
         .padding(.all, TokenSpacing.lg)
+        .frame(height: 76)
         .background(Color.gray700)
     }
 }
