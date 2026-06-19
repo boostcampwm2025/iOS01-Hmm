@@ -35,6 +35,7 @@ public struct StoryCard: View {
                 cardContent
             }
             .clipShape(RoundedRectangle(cornerRadius: TokenRadius.lg))
+            .padding(.horizontal, TokenSpacing.lg)
         }
     }
 }
