@@ -21,7 +21,7 @@ struct ScenarioStoryView: View {
 
     // 공유하기
     @State private var isShareSheetPresented = false
-    @State private var currentShareID = UUID().uuidString
+    @State private var currentShareID = ""
     // 환생하기
     @State private var isRebirthConfirmPopupPresented = false
     // 저장하기
@@ -87,14 +87,13 @@ type: .ending(
                                 }
                             },
                             onShare: {
+                                currentShareID = UUID().uuidString
                                 AnalyticsService.shared
                                     .logShareButtonClicked(
                                         shareID: currentShareID,
                                         resultID: ending.id,
                                         shareChannel: .unknown
                                     )
-
-                                currentShareID = UUID().uuidString
                                 isShareSheetPresented = true
                             },
                             onRebirth: {

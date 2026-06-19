@@ -88,7 +88,7 @@ final class AnalyticsService {
     /// 공유 완료 감지
     func logShareCompleted(
         shareID: String,
-        shareChannel: String,
+        shareChannel: ShareChannel,
         resultID: String,
         referrerShareID: String,
         referrerDeviceID: String
@@ -97,7 +97,7 @@ final class AnalyticsService {
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.shareID: shareID,
-            AP.shareChannel: shareChannel,
+            AP.shareChannel: shareChannel.rawValue,
             AP.resultID: resultID,
             AP.referrerShareID: referrerShareID,
             AP.referrerDeviceID: referrerDeviceID

@@ -26,7 +26,19 @@ struct ShareSheetView: View {
                     image: .shareLink,
                     title: "링크 복사",
                     action: {
-                        ShareService.copyLink(urlString + "&entry_source=link_copy")
+                        ShareService
+                            .copyLink(
+                                urlString + "&entry_source=link_copy",
+                                onCompleted: {
+                                    AnalyticsService.shared
+                                        .logShareCompleted(
+                                            shareID: shareID,
+                                            shareChannel: .link,
+                                            resultID: resultID,
+                                            referrerShareID: shareID,
+                                            referrerDeviceID: AnalyticsProperty.deviceID)
+                                }
+                            )
                         isCopied = true
                     }
                 )
@@ -42,7 +54,16 @@ struct ShareSheetView: View {
                                 "device_id": AnalyticsProperty.deviceIDValue,
                                 "result_id": resultID,
                                 "entry_source": "kakao"
-                            ]
+                            ],
+                            onCompleted: {
+                                AnalyticsService.shared
+                                    .logShareCompleted(
+                                        shareID: shareID,
+                                        shareChannel: .kakao,
+                                        resultID: resultID,
+                                        referrerShareID: shareID,
+                                        referrerDeviceID: AnalyticsProperty.deviceID)
+                            }
                         )
                     }
                 )
@@ -51,7 +72,19 @@ struct ShareSheetView: View {
                     image: .shareEtc,
                     title: "기타 공유",
                     action: {
-                        ShareService.defaultLinkShare(urlString + "&entry_source=other")
+                        ShareService
+                            .defaultLinkShare(
+                                urlString + "&entry_source=other",
+                                onCompleted: {
+                                    AnalyticsService.shared
+                                        .logShareCompleted(
+                                            shareID: shareID,
+                                            shareChannel: .os,
+                                            resultID: resultID,
+                                            referrerShareID: shareID,
+                                            referrerDeviceID: AnalyticsProperty.deviceID)
+                                }
+                            )
                     }
                 )
             }
