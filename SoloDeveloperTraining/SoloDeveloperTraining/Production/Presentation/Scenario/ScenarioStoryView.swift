@@ -92,7 +92,7 @@ type: .ending(
                                     .logShareButtonClicked(
                                         shareID: currentShareID,
                                         resultID: ending.id,
-                                        shareChannel: .unknown
+                                        shareChannel: ShareChannel.unknown.rawValue
                                     )
                                 isShareSheetPresented = true
                             },

@@ -10,9 +10,6 @@ import FirebaseAnalytics
 private typealias AP = AnalyticsProperty
 
 final class AnalyticsService {
-    enum ShareChannel: String  {
-        case link, kakao, os, unknown
-    }
 
     static let shared = AnalyticsService()
 
@@ -74,21 +71,21 @@ final class AnalyticsService {
     func logShareButtonClicked(
         shareID: String,
         resultID: String,
-        shareChannel: ShareChannel
+        shareChannel: String
     ) {
         Analytics.logEvent("share_button_clicked", parameters: [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.shareID: shareID,
             AP.resultID: resultID,
-            AP.shareChannel: shareChannel.rawValue
+            AP.shareChannel: shareChannel
         ])
     }
 
     /// 공유 완료 감지
     func logShareCompleted(
         shareID: String,
-        shareChannel: ShareChannel,
+        shareChannel: String,
         resultID: String,
         referrerShareID: String,
         referrerDeviceID: String
@@ -97,7 +94,7 @@ final class AnalyticsService {
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.shareID: shareID,
-            AP.shareChannel: shareChannel.rawValue,
+            AP.shareChannel: shareChannel,
             AP.resultID: resultID,
             AP.referrerShareID: referrerShareID,
             AP.referrerDeviceID: referrerDeviceID
