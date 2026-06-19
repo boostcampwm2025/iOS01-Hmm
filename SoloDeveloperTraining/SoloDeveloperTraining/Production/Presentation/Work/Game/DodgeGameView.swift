@@ -129,7 +129,7 @@ struct DodgeGameView: View {
 private extension DodgeGameView {
     /// 상단 툴바
     var toolbarSection: some View {
-        GameToolBar(
+        OldGameToolBar(
             closeButtonDidTapHandler: { closePause = true },
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
@@ -203,7 +203,7 @@ private extension DodgeGameView {
     /// 골드 변화 이펙트
     var goldEffectsView: some View {
         ForEach(goldEffects) { effect in
-            EffectLabel(
+            OldEffectLabel(
                 value: effect.value,
                 onComplete: { removeEffectLabel(id: effect.id) }
             )

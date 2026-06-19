@@ -25,7 +25,7 @@ private enum Constant {
     static let disabledAlpha: CGFloat = 0.3
 }
 
-struct GameToolBar: View {
+struct OldGameToolBar: View {
 
     // MARK: - Properties
     /// 닫기 버튼 탭 핸들러
@@ -59,7 +59,7 @@ struct GameToolBar: View {
 }
 
 // MARK: - SubViews
-private extension GameToolBar {
+private extension OldGameToolBar {
     /// 닫기 버튼
     var closeButton: some View {
         Button {
@@ -174,7 +174,7 @@ private extension GameToolBar {
 }
 
 // MARK: - Helper
-private extension GameToolBar {
+private extension OldGameToolBar {
     /// 커피 버프 활성화 여부
     var isCoffeeBuffActive: Bool {
         buffSystem.coffeeDuration > 0
@@ -275,7 +275,7 @@ private extension GameToolBar {
             Text("Use Energy Drink")
         }
 
-        GameToolBar(
+        OldGameToolBar(
             closeButtonDidTapHandler: {
                 print("Close")
             },

@@ -139,7 +139,7 @@ struct LanguageGameView: View {
 private extension LanguageGameView {
     /// 상단 툴바
     var toolbarSection: some View {
-        GameToolBar(
+        OldGameToolBar(
             closeButtonDidTapHandler: { closePause = true },
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
@@ -177,7 +177,7 @@ private extension LanguageGameView {
             // 획득한 골드를 표시하는 효과 라벨
             ZStack {
                 ForEach(effectValues, id: \.id) { effect in
-                    EffectLabel(value: effect.value) {
+                    OldEffectLabel(value: effect.value) {
                         removeEffectLabel(id: effect.id)
                     }
                 }

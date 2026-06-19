@@ -105,7 +105,7 @@ struct TapGameView: View {
 private extension TapGameView {
     /// 상단 툴바
     var toolbarSection: some View {
-        GameToolBar(
+        OldGameToolBar(
             closeButtonDidTapHandler: { closePause = true },
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
@@ -144,7 +144,7 @@ private extension TapGameView {
 
             // 효과 라벨들
             ForEach(effectLabels) { effectLabel in
-                EffectLabel(
+                OldEffectLabel(
                     value: effectLabel.value,
                     onComplete: { removeEffectLabel(id: effectLabel.id) }
                 )

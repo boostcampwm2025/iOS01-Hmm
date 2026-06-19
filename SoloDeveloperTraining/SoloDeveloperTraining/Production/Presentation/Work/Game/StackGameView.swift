@@ -103,7 +103,7 @@ struct StackGameView: View {
 private extension StackGameView {
     /// 상단 툴바
     var toolbarSection: some View {
-        GameToolBar(
+        OldGameToolBar(
             closeButtonDidTapHandler: { closePause = true },
             coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
             energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
@@ -132,7 +132,7 @@ private extension StackGameView {
             SpriteView(scene: scene)
 
             ForEach(effectLabels) { effectLabel in
-                EffectLabel(
+                OldEffectLabel(
                     value: effectLabel.value,
                     onComplete: { removeEffectLabel(id: effectLabel.id) }
                 )

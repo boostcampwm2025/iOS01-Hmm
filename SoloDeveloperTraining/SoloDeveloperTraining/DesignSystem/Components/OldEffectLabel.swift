@@ -39,7 +39,7 @@ struct EffectLabelData: Identifiable {
     let value: Int
 }
 
-struct EffectLabel: View {
+struct OldEffectLabel: View {
     let value: Int
     let onComplete: () -> Void
 
@@ -119,7 +119,7 @@ struct EffectLabel: View {
 }
 
 #Preview {
-    EffectLabel(value: 100000)
-    EffectLabel(value: -200000)
-    EffectLabel(value: 0)
+    OldEffectLabel(value: 100000)
+    OldEffectLabel(value: -200000)
+    OldEffectLabel(value: 0)
 }
