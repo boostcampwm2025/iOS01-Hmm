@@ -31,7 +31,7 @@ struct StackGameTestView: View {
             ZStack(alignment: .top) {
                 SpriteView(scene: scene)
 
-                GameToolBar(
+                OldGameToolBar(
                     closeButtonDidTapHandler: stopGame,
                     coffeeButtonDidTapHandler: useCoffee,
                     energyDrinkButtonDidTapHandler: useEnergyDrink,

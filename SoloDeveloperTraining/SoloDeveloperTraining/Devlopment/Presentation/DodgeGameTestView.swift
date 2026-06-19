@@ -40,7 +40,7 @@ struct DodgeGameTestView: View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
                 // GameToolBar 추가
-                GameToolBar(
+                OldGameToolBar(
                     closeButtonDidTapHandler: {
                         game.stopGame()
                     },
