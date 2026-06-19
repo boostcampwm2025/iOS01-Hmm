@@ -60,14 +60,27 @@ private extension NewTapGameView {
 
     var toolbarSection: some View {
         GameToolBar(
-            feverStage: 0,
-            feverProgress: 0,
-            feverMultiplier: 0,
-            coffeeCount: 0,
-            energyDrinkCount: 0,
-            onClose: { },
-            onCoffee: { },
-            onEnergyDrink: { }
+            feverStage: tapGame.feverSystem.feverStage,
+            feverProgress: {
+                let stageBase = Double(tapGame.feverSystem.feverStage) * 100.0
+                return (tapGame.feverSystem.feverPercent - stageBase) / 100.0
+            }(),
+            feverMultiplier: tapGame.feverSystem.feverStage == 0 ? 0 : tapGame.feverSystem.feverMultiplier,
+            coffeeCount: tapGame.inventory.count(.coffee) ?? 0,
+            energyDrinkCount: tapGame.inventory.count(.energyDrink) ?? 0,
+            coffeeCooldown: {
+                Double(tapGame.buffSystem.coffeeDuration) / Double(ConsumableType.coffee.duration)
+            }(),
+            energyDrinkCooldown: {
+                Double(tapGame.buffSystem.energyDrinkDuration) / Double(ConsumableType.energyDrink.duration)
+            }(),
+            onClose: {
+                closePause = true
+                SoundService.shared.stopAllSFX()
+                SoundService.shared.trigger(.buttonTap)
+            },
+            onCoffee: { useConsumableItem(.coffee) },
+            onEnergyDrink: { useConsumableItem(.energyDrink) }
         )
         .padding(.bottom, TokenSpacing.md)
     }
@@ -102,5 +115,22 @@ private extension NewTapGameView {
 
     func removeEffectLabel(id: UUID) {
         effectLabels.removeAll { $0.id == id }
+    }
+
+    func handleCloseButton() {
+        tapGame.stopGame()
+        isGameStarted = false
+    }
+
+    func useConsumableItem(_ type: ConsumableType) {
+        let count = tapGame.inventory.count(type) ?? 0
+        if count > 0 {
+            if tapGame.inventory.drink(type) {
+                SoundService.shared.trigger(.itemConsume)
+                HapticService.shared.trigger(.success)
+                tapGame.buffSystem.useConsumableItem(type: type)
+                tapGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
+            }
+        }
     }
 }
