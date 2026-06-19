@@ -49,7 +49,6 @@ struct DodgeGameView: View {
 
     // 광고 팝업 관련
     @Binding var showDrinkAdPopup: Bool
-    @Binding var showRewardPopup: Bool
     @Binding var showExitBonusPopup: Bool
     @Binding var selectedDrinkType: ConsumableType?
     @Binding var resumeGameCallback: (() -> Void)?
@@ -62,7 +61,6 @@ struct DodgeGameView: View {
         tabSwitchPause: Binding<Bool>,
         animationSystem: CharacterAnimationSystem? = nil,
         showDrinkAdPopup: Binding<Bool>,
-        showRewardPopup: Binding<Bool>,
         showExitBonusPopup: Binding<Bool>,
         selectedDrinkType: Binding<ConsumableType?>,
         resumeGameCallback: Binding<(() -> Void)?>,
@@ -72,7 +70,6 @@ struct DodgeGameView: View {
         self._gameActionGoldDelta = gameActionGoldDelta
         self._tabSwitchPause = tabSwitchPause
         self._showDrinkAdPopup = showDrinkAdPopup
-        self._showRewardPopup = showRewardPopup
         self._showExitBonusPopup = showExitBonusPopup
         self._selectedDrinkType = selectedDrinkType
         self._resumeGameCallback = resumeGameCallback
@@ -291,7 +288,6 @@ private extension DodgeGameView {
     @Previewable @State var gameActionGoldDelta = 0
     @Previewable @State var tabSwitchPause = true
     @Previewable @State var showDrinkAdPopup = false
-    @Previewable @State var showRewardPopup = false
     @Previewable @State var showExitBonusPopup = false
     @Previewable @State var selectedDrinkType: ConsumableType?
     @Previewable @State var resumeGameCallback: (() -> Void)?
@@ -330,7 +326,6 @@ private extension DodgeGameView {
                 tabSwitchPause: $tabSwitchPause,
                 animationSystem: nil,
                 showDrinkAdPopup: $showDrinkAdPopup,
-                showRewardPopup: $showRewardPopup,
                 showExitBonusPopup: $showExitBonusPopup,
                 selectedDrinkType: $selectedDrinkType,
                 resumeGameCallback: $resumeGameCallback,

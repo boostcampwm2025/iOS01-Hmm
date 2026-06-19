@@ -31,7 +31,6 @@ struct StackGameView: View {
 
     // 광고 팝업 관련
     @Binding var showDrinkAdPopup: Bool
-    @Binding var showRewardPopup: Bool
     @Binding var showExitBonusPopup: Bool
     @Binding var selectedDrinkType: ConsumableType?
     @Binding var resumeGameCallback: (() -> Void)?
@@ -44,7 +43,6 @@ struct StackGameView: View {
         tabSwitchPause: Binding<Bool>,
         animationSystem: CharacterAnimationSystem? = nil,
         showDrinkAdPopup: Binding<Bool>,
-        showRewardPopup: Binding<Bool>,
         showExitBonusPopup: Binding<Bool>,
         selectedDrinkType: Binding<ConsumableType?>,
         resumeGameCallback: Binding<(() -> Void)?>,
@@ -63,7 +61,6 @@ struct StackGameView: View {
         self._isGameStarted = isGameStarted
         self._gameActionGoldDelta = gameActionGoldDelta
         self._showDrinkAdPopup = showDrinkAdPopup
-        self._showRewardPopup = showRewardPopup
         self._showExitBonusPopup = showExitBonusPopup
         self._selectedDrinkType = selectedDrinkType
         self._resumeGameCallback = resumeGameCallback

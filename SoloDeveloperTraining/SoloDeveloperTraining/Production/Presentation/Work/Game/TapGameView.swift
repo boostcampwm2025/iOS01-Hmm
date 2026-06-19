@@ -33,8 +33,6 @@ struct TapGameView: View {
 
     /// 광고 시청 후 음료 지급 팝업 표시 여부
     @Binding var showDrinkAdPopup: Bool
-    /// 광고 보상 팝업 표시 여부
-    @Binding var showRewardPopup: Bool
     /// 나가기 보너스 팝업 표시 여부
     @Binding var showExitBonusPopup: Bool
     /// 광고 팝업에서 선택된 음료 타입
@@ -51,7 +49,6 @@ struct TapGameView: View {
         tabSwitchPause: Binding<Bool>,
         animationSystem: CharacterAnimationSystem?,
         showDrinkAdPopup: Binding<Bool>,
-        showRewardPopup: Binding<Bool>,
         showExitBonusPopup: Binding<Bool>,
         selectedDrinkType: Binding<ConsumableType?>,
         resumeGameCallback: Binding<(() -> Void)?>,
@@ -68,7 +65,6 @@ struct TapGameView: View {
         _gameActionGoldDelta = gameActionGoldDelta
         _tabSwitchPause = tabSwitchPause
         _showDrinkAdPopup = showDrinkAdPopup
-        _showRewardPopup = showRewardPopup
         _showExitBonusPopup = showExitBonusPopup
         _selectedDrinkType = selectedDrinkType
         _resumeGameCallback = resumeGameCallback

@@ -29,7 +29,8 @@ struct MainView: View {
 
     // 음료 광고 팝업 관련
     @State private var showDrinkAdPopup: Bool = false
-    @State private var showRewardPopup: Bool = false
+    @State private var showRewardToast: Bool = false
+    @State private var rewardToastMessage: String = ""
     @State private var selectedDrinkType: ConsumableType?
 
     // 스킬 광고 보상 지속시 남은 시간
@@ -43,6 +44,7 @@ struct MainView: View {
     @State private var offlineRewardToastMessage: String = ""
     @State private var hasCheckedOfflineReward: Bool = false
     @State private var tabbarAnchorY: CGFloat = 0
+    @State private var bottomAnchorY: CGFloat = 0
 
     // 레벨업 이펙트 관련
     @State private var isCareerSystemInitialized: Bool = false
@@ -114,6 +116,11 @@ struct MainView: View {
             isShowing: $showOfflineRewardToast,
             message: offlineRewardToastMessage,
             anchorY: tabbarAnchorY
+        )
+        .duToast(
+            isShowing: $showRewardToast,
+            message: rewardToastMessage,
+            anchorY: bottomAnchorY
         )
     }
 }
@@ -187,6 +194,11 @@ private extension MainView {
                 tabContentSwitchView
             }
         }
+        .background(GeometryReader { geo in
+            Color.clear.onAppear {
+                bottomAnchorY = geo.frame(in: .global).maxY - TokenGrid.paddingBottom
+            }
+        })
     }
 
     var workGameOverlayView: some View {
@@ -198,7 +210,6 @@ private extension MainView {
             tabSwitchPause: tabSwitchPauseBinding,
             careerSystem: $careerSystem,
             showDrinkAdPopup: $showDrinkAdPopup,
-            showRewardPopup: $showRewardPopup,
             showExitBonusPopup: workGameSession.exitBonusPopupBinding,
             selectedDrinkType: $selectedDrinkType,
             resumeGameCallback: workGameSession.resumeGameBinding,
@@ -221,7 +232,6 @@ private extension MainView {
                     tabSwitchPause: tabSwitchPauseBinding,
                     careerSystem: $careerSystem,
                     showDrinkAdPopup: $showDrinkAdPopup,
-                    showRewardPopup: $showRewardPopup,
                     showExitBonusPopup: workGameSession.exitBonusPopupBinding,
                     selectedDrinkType: $selectedDrinkType,
                     resumeGameCallback: workGameSession.resumeGameBinding,
@@ -249,7 +259,6 @@ private extension MainView {
                 .ignoresSafeArea()
             settingsOverlayView
             drinkAdPopupOverlayView
-            drinkRewardPopupOverlayView
             exitBonusPopupOverlayView
             offlineRewardPopupOverlayView
             scenarioOverlayView
@@ -455,22 +464,6 @@ private extension MainView {
     }
 
     @ViewBuilder
-    var drinkRewardPopupOverlayView: some View {
-        if showRewardPopup, let drinkType = selectedDrinkType {
-            modalOverlay {
-                NoticePopup(
-                    type: .default(
-                        buttonText: "확인",
-                        action: handleRewardConfirmInMainView
-                    ),
-                    title: "보상 지급 완료!",
-                    text: drinkType == .coffee ? "커피 1개를 받았습니다!" : "박하스 1개를 받았습니다!"
-                )
-            }
-        }
-    }
-
-    @ViewBuilder
     var exitBonusPopupOverlayView: some View {
         if workGameSession.showsExitBonusPopup {
             modalOverlay {
@@ -514,9 +507,10 @@ private extension MainView {
         if success {
             // 보상 지급
             user.inventory.gain(consumable: drinkType)
-
-            // 보상 팝업 표시
-            showRewardPopup = true
+            rewardToastMessage = "카페인 충전 완료!"
+            showRewardToast = true
+            selectedDrinkType = nil
+            workGameSession.resumeGame?()
         } else {
             // 광고 실패 시 초기화
             selectedDrinkType = nil
@@ -525,12 +519,6 @@ private extension MainView {
 
     func handleSkipAdInMainView() {
         showDrinkAdPopup = false
-        selectedDrinkType = nil
-        workGameSession.resumeGame?()
-    }
-
-    func handleRewardConfirmInMainView() {
-        showRewardPopup = false
         selectedDrinkType = nil
         workGameSession.resumeGame?()
     }
