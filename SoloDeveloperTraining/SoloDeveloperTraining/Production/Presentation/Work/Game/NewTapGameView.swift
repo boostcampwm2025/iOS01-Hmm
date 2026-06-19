@@ -108,6 +108,26 @@ private extension NewTapGameView {
                 Task { await handleTap(at: location) }
             }
         }
+        .gamePauseWrapper(
+            pauseBinding: pauseBinding,
+            onLeave: { },
+            onPause: {
+                tapGame.pauseGame()
+                SoundService.shared.stopAllSFX()
+                lastTapSoundTime = .distantPast
+            },
+            onResume: { tapGame.resumeGame() }
+        )
+    }
+
+    var pauseBinding: Binding<Bool> {
+        Binding(
+            get: { tabSwitchPause || closePause },
+            set: {
+                tabSwitchPause = $0
+                closePause = $0
+            }
+        )
     }
 }
 
