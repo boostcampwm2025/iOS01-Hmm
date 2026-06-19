@@ -12,10 +12,11 @@ import DUDesignSystem
 struct NicknameSetupView: View {
     @State private var nickname: String = ""
     @State private var nicknameState: InputField.InputFieldState = .default
+    @State private var showTutorial = false
+    @State private var confirmedNickname = ""
 
     private let validator = Validator()
-    let onStart: (String) -> Void
-    let onTutorial: (String) -> Void
+    let onComplete: (String) -> Void
 
     private var isValid: Bool {
         validator.isValid(nickname)
@@ -52,7 +53,8 @@ struct NicknameSetupView: View {
                     .opacity(TokenOpacity.opacity40)
             )
             TextButton(text: "완료", type: .primary, state: isValid ? .default : .disabled) {
-                onStart(nickname)
+                confirmedNickname = nickname
+                showTutorial = true
             }
             .padding(.top, 16 + 48)
             .padding(.horizontal, TokenSpacing.lg)
@@ -72,16 +74,16 @@ struct NicknameSetupView: View {
                 nicknameState = .error(message: message)
             }
         }
+        .fullScreenCover(isPresented: $showTutorial) {
+            TutorialView {
+                onComplete(confirmedNickname)
+            }
+        }
     }
 }
 
 #Preview {
-    NicknameSetupView(
-        onStart: { nickname in
-            print("시작: \(nickname)")
-        },
-        onTutorial: { nickname in
-            print("튜토리얼: \(nickname)")
-        }
-    )
+    NicknameSetupView { nickname in
+        print("완료: \(nickname)")
+    }
 }

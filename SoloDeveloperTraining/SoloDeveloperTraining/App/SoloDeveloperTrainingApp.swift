@@ -13,18 +13,11 @@ import FirebaseCore
 import GoogleMobileAds
 import KakaoSDKCommon
 
+import DUDesignSystem
+
 private enum Constant {
     enum Animation {
         static let transitionDuration: Double = 0.5
-    }
-
-    enum Padding {
-        static let nicknamePopupHorizontal: CGFloat = 25
-        static let errorPopupVertical: CGFloat = 20
-    }
-
-    enum Opacity {
-        static let overlay: Double = 0.5
     }
 }
 
@@ -51,7 +44,6 @@ struct SoloDeveloperTrainingApp: App {
 
     @State private var hasSeenIntro = false
     @State private var showNicknameSetup = false
-    @State private var showTutorial = false
     @State private var user: User?
     @State private var showErrorPopup = false
     @State private var errorMessage: String = ""
@@ -100,24 +92,20 @@ private extension SoloDeveloperTrainingApp {
         .onOpenURL { url in
             print("\(url) app open")
         }
-        .overlay {
-            nicknameSetupOverlay
+        .fullScreenCover(isPresented: $showNicknameSetup) {
+            NicknameSetupView { nickname in
+                let newUser = User(nickname: nickname)
+                user = newUser
+                showNicknameSetup = false
+                checkFirstOpen(user: newUser)
+                user?.record.tutorialCompleted = true
+                hasSeenIntro = true
+                user?.record.scenarioProgress
+                    .startScenario(career: .unemployed)
+            }
         }
         .overlay {
             errorPopupOverlay
-        }
-        .fullScreenCover(isPresented: $showTutorial) {
-            TutorialView(isPresented: $showTutorial) {
-                user?.record.tutorialCompleted = true
-                hasSeenIntro = true
-                showTutorial = false
-            }
-            .onAppear {
-                Task {
-                    try? await Task.sleep(nanoseconds: UInt64(Constant.Animation.transitionDuration * 1_000_000_000))
-                    hasSeenIntro = true
-                }
-            }
         }
         .onAppear {
             guard user == nil else { return }
@@ -200,65 +188,17 @@ private extension SoloDeveloperTrainingApp {
     // MARK: - Overlays
 
     @ViewBuilder
-    var nicknameSetupOverlay: some View {
-        if showNicknameSetup {
-            ZStack {
-                Color.black.opacity(Constant.Opacity.overlay)
-                    .ignoresSafeArea()
-
-                NicknameSetupView(
-                    onStart: { nickname in
-                        let newUser = User(nickname: nickname)
-                        user = newUser
-                        showNicknameSetup = false
-                        checkFirstOpen(user: newUser)
-                        withAnimation(.easeOut(duration: Constant.Animation.transitionDuration)) {
-                            hasSeenIntro = true
-                        }
-                        user?.record.scenarioProgress
-                            .startScenario(career: .unemployed)
-                    },
-                    onTutorial: { nickname in
-                        let newUser = User(nickname: nickname)
-                        user = newUser
-                        showNicknameSetup = false
-                        checkFirstOpen(user: newUser)
-                        showTutorial = true
-                        user?.record.scenarioProgress
-                            .startScenario(career: .unemployed)
-                    }
-                )
-                .padding(.horizontal, Constant.Padding.nicknamePopupHorizontal)
-            }
-        }
-    }
-
-    @ViewBuilder
     var errorPopupOverlay: some View {
         if showErrorPopup {
             ZStack {
-                Color.black.opacity(Constant.Opacity.overlay)
+                Color.black300PopUpDimStatusBar
                     .ignoresSafeArea()
 
-                Popup(title: "오류") {
-                    VStack(spacing: 0) {
-                        Text(errorMessage)
-                            .textStyle(.body)
-                            .foregroundColor(.black)
-                            .multilineTextAlignment(.center)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.vertical, Constant.Padding.errorPopupVertical)
-
-                        HStack(spacing: 0) {
-                            Spacer()
-                            MediumButton(title: "확인", isFilled: true) {
-                                showErrorPopup = false
-                            }
-                            Spacer()
-                        }
-                    }
-                }
-                .padding(.horizontal, Constant.Padding.nicknamePopupHorizontal)
+                NoticePopup(
+                    type: .default(buttonText: "확인", action: { showErrorPopup = false }),
+                    title: "오류",
+                    text: errorMessage
+                )
             }
         }
     }
