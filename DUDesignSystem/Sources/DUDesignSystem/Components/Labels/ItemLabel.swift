@@ -39,6 +39,7 @@ public struct ItemLabel: View {
             Text(text)
                 .duFont(font)
                 .foregroundStyle(color)
+                .multilineTextAlignment(.center)
         }
     }
 }
