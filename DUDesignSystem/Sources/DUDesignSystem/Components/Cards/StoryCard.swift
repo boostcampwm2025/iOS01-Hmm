@@ -51,7 +51,6 @@ private extension StoryCard {
                 .clipped()
                 .overlay(alignment: .bottom) {
                     TextBox(text: text)
-                        .padding([.horizontal, .bottom], TokenSpacing.lg)
                 }
         }
         .frame(height: type == .levelUp ? 560 : 408)
