@@ -19,6 +19,10 @@ public struct GameToolBar: View {
     public var coffeeCount: Int
     /// 에너지드링크 보유 개수
     public var energyDrinkCount: Int
+    /// 커피 쿨다운 진행도 (0.0 = 사용 가능, 1.0 = 쿨다운 시작 직후)
+    public var coffeeCooldown: Double
+    /// 에너지드링크 쿨다운 진행도 (0.0 = 사용 가능, 1.0 = 쿨다운 시작 직후)
+    public var energyDrinkCooldown: Double
 
     public var onClose: () -> Void
     public var onCoffee: () -> Void
@@ -30,6 +34,8 @@ public struct GameToolBar: View {
         feverMultiplier: Double = 0,
         coffeeCount: Int,
         energyDrinkCount: Int,
+        coffeeCooldown: Double = 0,
+        energyDrinkCooldown: Double = 0,
         onClose: @escaping () -> Void,
         onCoffee: @escaping () -> Void,
         onEnergyDrink: @escaping () -> Void
@@ -39,6 +45,8 @@ public struct GameToolBar: View {
         self.feverMultiplier = feverMultiplier
         self.coffeeCount = coffeeCount
         self.energyDrinkCount = energyDrinkCount
+        self.coffeeCooldown = max(0, min(1, coffeeCooldown))
+        self.energyDrinkCooldown = max(0, min(1, energyDrinkCooldown))
         self.onClose = onClose
         self.onCoffee = onCoffee
         self.onEnergyDrink = onEnergyDrink
@@ -73,8 +81,14 @@ public struct GameToolBar: View {
             feverBar
 
             HStack(spacing: TokenSpacing.sm) {
-                itemButton(icon: .coffee, count: coffeeCount, action: onCoffee)
-                itemButton(icon: .energyDrink, count: energyDrinkCount, action: onEnergyDrink)
+                itemButton(icon: .coffee,
+                           count: coffeeCount,
+                           cooldown: coffeeCooldown,
+                           action: onCoffee)
+                itemButton(icon: .energyDrink,
+                           count: energyDrinkCount,
+                           cooldown: energyDrinkCooldown,
+                           action: onEnergyDrink)
             }
         }
         .padding(.horizontal, TokenSpacing.md)
@@ -100,10 +114,23 @@ public struct GameToolBar: View {
         .frame(height: 16)
     }
 
-    private func itemButton(icon: DUIconName, count: Int, action: @escaping () -> Void) -> some View {
+    private func itemButton(icon: DUIconName, count: Int, cooldown: Double, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             ItemLabel(text: "\(count)", icon: icon, iconSize: .size24, font: .caption, color: .black300)
+                .mask(
+                    GeometryReader { geometry in
+                        VStack(spacing: 0) {
+                            Rectangle()
+                                .opacity(0.3)
+                                .frame(height: geometry.size.height * cooldown)
+                            Rectangle()
+                                .opacity(1)
+                                .frame(height: geometry.size.height * (1 - cooldown))
+                        }
+                    }
+                )
         }
+        .disabled(cooldown > 0)
     }
 }
 
@@ -111,9 +138,9 @@ public struct GameToolBar: View {
     VStack(spacing: TokenSpacing.lg) {
         GameToolBar(feverStage: 0, feverProgress: 0, coffeeCount: 999, energyDrinkCount: 999, onClose: {}, onCoffee: {}, onEnergyDrink: {})
         GameToolBar(feverStage: 0, feverProgress: 0.5, coffeeCount: 999, energyDrinkCount: 999, onClose: {}, onCoffee: {}, onEnergyDrink: {})
-        GameToolBar(feverStage: 1, feverProgress: 0.8, feverMultiplier: 0.8, coffeeCount: 999, energyDrinkCount: 999, onClose: {}, onCoffee: {}, onEnergyDrink: {})
-        GameToolBar(feverStage: 2, feverProgress: 0.5, feverMultiplier: 2.0, coffeeCount: 999, energyDrinkCount: 999, onClose: {}, onCoffee: {}, onEnergyDrink: {})
-        GameToolBar(feverStage: 3, feverProgress: 0.3, feverMultiplier: 3.0, coffeeCount: 999, energyDrinkCount: 999, onClose: {}, onCoffee: {}, onEnergyDrink: {})
+        GameToolBar(feverStage: 1, feverProgress: 0.8, feverMultiplier: 0.8, coffeeCount: 999, energyDrinkCount: 999, coffeeCooldown: 0.3, energyDrinkCooldown: 0.7, onClose: {}, onCoffee: {}, onEnergyDrink: {})
+        GameToolBar(feverStage: 2, feverProgress: 0.5, feverMultiplier: 2.0, coffeeCount: 999, energyDrinkCount: 999, coffeeCooldown: 1.0, energyDrinkCooldown: 0.0, onClose: {}, onCoffee: {}, onEnergyDrink: {})
+        GameToolBar(feverStage: 3, feverProgress: 0.3, feverMultiplier: 3.0, coffeeCount: 999, energyDrinkCount: 999, coffeeCooldown: 0.0, energyDrinkCooldown: 1.0, onClose: {}, onCoffee: {}, onEnergyDrink: {})
     }
     .padding(TokenSpacing.lg)
     .background(Color.beige200)
