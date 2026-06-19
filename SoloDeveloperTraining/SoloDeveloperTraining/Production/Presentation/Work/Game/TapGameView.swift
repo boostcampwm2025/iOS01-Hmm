@@ -76,15 +76,17 @@ struct TapGameView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            toolbarSection
-            tapAreaSection
-        }
-        .onAppear {
-            resumeGameCallback = { [weak tapGame] in
-                tapGame?.resumeGame()
+        GeometryReader { _ in
+            VStack(spacing: 0) {
+                toolbarSection
+                tapAreaSection
             }
-            exitGameCallback = { handleCloseButton() }
+            .onAppear {
+                resumeGameCallback = { [weak tapGame] in
+                    tapGame?.resumeGame()
+                }
+                exitGameCallback = { handleCloseButton() }
+            }
         }
     }
 }
