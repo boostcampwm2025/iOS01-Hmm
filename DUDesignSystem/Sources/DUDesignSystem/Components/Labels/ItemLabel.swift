@@ -14,21 +14,24 @@ public struct ItemLabel: View {
     public var iconSize: TokenIconSize?
     public var font: DUTypographyToken
     public var color: Color
+    public var textAlignment: TextAlignment
 
-    public init(text: String, font: DUTypographyToken, color: Color) {
+    public init(text: String, font: DUTypographyToken, color: Color, textAlignment: TextAlignment = .leading) {
         self.text = text
         self.icon = nil
         self.iconSize = nil
         self.font = font
         self.color = color
+        self.textAlignment = textAlignment
     }
 
-    public init(text: String, icon: DUIconName, iconSize: TokenIconSize, font: DUTypographyToken, color: Color) {
+    public init(text: String, icon: DUIconName, iconSize: TokenIconSize, font: DUTypographyToken, color: Color, textAlignment: TextAlignment = .leading) {
         self.text = text
         self.icon = icon
         self.iconSize = iconSize
         self.font = font
         self.color = color
+        self.textAlignment = textAlignment
     }
 
     public var body: some View {
@@ -39,6 +42,7 @@ public struct ItemLabel: View {
             Text(text)
                 .duFont(font)
                 .foregroundStyle(color)
+                .multilineTextAlignment(textAlignment)
         }
     }
 }
