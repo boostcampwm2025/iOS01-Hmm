@@ -105,6 +105,7 @@
 				Production/Presentation/DrinkAdPopupView.swift,
 				Production/Presentation/DrinkRewardPopupView.swift,
 				Production/Presentation/FeedbackSettingView.swift,
+				Production/Presentation/GIFView.swift,
 				Production/Presentation/Intro/IntroView.swift,
 				Production/Presentation/Intro/NicknameSetupView.swift,
 				Production/Presentation/Intro/TutorialPageView.swift,
