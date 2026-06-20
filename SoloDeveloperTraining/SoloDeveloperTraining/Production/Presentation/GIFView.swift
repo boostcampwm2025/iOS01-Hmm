@@ -5,11 +5,18 @@ import ImageIO
 
 struct GIFView: UIViewRepresentable {
     let gifName: String
+    var onFinished: (() -> Void)?
 
     func makeUIView(context: Context) -> UIImageView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        loadGIF(into: imageView)
+
+        if let duration = loadGIF(into: imageView) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+                onFinished?()
+            }
+        }
+
         return imageView
     }
 
@@ -27,17 +34,19 @@ struct GIFView: UIViewRepresentable {
         return CGSize(width: width, height: height)
     }
 
-    private func loadGIF(into imageView: UIImageView) {
+    private func loadGIF(into imageView: UIImageView) -> TimeInterval? {
         guard
             let url = DUGIF.bundle.url(
                 forResource: gifName.replacingOccurrences(of: ".gif", with: ""),
                 withExtension: "gif"
             ),
-            let image = UIImage.animatedGIF(url: url)
+            let animatedGIF = UIImage.animatedGIF(url: url)
         else {
             imageView.image = nil
-            return
+            return nil
         }
-        imageView.image = image
+
+        imageView.image = animatedGIF.image
+        return animatedGIF.duration
     }
 }

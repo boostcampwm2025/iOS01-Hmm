@@ -8,7 +8,14 @@
 import UIKit
 
 extension UIImage {
-    static func animatedGIF(url: URL) -> UIImage? {
+
+    /// 재생 시간을 리턴하기 위한 커스텀 타입 선언
+    struct AnimatedGIF {
+        let image: UIImage
+        let duration: TimeInterval
+    }
+
+    static func animatedGIF(url: URL) -> AnimatedGIF? {
         guard let data = try? Data(contentsOf: url) else { return nil }
 
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else { return nil }
@@ -32,7 +39,17 @@ extension UIImage {
             totalDuration = 0.1 * Double(frameCount)
         }
 
-        return UIImage.animatedImage(with: frames, duration: totalDuration)
+        guard let image = UIImage.animatedImage(
+            with: frames,
+            duration: totalDuration
+        ) else {
+            return nil
+        }
+
+        return AnimatedGIF(
+            image: image,
+            duration: totalDuration
+        )
     }
 
     private static func frameDuration(source: CGImageSource, index: Int) -> TimeInterval {
