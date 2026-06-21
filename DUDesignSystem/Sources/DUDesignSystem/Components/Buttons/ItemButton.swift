@@ -15,13 +15,15 @@ public struct ItemButton: View {
     }
 
     public var text: String
+    public var icon: DUIconName
     public var state: ItemButtonState = .default
     public var action: () -> Void
 
     @GestureState private var isPressed: Bool = false
 
-    public init(text: String, state: ItemButtonState, action: @escaping () -> Void) {
+    public init(text: String, icon: DUIconName = .coinBag, state: ItemButtonState, action: @escaping () -> Void) {
         self.text = text
+        self.icon = icon
         self.state = state
         self.action = action
     }
@@ -39,7 +41,7 @@ public struct ItemButton: View {
 
     public var body: some View {
         ZStack {
-            ItemLabel(text: text, icon: .coinBag, iconSize: .size16, font: .caption, color: .white300)
+            ItemLabel(text: text, icon: icon, iconSize: .size16, font: .caption, color: .white300)
                 .opacity(state == .locked ? TokenOpacity.opacity40 : TokenOpacity.opacity100)
             if state == .locked {
                 DUIcon(.lock, size: .size16)

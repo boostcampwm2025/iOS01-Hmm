@@ -7,10 +7,9 @@
 
 import SwiftUI
 
+import DUDesignSystem
+
 private enum Constant {
-    static let horizontalPadding: CGFloat = 16
-    static let popupHorizontalPadding: CGFloat = 25
-    static let itemCardSpacing: CGFloat = 12
     static let popupContentSpacing: CGFloat = 20
 }
 
@@ -39,12 +38,13 @@ struct SkillView: View {
         let isActive = SkillAdRewardManager.isRewardActive(user: user, now: adRewardNow)
         let canUseToday = SkillAdRewardManager.canUseRewardToday(user: user, now: adRewardNow)
 
-        return ItemRow(
+        return DUDesignSystem.ItemRow(
+            imageName: "adBoost",
             title: "업무 효율 대박",
-            description: "5분간 골드 \(Int(Policy.Ad.SkillReward.rewardMultiplier))배 획득",
-            imageName: "skill_ad_reward",
-            price: .text(isActive ? "사용중" : "AD"),
-            state: adRewardButtonState(isActive: isActive, canUseToday: canUseToday),
+            description: "5분간 피버타임 두배 (X1, X2, X4)",
+            buttonText: isActive ? "사용중" : "광고보기",
+            buttonIcon: .ad,
+            buttonState: adRewardButtonState(isActive: isActive, canUseToday: canUseToday),
             action: {
                 Task { await handleWatchAd() }
             }
@@ -53,36 +53,49 @@ struct SkillView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(spacing: Constant.itemCardSpacing) {
+            LazyVStack(spacing: TokenSpacing.md) {
                 skillAdItemRow
                 ForEach(skillSystem.skillList(), id: \.skill) { skillState in
-                    ItemRow(
+                    DUDesignSystem.ItemRow(
+                        imageName: skillState.skill.imageName,
                         title: skillState.skill.title,
                         description: {
                             let current = skillState.skill.gainGold
                             let after = skillState.skill.gainGoldAfterUpgrade
                             return "레벨업시 골드 획득 \(Int(current).formatted) -> \(Int(after).formatted)"
                         }(),
-                        imageName: skillState.skill.imageName,
-                        cost: skillState.skill.upgradeCost,
-                        state: skillState.itemState,
+                        buttonText: skillState.skill.upgradeCost.gold > 0
+                            ? skillState.skill.upgradeCost.gold.formatted
+                            : skillState.skill.upgradeCost.diamond.formatted,
+                        buttonIcon: skillState.skill.upgradeCost.gold > 0 ? .coinBag : .diamond,
+                        buttonState: skillState.itemState.itemButtonState,
                         action: { upgrade(skill: skillState.skill) },
-                        onLongPressAction: { upgradeRepeating(skill: skillState.skill) }
+                        onLongPress: { _ = upgradeRepeating(skill: skillState.skill) }
                     )
                 }
             }
+            .padding(.horizontal, TokenGrid.paddingSide)
+            .padding(.bottom, TokenGrid.paddingBottom)
         }
-        .padding(.bottom)
         .scrollIndicators(.never)
     }
 }
 
-private extension SkillView {
-    func adRewardButtonState(isActive: Bool, canUseToday: Bool) -> ItemState {
-        if isActive {
-            return .insufficient
+private extension ItemState {
+    var itemButtonState: ItemButton.ItemButtonState {
+        switch self {
+        case .available:    return .default
+        case .insufficient: return .disabled
+        case .locked:       return .locked
+        case .reachedMax:   return .locked
         }
-        return canUseToday ? .available : .locked
+    }
+}
+
+private extension SkillView {
+    func adRewardButtonState(isActive: Bool, canUseToday: Bool) -> ItemButton.ItemButtonState {
+        if isActive { return .disabled }
+        return canUseToday ? .default : .locked
     }
 
     func upgrade(skill: Skill) {
@@ -129,7 +142,7 @@ private extension SkillView {
     func handleWatchAd() async {
         let isActive = SkillAdRewardManager.isRewardActive(user: user, now: adRewardNow)
         let canUseToday = SkillAdRewardManager.canUseRewardToday(user: user, now: adRewardNow)
-        guard adRewardButtonState(isActive: isActive, canUseToday: canUseToday) == .available else { return }
+        guard adRewardButtonState(isActive: isActive, canUseToday: canUseToday) == .default else { return }
 
         let success = await AdService.shared.showAdWithResult(.interstitial)
         if success {

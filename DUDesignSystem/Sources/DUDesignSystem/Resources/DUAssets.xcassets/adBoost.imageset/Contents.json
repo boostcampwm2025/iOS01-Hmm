@@ -1,11 +1,11 @@
 {
   "images" : [
     {
+      "filename" : "skillAdReward.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "skill_language_3.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

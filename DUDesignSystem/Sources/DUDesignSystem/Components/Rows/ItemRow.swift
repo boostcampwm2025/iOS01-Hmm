@@ -13,23 +13,29 @@ public struct ItemRow: View {
     public var title: String
     public var description: String
     public var buttonText: String
+    public var buttonIcon: DUIconName
     public var buttonState: ItemButton.ItemButtonState
     public var action: () -> Void
+    public var onLongPress: (() -> Void)?
 
     public init(
         imageName: String,
         title: String,
         description: String,
         buttonText: String,
+        buttonIcon: DUIconName = .coinBag,
         buttonState: ItemButton.ItemButtonState = .default,
-        action: @escaping () -> Void
+        action: @escaping () -> Void,
+        onLongPress: (() -> Void)? = nil
     ) {
         self.imageName = imageName
         self.title = title
         self.description = description
         self.buttonText = buttonText
+        self.buttonIcon = buttonIcon
         self.buttonState = buttonState
         self.action = action
+        self.onLongPress = onLongPress
     }
 
     public var body: some View {
@@ -46,7 +52,10 @@ public struct ItemRow: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            ItemButton(text: buttonText, state: buttonState, action: action)
+            ItemButton(text: buttonText, icon: buttonIcon, state: buttonState, action: action)
+                .simultaneousGesture(
+                    LongPressGesture().onEnded { _ in onLongPress?() }
+                )
         }
     }
 }
