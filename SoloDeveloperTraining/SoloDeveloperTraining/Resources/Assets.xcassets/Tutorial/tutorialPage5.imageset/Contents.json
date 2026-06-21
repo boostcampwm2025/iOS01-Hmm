@@ -1,11 +1,11 @@
 {
   "images" : [
     {
+      "filename" : "tutorialPage5.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "tutorial_skill.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

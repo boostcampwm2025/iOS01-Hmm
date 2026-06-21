@@ -15,13 +15,13 @@ struct TutorialView: View {
     let onComplete: () -> Void
 
     private let tutorialPages: [TutorialPage] = [
-        TutorialPage(imageName: .tutorialWork),
-        TutorialPage(imageName: .tutorialSkill),
-        TutorialPage(imageName: .tutorialItem),
-        TutorialPage(imageName: .tutorialHousing),
-        TutorialPage(imageName: .tutorialQuiz),
-        TutorialPage(imageName: .tutorialMission),
-        TutorialPage(imageName: .tutorialCareer)
+        TutorialPage(imageName: .tutorialPage1),
+        TutorialPage(imageName: .tutorialPage2),
+        TutorialPage(imageName: .tutorialPage3),
+        TutorialPage(imageName: .tutorialPage4),
+        TutorialPage(imageName: .tutorialPage5),
+        TutorialPage(imageName: .tutorialPage6),
+        TutorialPage(imageName: .tutorialPage7)
     ]
 
     var body: some View {

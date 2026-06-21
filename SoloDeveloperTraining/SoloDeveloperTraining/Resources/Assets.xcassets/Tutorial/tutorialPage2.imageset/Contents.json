@@ -1,11 +1,11 @@
 {
   "images" : [
     {
+      "filename" : "tutorialPage2.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "tutorial_career.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
