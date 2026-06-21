@@ -1,5 +1,5 @@
 //
-//  RunningCharacter.swift
+//  OldRunningCharacter.swift
 //  SoloDeveloperTraining
 //
 //  Created by 최범수 on 2026-01-15.
@@ -11,7 +11,7 @@ private enum Constant {
     static let animationSpeed: TimeInterval = 0.15
 }
 
-struct RunningCharacter: View {
+struct OldRunningCharacter: View {
     @State private var currentFrame = 0
     @State private var animationTimer: Timer?
 
@@ -72,14 +72,14 @@ struct RunningCharacter: View {
 #Preview {
     HStack(spacing: 40) {
         VStack {
-            RunningCharacter(isFacingLeft: false, isGamePaused: false)
+            OldRunningCharacter(isFacingLeft: false, isGamePaused: false)
                 .frame(width: 40, height: 40)
             Text("오른쪽 →")
                 .font(.caption)
         }
 
         VStack {
-            RunningCharacter(isFacingLeft: true, isGamePaused: false)
+            OldRunningCharacter(isFacingLeft: true, isGamePaused: false)
                 .frame(width: 40, height: 40)
             Text("← 왼쪽")
                 .font(.caption)

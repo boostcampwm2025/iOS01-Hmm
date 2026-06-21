@@ -8,7 +8,7 @@
 import Foundation
 
 final class DodgeGame: Game {
-    typealias ActionInput = DropItem.DropItemType
+    typealias ActionInput = OldDropItem.DropItemType
 
     /// 게임 종류
     var kind: GameType = .dodge
@@ -156,7 +156,7 @@ final class DodgeGame: Game {
     /// 아이템 충돌 처리
     /// - Parameter type: 충돌한 아이템 타입
     /// - Returns: 획득/손실한 골드 (손실은 음수)
-    func didPerformAction(_ input: DropItem.DropItemType) async -> Int {
+    func didPerformAction(_ input: OldDropItem.DropItemType) async -> Int {
         switch input {
         case .smallGold:
             // 피버 증가

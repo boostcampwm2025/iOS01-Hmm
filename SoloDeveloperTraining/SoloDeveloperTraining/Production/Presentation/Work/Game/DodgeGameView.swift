@@ -172,7 +172,7 @@ private extension DodgeGameView {
 
     /// 플레이어
     var playerView: some View {
-        RunningCharacter(isFacingLeft: isFacingLeft, isGamePaused: isGamePaused)
+        OldRunningCharacter(isFacingLeft: isFacingLeft, isGamePaused: isGamePaused)
             .frame(
                 width: Constant.Size.character.width,
                 height: Constant.Size.character.height
@@ -189,7 +189,7 @@ private extension DodgeGameView {
     /// 낙하물
     var fallingItemsView: some View {
         ForEach(game.gameCore.fallingItems) { item in
-            DropItem(type: item.type)
+            OldDropItem(type: item.type)
                 .position(
                     x: gameAreaWidth / 2 + item.position.x,
                     y: gameAreaHeight / 2 + item.position.y

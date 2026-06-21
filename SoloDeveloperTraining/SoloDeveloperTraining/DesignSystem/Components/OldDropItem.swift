@@ -11,7 +11,7 @@ private enum Constant {
     static let itemSize = CGSize(width: 24, height: 24)
 }
 
-struct DropItem: View {
+struct OldDropItem: View {
 
     let type: DropItemType
 
@@ -22,7 +22,7 @@ struct DropItem: View {
     }
 }
 
-extension DropItem {
+extension OldDropItem {
     enum DropItemType {
         case smallGold
         case largeGold
@@ -43,8 +43,8 @@ extension DropItem {
 
 #Preview {
     HStack {
-        DropItem(type: .smallGold)
-        DropItem(type: .largeGold)
-        DropItem(type: .bug)
+        OldDropItem(type: .smallGold)
+        OldDropItem(type: .largeGold)
+        OldDropItem(type: .bug)
     }
 }

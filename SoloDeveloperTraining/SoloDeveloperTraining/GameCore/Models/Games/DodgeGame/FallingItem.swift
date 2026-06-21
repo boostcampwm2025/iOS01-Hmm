@@ -11,7 +11,7 @@ struct FallingItem: Identifiable {
     /// 고유 식별자
     let id = UUID()
     /// 아이템 타입 (smallGold, largeGold, bug)
-    let type: DropItem.DropItemType
+    let type: OldDropItem.DropItemType
     /// 화면 상의 위치 (중심점 기준)
     var position: CGPoint
     /// 아이템 크기
