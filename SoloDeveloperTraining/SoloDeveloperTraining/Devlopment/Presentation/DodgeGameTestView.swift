@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import DUDesignSystem
+
 /// Dodge 게임 테스트 뷰
 struct DodgeGameTestView: View {
     let user: User
@@ -40,20 +42,18 @@ struct DodgeGameTestView: View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
                 // GameToolBar 추가
-                OldGameToolBar(
-                    closeButtonDidTapHandler: {
-                        game.stopGame()
-                    },
-                    coffeeButtonDidTapHandler: {
-                        useCoffee()
-                    },
-                    energyDrinkButtonDidTapHandler: {
-                        useEnergyDrink()
-                    },
-                    feverState: game.feverSystem,
-                    buffSystem: game.buffSystem,
-                    coffeeCount: $coffeeCount,
-                    energyDrinkCount: $energyDrinkCount
+                GameToolBar(
+                    feverStage: game.feverSystem.feverStage,
+                    feverProgress: {
+                        let stageBase = Double(game.feverSystem.feverStage) * 100.0
+                        return (game.feverSystem.feverPercent - stageBase) / 100.0
+                    }(),
+                    feverMultiplier: game.feverSystem.feverStage == 0 ? 0 : game.feverSystem.feverMultiplier,
+                    coffeeCount: coffeeCount,
+                    energyDrinkCount: energyDrinkCount,
+                    onClose: { game.stopGame() },
+                    onCoffee: { useCoffee() },
+                    onEnergyDrink: { useEnergyDrink() }
                 )
                 .padding()
 
@@ -71,7 +71,7 @@ struct DodgeGameTestView: View {
 
                     // 낙하물들
                     ForEach(game.gameCore.fallingItems) { item in
-                    DropItem(type: item.type)
+                        DropItem(type: mapDropItemType(item.type))
                         .position(
                             x: gameAreaWidth / 2 + item.position.x,
                             y: gameAreaHeight / 2 + item.position.y
@@ -185,6 +185,14 @@ struct DodgeGameTestView: View {
             .onAppear {
                 setupGame(with: geometry.size)
             }
+        }
+    }
+
+    private func mapDropItemType(_ type: FallingItemType) -> DropItem.DropItemType {
+        switch type {
+        case .smallGold: return .smallGold
+        case .largeGold: return .largeGold
+        case .bug:       return .bug
         }
     }
 
