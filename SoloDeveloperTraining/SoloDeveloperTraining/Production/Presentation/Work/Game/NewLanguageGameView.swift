@@ -17,6 +17,8 @@ struct NewLanguageGameView: View {
     @State private var closePause: Bool = false
     /// 진행 중인 언어 버튼 탭 Task
     @State private var currentActionTask: Task<Void, Never>?
+    /// 획득한 골드를 표시하는 효과 라벨 목록
+    @State private var effectLabels: [EffectLabelData] = []
 
     /// 게임 시작 여부 (false로 바꾸면 선택 화면으로 복귀)
     @Binding var isGameStarted: Bool
@@ -113,6 +115,16 @@ private extension NewLanguageGameView {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .overlay(alignment: .top) {
+            ZStack {
+                ForEach(effectLabels) { data in
+                    EffectLabel(type: data.value >= 0 ? .plus : .minus, text: "\(abs(data.value))") {
+                        removeEffectLabel(id: data.id)
+                    }
+                }
+            }
+            .offset(y: -34)
+        }
     }
 
     var languageButtonsSection: some View {
@@ -178,8 +190,17 @@ private extension NewLanguageGameView {
                 HapticService.shared.trigger(.error)
             }
             gameActionGoldDelta += gainedGold
-            // TODO: 효과 라벨 표시
+            showEffectLabel(value: gainedGold)
         }
+    }
+
+    func showEffectLabel(value: Int) {
+        let data = EffectLabelData(id: UUID(), position: .zero, value: value)
+        effectLabels.append(data)
+    }
+
+    func removeEffectLabel(id: UUID) {
+        effectLabels.removeAll { $0.id == id }
     }
 
     func useConsumableItem(_ type: ConsumableType) {
