@@ -75,8 +75,7 @@ struct ScenarioStoryView: View {
                 Group {
                     if let ending = finalEnding {
                         // 3. 엔딩 전용 버튼 (저장/공유/환생)
-                        EventButton(
-type: .ending(
+                        EventButton(type: .ending(
                             onSave: {
                                 guard let image = renderEndingImage(ending) else {
                                     return
