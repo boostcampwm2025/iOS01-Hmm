@@ -16,7 +16,7 @@ public struct ItemLabel: View {
     public var color: Color
     public var textAlignment: TextAlignment
 
-    public init(text: String, font: DUTypographyToken, color: Color, textAlignment: TextAlignment = .leading) {
+    public init(text: String, font: DUTypographyToken, color: Color, textAlignment: TextAlignment = .center) {
         self.text = text
         self.icon = nil
         self.iconSize = nil
@@ -25,7 +25,7 @@ public struct ItemLabel: View {
         self.textAlignment = textAlignment
     }
 
-    public init(text: String, icon: DUIconName, iconSize: TokenIconSize, font: DUTypographyToken, color: Color, textAlignment: TextAlignment = .leading) {
+    public init(text: String, icon: DUIconName, iconSize: TokenIconSize, font: DUTypographyToken, color: Color, textAlignment: TextAlignment = .center) {
         self.text = text
         self.icon = icon
         self.iconSize = iconSize
