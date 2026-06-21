@@ -289,11 +289,9 @@ private extension ScenarioStoryView {
 
     func makeEndingCard(for ending: Ending) -> some View {
         StoryCard(
-            type: .ending(title: ending.type.title),
+            type: .endingDownload(title: ending.type.title),
             text: ending.type.description,
             imageName: ending.type.imageName
         )
-        .frame(width: 400)
-        .clipShape(RoundedRectangle(cornerRadius: TokenRadius.lg))
     }
 }

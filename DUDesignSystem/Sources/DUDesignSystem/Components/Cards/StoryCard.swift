@@ -9,9 +9,19 @@
 import SwiftUI
 
 public struct StoryCard: View {
+
     public enum StoryCardType: Equatable {
         case levelUp
         case ending(title: String)
+        case endingDownload(title: String)
+
+        var imageHeight: CGFloat {
+            switch self {
+            case .levelUp: return 560
+            case .ending: return 408
+            case .endingDownload: return 569
+            }
+        }
     }
 
     public let type: StoryCardType
@@ -36,6 +46,13 @@ public struct StoryCard: View {
             }
             .clipShape(RoundedRectangle(cornerRadius: TokenRadius.lg))
             .padding(.horizontal, TokenSpacing.lg)
+
+        case .endingDownload(let title):
+            VStack(spacing: TokenSpacing.none) {
+                headerView(title: title)
+                cardContent
+            }
+            .frame(width: 484)
         }
     }
 }
@@ -53,7 +70,7 @@ private extension StoryCard {
                     TextBox(text: text)
                 }
         }
-        .frame(height: type == .levelUp ? 560 : 408)
+        .frame(height: type.imageHeight)
     }
 
     func headerView(title: String) -> some View {

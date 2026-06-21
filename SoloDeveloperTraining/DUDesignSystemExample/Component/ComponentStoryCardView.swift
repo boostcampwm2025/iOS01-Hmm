@@ -11,6 +11,7 @@ struct ComponentStoryCardView: View {
     enum ViewMode: String, CaseIterable {
         case levelUp = "Level Up"
         case ending = "Ending"
+        case endingDownload = "Ending(download)"
     }
 
     @State private var viewMode: ViewMode = .levelUp
@@ -82,6 +83,8 @@ struct ComponentStoryCardView: View {
             return .levelUp
         case .ending:
             return .ending(title: title)
+        case .endingDownload:
+            return .endingDownload(title: title)
         }
     }
 }
