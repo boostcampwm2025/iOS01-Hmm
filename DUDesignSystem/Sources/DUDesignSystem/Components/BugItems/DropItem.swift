@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// TODO: Example 앱 추가
 public struct DropItem: View {
 
     public enum DropItemType: String {

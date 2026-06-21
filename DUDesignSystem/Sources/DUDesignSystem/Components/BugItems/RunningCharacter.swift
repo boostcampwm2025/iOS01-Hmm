@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// TODO: Example 앱 추가
 public struct RunningCharacter: View {
 
     public static let size: CGFloat = 64
