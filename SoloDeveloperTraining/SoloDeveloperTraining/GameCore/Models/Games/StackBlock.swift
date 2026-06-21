@@ -19,14 +19,14 @@ enum BlockType: CaseIterable {
 
     var size: CGSize {
         switch self {
-        case .blue: return CGSize(width: 60, height: 20)
-        case .green: return CGSize(width: 70, height: 22)
-        case .orange: return CGSize(width: 50, height: 17)
-        case .purple: return CGSize(width: 80, height: 25)
-        case .red: return CGSize(width: 40, height: 19)
-        case .yellow: return CGSize(width: 90, height: 21)
-        case .bomb: return CGSize(width: 40, height: 18)
-        case .bomb2: return CGSize(width: 30, height: 40)
+        case .blue: return CGSize(width: 81, height: 30)
+        case .green: return CGSize(width: 81, height: 47)
+        case .orange: return CGSize(width: 120, height: 31)
+        case .purple: return CGSize(width: 81, height: 29)
+        case .red: return CGSize(width: 81, height: 30)
+        case .yellow: return CGSize(width: 81, height: 29)
+        case .bomb: return CGSize(width: 80, height: 52)
+        case .bomb2: return CGSize(width: 64, height: 64)
         }
     }
 
