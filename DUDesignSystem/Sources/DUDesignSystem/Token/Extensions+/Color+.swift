@@ -53,6 +53,12 @@ public extension Color {
     static let accentGreen  = Color(hex: "#59B755")
     static let accentYellow = Color(hex: "#FBC02D")
     static let accentRed    = Color(hex: "#D32F2F")
+
+    // MARK: - Pastel
+
+    static let pastelSky      = Color(hex: "#E9F3F9")
+    static let pastelSkyGray  = Color(hex: "#D7E0ED")
+    static let pastelBlueGray = Color(hex: "#8495AD")
 }
 
 // MARK: - 내부 헬퍼
