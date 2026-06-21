@@ -15,6 +15,7 @@ private enum Constant {
 }
 
 struct TapGameView: View {
+
     /// 코드짜기 게임 모델
     @State private var tapGame: TapGame
     /// 닫기 버튼으로 인한 일시정지
@@ -75,7 +76,7 @@ struct TapGameView: View {
         GeometryReader { _ in
             VStack(spacing: 0) {
                 toolbarSection
-                tapAreaSection
+                gameAreaSection
             }
             .onAppear {
                 resumeGameCallback = { [weak tapGame] in
@@ -117,7 +118,7 @@ private extension TapGameView {
         .padding(.bottom, TokenSpacing.md)
     }
 
-    var tapAreaSection: some View {
+    var gameAreaSection: some View {
         ZStack {
             // TODO: DUAssets에서 불러오기
             Color.clear
