@@ -279,6 +279,7 @@ private extension MainView {
                     hasSeenIntro = false
                 }
             }
+            .ignoresSafeArea()
             .transition(.opacity.animation(.easeIn))
         }
     }

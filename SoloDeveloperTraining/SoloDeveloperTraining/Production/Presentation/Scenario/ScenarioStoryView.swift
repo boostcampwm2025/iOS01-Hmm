@@ -124,8 +124,9 @@ struct ScenarioStoryView: View {
         }
         .duToast(
             isShowing: $showCompletedToast,
-            message: showCompletedToastMessage
-        ).padding(.bottom, TokenGrid.paddingBottom)
+            message: showCompletedToastMessage,
+            anchorY: TokenGrid.paddingBottom
+        )
     }
 }
 
