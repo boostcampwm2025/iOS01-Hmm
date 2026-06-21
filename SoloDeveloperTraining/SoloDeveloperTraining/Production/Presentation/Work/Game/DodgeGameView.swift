@@ -7,15 +7,14 @@
 
 import SwiftUI
 
+import DUDesignSystem
+
 private enum Constant {
     enum Size {
-        static let ground: CGFloat = 60
-        static let character: CGSize = CGSize(width: 40, height: 40)
+        static let ground: CGFloat = 110
     }
 
     enum Position {
-        /// 캐릭터의 Y 위치 비율 (화면 하단 기준)
-        static let characterYRatio: CGFloat = 0.25
         /// 이펙트가 캐릭터 위로 올라가는 오프셋
         static let effectOffset: CGFloat = 30
     }
@@ -24,34 +23,42 @@ private enum Constant {
         /// 캐릭터 방향 전환을 위한 최소 이동 거리
         static let directionChange: CGFloat = 0.1
     }
-
-    enum Padding {
-        static let horizontal: CGFloat = 16
-        static let toolBarBottom: CGFloat = 10
-    }
 }
 
 struct DodgeGameView: View {
+
+    /// 버그 피하기 게임 모델
     @State private var game: DodgeGame
-    @State private var gameAreaWidth: CGFloat = 0
-    @State private var gameAreaHeight: CGFloat = 0
-    @State private var isFacingLeft: Bool = false
-    @State private var goldEffects: [EffectLabelData] = []
-    // 일시정지 상태 추가
-    @State private var isGamePaused: Bool = false
+    /// 닫기 버튼으로 인한 일시정지
     @State private var closePause: Bool = false
-    // 게임 초기 설정 완료 여부
+    /// 게임 영역 가로 너비
+    @State private var gameAreaWidth: CGFloat = 0
+    /// 게임 영역 세로 높이
+    @State private var gameAreaHeight: CGFloat = 0
+    /// 캐릭터가 왼쪽을 보고 있는지 여부
+    @State private var isFacingLeft: Bool = false
+    /// 게임 일시정지 상태 (애니메이션 정지용)
+    @State private var isGamePaused: Bool = false
+    /// 게임 초기 설정 완료 여부
     @State private var isGameInitialized: Bool = false
+    /// 골드 변화를 표시하는 효과 라벨 목록
+    @State private var effectLabels: [EffectLabelData] = []
 
+    /// 게임 시작 여부 (false로 바꾸면 선택 화면으로 복귀)
     @Binding var isGameStarted: Bool
+    /// 이번 세션에서 획득한 골드 누적량
     @Binding var gameActionGoldDelta: Int
+    /// 탭 전환으로 인한 일시정지
     @Binding var tabSwitchPause: Bool
-
-    // 광고 팝업 관련
+    /// 광고 시청 후 음료 지급 팝업 표시 여부
     @Binding var showDrinkAdPopup: Bool
+    /// 나가기 보너스 팝업 표시 여부
     @Binding var showExitBonusPopup: Bool
+    /// 광고 팝업에서 선택된 음료 타입
     @Binding var selectedDrinkType: ConsumableType?
+    /// 팝업에서 게임 재개 시 호출되는 콜백
     @Binding var resumeGameCallback: (() -> Void)?
+    /// 팝업에서 게임 종료 시 호출되는 콜백
     @Binding var exitGameCallback: (() -> Void)?
 
     init(
@@ -59,55 +66,90 @@ struct DodgeGameView: View {
         isGameStarted: Binding<Bool>,
         gameActionGoldDelta: Binding<Int>,
         tabSwitchPause: Binding<Bool>,
-        animationSystem: CharacterAnimationSystem? = nil,
+        animationSystem: CharacterAnimationSystem?,
         showDrinkAdPopup: Binding<Bool>,
         showExitBonusPopup: Binding<Bool>,
         selectedDrinkType: Binding<ConsumableType?>,
         resumeGameCallback: Binding<(() -> Void)?>,
         exitGameCallback: Binding<(() -> Void)?>
     ) {
-        self._isGameStarted = isGameStarted
-        self._gameActionGoldDelta = gameActionGoldDelta
-        self._tabSwitchPause = tabSwitchPause
-        self._showDrinkAdPopup = showDrinkAdPopup
-        self._showExitBonusPopup = showExitBonusPopup
-        self._selectedDrinkType = selectedDrinkType
-        self._resumeGameCallback = resumeGameCallback
-        self._exitGameCallback = exitGameCallback
         self.game = DodgeGame(
             user: user,
-            gameAreaSize: CGSize.zero,
+            gameAreaSize: .zero,
             onGoldChanged: { _ in },
             animationSystem: animationSystem
         )
+        _isGameStarted = isGameStarted
+        _gameActionGoldDelta = gameActionGoldDelta
+        _tabSwitchPause = tabSwitchPause
+        _showDrinkAdPopup = showDrinkAdPopup
+        _showExitBonusPopup = showExitBonusPopup
+        _selectedDrinkType = selectedDrinkType
+        _resumeGameCallback = resumeGameCallback
+        _exitGameCallback = exitGameCallback
     }
 
     var body: some View {
-        GeometryReader { geometry in
+        GeometryReader { _ in
             VStack(spacing: 0) {
-                // 상단 툴바 (닫기, 아이템 버튼, 피버 게이지)
                 toolbarSection
-                // 게임 영역 (바닥, 플레이어, 낙하물, 골드 이펙트)
                 gameAreaSection
             }
-            .onAppear {
-                // 게임이 이미 초기화되었으면 다시 초기화하지 않음
-                // (광고에서 돌아올 때 게임이 자동으로 재개되는 것을 방지)
-                guard !isGameInitialized else { return }
+        }
+    }
+}
 
+// MARK: - Sections
+private extension DodgeGameView {
+
+    var toolbarSection: some View {
+        GameToolBar(
+            feverStage: game.feverSystem.feverStage,
+            feverProgress: {
+                let stageBase = Double(game.feverSystem.feverStage) * 100.0
+                return (game.feverSystem.feverPercent - stageBase) / 100.0
+            }(),
+            feverMultiplier: game.feverSystem.feverStage == 0 ? 0 : game.feverSystem.feverMultiplier,
+            coffeeCount: game.user.inventory.count(.coffee) ?? 0,
+            energyDrinkCount: game.user.inventory.count(.energyDrink) ?? 0,
+            coffeeCooldown: {
+                Double(game.buffSystem.coffeeDuration) / Double(ConsumableType.coffee.duration)
+            }(),
+            energyDrinkCooldown: {
+                Double(game.buffSystem.energyDrinkDuration) / Double(ConsumableType.energyDrink.duration)
+            }(),
+            onClose: {
+                closePause = true
+                SoundService.shared.stopAllSFX()
+                SoundService.shared.trigger(.buttonTap)
+            },
+            onCoffee: { useConsumableItem(.coffee) },
+            onEnergyDrink: { useConsumableItem(.energyDrink) }
+        )
+        .padding(.bottom, TokenSpacing.md)
+    }
+
+    var gameAreaSection: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .bottom) {
+                groundSection
+                playerSection
+                fallingItemsSection
+                effectLabelsSection
+            }
+            .onAppear {
+                guard !isGameInitialized else { return }
                 setupGame(with: geometry.size)
                 isGameInitialized = true
 
-                // 게임 재개 콜백 설정
                 resumeGameCallback = { [weak game] in
                     game?.resumeGame()
                     isGamePaused = false
                 }
                 exitGameCallback = { handleCloseButton() }
             }
-            .pauseGameStyle(
+            .gamePauseWrapper(
                 pauseBinding: pauseBinding,
-                height: geometry.size.height,
                 onLeave: { showExitBonusPopup = true },
                 onPause: {
                     isGamePaused = true
@@ -120,23 +162,49 @@ struct DodgeGameView: View {
             )
         }
     }
-}
 
-// MARK: - View Components
-private extension DodgeGameView {
-    /// 상단 툴바
-    var toolbarSection: some View {
-        OldGameToolBar(
-            closeButtonDidTapHandler: { closePause = true },
-            coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
-            energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
-            feverState: game.feverSystem,
-            buffSystem: game.buffSystem,
-            coffeeCount: .constant(game.user.inventory.count(.coffee) ?? 0),
-            energyDrinkCount: .constant(game.user.inventory.count(.energyDrink) ?? 0)
-        )
-        .padding(.horizontal, Constant.Padding.horizontal)
-        .padding(.bottom, Constant.Padding.toolBarBottom)
+    var groundSection: some View {
+        // TODO: DUAssets에서 불러오기
+        Color.clear
+            .frame(height: Constant.Size.ground)
+            .overlay(
+                Image(.dodgeGround)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            )
+            .clipped()
+    }
+
+    var playerSection: some View {
+        RunningCharacter(isFacingLeft: isFacingLeft, isGamePaused: isGamePaused)
+            .position(
+                x: gameAreaWidth / 2 + (isGamePaused ? 0 : game.motionSystem.characterX),
+                y: gameAreaHeight - TokenGrid.marginBugCharacter - RunningCharacter.size / 2
+            )
+            .onChange(of: game.motionSystem.characterX) { oldPositionX, newPositionX in
+                updateCharacterDirection(oldPositionX: oldPositionX, newPositionX: newPositionX)
+            }
+    }
+
+    var fallingItemsSection: some View {
+        ForEach(game.gameCore.fallingItems) { item in
+            DropItem(type: mapDropItemType(item.type))
+                .position(
+                    x: gameAreaWidth / 2 + item.position.x,
+                    y: gameAreaHeight / 2 + item.position.y
+                )
+        }
+    }
+
+    var effectLabelsSection: some View {
+        ZStack {
+            ForEach(effectLabels) { effect in
+                EffectLabel(type: effect.value >= 0 ? .plus : .minus, text: "\(abs(effect.value))") {
+                    removeEffectLabel(id: effect.id)
+                }
+                .position(effect.position)
+            }
+        }
     }
 
     var pauseBinding: Binding<Bool> {
@@ -148,111 +216,20 @@ private extension DodgeGameView {
             }
         )
     }
-
-    /// 게임 영역
-    var gameAreaSection: some View {
-        ZStack(alignment: .bottom) {
-            // 바닥
-            groundView
-            // 플레이어
-            playerView
-            // 낙하물
-            fallingItemsView
-            // 골드 변화 이펙트
-            goldEffectsView
-        }
-    }
-
-    /// 바닥
-    var groundView: some View {
-        Image(.dodgeGround)
-            .resizable()
-            .frame(height: Constant.Size.ground)
-    }
-
-    /// 플레이어
-    var playerView: some View {
-        OldRunningCharacter(isFacingLeft: isFacingLeft, isGamePaused: isGamePaused)
-            .frame(
-                width: Constant.Size.character.width,
-                height: Constant.Size.character.height
-            )
-            .position(
-                x: gameAreaWidth / 2 + (isGamePaused ? 0 : game.motionSystem.characterX),
-                y: gameAreaHeight * (1 - Constant.Position.characterYRatio)
-            )
-            .onChange(of: game.motionSystem.characterX) { oldPositionX, newPositionX in
-                updateCharacterDirection(oldPositionX: oldPositionX, newPositionX: newPositionX)
-            }
-    }
-
-    /// 낙하물
-    var fallingItemsView: some View {
-        ForEach(game.gameCore.fallingItems) { item in
-            OldDropItem(type: item.type)
-                .position(
-                    x: gameAreaWidth / 2 + item.position.x,
-                    y: gameAreaHeight / 2 + item.position.y
-                )
-        }
-    }
-
-    /// 골드 변화 이펙트
-    var goldEffectsView: some View {
-        ForEach(goldEffects) { effect in
-            OldEffectLabel(
-                value: effect.value,
-                onComplete: { removeEffectLabel(id: effect.id) }
-            )
-            .position(effect.position)
-        }
-    }
 }
 
-// MARK: - Actions
+// MARK: - Helper
 private extension DodgeGameView {
-    /// 닫기 버튼 클릭 처리
-    func handleCloseButton() {
-        game.stopGame()
-        isGameStarted = false
-    }
 
-    /// 소비 아이템 사용 처리
-    func useConsumableItem(_ type: ConsumableType) {
-        let count = game.user.inventory.count(type) ?? 0
-
-        if count > 0 {
-            // 음료 사용
-            if game.user.inventory.drink(type) {
-                SoundService.shared.trigger(.itemConsume)
-                HapticService.shared.trigger(.success)
-                game.buffSystem.useConsumableItem(type: type)
-                game.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
-            }
-        } else {
-            // 광고 팝업 표시
-            selectedDrinkType = type
-            showDrinkAdPopup = true
-            game.pauseGame()
-            isGamePaused = true
-        }
-    }
-}
-
-// MARK: - Helper Methods
-private extension DodgeGameView {
-    /// 게임 초기 설정
     func setupGame(with size: CGSize) {
         gameAreaWidth = size.width
         gameAreaHeight = size.height
 
         game.setGoldChangedHandler(showGoldChangeEffect)
-
         game.configure(gameAreaSize: CGSize(width: size.width, height: size.height))
         game.startGame()
     }
 
-    /// 골드 변화 이펙트 표시
     func showGoldChangeEffect(_ goldDelta: Int) {
         gameActionGoldDelta += goldDelta
 
@@ -260,79 +237,51 @@ private extension DodgeGameView {
             id: UUID(),
             position: CGPoint(
                 x: gameAreaWidth / 2 + game.motionSystem.characterX,
-                y: gameAreaHeight * (1 - Constant.Position.characterYRatio) - Constant.Position.effectOffset
+                y: gameAreaHeight - TokenGrid.marginBugCharacter - RunningCharacter.size / 2 - Constant.Position.effectOffset
             ),
             value: goldDelta
         )
-
-        goldEffects.append(effect)
+        effectLabels.append(effect)
     }
 
-    /// 효과 라벨 제거 (애니메이션 완료 시 콜백으로 호출)
-    /// - Parameter id: 제거할 효과 라벨의 ID
     func removeEffectLabel(id: UUID) {
-        goldEffects.removeAll { $0.id == id }
+        effectLabels.removeAll { $0.id == id }
     }
 
-    /// 캐릭터의 진행 방향을 업데이트 합니다.
     func updateCharacterDirection(oldPositionX: CGFloat, newPositionX: CGFloat) {
         guard !isGamePaused else { return }
         if abs(newPositionX - oldPositionX) > Constant.Threshold.directionChange {
             isFacingLeft = newPositionX < oldPositionX
         }
     }
-}
 
-#Preview {
-    @Previewable @State var isGameStarted = true
-    @Previewable @State var gameActionGoldDelta = 0
-    @Previewable @State var tabSwitchPause = true
-    @Previewable @State var showDrinkAdPopup = false
-    @Previewable @State var showExitBonusPopup = false
-    @Previewable @State var selectedDrinkType: ConsumableType?
-    @Previewable @State var resumeGameCallback: (() -> Void)?
-    @Previewable @State var exitGameCallback: (() -> Void)?
+    func mapDropItemType(_ type: FallingItemType) -> DropItem.DropItemType {
+        switch type {
+        case .smallGold: return .smallGold
+        case .largeGold: return .largeGold
+        case .bug:       return .bug
+        }
+    }
 
-    let wallet = Wallet(gold: 1000, diamond: 0)
-    let inventory = Inventory(
-        equipmentItems: [],
-        consumableItems: [
-            .init(type: .coffee, count: 5),
-            .init(type: .energyDrink, count: 5)
-        ],
-        housing: .init(tier: .street)
-    )
-    let record = Record()
-    let user = User(
-        nickname: "TestUser",
-        wallet: wallet,
-        inventory: inventory,
-        record: record,
-        skills: [
-            .init(key: SkillKey(game: .dodge, tier: .beginner), level: 1000)
-        ]
-    )
+    func handleCloseButton() {
+        game.stopGame()
+        isGameStarted = false
+    }
 
-    GeometryReader { geometry in
-        VStack(spacing: 0) {
-            Spacer()
-                .frame(maxHeight: .infinity)
-                .background(Color.gray.opacity(0.2))
-
-            DodgeGameView(
-                user: user,
-                isGameStarted: $isGameStarted,
-                gameActionGoldDelta: $gameActionGoldDelta,
-                tabSwitchPause: $tabSwitchPause,
-                animationSystem: nil,
-                showDrinkAdPopup: $showDrinkAdPopup,
-                showExitBonusPopup: $showExitBonusPopup,
-                selectedDrinkType: $selectedDrinkType,
-                resumeGameCallback: $resumeGameCallback,
-                exitGameCallback: $exitGameCallback
-            )
-            .ignoresSafeArea()
-            .frame(height: geometry.size.height / 2 - Constant.Size.ground)
+    func useConsumableItem(_ type: ConsumableType) {
+        let count = game.user.inventory.count(type) ?? 0
+        if count > 0 {
+            if game.user.inventory.drink(type) {
+                SoundService.shared.trigger(.itemConsume)
+                HapticService.shared.trigger(.success)
+                game.buffSystem.useConsumableItem(type: type)
+                game.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
+            }
+        } else {
+            selectedDrinkType = type
+            showDrinkAdPopup = true
+            game.pauseGame()
+            isGamePaused = true
         }
     }
 }

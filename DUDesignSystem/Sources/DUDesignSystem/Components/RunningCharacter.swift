@@ -10,9 +10,10 @@ import SwiftUI
 // TODO: Example 앱 추가
 public struct RunningCharacter: View {
 
+    public static let size: CGFloat = 64
+
     private enum Constant {
         static let animationSpeed: TimeInterval = 0.15
-        static let size: CGFloat = 64
     }
 
     @State private var currentFrame = 0
@@ -37,7 +38,7 @@ public struct RunningCharacter: View {
         Image(frameImages[currentFrame], bundle: .module)
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .frame(width: Constant.size, height: Constant.size)
+            .frame(width: Self.size, height: Self.size)
             .scaleEffect(x: isFacingLeft ? -1 : 1, y: 1)
             .onAppear {
                 handleAnimation()

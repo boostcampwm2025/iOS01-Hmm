@@ -37,7 +37,7 @@ final class DodgeGameCore {
 
     // MARK: - Public Properties
     /// 충돌 발생 시 호출되는 콜백
-    var onCollision: ((OldDropItem.DropItemType) -> Void)?
+    var onCollision: ((FallingItemType) -> Void)?
     /// 버그가 땅에 닿았을 때 호출되는 콜백
     var onBugReachedGround: (() -> Void)?
     /// 플레이어의 X 위치 (MotionSystem에서 동기화)
@@ -89,7 +89,7 @@ private extension DodgeGameCore {
     func spawnItem() {
         // 랜덤 타입 생성
         let randomValue = Int.random(in: 0..<100)
-        let type: OldDropItem.DropItemType
+        let type: FallingItemType
         if randomValue < Policy.Game.Dodge.largeGoldSpawnRate {
             type = .largeGold
         } else if randomValue < Policy.Game.Dodge.largeGoldSpawnRate + Policy.Game.Dodge.smallGoldSpawnRate {
