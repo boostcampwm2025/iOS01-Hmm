@@ -96,11 +96,19 @@ private extension NewLanguageGameView {
 
     var languageItemsSection: some View {
         HStack(spacing: TokenSpacing.lg) {
-            LanguageItem(language: .swift, state: .completed)
-            LanguageItem(language: .kotlin, state: .completed)
-            LanguageItem(language: .dart, state: .active)
-            LanguageItem(language: .python, state: .upcoming)
-            LanguageItem(language: .swift, state: .upcoming)
+            ForEach(Array(game.itemList.enumerated()), id: \.offset) { _, item in
+                if item.languageType == .empty {
+                    Color.clear.frame(
+                        width: TokenIconSize.size38.rawValue,
+                        height: TokenIconSize.size38.rawValue
+                    )
+                } else {
+                    LanguageItem(
+                        language: mapLanguageType(item.languageType),
+                        state: mapLanguageItemState(item.state)
+                    )
+                }
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -126,6 +134,26 @@ private extension NewLanguageGameView {
 
 // MARK: - Helper
 private extension NewLanguageGameView {
+
+    func mapLanguageType(_ type: LanguageType) -> LanguageItem.LanguageType {
+        switch type {
+        case .swift:  return .swift
+        case .kotlin: return .kotlin
+        case .dart:   return .dart
+        case .python: return .python
+        case .empty:  return .swift // .empty는 뷰에서 Color.clear로 처리
+        }
+    }
+
+    func mapLanguageItemState(_ state: LanguageItemState) -> LanguageItem.LanguageItemState {
+        switch state {
+        case .completed: return .completed
+        case .active:    return .active
+        case .upcoming:  return .upcoming
+        case .empty:     return .upcoming // .empty는 뷰에서 Color.clear로 처리
+        }
+    }
+
     func useConsumableItem(_ type: ConsumableType) {
         let count = game.user.inventory.count(type) ?? 0
         if count > 0 {
