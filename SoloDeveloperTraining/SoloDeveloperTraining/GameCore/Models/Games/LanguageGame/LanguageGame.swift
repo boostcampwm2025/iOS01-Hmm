@@ -7,46 +7,6 @@
 
 import Foundation
 
-enum LanguageType: String, CaseIterable {
-    case swift = "Swift"
-    case kotlin = "Kotlin"
-    case dart = "Dart"
-    case python = "Python"
-    case empty = ""
-
-    var imageName: String {
-        switch self {
-        case .swift: return "language_swift"
-        case .kotlin: return "language_kotlin"
-        case .dart: return "language_dart"
-        case .python: return "language_python"
-        case .empty: return ""
-        }
-    }
-
-    var backgroundColorName: String {
-        switch self {
-        case .swift: return "PastelYellow"
-        case .kotlin: return "PastelPink"
-        case .dart: return "PastelBlue"
-        case .python: return "PastelGreen"
-        case .empty: return ""
-        }
-    }
-
-    static func random() -> Self {
-        return LanguageType.allCases
-            .filter { $0 != .empty}.randomElement() ?? .swift
-    }
-}
-
-enum LanguageItemState {
-    case completed
-    case active
-    case upcoming
-    case empty
-}
-
 @Observable
 final class LanguageGame: Game {
     typealias ActionInput = LanguageType
@@ -59,7 +19,7 @@ final class LanguageGame: Game {
     let itemCount: Int
 
     // 한 화면에 보여지는 아이템 리스트
-    var itemList: [OldLanguageItem] = []
+    var itemList: [LanguageGameItem] = []
 
     // 활성화 아이템 외에 양쪽에 보여지는 아이템의 개수
     var leadingAndTrailingItemCount: Int {
@@ -168,8 +128,8 @@ final class LanguageGame: Game {
         return true
     }
 
-    private func makeInitialItemList() -> [OldLanguageItem] {
-        var items: [OldLanguageItem] = []
+    private func makeInitialItemList() -> [LanguageGameItem] {
+        var items: [LanguageGameItem] = []
         let activeIndex = leadingAndTrailingItemCount // 중앙 인덱스
 
         for index in 0..<itemCount {
