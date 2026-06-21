@@ -17,7 +17,7 @@ public struct TextBox: View {
     public var body: some View {
         ItemLabel(text: text, font: .body2, color: .black300)
         .frame(maxWidth: .infinity)
-        .padding(.vertical, TokenSpacing.md)
+        .padding(.all, TokenSpacing.md)
         .background(Color.white300)
         .overlay {
             RoundedRectangle(cornerRadius: TokenRadius.ss)
