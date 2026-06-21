@@ -85,12 +85,6 @@ struct LanguageGameView: View {
                 toolbarSection
                 gameAreaSection
             }
-            .onAppear {
-                resumeGameCallback = { [weak game] in
-                    game?.resumeGame()
-                }
-                exitGameCallback = { handleCloseButton() }
-            }
         }
     }
 }
@@ -130,6 +124,12 @@ private extension LanguageGameView {
             languageBackgroundSection
             languageItemsSection
             languageButtonsSection
+        }
+        .onAppear {
+            resumeGameCallback = { [weak game] in
+                game?.resumeGame()
+            }
+            exitGameCallback = { handleCloseButton() }
         }
         .gamePauseWrapper(
             pauseBinding: pauseBinding,

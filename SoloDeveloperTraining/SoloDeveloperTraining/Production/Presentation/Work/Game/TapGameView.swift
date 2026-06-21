@@ -78,12 +78,6 @@ struct TapGameView: View {
                 toolbarSection
                 gameAreaSection
             }
-            .onAppear {
-                resumeGameCallback = { [weak tapGame] in
-                    tapGame?.resumeGame()
-                }
-                exitGameCallback = { handleCloseButton() }
-            }
         }
     }
 }
@@ -139,6 +133,12 @@ private extension TapGameView {
             MultiTouchView { location in
                 Task { await handleTap(at: location) }
             }
+        }
+        .onAppear {
+            resumeGameCallback = { [weak tapGame] in
+                tapGame?.resumeGame()
+            }
+            exitGameCallback = { handleCloseButton() }
         }
         .gamePauseWrapper(
             pauseBinding: pauseBinding,
