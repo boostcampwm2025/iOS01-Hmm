@@ -120,9 +120,13 @@ private extension TapGameView {
     var tapAreaSection: some View {
         ZStack {
             // TODO: DUAssets에서 불러오기
-            Image(.tapBackground)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
+            Color.clear
+                .overlay(
+                    Image(.tapBackground)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                )
+                .clipped()
 
             ForEach(effectLabels) { data in
                 EffectLabel(type: .plus, text: "\(data.value)") {
