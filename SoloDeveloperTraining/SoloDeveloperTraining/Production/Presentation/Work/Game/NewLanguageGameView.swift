@@ -96,6 +96,12 @@ private extension NewLanguageGameView {
             languageItemsSection
             languageButtonsSection
         }
+        .gamePauseWrapper(
+            pauseBinding: pauseBinding,
+            onLeave: { },
+            onPause: { game.pauseGame() },
+            onResume: { game.resumeGame() }
+        )
     }
 
     var languageItemsSection: some View {
@@ -143,6 +149,16 @@ private extension NewLanguageGameView {
                 .fill(Color.pastelBlueGray)
                 .frame(height: 1)
         }
+    }
+
+    var pauseBinding: Binding<Bool> {
+        Binding(
+            get: { tabSwitchPause || closePause },
+            set: {
+                tabSwitchPause = $0
+                closePause = $0
+            }
+        )
     }
 }
 
