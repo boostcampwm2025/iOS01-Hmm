@@ -8,6 +8,13 @@
 import SwiftUI
 import DUDesignSystem
 
+enum ShareChannel: String {
+    case copyLink = "copy_link"
+    case kakao = "kakao"
+    case osShare = "os_share"
+    case unknown = "unknown"
+}
+
 struct ShareSheetView: View {
     @Binding var isPresented: Bool
     @State private var isCopied = false
@@ -26,7 +33,19 @@ struct ShareSheetView: View {
                     image: .shareLink,
                     title: "링크 복사",
                     action: {
-                        ShareService.copyLink(urlString + "&entry_source=link_copy")
+                        ShareService
+                            .copyLink(
+                                urlString + "&entry_source=\(ShareChannel.copyLink.rawValue)",
+                                onCompleted: {
+                                    AnalyticsService.shared
+                                        .logShareCompleted(
+                                            shareID: shareID,
+                                            shareChannel: ShareChannel.copyLink.rawValue,
+                                            resultID: resultID,
+                                            referrerShareID: shareID,
+                                            referrerDeviceID: AnalyticsProperty.deviceID)
+                                }
+                            )
                         isCopied = true
                     }
                 )
@@ -41,8 +60,17 @@ struct ShareSheetView: View {
                                 "share_id": shareID,
                                 "device_id": AnalyticsProperty.deviceIDValue,
                                 "result_id": resultID,
-                                "entry_source": "kakao"
-                            ]
+                                "entry_source": ShareChannel.kakao.rawValue
+                            ],
+                            onCompleted: {
+                                AnalyticsService.shared
+                                    .logShareCompleted(
+                                        shareID: shareID,
+                                        shareChannel: ShareChannel.kakao.rawValue,
+                                        resultID: resultID,
+                                        referrerShareID: shareID,
+                                        referrerDeviceID: AnalyticsProperty.deviceID)
+                            }
                         )
                     }
                 )
@@ -51,7 +79,19 @@ struct ShareSheetView: View {
                     image: .shareEtc,
                     title: "기타 공유",
                     action: {
-                        ShareService.defaultLinkShare(urlString + "&entry_source=other")
+                        ShareService
+                            .defaultLinkShare(
+                                urlString + "&entry_source=\(ShareChannel.osShare.rawValue)",
+                                onCompleted: {
+                                    AnalyticsService.shared
+                                        .logShareCompleted(
+                                            shareID: shareID,
+                                            shareChannel: ShareChannel.osShare.rawValue,
+                                            resultID: resultID,
+                                            referrerShareID: shareID,
+                                            referrerDeviceID: AnalyticsProperty.deviceID)
+                                }
+                            )
                     }
                 )
             }
