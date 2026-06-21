@@ -140,8 +140,7 @@ private extension LanguageGameView {
     }
 
     var languageBackgroundSection: some View {
-        // TODO: DUAssets에서 불러오기
-        Image(.languageBackground)
+        Image.duImage("language_background")
             .resizable()
             .frame(height: Constant.Size.backgroundHeight)
             .frame(maxWidth: .infinity)

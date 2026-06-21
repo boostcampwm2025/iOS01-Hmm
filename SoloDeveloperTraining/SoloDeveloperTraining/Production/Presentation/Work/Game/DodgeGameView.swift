@@ -164,11 +164,10 @@ private extension DodgeGameView {
     }
 
     var groundSection: some View {
-        // TODO: DUAssets에서 불러오기
         Color.clear
             .frame(height: Constant.Size.ground)
             .overlay(
-                Image(.dodgeGround)
+                Image.duImage("dodge_ground")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
             )

@@ -114,10 +114,9 @@ private extension TapGameView {
 
     var gameAreaSection: some View {
         ZStack {
-            // TODO: DUAssets에서 불러오기
             Color.clear
                 .overlay(
-                    Image(.tapBackground)
+                    Image.duImage("tap_background")
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                 )
