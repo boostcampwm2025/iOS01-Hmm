@@ -15,6 +15,8 @@ struct NewLanguageGameView: View {
     @State private var game: LanguageGame
     /// 닫기 버튼으로 인한 일시정지
     @State private var closePause: Bool = false
+    /// 진행 중인 언어 버튼 탭 Task
+    @State private var currentActionTask: Task<Void, Never>?
 
     /// 게임 시작 여부 (false로 바꾸면 선택 화면으로 복귀)
     @Binding var isGameStarted: Bool
@@ -115,10 +117,10 @@ private extension NewLanguageGameView {
 
     var languageButtonsSection: some View {
         HStack(spacing: TokenSpacing.lg) {
-            LanguageItemButton(language: .swift, action: {})
-            LanguageItemButton(language: .kotlin, action: {})
-            LanguageItemButton(language: .dart, action: {})
-            LanguageItemButton(language: .python, action: {})
+            LanguageItemButton(language: .swift) { handleLanguageButtonTap(.swift) }
+            LanguageItemButton(language: .kotlin) { handleLanguageButtonTap(.kotlin) }
+            LanguageItemButton(language: .dart) { handleLanguageButtonTap(.dart) }
+            LanguageItemButton(language: .python) { handleLanguageButtonTap(.python) }
         }
         .frame(maxWidth: .infinity)
         .padding(.top, TokenSpacing.md)
@@ -151,6 +153,32 @@ private extension NewLanguageGameView {
         case .active:    return .active
         case .upcoming:  return .upcoming
         case .empty:     return .upcoming // .empty는 뷰에서 Color.clear로 처리
+        }
+    }
+
+    func mapToAppLanguageType(_ type: LanguageItem.LanguageType) -> LanguageType {
+        switch type {
+        case .swift:  return .swift
+        case .kotlin: return .kotlin
+        case .dart:   return .dart
+        case .python: return .python
+        }
+    }
+
+    func handleLanguageButtonTap(_ type: LanguageItem.LanguageType) {
+        currentActionTask?.cancel()
+
+        currentActionTask = Task {
+            let gainedGold = await game.didPerformAction(mapToAppLanguageType(type))
+
+            guard !Task.isCancelled else { return }
+
+            SoundService.shared.trigger(gainedGold > 0 ? .languageCorrect : .languageWrong)
+            if gainedGold <= 0 {
+                HapticService.shared.trigger(.error)
+            }
+            gameActionGoldDelta += gainedGold
+            // TODO: 효과 라벨 표시
         }
     }
 
