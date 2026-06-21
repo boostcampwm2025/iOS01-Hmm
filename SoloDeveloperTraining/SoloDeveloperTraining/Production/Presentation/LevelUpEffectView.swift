@@ -27,8 +27,7 @@ struct LevelUpEffectView: View {
 
     @State private var phase: Phase = .start
     @State private var isTitleBoxVisible = false
-    @State private var lightOrangeGradientOpacity: CGFloat = 0
-    @State private var yellowGradientOpacity: CGFloat = 0
+    @State private var gradientOpacity: CGFloat = 0
 
     private var careerTitle: String {
         phase == .start ? previousCareerTitle : currentCareerTitle
@@ -106,17 +105,6 @@ private extension LevelUpEffectView {
 
             LinearGradient(
                 stops: [
-                    .init(color: .lightOrange, location: 0),
-                    .init(color: .lightOrange, location: 0.4),
-                    .init(color: .orange500, location: 1)
-                ],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-            .opacity(lightOrangeGradientOpacity)
-
-            LinearGradient(
-                stops: [
                     .init(color: .accentYellow, location: 0),
                     .init(color: .accentYellow, location: 0.4),
                     .init(color: .lightOrange, location: 1)
@@ -124,7 +112,7 @@ private extension LevelUpEffectView {
                 startPoint: .leading,
                 endPoint: .trailing
             )
-            .opacity(yellowGradientOpacity)
+            .opacity(gradientOpacity)
         }
     }
 }
@@ -135,8 +123,7 @@ private extension LevelUpEffectView {
         guard phase == .start else { return }
 
         isTitleBoxVisible = false
-        lightOrangeGradientOpacity = 0
-        yellowGradientOpacity = 0
+        gradientOpacity = 0
 
         withAnimation(.easeIn(duration: 0.3)) {
             isTitleBoxVisible = true
@@ -146,13 +133,9 @@ private extension LevelUpEffectView {
     func switchToLoopAnimation() {
         guard phase == .loop else { return }
 
-        withAnimation(.easeOut(duration: 0.6)) {
-            lightOrangeGradientOpacity = 1
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            withAnimation(.easeOut(duration: 0.6)) {
-                yellowGradientOpacity = 1
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            withAnimation(.easeOut(duration: 0.3)) {
+                gradientOpacity = 1
             }
         }
     }
