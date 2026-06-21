@@ -88,10 +88,41 @@ private extension NewLanguageGameView {
     }
 
     var gameAreaSection: some View {
-        EmptyView()
+        VStack(spacing: 0) {
+            languageItemsSection
+            languageButtonsSection
+        }
+    }
+
+    var languageItemsSection: some View {
+        HStack(spacing: TokenSpacing.lg) {
+            LanguageItem(language: .swift, state: .completed)
+            LanguageItem(language: .kotlin, state: .completed)
+            LanguageItem(language: .dart, state: .active)
+            LanguageItem(language: .python, state: .upcoming)
+            LanguageItem(language: .swift, state: .upcoming)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    var languageButtonsSection: some View {
+        HStack(spacing: TokenSpacing.lg) {
+            LanguageItemButton(language: .swift, action: {})
+            LanguageItemButton(language: .kotlin, action: {})
+            LanguageItemButton(language: .dart, action: {})
+            LanguageItemButton(language: .python, action: {})
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, TokenSpacing.md)
+        .padding(.bottom, TokenGrid.paddingBottom)
+        .frame(height: 130)
+        .overlay(alignment: .top) {
+            Rectangle()
+                .fill(Color.pastelBlueGray)
+                .frame(height: 1)
+        }
     }
 }
-
 
 // MARK: - Helper
 private extension NewLanguageGameView {

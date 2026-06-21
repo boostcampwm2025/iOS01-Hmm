@@ -22,7 +22,7 @@ private enum Constant {
     }
 }
 
-struct LanguageItem: View {
+struct OldLanguageItem: View {
     let languageType: LanguageType
     let state: LanguageItemState
 
@@ -80,24 +80,24 @@ struct LanguageItem: View {
 #Preview {
     VStack(spacing: 20) {
         HStack(spacing: 20) {
-            LanguageItem(languageType: .swift, state: .upcoming)
-            LanguageItem(languageType: .kotlin, state: .upcoming)
-            LanguageItem(languageType: .dart, state: .upcoming)
-            LanguageItem(languageType: .python, state: .upcoming)
+            OldLanguageItem(languageType: .swift, state: .upcoming)
+            OldLanguageItem(languageType: .kotlin, state: .upcoming)
+            OldLanguageItem(languageType: .dart, state: .upcoming)
+            OldLanguageItem(languageType: .python, state: .upcoming)
         }
 
         HStack(spacing: 20) {
-            LanguageItem(languageType: .swift, state: .active)
-            LanguageItem(languageType: .kotlin, state: .active)
-            LanguageItem(languageType: .dart, state: .active)
-            LanguageItem(languageType: .python, state: .active)
+            OldLanguageItem(languageType: .swift, state: .active)
+            OldLanguageItem(languageType: .kotlin, state: .active)
+            OldLanguageItem(languageType: .dart, state: .active)
+            OldLanguageItem(languageType: .python, state: .active)
         }
 
         HStack(spacing: 20) {
-            LanguageItem(languageType: .swift, state: .completed)
-            LanguageItem(languageType: .kotlin, state: .completed)
-            LanguageItem(languageType: .dart, state: .completed)
-            LanguageItem(languageType: .python, state: .completed)
+            OldLanguageItem(languageType: .swift, state: .completed)
+            OldLanguageItem(languageType: .kotlin, state: .completed)
+            OldLanguageItem(languageType: .dart, state: .completed)
+            OldLanguageItem(languageType: .python, state: .completed)
         }
     }
     .padding()

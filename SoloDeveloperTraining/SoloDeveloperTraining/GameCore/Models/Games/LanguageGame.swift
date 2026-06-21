@@ -59,7 +59,7 @@ final class LanguageGame: Game {
     let itemCount: Int
 
     // 한 화면에 보여지는 아이템 리스트
-    var itemList: [LanguageItem] = []
+    var itemList: [OldLanguageItem] = []
 
     // 활성화 아이템 외에 양쪽에 보여지는 아이템의 개수
     var leadingAndTrailingItemCount: Int {
@@ -168,8 +168,8 @@ final class LanguageGame: Game {
         return true
     }
 
-    private func makeInitialItemList() -> [LanguageItem] {
-        var items: [LanguageItem] = []
+    private func makeInitialItemList() -> [OldLanguageItem] {
+        var items: [OldLanguageItem] = []
         let activeIndex = leadingAndTrailingItemCount // 중앙 인덱스
 
         for index in 0..<itemCount {

@@ -163,7 +163,7 @@ private extension LanguageGameView {
     var languageItemsSection: some View {
         HStack(alignment: .bottom, spacing: Constant.Spacing.itemHorizontal) {
             ForEach(Array(game.itemList.enumerated()), id: \.offset) { _, item in
-                LanguageItem(
+                OldLanguageItem(
                     languageType: item.languageType,
                     state: item.state
                 )
