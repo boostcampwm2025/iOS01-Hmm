@@ -93,7 +93,7 @@ struct NicknameSetupView: View {
         .onTapGesture {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
-        .onChange(of: nickname) { newValue, _ in
+        .onChange(of: nickname) { _, newValue in
             switch validator.validate(newValue) {
             case .empty:
                 nicknameState = .default

@@ -96,12 +96,11 @@ private extension SoloDeveloperTrainingApp {
             NicknameSetupView { nickname in
                 let newUser = User(nickname: nickname)
                 user = newUser
-                showNicknameSetup = false
                 checkFirstOpen(user: newUser)
                 user?.record.tutorialCompleted = true
+                user?.record.scenarioProgress.startScenario(career: .unemployed)
                 hasSeenIntro = true
-                user?.record.scenarioProgress
-                    .startScenario(career: .unemployed)
+                showNicknameSetup = false
             }
         }
         .overlay {
