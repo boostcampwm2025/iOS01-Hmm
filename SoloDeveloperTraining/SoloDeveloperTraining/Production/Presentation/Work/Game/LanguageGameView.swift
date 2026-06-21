@@ -9,6 +9,14 @@ import SwiftUI
 
 import DUDesignSystem
 
+private enum Constant {
+    enum Size {
+        static let backgroundHeight: CGFloat = 27
+        static let buttonsSectionHeight: CGFloat = 130
+        static let strokeHeight: CGFloat = 1
+    }
+}
+
 struct LanguageGameView: View {
 
     /// 언어 맞추기 게임 모델
@@ -119,6 +127,7 @@ private extension LanguageGameView {
 
     var gameAreaSection: some View {
         VStack(spacing: 0) {
+            languageBackgroundSection
             languageItemsSection
             languageButtonsSection
         }
@@ -128,6 +137,14 @@ private extension LanguageGameView {
             onPause: { game.pauseGame() },
             onResume: { game.resumeGame() }
         )
+    }
+
+    var languageBackgroundSection: some View {
+        // TODO: DUAssets에서 불러오기
+        Image(.languageBackground)
+            .resizable()
+            .frame(height: Constant.Size.backgroundHeight)
+            .frame(maxWidth: .infinity)
     }
 
     var languageItemsSection: some View {
@@ -147,6 +164,7 @@ private extension LanguageGameView {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.pastelSky)
         .overlay(alignment: .top) {
             ZStack {
                 ForEach(effectLabels) { data in
@@ -168,11 +186,12 @@ private extension LanguageGameView {
         .frame(maxWidth: .infinity)
         .padding(.top, TokenSpacing.md)
         .padding(.bottom, TokenGrid.paddingBottom)
-        .frame(height: 130)
+        .frame(height: Constant.Size.buttonsSectionHeight)
+        .background(Color.pastelSkyGray)
         .overlay(alignment: .top) {
             Rectangle()
                 .fill(Color.pastelBlueGray)
-                .frame(height: 1)
+                .frame(height: Constant.Size.strokeHeight)
         }
     }
 
