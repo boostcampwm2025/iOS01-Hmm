@@ -21,7 +21,7 @@ struct ScenarioStoryView: View {
 
     // 공유하기
     @State private var isShareSheetPresented = false
-    @State private var currentShareID = UUID().uuidString
+    @State private var currentShareID = ""
     // 환생하기
     @State private var isRebirthConfirmPopupPresented = false
     // 저장하기
@@ -73,12 +73,11 @@ struct ScenarioStoryView: View {
                 }
 
                 Group {
-                    if finalEnding != nil {
+                    if let ending = finalEnding {
                         // 3. 엔딩 전용 버튼 (저장/공유/환생)
                         EventButton(type: .ending(
                             onSave: {
-                                guard let ending = finalEnding,
-                                      let image = renderEndingImage(ending) else {
+                                guard let image = renderEndingImage(ending) else {
                                     return
                                 }
                                 PhotoLibraryService.saveImageToPhotoLibrary(image) { success in
@@ -88,12 +87,19 @@ struct ScenarioStoryView: View {
                             },
                             onShare: {
                                 currentShareID = UUID().uuidString
+                                AnalyticsService.shared
+                                    .logShareButtonClicked(
+                                        shareID: currentShareID,
+                                        resultID: ending.id,
+                                        shareChannel: ShareChannel.unknown.rawValue
+                                    )
                                 isShareSheetPresented = true
                             },
                             onRebirth: {
                                 isRebirthConfirmPopupPresented = true
                             }
-                        ))
+                        )
+)
                     } else if let page = manager.currentPage {
                         // 4. 일반 진행 버튼 (다음/선택/다시선택)
                         eventButtonView(for: page)
