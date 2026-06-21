@@ -12,12 +12,18 @@ struct GIFView: UIViewRepresentable {
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
 
+        context.coordinator.currentGIFName = gifName
         loadGIF(into: imageView)
 
         return imageView
     }
 
     func updateUIView(_ uiView: UIImageView, context: Context) {
+        guard context.coordinator.currentGIFName != gifName else {
+            return
+        }
+
+        context.coordinator.currentGIFName = gifName
         loadGIF(into: uiView)
     }
 
@@ -30,7 +36,17 @@ struct GIFView: UIViewRepresentable {
         return CGSize(width: width, height: height)
     }
 
-    private func loadGIF(into imageView: UIImageView) {
+    final class Coordinator {
+        var currentGIFName: String?
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+}
+
+private extension GIFView {
+    func loadGIF(into imageView: UIImageView) {
         DispatchQueue.global(qos: .userInitiated).async {
             guard
                 let url = DUGIF.bundle.url(forResource: gifName.replacingOccurrences(of: ".gif", with: ""), withExtension: "gif"),
