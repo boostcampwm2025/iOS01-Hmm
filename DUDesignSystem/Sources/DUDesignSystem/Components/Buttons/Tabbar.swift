@@ -17,9 +17,11 @@ public struct Tabbar: View {
     ]
 
     @Binding public var selectedIndex: Int
+    public var hasCompletedMission: Bool
 
-    public init(selectedIndex: Binding<Int>) {
+    public init(selectedIndex: Binding<Int>, hasCompletedMission: Bool = false) {
         self._selectedIndex = selectedIndex
+        self.hasCompletedMission = hasCompletedMission
     }
 
     public var body: some View {
@@ -29,7 +31,8 @@ public struct Tabbar: View {
                 TabbarItem(
                     assetName: item.assetName,
                     text: item.text,
-                    state: selectedIndex == index ? .selected : .default
+                    state: selectedIndex == index ? .selected : .default,
+                    isNew: index == 3 && hasCompletedMission
                 ) {
                     selectedIndex = index
                 }

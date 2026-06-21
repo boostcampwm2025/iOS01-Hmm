@@ -8,42 +8,25 @@
 import SwiftUI
 import SpriteKit
 
-enum AppTheme {
-    static let backgroundColor: Color = AppColors.beige200
-}
+import DUDesignSystem
 
 private enum Constant {
     static let characterSceneSize = CGSize(width: 100, height: 100)
     static let spriteViewSize = CGSize(width: 200, height: 200)
-    static let topAreaHeightRatio: CGFloat = 0.5
-
-    enum Padding {
-        static let horizontalPadding: CGFloat = 25
-    }
-
-    enum Color {
-        static let overlay = SwiftUI.Color.black.opacity(0.4)
-    }
-
-    enum CareerPopup {
-        static let title: String = "커리어"
-        static let maxHeight: CGFloat = 650
-    }
-
-    enum TopButton {
-        static let top: CGFloat = 128
-        static let horizontal: CGFloat = 16
-    }
 }
 
 struct MainView: View {
     @Environment(\.scenePhase) var scenePhase
+
     @Binding var hasSeenIntro: Bool
-    @State private var selectedTab: TabItem = .work
+
+    @State private var selectedTab: AppTab = .work
+
     // 게임 세션 관리
     @State private var workGameSession = WorkGameSession()
 
     @State private var popupContent: PopupConfiguration?
+    @State private var showCareerPopup: Bool = false
     @State private var careerSystem: CareerSystem?
     @State private var showQuizView: Bool = false
     @State private var showSettingsView: Bool = false
@@ -60,8 +43,10 @@ struct MainView: View {
     @State private var showOfflineRewardPopup: Bool = false
     @State private var offlineRewardGold: Int = 0
     @State private var offlineRewardHours: Double = 0.0
-    @State private var showOfflineRewardConfirmPopup: Bool = false
+    @State private var showOfflineRewardToast: Bool = false
+    @State private var offlineRewardToastMessage: String = ""
     @State private var hasCheckedOfflineReward: Bool = false
+    @State private var tabbarAnchorY: CGFloat = 0
 
     // 레벨업 이펙트 관련
     @State private var isCareerSystemInitialized: Bool = false
@@ -98,89 +83,99 @@ struct MainView: View {
     }
 
     var body: some View {
-        GeometryReader { geometry in
-            VStack(spacing: 0) {
-                topAreaContent
-                    .frame(height: geometry.size.height * Constant.topAreaHeightRatio)
-                    .background(housingBackgroundView)
-                tabBar
-                tabContentView
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            }
-            .ignoresSafeArea(edges: [.top, .bottom])
-            .background(AppTheme.backgroundColor)
-            .onAppear(perform: setupOnAppear)
-            .task {
-                await updateSkillAdRewardTimer()
-            }
-            .onDisappear { SoundService.shared.stopBGM() }
-            .onChange(of: scenePhase, handleScenePhaseChange)
-            .onChange(of: user.record.totalEarnedMoney) {
-                careerSystem?.updateCareer()
-            }
-            .overlay { overlayView }
-            .onChange(of: showLevelUpEffect) { oldValue, newValue in
-                if oldValue == true && newValue == false {
-                    Task {
-                        await checkAndStartScenario()
-                    }
-                }
-            }
-            .fullScreenCover(isPresented: $showQuizView) {
-                QuizGameView(user: user)
-            }
-
+        VStack(spacing: TokenSpacing.none) {
+            gameViewport
+            tabBar
+            contentsPanel
+        }
+        .ignoresSafeArea(edges: [.top, .bottom])
+        .background(Color.beige200)
+        .onAppear(perform: setupOnAppear)
+        .task {
+            await updateSkillAdRewardTimer()
+        }
+        .onDisappear { SoundService.shared.stopBGM() }
+        .onChange(of: scenePhase, handleScenePhaseChange)
+        .onChange(of: user.record.totalEarnedMoney) {
+            careerSystem?.updateCareer()
+        }
+        .overlay { overlayView }
+        .overlay {
             if showLevelUpEffect {
                 LevelUpEffectView(isPresented: $showLevelUpEffect, career: leveledUpCareer)
                     .transition(.opacity.animation(.easeIn))
             }
         }
-        .darkToast(
-            isShowing: workGameSession.exitBonusToastBinding,
-            message: workGameSession.exitBonusToastMessage
+        .onChange(of: showLevelUpEffect) { oldValue, newValue in
+            if oldValue == true && newValue == false {
+                Task {
+                    await checkAndStartScenario()
+                }
+            }
+        }
+        .fullScreenCover(isPresented: $showQuizView) {
+            QuizGameView(user: user)
+        }
+        .duToast(
+            isShowing: $showOfflineRewardToast,
+            message: offlineRewardToastMessage,
+            anchorY: tabbarAnchorY
         )
     }
 }
 
 private extension MainView {
-    var topAreaContent: some View {
-        ZStack(alignment: .top) {
-            topAreaMainContent
-            topButtonOverlay
-        }
-    }
-
-    var topAreaMainContent: some View {
-        VStack(spacing: 0) {
+    var gameViewport: some View {
+        VStack(spacing: TokenSpacing.none) {
+            // StatusBar Area
             StatusBar(
-                career: careerSystem?.currentCareer ?? .unemployed,
+                imageName: careerSystem?.currentCareer.imageName ?? "",
+                careerName: careerSystem?.currentCareer.rawValue ?? "",
                 nickname: user.nickname,
-                careerProgress: careerSystem?.careerProgress ?? 0.0,
-                gold: user.wallet.gold,
-                diamond: user.wallet.diamond,
-                skillAdRewardRemainingText: SkillAdRewardManager.remainingTimeText(user: user, now: skillAdRewardNow)
+                careerProgress: careerSystem?.careerProgress ?? 0,
+                gold: user.wallet.gold.formatted,
+                diamond: user.wallet.diamond.formatted,
+                time: SkillAdRewardManager.remainingTimeText(user: user, now: skillAdRewardNow)
             )
-            .onTapGesture { showCareerPopup() }
+            .background(Color.white300StatusBar)
+            .onTapGesture { showCareerPopup = true }
+            // SettingButton, QuizButton Area
+            HStack {
+                SmallButton(type: .setting) {
+                    showSettingsView = true
+                }
+                Spacer()
+                if !workGameSession.isInProgress {
+                    SmallButton(type: .quiz) {
+                        showQuizView = true
+                    }
+                }
+            }
             Spacer()
-            characterSceneView
+            // character Area
+            SpriteView(scene: scene, options: [.allowsTransparency])
+                .frame(width: Constant.spriteViewSize.width, height: Constant.spriteViewSize.height)
+                .background(Color.clear)
         }
+        .background(housingBackgroundView)
+        .clipped()
     }
 
     var tabBar: some View {
-        TabBar(
-            selectedTab: Binding(
-                get: { selectedTab },
-                set: { handleTabTap($0) }
+        Tabbar(
+            selectedIndex: Binding(
+                get: { AppTab.allCases.firstIndex(of: selectedTab) ?? 0 },
+                set: { handleTabTap(AppTab.allCases[$0]) }
             ),
-            hasCompletedMisson: user.record
-                .missionSystem.hasCompletedMission
+            hasCompletedMission: user.record.missionSystem.hasCompletedMission
         )
-    }
-
-    var characterSceneView: some View {
-        SpriteView(scene: scene, options: [.allowsTransparency])
-            .frame(width: Constant.spriteViewSize.width, height: Constant.spriteViewSize.height)
-            .background(Color.clear)
+        .padding(.vertical, TokenSpacing.md)
+        .padding(.horizontal, TokenGrid.paddingSide)
+        .background(GeometryReader { geo in
+            Color.clear.onAppear {
+                tabbarAnchorY = geo.frame(in: .global).minY
+            }
+        })
     }
 
     var housingBackgroundView: some View {
@@ -189,26 +184,7 @@ private extension MainView {
             .aspectRatio(contentMode: .fill)
     }
 
-    var topButtonOverlay: some View {
-        VStack {
-            HStack {
-                SmallButton(title: "설정", image: Image(.iconSetting)) {
-                    showSettingsView = true
-                }
-                Spacer()
-                if !workGameSession.isInProgress {
-                    SmallButton(title: "퀴즈", hasBadge: true) {
-                        showQuizView = true
-                    }
-                }
-            }
-            .padding(.top, Constant.TopButton.top)
-            .padding(.horizontal, Constant.TopButton.horizontal)
-            Spacer()
-        }
-    }
-
-    var tabContentView: some View {
+    var contentsPanel: some View {
         ZStack {
             if workGameSession.isInProgress {
                 workGameOverlayView
@@ -276,12 +252,12 @@ private extension MainView {
     var overlayView: some View {
         ZStack {
             popupOverlayView
+                .ignoresSafeArea()
             settingsOverlayView
             drinkAdPopupOverlayView
             drinkRewardPopupOverlayView
             exitBonusPopupOverlayView
             offlineRewardPopupOverlayView
-            offlineRewardConfirmPopupOverlayView
             scenarioOverlayView
         }
     }
@@ -313,6 +289,11 @@ private extension MainView {
             modalOverlay(onBackgroundTap: { self.popupContent = nil }) {
                 Popup(title: popupContent.title, contentView: popupContent.content)
                     .frame(maxHeight: popupContent.maxHeight)
+            }
+        }
+        if let careerSystem, showCareerPopup {
+            CareerPopupView(careerSystem: careerSystem, user: user) {
+                showCareerPopup = false
             }
         }
     }
@@ -440,7 +421,7 @@ private extension MainView {
         )
     }
 
-    func handleTabTap(_ newTab: TabItem) {
+    func handleTabTap(_ newTab: AppTab) {
         guard selectedTab != newTab else { return }
 
         if workGameSession.isInProgress && selectedTab == .work && newTab != .work {
@@ -449,23 +430,6 @@ private extension MainView {
         }
 
         selectedTab = newTab
-    }
-
-    func showCareerPopup() {
-        guard let careerSystem else { return }
-
-        popupContent = PopupConfiguration(
-            title: Constant.CareerPopup.title,
-            maxHeight: Constant.CareerPopup.maxHeight
-        ) {
-            CareerPopupView(
-                careerSystem: careerSystem,
-                user: user,
-                onClose: {
-                    popupContent = nil
-                }
-            )
-        }
     }
 
     @ViewBuilder
@@ -510,15 +474,14 @@ private extension MainView {
         @ViewBuilder content: () -> Content
     ) -> some View {
         ZStack {
-            Constant.Color.overlay
-                .ignoresSafeArea()
+            Color.black300PopUpDimStatusBar
                 .onTapGesture {
                     onBackgroundTap?()
                 }
 
             content()
-                .padding(.horizontal, Constant.Padding.horizontalPadding)
         }
+        .ignoresSafeArea()
     }
 
     func handleWatchAdInMainView() async {
@@ -592,11 +555,19 @@ private extension MainView {
     var offlineRewardPopupOverlayView: some View {
         if showOfflineRewardPopup {
             modalOverlay {
-                OfflineRewardPopupView(
-                    gold: offlineRewardGold,
-                    hoursElapsed: offlineRewardHours,
-                    onWatchAd: { Task { await handleOfflineRewardWatchAd() } },
-                    onSkip: handleOfflineRewardSkip
+                NoticePopup(
+                    type: .ad(
+                        cancelText: "안받기",
+                        adText: "보상 받기",
+                        cancelAction: {
+                            handleOfflineRewardSkip()
+                        },
+                        adAction: {
+                            Task { await handleOfflineRewardWatchAd() }
+                        }
+                    ),
+                    title: "보상 획득",
+                    text: "잠자는 시간 동안 '\(user.nickname)'가 일을 했습니다.\n일한 보상을 받을까요?"
                 )
             }
         }
@@ -630,12 +601,11 @@ private extension MainView {
 
         if success {
             user.wallet.addGold(offlineRewardGold)
-            showOfflineRewardConfirmPopup = true
-        } else {
-            // 광고 실패 시 데이터 초기화
-            offlineRewardGold = 0
-            offlineRewardHours = 0.0
+            offlineRewardToastMessage = "잠자는 시간에 일한 보상 획득!"
+            showOfflineRewardToast = true
         }
+        offlineRewardGold = 0
+        offlineRewardHours = 0.0
     }
 
     func handleOfflineRewardSkip() {
@@ -647,26 +617,6 @@ private extension MainView {
         hasCheckedOfflineReward = false
     }
 
-    @ViewBuilder
-    var offlineRewardConfirmPopupOverlayView: some View {
-        if showOfflineRewardConfirmPopup {
-            modalOverlay {
-                OfflineRewardConfirmPopupView(
-                    gold: offlineRewardGold,
-                    onConfirm: handleOfflineRewardConfirm
-                )
-            }
-        }
-    }
-
-    func handleOfflineRewardConfirm() {
-        showOfflineRewardConfirmPopup = false
-        // 데이터 초기화
-        offlineRewardGold = 0
-        offlineRewardHours = 0.0
-        // 다음 체크를 위해 플래그 리셋
-        hasCheckedOfflineReward = false
-    }
 }
 
 #Preview {

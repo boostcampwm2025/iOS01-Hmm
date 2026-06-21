@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import DUDesignSystem
+
 private enum Constant {
     enum Spacing {
         static let content: CGFloat = 10
@@ -72,7 +74,7 @@ struct TutorialView: View {
 
     var body: some View {
         ZStack {
-            AppTheme.backgroundColor
+            Color.beige200
                 .ignoresSafeArea()
 
             VStack(spacing: Constant.Spacing.content) {

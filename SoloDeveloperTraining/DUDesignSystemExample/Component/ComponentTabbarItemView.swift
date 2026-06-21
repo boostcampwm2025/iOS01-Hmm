@@ -11,6 +11,7 @@ struct ComponentTabbarItemView: View {
     @State private var text: String = "홈"
     @State private var assetName: String = "work"
     @State private var selectedState: TabbarItem.TabbarItemState = .default
+    @State private var isNew: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -18,7 +19,7 @@ struct ComponentTabbarItemView: View {
             PreviewArea {
                 HStack {
                     Spacer()
-                    TabbarItem(assetName: assetName, text: text, state: selectedState) {
+                    TabbarItem(assetName: assetName, text: text, state: selectedState, isNew: isNew) {
                         selectedState = selectedState == .selected ? .default : .selected
                     }
                     .frame(width: 103)
@@ -40,6 +41,10 @@ struct ComponentTabbarItemView: View {
                             .buttonStyle(.plain)
                         }
                     }
+                }
+
+                Section("뱃지") {
+                    Toggle("New 뱃지", isOn: $isNew)
                 }
 
                 Section("상태") {

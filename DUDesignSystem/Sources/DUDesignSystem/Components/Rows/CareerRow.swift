@@ -40,6 +40,10 @@ public struct CareerRow: View {
         }
     }
 
+    private var borderColor: Color {
+        state == .current ? Color.accentYellow : Color.black300GrayBar
+    }
+
     public var body: some View {
         HStack(alignment: .center, spacing: TokenSpacing.sm) {
             Image(imageName, bundle: .module)
@@ -47,6 +51,11 @@ public struct CareerRow: View {
                 .scaledToFill()
                 .frame(width: 44, height: 44)
                 .clipped()
+                .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
+                .overlay(
+                    RoundedRectangle(cornerRadius: TokenRadius.sm)
+                        .stroke(borderColor, lineWidth: 0.9)
+                )
 
             VStack(alignment: .leading, spacing: TokenSpacing.xs) {
                 HStack(alignment: .top) {

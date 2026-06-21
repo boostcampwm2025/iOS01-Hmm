@@ -5,6 +5,9 @@
 //  Created by SeoJunYoung on 1/6/26.
 //
 
+#if canImport(AppsFlyerLib)
+import AppsFlyerLib
+#endif
 import SwiftUI
 import FirebaseCore
 import GoogleMobileAds
@@ -28,12 +31,22 @@ private enum Constant {
 @main
 struct SoloDeveloperTrainingApp: App {
 
-    // Firebase 초기화
     init() {
         FirebaseApp.configure()
+
         MobileAds.shared.start()
+
         let kakaoAppKey = Bundle.main.kakaoAppKey
         KakaoSDK.initSDK(appKey: kakaoAppKey)
+
+#if canImport(AppsFlyerLib)
+        AppsFlyerLib.shared().initialize(
+            devKey: Bundle.main.appsFlyerDevKey,
+            appId: "6758282441"
+        )
+        AppsFlyerLib.shared().delegate = AppsFlyerDelegate.shared
+        AppsFlyerLib.shared().start()
+#endif
     }
 
     @State private var hasSeenIntro = false
@@ -85,7 +98,15 @@ private extension SoloDeveloperTrainingApp {
         }
         .animation(.easeOut(duration: Constant.Animation.transitionDuration), value: hasSeenIntro)
         .onOpenURL { url in
-            print("\(url) app open")
+            guard let deeplinkInfo = parseOpenURL(url) else { return }
+
+            AnalyticsService.shared
+                .logAppOpenedFromDeeplink(
+                    entrySource: deeplinkInfo.entrySource,
+                    referrerShareID: deeplinkInfo.referrerShareID,
+                    isDeferredDeeplink: false,
+                    resultID: deeplinkInfo.resultID
+                )
         }
         .overlay {
             nicknameSetupOverlay
@@ -263,4 +284,39 @@ private extension SoloDeveloperTrainingApp {
         AnalyticsKeychain.getOrCreateDeviceID()
         AnalyticsService.shared.logFirstOpen(level: user.career.level)
     }
+
+    struct DeeplinkInfo {
+        let entrySource: String
+        let referrerShareID: String
+        let resultID: String
+    }
+
+    func parseOpenURL(_ url: URL) -> DeeplinkInfo? {
+        guard let components = URLComponents(
+            url: url,
+            resolvingAgainstBaseURL: false
+        ) else {
+            return nil
+        }
+
+        let queryItems = components.queryItems ?? []
+
+        guard
+            let shareID = queryItems.first(where: { $0.name == "share_id" })?.value,
+            let resultID = queryItems.first(where: { $0.name == "result_id" })?.value
+        else {
+            return nil
+        }
+
+        let entrySource = queryItems
+            .first(where: { $0.name == "entry_source" })?
+            .value ?? "unknown"
+
+        return DeeplinkInfo(
+            entrySource: entrySource,
+            referrerShareID: shareID,
+            resultID: resultID
+        )
+    }
+
 }

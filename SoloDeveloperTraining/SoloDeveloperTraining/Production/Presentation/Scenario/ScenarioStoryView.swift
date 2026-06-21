@@ -28,6 +28,7 @@ struct ScenarioStoryView: View {
     @State private var showCompletedToastMessage = ""
     // 공유하기
     @State private var isShareSheetPresented = false
+    @State private var currentShareID = ""
     // 환생하기
     @State private var isRebirthConfirmPopupPresented = false
 
@@ -65,19 +66,23 @@ struct ScenarioStoryView: View {
                     .id(currentPageIndex)
                 }
 
-                if isEnding {
+                if let ending = finalEnding {
                     EventButton(type: .ending(
                         onSave: {
-                            guard let ending = finalEnding,
-                                  let image = renderEndingImage(ending) else {
-                                return
-                            }
+                            guard let image = renderEndingImage(ending) else { return }
                             PhotoLibraryService.saveImageToPhotoLibrary(image) { success in
                                 showCompletedToast = true
                                 showCompletedToastMessage = success ? "이미지가 저장되었습니다." : "이미지 저장에 실패했습니다."
                             }
                         },
                         onShare: {
+                            currentShareID = UUID().uuidString
+                            AnalyticsService.shared
+                                .logShareButtonClicked(
+                                    shareID: currentShareID,
+                                    resultID: ending.id,
+                                    shareChannel: ShareChannel.unknown.rawValue
+                                )
                             isShareSheetPresented = true
                         },
                         onRebirth: {
@@ -95,10 +100,18 @@ struct ScenarioStoryView: View {
             }
 
             if isShareSheetPresented, let ending = finalEnding {
-                shareSheetView(
+                ShareSheetView(
+                    isPresented: $isShareSheetPresented,
                     kakaoMessageTemplateID: ending.type.kakaoMessageTemplateID,
-                    webURLSlug: ending.type.webURLSlug
+                    shareID: currentShareID,
+                    resultID: ending.id,
+                    urlString: "\(ShareService.baseURL)/\(ending.type.webURLSlug)?share_id=\(currentShareID)&device_id=\(AnalyticsProperty.deviceIDValue)&result_id=\(ending.id)",
+                    onLinkCopied: {
+                        showCompletedToast = true
+                        showCompletedToastMessage = "링크가 복사되었습니다."
+                    }
                 )
+                .padding(.horizontal, TokenSpacing.lg)
             }
 
             if isRebirthConfirmPopupPresented {
@@ -143,19 +156,6 @@ private extension ScenarioStoryView {
             title: "환생하기",
             text: "전생의 기억은 모두 잃고 새로 태어나게됩니다.\n환생하시겠습니까?"
         )
-    }
-
-    func shareSheetView(kakaoMessageTemplateID: String, webURLSlug: String) -> some View {
-        ShareSheetView(
-            isPresented: $isShareSheetPresented,
-            kakaoMessageTemplateID: kakaoMessageTemplateID,
-            urlString: "\(ShareService.baseURL)/\(webURLSlug)",
-            onLinkCopied: {
-                showCompletedToast = true
-                showCompletedToastMessage = "링크가 복사되었습니다."
-            }
-        )
-        .padding(.horizontal, TokenSpacing.lg)
     }
 
     @ViewBuilder
