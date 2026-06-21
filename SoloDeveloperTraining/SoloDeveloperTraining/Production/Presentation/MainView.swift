@@ -47,6 +47,7 @@ struct MainView: View {
     // 레벨업 이펙트 관련
     @State private var isCareerSystemInitialized: Bool = false
     @State private var showLevelUpEffect: Bool = false
+    @State private var previousCareer: Career? = nil
     @State private var leveledUpCareer: Career? = nil
 
     // 시나리오 관련
@@ -95,7 +96,13 @@ struct MainView: View {
             await careerSystem?.updateCareer()
         }
         .overlay { overlayView }
-        .overlay { LevelUpEffectView(isPresented: $showLevelUpEffect, career: leveledUpCareer) }
+        .overlay {
+            LevelUpEffectView(
+                isPresented: $showLevelUpEffect,
+                previousCareerTitle: previousCareer?.rawValue ?? "",
+                currentCareerTitle: leveledUpCareer?.rawValue ?? ""
+            )
+        }
         .onChange(of: showLevelUpEffect) { oldValue, newValue in
             if oldValue == true && newValue == false {
                 Task {
@@ -309,10 +316,11 @@ private extension MainView {
             if careerSystem == nil {
                 careerSystem = await CareerSystem(user: user)
                 isCareerSystemInitialized = true
-                careerSystem?.onCareerChanged = { [weak scene] newCareer in
+                careerSystem?.onCareerChanged = { [weak scene] oldCareer, newCareer in
                     scene?.updateCareerAppearance(to: newCareer)
-
+                    previousCareer = oldCareer
                     leveledUpCareer = newCareer
+
                     withAnimation(.spring()) {
                         showLevelUpEffect = newCareer != .unemployed
                     }
@@ -332,6 +340,7 @@ private extension MainView {
 
         // 큐에 대기 중인 레벨업 커리어가 있다면 이펙트 다시 표시
         if let pendingCareer = user.record.scenarioProgress.levelupQueue.first {
+            previousCareer = user.career
             leveledUpCareer = pendingCareer
             showLevelUpEffect = pendingCareer != .unemployed
         }

@@ -13,7 +13,7 @@ final class CareerSystem {
     private let user: User
     var currentCareer: Career
     var careerProgress: Double = 0.0
-    var onCareerChanged: ((Career) -> Void)?
+    var onCareerChanged: ((Career, Career) -> Void)?
 
     init(user: User) async {
         self.user = user
@@ -40,10 +40,11 @@ final class CareerSystem {
     func updateCareer() async {
         let newCareer = await calculateCareer()
         if currentCareer != newCareer {
+            let previousCareer = currentCareer
             currentCareer = newCareer
             user.updateCareer(to: newCareer)
             user.record.scenarioProgress.enqueueLevelUp(newCareer) // 시나리오 큐에 추가
-            onCareerChanged?(newCareer)
+            onCareerChanged?(previousCareer, newCareer)
 
             if newCareer == .juniorDeveloper {
                 user.record.record(.juniorDeveloperAchieve)
