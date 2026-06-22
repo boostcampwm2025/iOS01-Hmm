@@ -67,68 +67,62 @@ struct ContentView: View {
                     Image(systemName: "gamecontroller")
                     Text("탭 게임")
                 }
-            LanguageGameTestView(user: user)
-                .tag(2)
-                .tabItem {
-                    Image(systemName: "gamecontroller")
-                    Text("언어 맞추기")
-                }
             ShopTestView(user: user)
-                .tag(3)
+                .tag(2)
                 .tabItem {
                     Image(systemName: "cart")
                     Text("상점")
                 }
             MissionTestView()
-                .tag(4)
+                .tag(3)
                 .tabItem {
                     Image(systemName: "note")
                     Text("미션")
                 }
             DodgeGameTestView(user: user)
-                .tag(5)
+                .tag(4)
                 .tabItem {
                     Image(systemName: "exclamationmark.triangle")
                     Text("버그피하기")
                 }
             StackGameTestView(user: user)
-                .tag(6)
+                .tag(5)
                 .tabItem {
                     Image(systemName: "square.stack.3d.up")
                     Text("스택 게임")
                 }
             SkillTestView(user: user)
-                .tag(7)
+                .tag(6)
                 .tabItem {
                     Image(systemName: "plus")
                     Text("스킬")
                 }
             AdminView()
-                .tag(8)
+                .tag(7)
                 .tabItem {
                     Image(systemName: "gearshape.fill")
                     Text("어드민")
                 }
             ScenarioTestView()
-                .tag(9)
+                .tag(8)
                 .tabItem {
                     Image(systemName: "book.pages")
                     Text("선택형 구조")
                 }
             AdView()
-                .tag(10)
+                .tag(9)
                 .tabItem {
                     Image(systemName: "storefront.fill")
                     Text("광고")
                 }
             RebirthTestView()
-                .tag(11)
+                .tag(10)
                 .tabItem {
                     Image(systemName: "arrow.clockwise.circle")
                     Text("환생")
                 }
             PolicyTestView()
-                .tag(12)
+                .tag(11)
                 .tabItem {
                     Image(systemName: "slider.horizontal.3")
                     Text("Policy")

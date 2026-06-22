@@ -10,7 +10,7 @@ struct ComponentEffectLabelView: View {
 
     @State private var text: String = "100"
     @State private var selectedType: EffectLabel.EffectLabelType = .plus
-    @State private var opacity: Double = 1.0
+    @State private var id = UUID()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -18,7 +18,7 @@ struct ComponentEffectLabelView: View {
             PreviewArea {
                 EffectLabel(type: selectedType, text: text)
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .opacity(opacity)
+                    .id(id)
             }
 
             // MARK: - Controls
@@ -46,9 +46,10 @@ struct ComponentEffectLabelView: View {
                 .listRowBackground(Color.clear)
                 .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
 
-                Section("Opacity  \(String(format: "%.2f", opacity))") {
-                    Slider(value: $opacity, in: 0...1)
-                        .tint(Color.orange300)
+                Section {
+                    Button("다시 보기") {
+                        id = UUID()
+                    }
                 }
             }
             .scrollContentBackground(.hidden)
