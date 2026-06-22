@@ -7,143 +7,112 @@
 
 import SwiftUI
 
-private enum Constant {
-    enum Spacing {
-        static let content: CGFloat = 10
-        static let textGroup: CGFloat = 4
-        static let button: CGFloat = 15
-    }
-
-    enum Size {
-        static let textFieldHeight: CGFloat = 40
-        static let cornerRadius: CGFloat = 10
-        static let strokeLineWidth: CGFloat = 1
-        static let errorTextMinHeight: CGFloat = 15
-    }
-
-    enum Padding {
-        static let textFieldHorizontalPadding: CGFloat = 17
-        static let textFieldBottomPadding: CGFloat = 9
-        static let contentPadding: CGFloat = 20
-    }
-
-    enum Opacity {
-        static let background: Double = 0.3
-        static let stroke: Double = 0.3
-    }
-
-    enum Text {
-        static let popupTitle = "닉네임 설정"
-        static let story = "당신은 취직에 실패한 개발자.\n... 이대로 물러설 수는 없다.\n나의 꿈은 1인 개발자로 성공하기 ~!\n\n내 이름은!!"
-        static let nicknamePlaceholder = "닉네임"
-        static let startButton = "바로 시작"
-        static let tutorialButton = "튜토리얼"
-    }
-}
+import DUDesignSystem
 
 struct NicknameSetupView: View {
     @State private var nickname: String = ""
-    @State private var errorMessage: String = ""
+    @State private var nicknameState: InputField.InputFieldState = .default
+    @State private var showTutorial = false
+    @State private var confirmedNickname = ""
+    @State private var inputFieldMaxY: CGFloat = 0
+    @State private var keyboardMinY: CGFloat = .infinity
+
     private let validator = Validator()
-    let onStart: (String) -> Void
-    let onTutorial: (String) -> Void
+    let onComplete: (String) -> Void
+
+    private var isValid: Bool {
+        validator.isValid(nickname)
+    }
+
+    private var inputFieldOffset: CGFloat {
+        let overlap = inputFieldMaxY - keyboardMinY
+        return max(0, overlap)
+    }
 
     var body: some View {
-        Popup(title: Constant.Text.popupTitle) {
-            VStack(alignment: .leading, spacing: Constant.Spacing.content) {
-                storyTexts
-                nicknameTextField
-                errorText
-                buttons
-            }
-            .padding(Constant.Padding.contentPadding)
-        }
-    }
-}
+        GeometryReader { geo in
+            VStack(spacing: TokenSpacing.lg) {
+                Spacer()
+                VStack(spacing: TokenSpacing.none) {
+                    Spacer()
+                    ItemLabel(
+                        text: """
+                            당신은 취직에 실패한 개발자
+                            .... 이대로 물러설 수는 없다.
+                            나의 꿈은 1인 개발자로 성공하기 ~!
 
-private extension NicknameSetupView {
-    var storyTexts: some View {
-        Text(Constant.Text.story)
-            .textStyle(.body)
-            .foregroundColor(.black)
-    }
-
-    var nicknameTextField: some View {
-        TextField(Constant.Text.nicknamePlaceholder, text: $nickname)
-            .font(.pfFont(.body))
-            .padding(.horizontal, Constant.Padding.textFieldHorizontalPadding)
-            .frame(height: Constant.Size.textFieldHeight)
-            .background(AppColors.gray100.opacity(Constant.Opacity.background))
-            .cornerRadius(Constant.Size.cornerRadius)
-            .foregroundColor(.black)
-            .overlay {
-                RoundedRectangle(cornerRadius: Constant.Size.cornerRadius)
-                    .stroke(
-                        errorMessage.isEmpty
-                            ? Color.gray.opacity(Constant.Opacity.stroke)
-                            : Color.red.opacity(0.7),
-                        lineWidth: Constant.Size.strokeLineWidth
+                            내 이름은!!
+                            """,
+                        font: .body,
+                        color: .white300,
+                        textAlignment: .center
                     )
+                    .offset(y: inputFieldOffset > 0 ? -20 : 0)
+                    Spacer()
+                    InputField(
+                        text: $nickname,
+                        placeholder: "닉네임을 입력해주세요",
+                        state: nicknameState
+                    )
+                    .overlay(
+                        GeometryReader { geo in
+                            Color.clear.onAppear {
+                                inputFieldMaxY = geo.frame(in: .global).maxY
+                            }
+                        }
+                    )
+                    .offset(y: -inputFieldOffset)
+                }
+                .frame(height: 560)
+                .background(
+                    Image.duImage("housing_street")
+                        .resizable()
+                        .opacity(TokenOpacity.opacity40)
+                )
+                TextButton(text: "완료", type: .primary, state: isValid ? .default : .disabled) {
+                    confirmedNickname = nickname
+                    showTutorial = true
+                }
+                .padding(.top, 16 + 48)
+                .padding(.horizontal, TokenSpacing.lg)
+                Spacer()
             }
-            .padding(.bottom, Constant.Padding.textFieldBottomPadding)
-            .onChange(of: nickname) { _, newValue in
-                updateValidationState(for: newValue)
-            }
-    }
-
-    var errorText: some View {
-        Text(errorMessage)
-            .font(.pfFont(.caption))
-            .foregroundColor(.red)
-            .frame(minHeight: Constant.Size.errorTextMinHeight, alignment: .leading)
-    }
-
-    var buttons: some View {
-        HStack(spacing: Constant.Spacing.button) {
-            MediumButton(
-                title: Constant.Text.startButton,
-                isFilled: !validator.isValid(nickname),
-                isEnabled: validator.isValid(nickname),
-                isCancelButton: true
-            ) {
-                onStart(nickname)
-            }
-
-            MediumButton(
-                title: Constant.Text.tutorialButton,
-                isFilled: true,
-                hasBadge: true,
-                isEnabled: validator.isValid(nickname)
-            ) {
-                onTutorial(nickname)
+            .background(Color.black300)
+            .frame(width: geo.size.width, height: geo.size.height)
+        }
+        .ignoresSafeArea(.keyboard)
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillChangeFrameNotification)) { notification in
+            if let frame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+                keyboardMinY = frame.minY
             }
         }
-        .frame(maxWidth: .infinity)
-    }
-
-    func updateValidationState(for value: String) {
-        switch validator.validate(value) {
-        case .empty, .valid:
-            errorMessage = ""
-        case .invalid(let message):
-            errorMessage = message
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            keyboardMinY = .infinity
+        }
+        .animation(.easeOut(duration: 0.25), value: inputFieldOffset)
+        .onTapGesture {
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        }
+        .onChange(of: nickname) { _, newValue in
+            switch validator.validate(newValue) {
+            case .empty:
+                nicknameState = .default
+            case .valid:
+                nicknameState = .success
+            case .invalid(let message):
+                nicknameState = .error(message: message)
+            }
+        }
+        .fullScreenCover(isPresented: $showTutorial) {
+            TutorialView {
+                onComplete(confirmedNickname)
+            }
         }
     }
 }
 
 #Preview {
-    ZStack {
-        Color.gray.opacity(0.5)
-            .ignoresSafeArea()
-
-        NicknameSetupView(
-            onStart: { nickname in
-                print("시작: \(nickname)")
-            },
-            onTutorial: { nickname in
-                print("튜토리얼: \(nickname)")
-            }
-        )
-        .padding()
+    NicknameSetupView { nickname in
+        print("완료: \(nickname)")
     }
 }

@@ -2,39 +2,47 @@
 //  StackGameView.swift
 //  SoloDeveloperTraining
 //
-//  Created by sunjae on 1/15/26.
+//  Created by 김성훈 on 6/22/26.
 //
 
 import SwiftUI
 import SpriteKit
 
-private enum Constant {
-    static let effectLabelXRatios: [CGFloat] = [0.3, 0.4, 0.7]
-    static let effectLabelYPositions: [CGFloat] = [150, 200, 250]
+import DUDesignSystem
 
-    enum Padding {
-        static let horizontal: CGFloat = 16
-        static let toolBarBottom: CGFloat = 10
+private enum Constant {
+    enum EffectLabel {
+        static let xRatios: [CGFloat] = [0.3, 0.4, 0.7]
+        static let yPositions: [CGFloat] = [150, 200, 250]
     }
 }
 
 struct StackGameView: View {
+
+    /// 데이터 쌓기 게임 모델
     @State private var stackGame: StackGame
-    @State private var scene: StackGameScene
+    /// 닫기 버튼으로 인한 일시정지
     @State private var closePause: Bool = false
+    /// 데이터 쌓기 게임 SpriteKit 씬
+    @State private var scene: StackGameScene
+    /// 획득한 골드를 표시하는 효과 라벨 목록
     @State private var effectLabels: [EffectLabelData] = []
 
-    /// 게임 시작 상태 (부모 뷰와 바인딩)
+    /// 게임 시작 여부 (false로 바꾸면 선택 화면으로 복귀)
     @Binding var isGameStarted: Bool
+    /// 이번 세션에서 획득한 골드 누적량
     @Binding var gameActionGoldDelta: Int
+    /// 탭 전환으로 인한 일시정지
     @Binding var tabSwitchPause: Bool
-
-    // 광고 팝업 관련
+    /// 광고 시청 후 음료 지급 팝업 표시 여부
     @Binding var showDrinkAdPopup: Bool
-    @Binding var showRewardPopup: Bool
+    /// 나가기 보너스 팝업 표시 여부
     @Binding var showExitBonusPopup: Bool
+    /// 광고 팝업에서 선택된 음료 타입
     @Binding var selectedDrinkType: ConsumableType?
+    /// 팝업에서 게임 재개 시 호출되는 콜백
     @Binding var resumeGameCallback: (() -> Void)?
+    /// 팝업에서 게임 종료 시 호출되는 콜백
     @Binding var exitGameCallback: (() -> Void)?
 
     init(
@@ -42,78 +50,93 @@ struct StackGameView: View {
         isGameStarted: Binding<Bool>,
         gameActionGoldDelta: Binding<Int>,
         tabSwitchPause: Binding<Bool>,
-        animationSystem: CharacterAnimationSystem? = nil,
+        animationSystem: CharacterAnimationSystem?,
         showDrinkAdPopup: Binding<Bool>,
-        showRewardPopup: Binding<Bool>,
         showExitBonusPopup: Binding<Bool>,
         selectedDrinkType: Binding<ConsumableType?>,
         resumeGameCallback: Binding<(() -> Void)?>,
         exitGameCallback: Binding<(() -> Void)?>
     ) {
         let stackGame = StackGame(user: user, animationSystem: animationSystem)
-
-        self._stackGame = State(initialValue: stackGame)
-        self._scene = State(
-             initialValue: StackGameScene(
-                 stackGame: stackGame,
-                 onBlockDropped: { _ in }
-             )
+        self.stackGame = stackGame
+        self.scene = StackGameScene(
+            stackGame: stackGame,
+            onBlockDropped: { _ in }
         )
-        self._tabSwitchPause = tabSwitchPause
-        self._isGameStarted = isGameStarted
-        self._gameActionGoldDelta = gameActionGoldDelta
-        self._showDrinkAdPopup = showDrinkAdPopup
-        self._showRewardPopup = showRewardPopup
-        self._showExitBonusPopup = showExitBonusPopup
-        self._selectedDrinkType = selectedDrinkType
-        self._resumeGameCallback = resumeGameCallback
-        self._exitGameCallback = exitGameCallback
+        _isGameStarted = isGameStarted
+        _gameActionGoldDelta = gameActionGoldDelta
+        _tabSwitchPause = tabSwitchPause
+        _showDrinkAdPopup = showDrinkAdPopup
+        _showExitBonusPopup = showExitBonusPopup
+        _selectedDrinkType = selectedDrinkType
+        _resumeGameCallback = resumeGameCallback
+        _exitGameCallback = exitGameCallback
     }
 
     var body: some View {
+        VStack(spacing: 0) {
+            toolbarSection
+            gameAreaSection
+        }
+    }
+}
+
+// MARK: - Sections
+private extension StackGameView {
+
+    var toolbarSection: some View {
+        GameToolBar(
+            feverStage: stackGame.feverSystem.feverStage,
+            feverProgress: {
+                let stageBase = Double(stackGame.feverSystem.feverStage) * 100.0
+                return (stackGame.feverSystem.feverPercent - stageBase) / 100.0
+            }(),
+            feverMultiplier: stackGame.feverSystem.feverStage == 0 ? 0 : stackGame.feverSystem.feverMultiplier,
+            coffeeCount: stackGame.user.inventory.count(.coffee) ?? 0,
+            energyDrinkCount: stackGame.user.inventory.count(.energyDrink) ?? 0,
+            coffeeCooldown: {
+                Double(stackGame.buffSystem.coffeeDuration) / Double(ConsumableType.coffee.duration)
+            }(),
+            energyDrinkCooldown: {
+                Double(stackGame.buffSystem.energyDrinkDuration) / Double(ConsumableType.energyDrink.duration)
+            }(),
+            onClose: {
+                closePause = true
+                SoundService.shared.stopAllSFX()
+                SoundService.shared.trigger(.buttonTap)
+            },
+            onCoffee: { useConsumableItem(.coffee) },
+            onEnergyDrink: { useConsumableItem(.energyDrink) }
+        )
+        .padding(.bottom, TokenSpacing.md)
+    }
+
+    var gameAreaSection: some View {
         GeometryReader { geometry in
-            VStack(spacing: 0) {
-                // 상단 툴바 (닫기, 아이템 버튼, 피버 게이지)
-                toolbarSection
-                // 게임 영역 (SpriteKit 씬, 골드 이펙트)
-                gameAreaSection
+            ZStack {
+                SpriteView(scene: scene)
+
+                ForEach(effectLabels) { effect in
+                    EffectLabel(type: effect.value >= 0 ? .plus : .minus, text: "\(abs(effect.value))") {
+                        removeEffectLabel(id: effect.id)
+                    }
+                    .position(effect.position)
+                }
             }
-            .background(Color.beige200)
-            .navigationBarBackButtonHidden(true) // 임시로 숨김
             .onAppear {
                 setupGameCallbacks(with: geometry)
-                // 게임 재개 콜백 설정
                 resumeGameCallback = { [weak scene] in
                     scene?.resumeGame()
                 }
                 exitGameCallback = { handleCloseButton() }
             }
-            .pauseGameStyle(
+            .gamePauseWrapper(
                 pauseBinding: pauseBinding,
-                height: geometry.size.height,
                 onLeave: { showExitBonusPopup = true },
                 onPause: { scene.pauseGame() },
                 onResume: { scene.resumeGame() }
             )
         }
-    }
-}
-
-// MARK: - View Components
-private extension StackGameView {
-    /// 상단 툴바
-    var toolbarSection: some View {
-        GameToolBar(
-            closeButtonDidTapHandler: { closePause = true },
-            coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
-            energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
-            feverState: stackGame.feverSystem,
-            buffSystem: stackGame.buffSystem,
-            coffeeCount: .constant(stackGame.user.inventory.count(.coffee) ?? 0),
-            energyDrinkCount: .constant(stackGame.user.inventory.count(.energyDrink) ?? 0)
-        )
-        .padding(.horizontal, Constant.Padding.horizontal)
-        .padding(.bottom, Constant.Padding.toolBarBottom)
     }
 
     var pauseBinding: Binding<Bool> {
@@ -125,55 +148,15 @@ private extension StackGameView {
             }
         )
     }
-
-    /// 게임 영역
-    var gameAreaSection: some View {
-        ZStack {
-            SpriteView(scene: scene)
-
-            ForEach(effectLabels) { effectLabel in
-                EffectLabel(
-                    value: effectLabel.value,
-                    onComplete: { removeEffectLabel(id: effectLabel.id) }
-                )
-                .position(effectLabel.position)
-            }
-        }
-    }
 }
 
-// MARK: - Actions
+// MARK: - Helper
 private extension StackGameView {
-    /// 닫기 버튼 클릭 처리
-    func handleCloseButton() {
-        stackGame.stopGame()
-        isGameStarted = false
+
+    func removeEffectLabel(id: UUID) {
+        effectLabels.removeAll { $0.id == id }
     }
 
-    /// 소비 아이템 사용 처리
-    func useConsumableItem(_ type: ConsumableType) {
-        let count = stackGame.user.inventory.count(type) ?? 0
-
-        if count > 0 {
-            // 음료 사용
-            if stackGame.user.inventory.drink(type) {
-                SoundService.shared.trigger(.itemConsume)
-                HapticService.shared.trigger(.success)
-                stackGame.buffSystem.useConsumableItem(type: type)
-                stackGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
-            }
-        } else {
-            // 광고 팝업 표시
-            selectedDrinkType = type
-            showDrinkAdPopup = true
-            scene.pauseGame()
-        }
-    }
-}
-
-// MARK: - Helper Methods
-private extension StackGameView {
-    /// 게임 콜백 설정
     func setupGameCallbacks(with geometry: GeometryProxy) {
         scene.onBlockDropped = { gold in
             gameActionGoldDelta += gold
@@ -187,32 +170,37 @@ private extension StackGameView {
         }
     }
 
-    /// 효과 라벨 추가
-    /// - Parameters:
-    ///   - location: 표시할 위치
-    ///   - value: 표시할 값
     func showEffectLabel(at location: CGPoint, value: Int) {
-        let labelData = EffectLabelData(
-            id: UUID(),
-            position: location,
-            value: value
-        )
-        effectLabels.append(labelData)
+        let data = EffectLabelData(id: UUID(), position: location, value: value)
+        effectLabels.append(data)
     }
 
-    /// 효과 라벨 제거 (애니메이션 완료 시 콜백으로 호출)
-    /// - Parameter id: 제거할 효과 라벨의 ID
-    func removeEffectLabel(id: UUID) {
-        effectLabels.removeAll { $0.id == id }
-    }
-
-    /// 랜덤 효과 라벨 X 위치 비율
     var randomEffectXRatio: CGFloat {
-        Constant.effectLabelXRatios.randomElement() ?? 0.4
+        Constant.EffectLabel.xRatios.randomElement() ?? 0.4
     }
 
-    /// 랜덤 효과 라벨 Y 오프셋
     var randomEffectYOffset: CGFloat {
-        Constant.effectLabelYPositions.randomElement() ?? 200
+        Constant.EffectLabel.yPositions.randomElement() ?? 200
+    }
+
+    func handleCloseButton() {
+        stackGame.stopGame()
+        isGameStarted = false
+    }
+
+    func useConsumableItem(_ type: ConsumableType) {
+        let count = stackGame.user.inventory.count(type) ?? 0
+        if count > 0 {
+            if stackGame.user.inventory.drink(type) {
+                SoundService.shared.trigger(.itemConsume)
+                HapticService.shared.trigger(.success)
+                stackGame.buffSystem.useConsumableItem(type: type)
+                stackGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
+            }
+        } else {
+            selectedDrinkType = type
+            showDrinkAdPopup = true
+            scene.pauseGame()
+        }
     }
 }

@@ -8,10 +8,10 @@
 /// 시나리오 데이터 저장소 프로토콜
 protocol ScenarioRepository {
     /// 특정 커리어의 시나리오 가져오기
-    func fetchScenario(for career: Career) async throws -> Scenario?
+    func fetchScenario(for career: Career) -> Scenario?
 
-    /// 모든 시나리오 목록 가져오기
-    func fetchAllScenario() async throws -> [Scenario]
+    /// 환생 스토리 3장 가져오기
+    func fetchRebirthScenarioPages() -> [ScenarioPage]
 
     /// 선택 조합으로 최종 엔딩 계산
     func calculateEnding(
@@ -20,7 +20,4 @@ protocol ScenarioRepository {
         evt03: ChoiceResult,
         evt04: ChoiceResult
     ) -> Ending
-
-    /// 환생 스토리 3장 가져오기
-    func fetchRebirthStory() -> [ScenarioPage]
 }

@@ -31,6 +31,8 @@ struct ComponentListView: View {
         ("StatusBar", "person.crop.rectangle", AnyView(ComponentStatusBarView())),
         ("LanguageItem", "swift", AnyView(ComponentLanguageItemView())),
         ("LanguageItemButton", "hand.tap", AnyView(ComponentLanguageItemButtonView())),
+        ("DropItem", "circle.hexagongrid", AnyView(ComponentDropItemView())),
+        ("RunningCharacter", "figure.run", AnyView(ComponentRunningCharacterView())),
         ("ItemRow", "list.bullet.rectangle", AnyView(ComponentItemRowView())),
         ("CareerRow", "person.crop.rectangle.stack", AnyView(ComponentCareerRowView())),
         ("MissionCard", "trophy", AnyView(ComponentMissionCardView())),
