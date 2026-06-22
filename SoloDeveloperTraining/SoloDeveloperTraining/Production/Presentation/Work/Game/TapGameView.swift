@@ -73,11 +73,9 @@ struct TapGameView: View {
     }
 
     var body: some View {
-        GeometryReader { _ in
-            VStack(spacing: 0) {
-                toolbarSection
-                gameAreaSection
-            }
+        VStack(spacing: 0) {
+            toolbarSection
+            gameAreaSection
         }
     }
 }
