@@ -1,7 +1,5 @@
 import SwiftUI
-import UIKit
 import DUDesignSystem
-import ImageIO
 
 struct GIFView: UIViewRepresentable {
     let gifName: String
@@ -49,7 +47,11 @@ private extension GIFView {
     func loadGIF(into imageView: UIImageView) {
         DispatchQueue.global(qos: .userInitiated).async {
             guard
-                let url = DUGIF.bundle.url(forResource: gifName.replacingOccurrences(of: ".gif", with: ""), withExtension: "gif"),
+                let url = DUBundle.bundle.url(
+                    forResource: gifName
+                        .replacingOccurrences(of: ".gif", with: ""),
+                    withExtension: "gif"
+                ),
                 let animatedGIF = UIImage.animatedGIF(url: url)
             else {
                 return
