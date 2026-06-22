@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import DUDesignSystem
 
 struct ShopTestView: View {
     let user: User
@@ -25,12 +26,12 @@ struct ShopTestView: View {
             ScrollView {
                 LazyVStack(spacing: 0) {
                     ForEach(shopSystem.itemList(itemTypes: [.consumable, .equipment, .housing])) { item in
-                        ItemRow(
+                        DUDesignSystem.ItemRow(
+                            imageName: item.imageName,
                             title: item.displayTitle + "\(item.isEquipped ? "-착용중" : "")",
                             description: item.description,
-                            imageName: item.imageName,
-                            cost: item.cost,
-                            state: item.isPurchasable ? .available : .insufficient
+                            buttonType: item.cost.itemButtonType,
+                            buttonState: item.isPurchasable ? .default : .disabled
                         ) {
                             do {
                                 try shopSystem.buy(item: item)
