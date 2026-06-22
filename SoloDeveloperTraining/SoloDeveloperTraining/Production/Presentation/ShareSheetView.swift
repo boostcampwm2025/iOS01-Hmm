@@ -17,12 +17,12 @@ enum ShareChannel: String {
 
 struct ShareSheetView: View {
     @Binding var isPresented: Bool
-    @State private var isCopied = false
 
     let kakaoMessageTemplateID: String
     let shareID: String
     let resultID: String
     let urlString: String
+    let onLinkCopied: () -> Void
 
     var body: some View {
         VStack(spacing: TokenSpacing.xxl) {
@@ -46,7 +46,8 @@ struct ShareSheetView: View {
                                             referrerDeviceID: AnalyticsProperty.deviceID)
                                 }
                             )
-                        isCopied = true
+                        onLinkCopied()
+                        isPresented = false
                     }
                 )
 
@@ -104,7 +105,6 @@ struct ShareSheetView: View {
             RoundedRectangle(cornerRadius: TokenRadius.lg)
                 .stroke(Color.gray700, lineWidth: 2)
         }
-        .darkToast(isShowing: $isCopied, message: "링크가 복사되었습니다.")
     }
 }
 
@@ -147,6 +147,7 @@ private extension ShareSheetView {
         kakaoMessageTemplateID: "",
         shareID: "",
         resultID: "",
-        urlString: ""
+        urlString: "",
+        onLinkCopied: {}
     )
 }

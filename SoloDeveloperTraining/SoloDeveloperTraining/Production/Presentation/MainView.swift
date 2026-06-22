@@ -17,7 +17,11 @@ private enum Constant {
 
 struct MainView: View {
     @Environment(\.scenePhase) var scenePhase
+
+    @Binding var hasSeenIntro: Bool
+
     @State private var selectedTab: AppTab = .work
+
     // 게임 세션 관리
     @State private var workGameSession = WorkGameSession()
 
@@ -59,7 +63,8 @@ struct MainView: View {
     private let scene: CharacterScene
     private let animationSystem: CharacterAnimationSystem
 
-    init(user: User) {
+    init(user: User, hasSeenIntro: Binding<Bool>) {
+        self._hasSeenIntro = hasSeenIntro
         self.autoGainSystem = AutoGainSystem(user: user)
         self.user = user
 
@@ -91,11 +96,16 @@ struct MainView: View {
         }
         .onDisappear { SoundService.shared.stopBGM() }
         .onChange(of: scenePhase, handleScenePhaseChange)
-        .task(id: user.record.totalEarnedMoney) {
-            await careerSystem?.updateCareer()
+        .onChange(of: user.record.totalEarnedMoney) {
+            careerSystem?.updateCareer()
         }
         .overlay { overlayView }
-        .overlay { LevelUpEffectView(isPresented: $showLevelUpEffect, career: leveledUpCareer) }
+        .overlay {
+            if showLevelUpEffect {
+                LevelUpEffectView(isPresented: $showLevelUpEffect, career: leveledUpCareer)
+                    .transition(.opacity.animation(.easeIn))
+            }
+        }
         .onChange(of: showLevelUpEffect) { oldValue, newValue in
             if oldValue == true && newValue == false {
                 Task {
@@ -106,10 +116,6 @@ struct MainView: View {
         .fullScreenCover(isPresented: $showQuizView) {
             QuizGameView(user: user)
         }
-        .darkToast(
-            isShowing: workGameSession.exitBonusToastBinding,
-            message: workGameSession.exitBonusToastMessage
-        )
         .duToast(
             isShowing: $showOfflineRewardToast,
             message: offlineRewardToastMessage,
@@ -260,14 +266,21 @@ private extension MainView {
     var scenarioOverlayView: some View {
         if showScenarioView, let manager = scenarioManager {
             ScenarioStoryView(
+                user: user,
                 manager: manager,
-                record: user.record,
                 repository: scenarioRepository
             ) {
-                withAnimation {
-                    showScenarioView = false
+                let isRebirth = manager.currentScenario?.scenarioType == .rebirth
+                manager.completeScenario()
+
+                showScenarioView = false
+
+                if isRebirth {
+                    hasSeenIntro = false
                 }
             }
+            .ignoresSafeArea()
+            .transition(.opacity.animation(.easeIn))
         }
     }
 
@@ -305,24 +318,20 @@ private extension MainView {
             await checkOfflineReward()
         }
 
-        Task {
-            if careerSystem == nil {
-                careerSystem = await CareerSystem(user: user)
-                isCareerSystemInitialized = true
-                careerSystem?.onCareerChanged = { [weak scene] newCareer in
-                    scene?.updateCareerAppearance(to: newCareer)
+        if careerSystem == nil {
+            careerSystem = CareerSystem(user: user)
+            isCareerSystemInitialized = true
+            careerSystem?.onCareerChanged = { [weak scene] newCareer in
+                scene?.updateCareerAppearance(to: newCareer)
+                leveledUpCareer = newCareer
 
-                    leveledUpCareer = newCareer
-                    withAnimation(.spring()) {
-                        showLevelUpEffect = newCareer != .unemployed
-                    }
-                }
+                showLevelUpEffect = newCareer != .unemployed
             }
-            // 저장된 시나리오 복구 체크
-            await restoreScenarioIfNeeded()
-            // 대기 중인 레벨업 이펙트 복구 체크
-            checkPendingLevelUp()
         }
+        // 저장된 시나리오 복구 체크
+        restoreScenarioIfNeeded()
+        // 대기 중인 레벨업 이펙트 복구 체크
+        checkPendingLevelUp()
     }
 
     @MainActor
@@ -338,21 +347,15 @@ private extension MainView {
     }
 
     @MainActor
-    func restoreScenarioIfNeeded() async {
+    func restoreScenarioIfNeeded() {
         guard !showScenarioView, let career = user.record.scenarioProgress.currentCareer else { return }
 
-        do {
-            if let scenario = try await scenarioRepository.fetchScenario(for: career) {
-                let manager = ScenarioManager(record: user.record)
+        if let scenario = scenarioRepository.fetchScenario(for: career) {
+            let manager = ScenarioManager(record: user.record)
 
-                manager.restoreScenario(scenario)
-                self.scenarioManager = manager
-                withAnimation {
-                    showScenarioView = true
-                }
-            }
-        } catch {
-            print("Failed to restore scenario: \(error)")
+            manager.restoreScenario(scenario)
+            self.scenarioManager = manager
+            showScenarioView = true
         }
     }
 
@@ -374,17 +377,11 @@ private extension MainView {
     func checkAndStartScenario() async {
         guard let career = user.record.scenarioProgress.dequeueLevelUp() else { return }
 
-        do {
-            if let scenario = try await scenarioRepository.fetchScenario(for: career) {
-                let manager = ScenarioManager(record: user.record)
-                manager.startScenario(scenario)
-                self.scenarioManager = manager
-                withAnimation {
-                    showScenarioView = true
-                }
-            }
-        } catch {
-            print("❌ 시나리오 fetch 실패: \(error)")
+        if let scenario = scenarioRepository.fetchScenario(for: career) {
+            let manager = ScenarioManager(record: user.record)
+            manager.startScenario(scenario)
+            self.scenarioManager = manager
+            showScenarioView = true
         }
     }
 
@@ -645,5 +642,5 @@ private extension MainView {
             .init(key: SkillKey(game: .stack, tier: .beginner), level: 1)
         ]
     )
-    MainView(user: user)
+    MainView(user: user, hasSeenIntro: .constant(true))
 }
