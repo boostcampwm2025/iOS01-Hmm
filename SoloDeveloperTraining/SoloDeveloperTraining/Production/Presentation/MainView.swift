@@ -25,7 +25,6 @@ struct MainView: View {
     // 게임 세션 관리
     @State private var workGameSession = WorkGameSession()
 
-    @State private var popupContent: PopupConfiguration?
     @State private var showCareerPopup: Bool = false
     @State private var careerSystem: CareerSystem?
     @State private var showQuizView: Bool = false
@@ -251,7 +250,7 @@ private extension MainView {
             SkillView(
                 user: user,
                 careerSystem: careerSystem,
-                popupContent: $popupContent,
+                noticePopup: $noticePopup,
                 adRewardNow: skillAdRewardNow
             )
         case .shop:
@@ -299,12 +298,6 @@ private extension MainView {
 
     @ViewBuilder
     var popupOverlayView: some View {
-        if let popupContent {
-            modalOverlay(onBackgroundTap: { self.popupContent = nil }) {
-                Popup(title: popupContent.title, contentView: popupContent.content)
-                    .frame(maxHeight: popupContent.maxHeight)
-            }
-        }
         if let careerSystem, showCareerPopup {
             CareerPopupView(careerSystem: careerSystem, user: user) {
                 showCareerPopup = false

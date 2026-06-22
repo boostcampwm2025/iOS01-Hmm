@@ -6,31 +6,26 @@
 //
 
 import SwiftUI
-
 import DUDesignSystem
-
-private enum Constant {
-    static let popupContentSpacing: CGFloat = 20
-}
 
 struct SkillView: View {
     private let user: User
     private let careerSystem: CareerSystem?
     private let skillSystem: SkillSystem
 
-    @Binding var popupContent: PopupConfiguration?
+    @Binding var noticePopup: NoticePopup?
     let adRewardNow: Date
 
     init(
         user: User,
         careerSystem: CareerSystem?,
-        popupContent: Binding<PopupConfiguration?>,
+        noticePopup: Binding<NoticePopup?>,
         adRewardNow: Date
     ) {
         self.user = user
         self.careerSystem = careerSystem
         self.skillSystem = SkillSystem(user: user, careerSystem: careerSystem)
-        self._popupContent = popupContent
+        self._noticePopup = noticePopup
         self.adRewardNow = adRewardNow
     }
 
@@ -77,7 +72,6 @@ struct SkillView: View {
     }
 }
 
-
 private extension SkillView {
     func adRewardButtonState(isActive: Bool, canUseToday: Bool) -> ItemButton.ItemButtonState {
         if isActive { return .disabled }
@@ -88,31 +82,17 @@ private extension SkillView {
         do {
             try skillSystem.upgrade(skill: skill)
         } catch let error as UserReadableError {
-            popupContent = PopupConfiguration(title: "스킬") {
-                VStack(spacing: Constant.popupContentSpacing) {
-                    Text(error.message)
-                        .textStyle(.body)
-                        .foregroundColor(.black)
-                        .multilineTextAlignment(.center)
-
-                    MediumButton(title: "확인", isFilled: true) {
-                        popupContent = nil
-                    }
-                }
-            }
+            noticePopup = NoticePopup(
+                type: .default(buttonText: "확인", action: { noticePopup = nil }),
+                title: "스킬",
+                text: error.message
+            )
         } catch {
-            popupContent = PopupConfiguration(title: "스킬") {
-                VStack(spacing: Constant.popupContentSpacing) {
-                    Text(error.localizedDescription)
-                        .textStyle(.body)
-                        .foregroundColor(.black)
-                        .multilineTextAlignment(.center)
-
-                    MediumButton(title: "확인", isFilled: true) {
-                        popupContent = nil
-                    }
-                }
-            }
+            noticePopup = NoticePopup(
+                type: .default(buttonText: "확인", action: { noticePopup = nil }),
+                title: "스킬",
+                text: error.localizedDescription
+            )
         }
     }
 
@@ -132,22 +112,14 @@ private extension SkillView {
 
         let success = await AdService.shared.showAdWithResult(.interstitial)
         if success {
-            popupContent = PopupConfiguration(title: "보상 완료") {
-                VStack(spacing: Constant.popupContentSpacing) {
-                    Text(
-                        "\(Int(Policy.Ad.SkillReward.rewardDuration / 60))분간 게임 재화를 \(Int(Policy.Ad.SkillReward.rewardMultiplier))배로 획득합니다."
-                    )
-                    .textStyle(.body)
-                    .foregroundColor(.black)
-                    .multilineTextAlignment(.center)
-                    MediumButton(title: "확인", isFilled: true) {
-                        popupContent = nil
-                    }
-                }
-                .onDisappear {
+            noticePopup = NoticePopup(
+                type: .default(buttonText: "확인", action: {
+                    noticePopup = nil
                     SkillAdRewardManager.grantReward(user: user)
-                }
-            }
+                }),
+                title: "보상 완료",
+                text: "\(Int(Policy.Ad.SkillReward.rewardDuration / 60))분간 게임 재화를 \(Int(Policy.Ad.SkillReward.rewardMultiplier))배로 획득합니다."
+            )
         }
     }
 }
@@ -159,24 +131,20 @@ private extension SkillView {
         inventory: .init(),
         record: .init(),
         skills: [
-            // 코드짜기
             .init(key: SkillKey(game: .tap, tier: .beginner), level: 1),
             .init(key: SkillKey(game: .tap, tier: .intermediate), level: 1),
             .init(key: SkillKey(game: .tap, tier: .advanced), level: 1),
-            // 언어 맞추기
             .init(key: SkillKey(game: .language, tier: .beginner), level: 1),
             .init(key: SkillKey(game: .language, tier: .intermediate), level: 1),
             .init(key: SkillKey(game: .language, tier: .advanced), level: 1),
-            // 버그 피하기
             .init(key: SkillKey(game: .dodge, tier: .beginner), level: 1),
             .init(key: SkillKey(game: .dodge, tier: .intermediate), level: 1),
             .init(key: SkillKey(game: .dodge, tier: .advanced), level: 1),
-            // 데이터 쌓기
             .init(key: SkillKey(game: .stack, tier: .beginner), level: 1),
             .init(key: SkillKey(game: .stack, tier: .intermediate), level: 1),
             .init(key: SkillKey(game: .stack, tier: .advanced), level: 1)
         ]
     )
 
-    SkillView(user: user, careerSystem: nil, popupContent: .constant(nil), adRewardNow: Date())
+    SkillView(user: user, careerSystem: nil, noticePopup: .constant(nil), adRewardNow: Date())
 }
