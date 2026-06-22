@@ -26,7 +26,7 @@ struct ComponentStatusBarView: View {
                     careerProgress: careerProgress,
                     gold: gold,
                     diamond: diamond,
-                    time: time
+                    time: time.isEmpty ? nil : time
                 )
                 .frame(maxWidth: .infinity)
             }

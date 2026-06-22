@@ -9,9 +9,19 @@
 import SwiftUI
 
 public struct StoryCard: View {
+
     public enum StoryCardType: Equatable {
         case levelUp
         case ending(title: String)
+        case endingDownload(title: String)
+
+        var imageHeight: CGFloat {
+            switch self {
+            case .levelUp: return 560
+            case .ending: return 408
+            case .endingDownload: return 569
+            }
+        }
     }
 
     public let type: StoryCardType
@@ -35,6 +45,14 @@ public struct StoryCard: View {
                 cardContent
             }
             .clipShape(RoundedRectangle(cornerRadius: TokenRadius.lg))
+            .padding(.horizontal, TokenSpacing.lg)
+
+        case .endingDownload(let title):
+            VStack(spacing: TokenSpacing.none) {
+                headerView(title: title)
+                cardContent
+            }
+            .frame(width: 484)
         }
     }
 }
@@ -42,14 +60,17 @@ public struct StoryCard: View {
 // MARK: - Subviews
 private extension StoryCard {
     var cardContent: some View {
-        Image(imageName, bundle: .module)
-            .resizable()
-            .scaledToFit()
-            .frame(maxWidth: .infinity)
-            .overlay(alignment: .bottom) {
-                TextBox(text: text)
-                    .padding([.horizontal, .bottom], TokenSpacing.lg)
-            }
+        GeometryReader { geo in
+            Image(imageName, bundle: .module)
+                .resizable()
+                .scaledToFill()
+                .frame(width: geo.size.width)
+                .clipped()
+                .overlay(alignment: .bottom) {
+                    TextBox(text: text)
+                }
+        }
+        .frame(height: type.imageHeight)
     }
 
     func headerView(title: String) -> some View {
@@ -71,6 +92,7 @@ private extension StoryCard {
             )
         }
         .padding(.all, TokenSpacing.lg)
+        .frame(height: 76)
         .background(Color.gray700)
     }
 }

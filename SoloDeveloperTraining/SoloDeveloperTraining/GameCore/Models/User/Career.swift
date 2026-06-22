@@ -46,16 +46,16 @@ enum Career: String, CaseIterable, Codable {
 
     var imageName: String {
         switch self {
-        case .unemployed: return "profile_unemployed"
-        case .laptopOwner: return "profile_laptop_owner"
-        case .aspiringDeveloper: return "profile_aspiring_developer"
-        case .juniorDeveloper: return "profile_junior_developer"
-        case .normalDeveloper: return "profile_normal_developer"
-        case .nightOwlDeveloper: return "profile_night_owl_developer"
-        case .skilledDeveloper: return "profile_skilled_developer"
-        case .famousDeveloper: return "profile_famous_developer"
-        case .allRounderDeveloper: return "profile_all_rounder_developer"
-        case .worldClassDeveloper: return "profile_world_class_developer"
+        case .unemployed: return "profileUnemployed"
+        case .laptopOwner: return "profileLaptopOwner"
+        case .aspiringDeveloper: return "profileAspiringDeveloper"
+        case .juniorDeveloper: return "profileJuniorDeveloper"
+        case .normalDeveloper: return "profileNormalDeveloper"
+        case .nightOwlDeveloper: return "profileNightOwlDeveloper"
+        case .skilledDeveloper: return "profileSkilledDeveloper"
+        case .famousDeveloper: return "profileFamousDeveloper"
+        case .allRounderDeveloper: return "profileAllRounderDeveloper"
+        case .worldClassDeveloper: return "profileWorldClassDeveloper"
         }
     }
 
@@ -72,10 +72,6 @@ enum Career: String, CaseIterable, Codable {
         case .allRounderDeveloper: return "character_all_rounder_developer"
         case .worldClassDeveloper: return "character_world_class_developer"
         }
-    }
-
-    var scenarioImagePrefix: String {
-        return "scenario_levelup_normal_developer" // TODO: 수정
     }
 
     /// 다음 단계로 업그레이드하기 위해 필요한 누적 재산

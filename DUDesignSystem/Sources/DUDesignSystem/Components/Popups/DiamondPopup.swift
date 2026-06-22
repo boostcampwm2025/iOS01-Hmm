@@ -68,6 +68,7 @@ public struct DiamondPopup: View {
             }
 
             buttonSection
+                .padding(.top, TokenSpacing.xxl - TokenSpacing.lg)
         }
         .frame(maxWidth: .infinity)
         .padding(TokenSpacing.lg)

@@ -10,10 +10,15 @@ import FirebaseAnalytics
 private typealias AP = AnalyticsProperty
 
 final class AnalyticsService {
+
     static let shared = AnalyticsService()
 
     /// 광고 이벤트별 flow ID 중복 로깅 방지
     private var loggedAdRewardFlowIDsByEvent: [AdAnalyticsEvent: Set<String>] = [:]
+
+    /// 공유하기 중복 로깅 방지
+    private var loggedShareCompletions: Set<String> = []
+    private var loggedAppOpenedFromDeeplinkSessions: Set<String> = []
 
     private init() {}
 
@@ -89,6 +94,9 @@ final class AnalyticsService {
         referrerShareID: String,
         referrerDeviceID: String
     ) {
+        let key = "\(shareID)_\(shareChannel)"
+        guard loggedShareCompletions.insert(key).inserted else { return }
+
         Analytics.logEvent("share_completed", parameters: [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
@@ -107,6 +115,9 @@ final class AnalyticsService {
         isDeferredDeeplink: Bool,
         resultID: String
     ) {
+        let sessionID = SessionManager.shared.sessionID
+        guard loggedAppOpenedFromDeeplinkSessions.insert(sessionID).inserted else { return }
+
         Analytics.logEvent("app_opened_from_deeplink", parameters: [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,

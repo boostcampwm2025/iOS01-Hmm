@@ -7,11 +7,9 @@
 
 import SwiftUI
 
+import DUDesignSystem
+
 private enum Constant {
-    enum Padding {
-        static let horizontal: CGFloat = 16
-        static let selectionViewBottom: CGFloat = 30
-    }
 
     enum UserDefaults {
         static let lastSelectedWorkIndexKey = "lastSelectedWorkIndex"
@@ -23,9 +21,6 @@ private enum Constant {
         static let dodgeGame = "기기를 기울여 버그를 피하고 골드를 획득하세요."
         static let stackGame = "최대한 높은 데이터를 쌓으세요."
     }
-
-    static let contentSpacing: CGFloat = 17
-    static let descriptionSpacing: CGFloat = 10
 }
 
 struct WorkSelectedView: View {
@@ -33,7 +28,8 @@ struct WorkSelectedView: View {
     let user: User
     let animationSystem: CharacterAnimationSystem?
     @State var selectedIndex: Int = 0
-    @State var workItems: [WorkItem] = []
+    @State var workItems: [WorkSegmentControl.Item] = []
+    @State private var requiredCareers: [Career?] = []
     @State private var showToast: Bool = false
     @State private var toastMessage: String = ""
     @Binding var isGameStarted: Bool
@@ -88,14 +84,14 @@ struct WorkSelectedView: View {
             }
         }
         .onAppear {
-            workItems = createWorkItems(career: careerSystem?.currentCareer)
+            (workItems, requiredCareers) = makeWorkItems(career: careerSystem?.currentCareer)
             loadLastSelectedIndex()
         }
         .onChange(of: selectedIndex) { _, newValue in
             saveLastSelectedIndex(newValue)
         }
         .onChange(of: careerSystem?.currentCareer) { _, newValue in
-            workItems = createWorkItems(career: newValue)
+            (workItems, requiredCareers) = makeWorkItems(career: newValue)
         }
     }
 }
@@ -104,83 +100,47 @@ struct WorkSelectedView: View {
 private extension WorkSelectedView {
 
     var selectionView: some View {
-        VStack(spacing: Constant.contentSpacing) {
-            workSegmentControl
-            descriptionStack
-            Spacer()
-            startButton
-        }
-        .padding(.horizontal, Constant.Padding.horizontal)
-        .toast(isShowing: $showToast, message: toastMessage)
-    }
-
-    var workSegmentControl: some View {
-        WorkSegmentControl(
-            items: workItems,
-            onLockedTap: { requiredCareer in
-                toastMessage = "\(requiredCareer.rawValue)부터 플레이할 수 있습니다."
-                showToast = true
+        VStack(spacing: TokenSpacing.lg) {
+            WorkSegmentControl(
+                items: workItems,
+                selectedIndex: $selectedIndex,
+                onLockedTap: { index in
+                    guard index < requiredCareers.count, let career = requiredCareers[index] else { return }
+                    toastMessage = "\(career.rawValue)부터 플레이할 수 있습니다."
+                    showToast = true
+                }
+            )
+            ItemLabel(text: actionDescription(for: selectedIndex), font: .body2, color: .black300)
+            TextButton(text: "시작하기", type: .primary, size: .large) {
+                isGameStarted = true
             }
-            , selectedIndex: $selectedIndex
-        )
-    }
-
-    var descriptionStack: some View {
-        VStack(alignment: .leading, spacing: Constant.descriptionSpacing) {
-            Text(actionDescription(for: selectedIndex))
-                .foregroundStyle(.gray300)
-                .textStyle(.subheadline)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.bottom, TokenGrid.paddingBottom)
         }
-    }
-
-    var startButton: some View {
-        LargeButton(title: "시작하기") {
-            isGameStarted = true
-        }
-        .frame(maxWidth: .infinity, alignment: .bottom)
-        .padding(.bottom, Constant.Padding.selectionViewBottom)
+        .padding(.horizontal, TokenGrid.paddingSide)
+        .toast(isShowing: $showToast, message: toastMessage)
     }
 }
 
 // MARK: - Helper
 private extension WorkSelectedView {
 
-    func createWorkItems(career: Career?) -> [WorkItem] {
-        let currentCareer = career ?? .unemployed
-        let currentWealth = currentCareer.requiredWealth
+    func makeWorkItems(career: Career?) -> ([WorkSegmentControl.Item], [Career?]) {
+        let currentWealth = (career ?? .unemployed).requiredWealth
 
-        let tapUnlocked = currentWealth >= Policy.Game.GameUnlock.tap
-        let languageUnlocked = currentWealth >= Policy.Game.GameUnlock.language
-        let dodgeUnlocked = currentWealth >= Policy.Game.GameUnlock.dodge
-        let stackUnlocked = currentWealth >= Policy.Game.GameUnlock.stack
-
-        return [
-            .init(
-                title: "코드짜기",
-                imageName: GameType.tap.imageName,
-                isDisabled: !tapUnlocked,
-                requiredCareer: findCareer(for: Policy.Game.GameUnlock.tap)
-            ),
-            .init(
-                title: "언어 맞추기",
-                imageName: GameType.language.imageName,
-                isDisabled: !languageUnlocked,
-                requiredCareer: findCareer(for: Policy.Game.GameUnlock.language)
-            ),
-            .init(
-                title: "버그 피하기",
-                imageName: GameType.dodge.imageName,
-                isDisabled: !dodgeUnlocked,
-                requiredCareer: findCareer(for: Policy.Game.GameUnlock.dodge)
-            ),
-            .init(
-                title: "데이터 쌓기",
-                imageName: GameType.stack.imageName,
-                isDisabled: !stackUnlocked,
-                requiredCareer: findCareer(for: Policy.Game.GameUnlock.stack)
-            )
+        let configs: [(String, GameType, Int)] = [
+            ("코드짜기", .tap, Policy.Game.GameUnlock.tap),
+            ("언어 맞추기", .language, Policy.Game.GameUnlock.language),
+            ("버그 피하기", .dodge, Policy.Game.GameUnlock.dodge),
+            ("데이터 쌓기", .stack, Policy.Game.GameUnlock.stack),
         ]
+
+        let items = configs.map { title, gameType, unlock in
+            WorkSegmentControl.Item(title: title, imageName: gameType.imageName, isLocked: currentWealth < unlock)
+        }
+        let careers = configs.map { _, _, unlock in
+            findCareer(for: unlock)
+        }
+        return (items, careers)
     }
 
     func findCareer(for requiredWealth: Int) -> Career? {

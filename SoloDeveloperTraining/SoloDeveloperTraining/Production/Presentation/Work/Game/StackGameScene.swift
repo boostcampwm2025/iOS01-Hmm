@@ -159,7 +159,7 @@ private extension StackGameScene {
     /// - 물리 엔진의 중력 설정
     /// - 카메라 초기화
     private func setupScene() {
-        backgroundColor = UIColor(AppTheme.backgroundColor)
+        backgroundColor = UIColor(Color.beige200)
         physicsWorld.gravity = Constant.Physics.gravity
 
         setupCamera()

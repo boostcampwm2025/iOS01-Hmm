@@ -36,6 +36,17 @@ enum EndingType: Codable {
         }
     }
 
+    var imageName: String {
+        switch self {
+        case .aceDeveloper: return "aceDeveloper"
+        case .startupCEO: return "startupCEO"
+        case .techInfluencer: return "techInfluencer"
+        case .geniusHacker: return "geniusHacker"
+        case .digitalNomad: return "digitalNomad"
+        case .darkWebAgent: return "darkWebAgent"
+        }
+    }
+
     var description: String {
         switch self {
         case .aceDeveloper: return "연봉 100억. 스톡옵션. 야근도 행복하다."

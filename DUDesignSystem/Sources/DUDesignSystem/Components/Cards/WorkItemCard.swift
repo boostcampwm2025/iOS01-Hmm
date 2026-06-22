@@ -19,17 +19,20 @@ public struct WorkItemCard: View {
     public var imageName: String
     public var state: WorkItemCardState
     public var onTap: () -> Void
+    public var onLockedTap: (() -> Void)?
 
     public init(
         title: String,
         imageName: String,
         state: WorkItemCardState = .default,
-        onTap: @escaping () -> Void
+        onTap: @escaping () -> Void,
+        onLockedTap: (() -> Void)? = nil
     ) {
         self.title = title
         self.imageName = imageName
         self.state = state
         self.onTap = onTap
+        self.onLockedTap = onLockedTap
     }
 
     public var body: some View {
@@ -72,7 +75,11 @@ public struct WorkItemCard: View {
             }
         )
         .onTapGesture {
-            if state != .locked { onTap() }
+            if state == .locked {
+                onLockedTap?()
+            } else {
+                onTap()
+            }
         }
     }
 }

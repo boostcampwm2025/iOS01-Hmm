@@ -13,6 +13,15 @@ public struct InputField: View {
         case `default`
         case error(message: String)
         case success
+        
+        var message: String {
+            switch self {
+            case .error(let message):
+                return message
+            default:
+                return ""
+            }
+        }
     }
 
     @Binding public var text: String
@@ -41,50 +50,42 @@ public struct InputField: View {
 
     public var body: some View {
         VStack(alignment: .trailing, spacing: TokenSpacing.xs) {
+            
+            ItemLabel(text: state.message, font: .label, color: .accentRed)
+                .padding(.trailing, TokenSpacing.xs)
+
             HStack {
                 ZStack(alignment: .leading) {
-                    ItemLabel(text: placeholder, font: .body, color: .black300)
+                    ItemLabel(text: placeholder, font: .body2, color: .black300)
                         .opacity(text.isEmpty && !isFocused ? TokenOpacity.opacity20 : 0)
-                        .frame(height: 16)
+                        .frame(height: 14)
                     TextField("", text: $text)
-                        .duFont(.body)
+                        .duFont(.body2)
                         .foregroundStyle(Color.black300)
                         .tint(Color.black300)
                         .focused($isFocused)
-                        .frame(height: 16)
+                        .frame(height: 14)
                 }
 
-                if case .error = state {
-                    Image("errorNotice", bundle: .module)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 16, height: 16)
-                }
             }
-            .padding(.vertical, TokenSpacing.mm)
-            .padding(.horizontal, TokenSpacing.md)
-            .background(Color.white300StatusBar)
-            .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
+            .padding(TokenSpacing.md)
+            .background(Color.white300)
+            .clipShape(RoundedRectangle(cornerRadius: TokenRadius.ss))
             .overlay(
-                RoundedRectangle(cornerRadius: TokenRadius.sm)
-                    .stroke(borderColor, lineWidth: 1)
+                RoundedRectangle(cornerRadius: TokenRadius.ss)
+                    .stroke(borderColor, lineWidth: 2)
             )
-
-            if case .error(let message) = state {
-                ItemLabel(text: message, font: .label, color: .accentRed)
-                    .padding(.trailing, TokenSpacing.xs)
-            }
         }
+        .padding(TokenSpacing.lg)
     }
 }
 
 #Preview {
-    VStack(spacing: TokenSpacing.md) {
+    VStack(spacing: TokenSpacing.xs) {
         InputField(text: .constant(""), placeholder: "닉네임을 입력해주세요", state: .default)
         InputField(text: .constant("소"), placeholder: "닉네임을 입력해주세요", state: .error(message: "닉네임은 1자 이상 입력해주세요."))
         InputField(text: .constant("소피아소피아소피아"), placeholder: "닉네임을 입력해주세요", state: .error(message: "닉네임은 최대 8자까지 입력할 수 있어요."))
         InputField(text: .constant("소피아"), placeholder: "닉네임을 입력해주세요", state: .success)
     }
-    .padding(TokenSpacing.md)
     .background(Color.beige200)
 }

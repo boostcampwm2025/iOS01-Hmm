@@ -10,7 +10,7 @@ import SwiftUI
 @Observable
 final class WorkGameSession {
     var isInProgress: Bool = false
-    var pendingTab: TabItem?
+    var pendingTab: AppTab?
     var isPauseRequested: Bool = false
     var actionGoldDelta: Int = 0
     var showsExitBonusPopup: Bool = false
@@ -29,14 +29,14 @@ final class WorkGameSession {
     }
 
     // 게임 종료 후 이동을 원하는 탭을 반환하고, 세션 내부 pending 상태는 초기화
-    func finish() -> TabItem? {
+    func finish() -> AppTab? {
         isInProgress = false
         defer { pendingTab = nil }
         return pendingTab
     }
 
     // 게임 화면에서 다른 탭 전환 시도
-    func requestTabSwitch(to tab: TabItem) {
+    func requestTabSwitch(to tab: AppTab) {
         pendingTab = tab
         isPauseRequested = true
     }
@@ -48,7 +48,7 @@ final class WorkGameSession {
     }
 
     // 보너스 팝업에서 '그냥 나가기' 선택
-    func closeExitBonusPopupAndReturnPendingTab() -> TabItem? {
+    func closeExitBonusPopupAndReturnPendingTab() -> AppTab? {
         showsExitBonusPopup = false
         return pendingTab
     }

@@ -15,7 +15,6 @@ struct ComponentTextBoxView: View {
             // MARK: - Preview Area
             PreviewArea {
                 TextBox(text: text)
-                    .padding(.horizontal, TokenSpacing.lg)
             }
 
             // MARK: - Controls

@@ -23,10 +23,12 @@ public struct WorkSegmentControl: View {
 
     public var items: [Item]
     @Binding public var selectedIndex: Int
+    public var onLockedTap: ((Int) -> Void)?
 
-    public init(items: [Item], selectedIndex: Binding<Int>) {
+    public init(items: [Item], selectedIndex: Binding<Int>, onLockedTap: ((Int) -> Void)? = nil) {
         self.items = items
         self._selectedIndex = selectedIndex
+        self.onLockedTap = onLockedTap
     }
 
     public var body: some View {
@@ -36,7 +38,8 @@ public struct WorkSegmentControl: View {
                     title: items[index].title,
                     imageName: items[index].imageName,
                     state: cardState(for: index),
-                    onTap: { selectedIndex = index }
+                    onTap: { selectedIndex = index },
+                    onLockedTap: { onLockedTap?(index) }
                 )
             }
         }
