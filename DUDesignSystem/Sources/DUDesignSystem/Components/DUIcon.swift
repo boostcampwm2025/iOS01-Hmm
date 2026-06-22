@@ -27,7 +27,6 @@ public enum DUIconName: String, CaseIterable {
     case share       = "iconShare"
     case dogFace     = "iconDogFace"
     case dogFoot     = "iconDogFoot"
-    case movieSlate  = "iconMovieSlate"
 }
 
 public struct DUIcon: View {
