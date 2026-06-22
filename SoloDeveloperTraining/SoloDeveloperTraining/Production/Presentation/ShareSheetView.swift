@@ -47,6 +47,7 @@ struct ShareSheetView: View {
                                 }
                             )
                         onLinkCopied()
+                        isPresented = false
                     }
                 )
 
