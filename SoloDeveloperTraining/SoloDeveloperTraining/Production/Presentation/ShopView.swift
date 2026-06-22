@@ -135,6 +135,7 @@ private extension ShopView {
                 .padding(.horizontal, TokenGrid.paddingSide)
                 .id(Constant.ID.housingScrollStart)
             }
+            .scrollClipDisabled()
             .padding(.bottom, TokenGrid.paddingBottom)
             .scrollIndicators(.never)
         }
