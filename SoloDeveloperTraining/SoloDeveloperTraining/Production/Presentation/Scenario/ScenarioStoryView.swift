@@ -72,7 +72,7 @@ struct ScenarioStoryView: View {
                             guard let image = renderEndingImage(ending) else { return }
                             PhotoLibraryService.saveImageToPhotoLibrary(image) { success in
                                 showCompletedToast = true
-                                showCompletedToastMessage = success ? "이미지가 저장되었습니다." : "이미지 저장에 실패했습니다."
+                                showCompletedToastMessage = success ? "이미지가 저장되었습니다." : "사진 접근 허용이 필요해요!"
                             }
                         },
                         onShare: {
