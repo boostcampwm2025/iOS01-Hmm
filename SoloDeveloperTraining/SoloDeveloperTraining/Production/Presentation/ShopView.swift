@@ -172,51 +172,35 @@ private extension ShopView {
         let displayRate = hasBonus ? min(baseRate + 10, 100) : baseRate
         let priceText = ShopPurchaseHelper.createPriceText(for: item, shopSystem: shopSystem)
 
-        if hasBonus {
-            storePopup = StorePopup(
-                type: .default(
-                    cancelText: "취소",
-                    confirmText: "강화",
-                    cancelAction: { storePopup = nil },
-                    confirmAction: {
-                        storePopup = nil
-                        executePurchase(item: item, bonusRate: 0.1, scrollProxy: scrollProxy)
+        storePopup = StorePopup(
+            type: .ad(
+                successRate: displayRate,
+                adState: hasBonus ? .disabled : .default,
+                cancelText: "취소",
+                adText: "확률 UP",
+                confirmText: "강화",
+                cancelAction: { storePopup = nil },
+                adAction: {
+                    storePopup = nil
+                    Task {
+                        let watched = await AdService.shared.showAdWithResult(.interstitial)
+                        guard watched else { return }
+                        adBonusAppliedTypes.insert(typeKey)
+                        UserDefaults.standard.set(Array(adBonusAppliedTypes), forKey: Constant.UserDefaultsKey.equipmentAdBonus)
+                        showAdBonusToast = true
+                        showEquipmentEnhancePopup(item: item, equipment: equipment, scrollProxy: scrollProxy)
                     }
-                ),
-                title: "장비 강화",
-                itemName: item.displayTitle,
-                price: priceText
-            )
-        } else {
-            storePopup = StorePopup(
-                type: .ad(
-                    successRate: displayRate,
-                    adState: .default,
-                    cancelText: "취소",
-                    adText: "확률 UP",
-                    confirmText: "강화",
-                    cancelAction: { storePopup = nil },
-                    adAction: {
-                        storePopup = nil
-                        Task {
-                            let watched = await AdService.shared.showAdWithResult(.interstitial)
-                            guard watched else { return }
-                            adBonusAppliedTypes.insert(typeKey)
-                            UserDefaults.standard.set(Array(adBonusAppliedTypes), forKey: Constant.UserDefaultsKey.equipmentAdBonus)
-                            showAdBonusToast = true
-                            showEquipmentEnhancePopup(item: item, equipment: equipment, scrollProxy: scrollProxy)
-                        }
-                    },
-                    confirmAction: {
-                        storePopup = nil
-                        executePurchase(item: item, bonusRate: 0.0, scrollProxy: scrollProxy)
-                    }
-                ),
-                title: "장비 강화",
-                itemName: item.displayTitle,
-                price: priceText
-            )
-        }
+                },
+                confirmAction: {
+                    storePopup = nil
+                    executePurchase(item: item, bonusRate: hasBonus ? 0.1 : 0.0, scrollProxy: scrollProxy)
+                }
+            ),
+            title: "장비 강화",
+            itemName: item.displayTitle,
+            price: priceText,
+            rateHighlighted: hasBonus
+        )
     }
 
     /// 실제 구매 실행
