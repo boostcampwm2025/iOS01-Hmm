@@ -63,19 +63,7 @@ struct SkillView: View {
                             let after = skillState.skill.gainGoldAfterUpgrade
                             return "레벨업시 골드 획득 \(Int(current).formatted) -> \(Int(after).formatted)"
                         }(),
-                        buttonType: {
-                            let cost = skillState.skill.upgradeCost
-                            if cost.gold > 0 && cost.diamond > 0 {
-                                return .twoLine(
-                                    firstText: cost.gold.formatted, firstIcon: .coinBag,
-                                    secondText: cost.diamond.formatted, secondIcon: .diamond
-                                )
-                            } else if cost.diamond > 0 {
-                                return .singleLine(text: cost.diamond.formatted, icon: .diamond)
-                            } else {
-                                return .singleLine(text: cost.gold.formatted, icon: .coinBag)
-                            }
-                        }(),
+                        buttonType: skillState.skill.upgradeCost.itemButtonType,
                         buttonState: skillState.itemState.itemButtonState,
                         action: { upgrade(skill: skillState.skill) },
                         onLongPress: { upgradeRepeating(skill: skillState.skill) }
@@ -89,16 +77,6 @@ struct SkillView: View {
     }
 }
 
-private extension ItemState {
-    var itemButtonState: ItemButton.ItemButtonState {
-        switch self {
-        case .available:    return .default
-        case .insufficient: return .disabled
-        case .locked:       return .locked
-        case .reachedMax:   return .locked
-        }
-    }
-}
 
 private extension SkillView {
     func adRewardButtonState(isActive: Bool, canUseToday: Bool) -> ItemButton.ItemButtonState {
