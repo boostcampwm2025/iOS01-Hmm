@@ -119,7 +119,7 @@ private extension ShopView {
                                 price: ShopPurchaseHelper.createPriceText(for: item, shopSystem: shopSystem),
                                 rewardPerSecond: "\(housing.goldPerSecond.formatted) 골드",
                                 imageName: housing.imageName,
-                                state: housingCardState(itemState: ItemState(item: item), isSelected: selectedHousingTier == housing.tier),
+                                state: ItemState(item: item).housingCardState(isSelected: selectedHousingTier == housing.tier),
                                 onTap: {
                                     selectedHousingTier = housing.tier
                                 },
@@ -132,20 +132,11 @@ private extension ShopView {
                         }
                     }
                 }
-                .padding(.horizontal, Constant.Padding.horizontal)
-                .padding(.top, Constant.Padding.housingTop)
-                .padding(.bottom, Constant.Padding.housingBottom)
+                .padding(.horizontal, TokenGrid.paddingSide)
                 .id(Constant.ID.housingScrollStart)
             }
+            .padding(.bottom, TokenGrid.paddingBottom)
             .scrollIndicators(.never)
-        }
-    }
-
-    func housingCardState(itemState: ItemState, isSelected: Bool) -> HousingCard.HousingCardState {
-        switch itemState {
-        case .available, .insufficient: return isSelected ? .selected : .default
-        case .locked:                   return .locked
-        case .reachedMax:               return .equipped
         }
     }
 
@@ -280,7 +271,6 @@ private extension ShopView {
         }
     }
 }
-
 
 #Preview {
     let user = User(

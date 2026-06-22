@@ -1,5 +1,5 @@
 //
-//  ItemButtonExtensions.swift
+//  DisplayStateExtensions.swift
 //  SoloDeveloperTraining
 //
 
@@ -12,6 +12,14 @@ extension ItemState {
         case .insufficient: return .disabled
         case .locked:       return .locked
         case .reachedMax:   return .locked
+        }
+    }
+
+    func housingCardState(isSelected: Bool) -> HousingCard.HousingCardState {
+        switch self {
+        case .available, .insufficient: return isSelected ? .selected : .default
+        case .locked:                   return .locked
+        case .reachedMax:               return .equipped
         }
     }
 }
