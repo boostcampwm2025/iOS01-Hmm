@@ -1,11 +1,11 @@
 {
   "images" : [
     {
-      "filename" : "adBoost.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "adBoost.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

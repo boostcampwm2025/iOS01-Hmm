@@ -12,8 +12,7 @@ public struct ItemRow: View {
     public var imageName: String
     public var title: String
     public var description: String
-    public var buttonText: String
-    public var buttonIcon: DUIconName
+    public var buttonType: ItemButton.ItemButtonType
     public var buttonState: ItemButton.ItemButtonState
     public var action: () -> Void
     public var onLongPress: (() -> Void)?
@@ -22,8 +21,7 @@ public struct ItemRow: View {
         imageName: String,
         title: String,
         description: String,
-        buttonText: String,
-        buttonIcon: DUIconName = .coinBag,
+        buttonType: ItemButton.ItemButtonType,
         buttonState: ItemButton.ItemButtonState = .default,
         action: @escaping () -> Void,
         onLongPress: (() -> Void)? = nil
@@ -31,8 +29,7 @@ public struct ItemRow: View {
         self.imageName = imageName
         self.title = title
         self.description = description
-        self.buttonText = buttonText
-        self.buttonIcon = buttonIcon
+        self.buttonType = buttonType
         self.buttonState = buttonState
         self.action = action
         self.onLongPress = onLongPress
@@ -52,7 +49,7 @@ public struct ItemRow: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            ItemButton(text: buttonText, icon: buttonIcon, state: buttonState, action: action)
+            ItemButton(type: buttonType, state: buttonState, action: action)
                 .simultaneousGesture(
                     LongPressGesture().onEnded { _ in onLongPress?() }
                 )
@@ -62,10 +59,10 @@ public struct ItemRow: View {
 
 #Preview {
     VStack(spacing: TokenSpacing.sm) {
-        ItemRow(imageName: "", title: "아이템 이름", description: "항목 설명 설명 설명 설명 설명 설명", buttonText: "28.71M", buttonState: .default, action: {})
-        ItemRow(imageName: "", title: "아이템 이름", description: "항목 설명 설명 설명 설명 설명 설명", buttonText: "28.71M", buttonState: .default, action: {})
-        ItemRow(imageName: "", title: "아이템 이름", description: "항목 설명 설명 설명 설명 설명 설명", buttonText: "28.71M", buttonState: .disabled, action: {})
-        ItemRow(imageName: "", title: "아이템 이름", description: "항목 설명 설명 설명 설명 설명 설명", buttonText: "28.71M", buttonState: .locked, action: {})
+        ItemRow(imageName: "", title: "아이템 이름", description: "항목 설명 설명 설명 설명 설명 설명", buttonType: .singleLine(text: "28.71M", icon: .coinBag), buttonState: .default, action: {})
+        ItemRow(imageName: "", title: "아이템 이름", description: "항목 설명 설명 설명 설명 설명 설명", buttonType: .singleLine(text: "28.71M", icon: .coinBag), buttonState: .disabled, action: {})
+        ItemRow(imageName: "", title: "아이템 이름", description: "항목 설명 설명 설명 설명 설명 설명", buttonType: .singleLine(text: "28.71M", icon: .coinBag), buttonState: .locked, action: {})
+        ItemRow(imageName: "", title: "아이템 이름", description: "항목 설명 설명 설명 설명 설명 설명", buttonType: .twoLine(firstText: "28.71M", firstIcon: .coinBag, secondText: "구매", secondIcon: .coinBag), buttonState: .default, action: {})
     }
     .padding(TokenSpacing.md)
     .background(Color.beige200)

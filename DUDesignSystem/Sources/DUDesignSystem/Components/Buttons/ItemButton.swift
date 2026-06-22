@@ -14,16 +14,19 @@ public struct ItemButton: View {
         case disabled
     }
 
-    public var text: String
-    public var icon: DUIconName
-    public var state: ItemButtonState = .default
+    public enum ItemButtonType {
+        case singleLine(text: String, icon: DUIconName)
+        case twoLine(firstText: String, firstIcon: DUIconName, secondText: String, secondIcon: DUIconName)
+    }
+
+    public var type: ItemButtonType
+    public var state: ItemButtonState
     public var action: () -> Void
 
     @GestureState private var isPressed: Bool = false
 
-    public init(text: String, icon: DUIconName = .coinBag, state: ItemButtonState, action: @escaping () -> Void) {
-        self.text = text
-        self.icon = icon
+    public init(type: ItemButtonType, state: ItemButtonState, action: @escaping () -> Void) {
+        self.type = type
         self.state = state
         self.action = action
     }
@@ -39,16 +42,28 @@ public struct ItemButton: View {
         state != .disabled && state != .locked
     }
 
+    @ViewBuilder
+    private var label: some View {
+        switch type {
+        case .singleLine(let text, let icon):
+            ItemLabel(text: text, icon: icon, iconSize: .size16, font: .caption, color: .white300)
+        case .twoLine(let firstText, let firstIcon, let secondText, let secondIcon):
+            VStack(spacing: TokenSpacing.xs) {
+                ItemLabel(text: firstText, icon: firstIcon, iconSize: .size16, font: .caption, color: .white300)
+                ItemLabel(text: secondText, icon: secondIcon, iconSize: .size16, font: .caption, color: .white300)
+            }
+        }
+    }
+
     public var body: some View {
         ZStack {
-            ItemLabel(text: text, icon: icon, iconSize: .size16, font: .caption, color: .white300)
+            label
                 .opacity(state == .locked ? TokenOpacity.opacity40 : TokenOpacity.opacity100)
             if state == .locked {
                 DUIcon(.lock, size: .size16)
             }
         }
-        .frame(width: 80)
-        .padding(.vertical, TokenSpacing.mm)
+        .frame(width: 84, height: 42)
         .background(backgroundColor)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
         .tokenShadow(isPressed ? .none : (state == .default ? .default : .dim))
@@ -67,9 +82,12 @@ public struct ItemButton: View {
 
 #Preview {
     VStack(spacing: 20) {
-        ItemButton(text: "20,000", state: .default) { }
-        ItemButton(text: "20,000", state: .locked) { }
-        ItemButton(text: "20,000", state: .disabled) { }
+        ItemButton(type: .singleLine(text: "20,000", icon: .coinBag), state: .default) { }
+        ItemButton(type: .singleLine(text: "20,000", icon: .coinBag), state: .locked) { }
+        ItemButton(type: .singleLine(text: "20,000", icon: .coinBag), state: .disabled) { }
+        ItemButton(type: .twoLine(firstText: "20,000", firstIcon: .coinBag, secondText: "구매", secondIcon: .coinBag), state: .default) { }
+        ItemButton(type: .twoLine(firstText: "20,000", firstIcon: .coinBag, secondText: "구매", secondIcon: .coinBag), state: .locked) { }
+        ItemButton(type: .twoLine(firstText: "20,000", firstIcon: .coinBag, secondText: "구매", secondIcon: .coinBag), state: .disabled) { }
     }
     .padding(32)
     .background(Color.beige200)

@@ -42,8 +42,7 @@ struct SkillView: View {
             imageName: "adBoost",
             title: "업무 효율 대박",
             description: "5분간 피버타임 두배 (X1, X2, X4)",
-            buttonText: isActive ? "사용중" : "광고보기",
-            buttonIcon: .ad,
+            buttonType: .singleLine(text: isActive ? "사용중" : "광고보기", icon: .ad),
             buttonState: adRewardButtonState(isActive: isActive, canUseToday: canUseToday),
             action: {
                 Task { await handleWatchAd() }
@@ -64,10 +63,12 @@ struct SkillView: View {
                             let after = skillState.skill.gainGoldAfterUpgrade
                             return "레벨업시 골드 획득 \(Int(current).formatted) -> \(Int(after).formatted)"
                         }(),
-                        buttonText: skillState.skill.upgradeCost.gold > 0
-                            ? skillState.skill.upgradeCost.gold.formatted
-                            : skillState.skill.upgradeCost.diamond.formatted,
-                        buttonIcon: skillState.skill.upgradeCost.gold > 0 ? .coinBag : .diamond,
+                        buttonType: .singleLine(
+                            text: skillState.skill.upgradeCost.gold > 0
+                                ? skillState.skill.upgradeCost.gold.formatted
+                                : skillState.skill.upgradeCost.diamond.formatted,
+                            icon: skillState.skill.upgradeCost.gold > 0 ? .coinBag : .diamond
+                        ),
                         buttonState: skillState.itemState.itemButtonState,
                         action: { upgrade(skill: skillState.skill) },
                         onLongPress: { _ = upgradeRepeating(skill: skillState.skill) }
