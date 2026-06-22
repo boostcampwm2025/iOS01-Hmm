@@ -16,16 +16,16 @@ private enum Constant {
     enum Text {
         static let itemSegment = "아이템"
         static let housingSegment = "부동산"
-        
+
         static let enhanceSuccessTitle = "강화 성공"
         static let enhanceFailureTitle = "강화 실패"
         static let enhanceSuccessMessage = "강화에 성공했습니다!"
         static let enhanceFailureMessage = "강화에 실패했습니다.\n비용은 소모되었습니다."
-        
+
         static let purchaseFailureTitle = "구매 실패"
         static let purchaseFailureMessage = "구매에 실패했습니다."
     }
-    
+
     enum ID {
         static let housingScrollStart = "housingScrollStart"
     }
@@ -53,12 +53,14 @@ struct ShopView: View {
         return Set(saved)
     }()
 
-    @Binding var popupContent: PopupConfiguration?
+    @Binding var storePopup: StorePopup?
+    @Binding var noticePopup: NoticePopup?
 
-    init(user: User, popupContent: Binding<PopupConfiguration?>) {
+    init(user: User, storePopup: Binding<StorePopup?>, noticePopup: Binding<NoticePopup?>) {
         self.user = user
         self.shopSystem = ShopSystem(user: user)
-        self._popupContent = popupContent
+        self._storePopup = storePopup
+        self._noticePopup = noticePopup
     }
 
     var body: some View {
@@ -142,16 +144,22 @@ private extension ShopView {
         if item.category == .equipment, let equipment = item.item as? Equipment {
             showEquipmentEnhancePopup(item: item, equipment: equipment, scrollProxy: scrollProxy)
         } else {
-            let (title, message, buttonTitle) = ShopPurchaseHelper.purchaseInfo(for: item)
-            let fullMessage = ShopPurchaseHelper.createPurchaseMessage(item: item, baseMessage: message, shopSystem: shopSystem)
-            ShopPurchaseHelper.showConfirm(
-                popupContent: $popupContent,
+            let (title, _, buttonTitle) = ShopPurchaseHelper.purchaseInfo(for: item)
+            let priceText = ShopPurchaseHelper.createPriceText(for: item, shopSystem: shopSystem)
+            storePopup = StorePopup(
+                type: .default(
+                    cancelText: "취소",
+                    confirmText: buttonTitle,
+                    cancelAction: { storePopup = nil },
+                    confirmAction: {
+                        storePopup = nil
+                        executePurchase(item: item, scrollProxy: scrollProxy)
+                    }
+                ),
                 title: title,
-                message: fullMessage,
-                confirmTitle: buttonTitle
-            ) {
-                executePurchase(item: item, scrollProxy: scrollProxy)
-            }
+                itemName: item.displayTitle,
+                price: priceText
+            )
         }
     }
 
@@ -163,25 +171,51 @@ private extension ShopView {
         let displayRate = hasBonus ? min(baseRate + 10, 100) : baseRate
         let priceText = ShopPurchaseHelper.createPriceText(for: item, shopSystem: shopSystem)
 
-        ShopPurchaseHelper.showEquipmentEnhanceConfirm(
-            popupContent: $popupContent,
-            priceText: priceText,
-            displayRate: displayRate,
-            hasAdBonus: hasBonus,
-            onWatchAd: {
-                Task {
-                    let watched = await AdService.shared.showAdWithResult(.interstitial)
-                    guard watched else { return }
-                    adBonusAppliedTypes.insert(typeKey)
-                    UserDefaults.standard.set(Array(adBonusAppliedTypes), forKey: Constant.UserDefaultsKey.equipmentAdBonus)
-                    showAdBonusToast = true
-                    showEquipmentEnhancePopup(item: item, equipment: equipment, scrollProxy: scrollProxy)
-                }
-            },
-            onConfirm: {
-                executePurchase(item: item, bonusRate: hasBonus ? 0.1 : 0.0, scrollProxy: scrollProxy)
-            }
-        )
+        if hasBonus {
+            storePopup = StorePopup(
+                type: .default(
+                    cancelText: "취소",
+                    confirmText: "강화",
+                    cancelAction: { storePopup = nil },
+                    confirmAction: {
+                        storePopup = nil
+                        executePurchase(item: item, bonusRate: 0.1, scrollProxy: scrollProxy)
+                    }
+                ),
+                title: "장비 강화",
+                itemName: item.displayTitle,
+                price: priceText
+            )
+        } else {
+            storePopup = StorePopup(
+                type: .ad(
+                    successRate: displayRate,
+                    adState: .default,
+                    cancelText: "취소",
+                    adText: "확률 UP",
+                    confirmText: "강화",
+                    cancelAction: { storePopup = nil },
+                    adAction: {
+                        storePopup = nil
+                        Task {
+                            let watched = await AdService.shared.showAdWithResult(.interstitial)
+                            guard watched else { return }
+                            adBonusAppliedTypes.insert(typeKey)
+                            UserDefaults.standard.set(Array(adBonusAppliedTypes), forKey: Constant.UserDefaultsKey.equipmentAdBonus)
+                            showAdBonusToast = true
+                            showEquipmentEnhancePopup(item: item, equipment: equipment, scrollProxy: scrollProxy)
+                        }
+                    },
+                    confirmAction: {
+                        storePopup = nil
+                        executePurchase(item: item, bonusRate: 0.0, scrollProxy: scrollProxy)
+                    }
+                ),
+                title: "장비 강화",
+                itemName: item.displayTitle,
+                price: priceText
+            )
+        }
     }
 
     /// 실제 구매 실행
@@ -213,14 +247,26 @@ private extension ShopView {
                 }
                 let title = isSuccess ? Constant.Text.enhanceSuccessTitle : Constant.Text.enhanceFailureTitle
                 let message = isSuccess ? Constant.Text.enhanceSuccessMessage : Constant.Text.enhanceFailureMessage
-                ShopPurchaseHelper.showAlert(popupContent: $popupContent, title: title, message: message)
+                noticePopup = NoticePopup(
+                    type: .default(buttonText: "확인", action: { noticePopup = nil }),
+                    title: title,
+                    text: message
+                )
             }
         } catch let error as PurchasingError {
             HapticService.shared.trigger(.error)
-            ShopPurchaseHelper.showAlert(popupContent: $popupContent, title: Constant.Text.purchaseFailureTitle, message: error.message)
+            noticePopup = NoticePopup(
+                type: .default(buttonText: "확인", action: { noticePopup = nil }),
+                title: Constant.Text.purchaseFailureTitle,
+                text: error.message
+            )
         } catch {
             HapticService.shared.trigger(.error)
-            ShopPurchaseHelper.showAlert(popupContent: $popupContent, title: Constant.Text.purchaseFailureTitle, message: Constant.Text.purchaseFailureMessage)
+            noticePopup = NoticePopup(
+                type: .default(buttonText: "확인", action: { noticePopup = nil }),
+                title: Constant.Text.purchaseFailureTitle,
+                text: Constant.Text.purchaseFailureMessage
+            )
         }
     }
 }
@@ -258,5 +304,5 @@ private extension Cost {
             .init(key: SkillKey(game: .tap, tier: .beginner), level: 1)
         ]
     )
-    ShopView(user: user, popupContent: .constant(nil))
+    ShopView(user: user, storePopup: .constant(nil), noticePopup: .constant(nil))
 }
