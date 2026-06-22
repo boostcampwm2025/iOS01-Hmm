@@ -71,11 +71,11 @@ private extension LevelUpEffectView {
 
     var sidebarOverlay: some View {
         HStack {
-            Image(.bar)
+            Image.duImage("bar")
                 .resizable()
                 .frame(width: Constant.barWidth, height: Constant.barHeight)
             Spacer()
-            Image(.bar)
+            Image.duImage("bar")
                 .resizable()
                 .frame(width: Constant.barWidth, height: Constant.barHeight)
         }
