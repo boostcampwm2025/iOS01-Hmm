@@ -17,7 +17,11 @@ private enum Constant {
 
 struct MainView: View {
     @Environment(\.scenePhase) var scenePhase
+
+    @Binding var hasSeenIntro: Bool
+
     @State private var selectedTab: AppTab = .work
+
     // 게임 세션 관리
     @State private var workGameSession = WorkGameSession()
 
@@ -29,7 +33,8 @@ struct MainView: View {
 
     // 음료 광고 팝업 관련
     @State private var showDrinkAdPopup: Bool = false
-    @State private var showRewardPopup: Bool = false
+    @State private var showRewardToast: Bool = false
+    @State private var rewardToastMessage: String = ""
     @State private var selectedDrinkType: ConsumableType?
 
     // 스킬 광고 보상 지속시 남은 시간
@@ -43,6 +48,7 @@ struct MainView: View {
     @State private var offlineRewardToastMessage: String = ""
     @State private var hasCheckedOfflineReward: Bool = false
     @State private var tabbarAnchorY: CGFloat = 0
+    @State private var bottomAnchorY: CGFloat = 0
 
     // 레벨업 이펙트 관련
     @State private var isCareerSystemInitialized: Bool = false
@@ -59,7 +65,8 @@ struct MainView: View {
     private let scene: CharacterScene
     private let animationSystem: CharacterAnimationSystem
 
-    init(user: User) {
+    init(user: User, hasSeenIntro: Binding<Bool>) {
+        self._hasSeenIntro = hasSeenIntro
         self.autoGainSystem = AutoGainSystem(user: user)
         self.user = user
 
@@ -91,11 +98,16 @@ struct MainView: View {
         }
         .onDisappear { SoundService.shared.stopBGM() }
         .onChange(of: scenePhase, handleScenePhaseChange)
-        .task(id: user.record.totalEarnedMoney) {
-            await careerSystem?.updateCareer()
+        .onChange(of: user.record.totalEarnedMoney) {
+            careerSystem?.updateCareer()
         }
         .overlay { overlayView }
-        .overlay { LevelUpEffectView(isPresented: $showLevelUpEffect, career: leveledUpCareer) }
+        .overlay {
+            if showLevelUpEffect {
+                LevelUpEffectView(isPresented: $showLevelUpEffect, career: leveledUpCareer)
+                    .transition(.opacity.animation(.easeIn))
+            }
+        }
         .onChange(of: showLevelUpEffect) { oldValue, newValue in
             if oldValue == true && newValue == false {
                 Task {
@@ -106,14 +118,15 @@ struct MainView: View {
         .fullScreenCover(isPresented: $showQuizView) {
             QuizGameView(user: user)
         }
-        .darkToast(
-            isShowing: workGameSession.exitBonusToastBinding,
-            message: workGameSession.exitBonusToastMessage
-        )
         .duToast(
             isShowing: $showOfflineRewardToast,
             message: offlineRewardToastMessage,
             anchorY: tabbarAnchorY
+        )
+        .duToast(
+            isShowing: $showRewardToast,
+            message: rewardToastMessage,
+            anchorY: bottomAnchorY
         )
     }
 }
@@ -187,6 +200,11 @@ private extension MainView {
                 tabContentSwitchView
             }
         }
+        .background(GeometryReader { geo in
+            Color.clear.onAppear {
+                bottomAnchorY = geo.frame(in: .global).maxY - TokenGrid.paddingBottom
+            }
+        })
     }
 
     var workGameOverlayView: some View {
@@ -198,7 +216,6 @@ private extension MainView {
             tabSwitchPause: tabSwitchPauseBinding,
             careerSystem: $careerSystem,
             showDrinkAdPopup: $showDrinkAdPopup,
-            showRewardPopup: $showRewardPopup,
             showExitBonusPopup: workGameSession.exitBonusPopupBinding,
             selectedDrinkType: $selectedDrinkType,
             resumeGameCallback: workGameSession.resumeGameBinding,
@@ -221,7 +238,6 @@ private extension MainView {
                     tabSwitchPause: tabSwitchPauseBinding,
                     careerSystem: $careerSystem,
                     showDrinkAdPopup: $showDrinkAdPopup,
-                    showRewardPopup: $showRewardPopup,
                     showExitBonusPopup: workGameSession.exitBonusPopupBinding,
                     selectedDrinkType: $selectedDrinkType,
                     resumeGameCallback: workGameSession.resumeGameBinding,
@@ -249,7 +265,6 @@ private extension MainView {
                 .ignoresSafeArea()
             settingsOverlayView
             drinkAdPopupOverlayView
-            drinkRewardPopupOverlayView
             exitBonusPopupOverlayView
             offlineRewardPopupOverlayView
             scenarioOverlayView
@@ -260,14 +275,21 @@ private extension MainView {
     var scenarioOverlayView: some View {
         if showScenarioView, let manager = scenarioManager {
             ScenarioStoryView(
+                user: user,
                 manager: manager,
-                record: user.record,
                 repository: scenarioRepository
             ) {
-                withAnimation {
-                    showScenarioView = false
+                let isRebirth = manager.currentScenario?.scenarioType == .rebirth
+                manager.completeScenario()
+
+                showScenarioView = false
+
+                if isRebirth {
+                    hasSeenIntro = false
                 }
             }
+            .ignoresSafeArea()
+            .transition(.opacity.animation(.easeIn))
         }
     }
 
@@ -305,24 +327,20 @@ private extension MainView {
             await checkOfflineReward()
         }
 
-        Task {
-            if careerSystem == nil {
-                careerSystem = await CareerSystem(user: user)
-                isCareerSystemInitialized = true
-                careerSystem?.onCareerChanged = { [weak scene] newCareer in
-                    scene?.updateCareerAppearance(to: newCareer)
+        if careerSystem == nil {
+            careerSystem = CareerSystem(user: user)
+            isCareerSystemInitialized = true
+            careerSystem?.onCareerChanged = { [weak scene] newCareer in
+                scene?.updateCareerAppearance(to: newCareer)
+                leveledUpCareer = newCareer
 
-                    leveledUpCareer = newCareer
-                    withAnimation(.spring()) {
-                        showLevelUpEffect = newCareer != .unemployed
-                    }
-                }
+                showLevelUpEffect = newCareer != .unemployed
             }
-            // 저장된 시나리오 복구 체크
-            await restoreScenarioIfNeeded()
-            // 대기 중인 레벨업 이펙트 복구 체크
-            checkPendingLevelUp()
         }
+        // 저장된 시나리오 복구 체크
+        restoreScenarioIfNeeded()
+        // 대기 중인 레벨업 이펙트 복구 체크
+        checkPendingLevelUp()
     }
 
     @MainActor
@@ -338,21 +356,15 @@ private extension MainView {
     }
 
     @MainActor
-    func restoreScenarioIfNeeded() async {
+    func restoreScenarioIfNeeded() {
         guard !showScenarioView, let career = user.record.scenarioProgress.currentCareer else { return }
 
-        do {
-            if let scenario = try await scenarioRepository.fetchScenario(for: career) {
-                let manager = ScenarioManager(record: user.record)
+        if let scenario = scenarioRepository.fetchScenario(for: career) {
+            let manager = ScenarioManager(record: user.record)
 
-                manager.restoreScenario(scenario)
-                self.scenarioManager = manager
-                withAnimation {
-                    showScenarioView = true
-                }
-            }
-        } catch {
-            print("Failed to restore scenario: \(error)")
+            manager.restoreScenario(scenario)
+            self.scenarioManager = manager
+            showScenarioView = true
         }
     }
 
@@ -374,17 +386,11 @@ private extension MainView {
     func checkAndStartScenario() async {
         guard let career = user.record.scenarioProgress.dequeueLevelUp() else { return }
 
-        do {
-            if let scenario = try await scenarioRepository.fetchScenario(for: career) {
-                let manager = ScenarioManager(record: user.record)
-                manager.startScenario(scenario)
-                self.scenarioManager = manager
-                withAnimation {
-                    showScenarioView = true
-                }
-            }
-        } catch {
-            print("❌ 시나리오 fetch 실패: \(error)")
+        if let scenario = scenarioRepository.fetchScenario(for: career) {
+            let manager = ScenarioManager(record: user.record)
+            manager.startScenario(scenario)
+            self.scenarioManager = manager
+            showScenarioView = true
         }
     }
 
@@ -440,22 +446,15 @@ private extension MainView {
     var drinkAdPopupOverlayView: some View {
         if showDrinkAdPopup, let drinkType = selectedDrinkType {
             modalOverlay {
-                DrinkAdPopupView(
-                    drinkType: drinkType,
-                    onWatchAd: { Task { await handleWatchAdInMainView() } },
-                    onSkip: handleSkipAdInMainView
-                )
-            }
-        }
-    }
-
-    @ViewBuilder
-    var drinkRewardPopupOverlayView: some View {
-        if showRewardPopup, let drinkType = selectedDrinkType {
-            modalOverlay {
-                DrinkRewardPopupView(
-                    drinkType: drinkType,
-                    onConfirm: handleRewardConfirmInMainView
+                NoticePopup(
+                    type: .ad(
+                        cancelText: "그냥 하기",
+                        adText: "음료 받기",
+                        cancelAction: handleSkipAdInMainView,
+                        adAction: { Task { await handleWatchAdInMainView() } }
+                    ),
+                    title: drinkType == .coffee ? "커피 없음" : "박하스 없음",
+                    text: "대신에 광고를 보고\n카페인을 보충할까요?"
                 )
             }
         }
@@ -465,9 +464,15 @@ private extension MainView {
     var exitBonusPopupOverlayView: some View {
         if workGameSession.showsExitBonusPopup {
             modalOverlay {
-                WorkExitBonusPopupView(
-                    onWatchAd: { Task { await handleExitBonusAd() } },
-                    onLeave: handleExitWithoutBonus
+                NoticePopup(
+                    type: .ad(
+                        cancelText: "그냥 나가기",
+                        adText: "보너스 받기",
+                        cancelAction: handleExitWithoutBonus,
+                        adAction: { Task { await handleExitBonusAd() } }
+                    ),
+                    title: "보너스",
+                    text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다"
                 )
             }
         }
@@ -499,9 +504,10 @@ private extension MainView {
         if success {
             // 보상 지급
             user.inventory.gain(consumable: drinkType)
-
-            // 보상 팝업 표시
-            showRewardPopup = true
+            rewardToastMessage = "카페인 충전 완료!"
+            showRewardToast = true
+            selectedDrinkType = nil
+            workGameSession.resumeGame?()
         } else {
             // 광고 실패 시 초기화
             selectedDrinkType = nil
@@ -510,12 +516,6 @@ private extension MainView {
 
     func handleSkipAdInMainView() {
         showDrinkAdPopup = false
-        selectedDrinkType = nil
-        workGameSession.resumeGame?()
-    }
-
-    func handleRewardConfirmInMainView() {
-        showRewardPopup = false
         selectedDrinkType = nil
         workGameSession.resumeGame?()
     }
@@ -532,9 +532,8 @@ private extension MainView {
     func handleExitWithoutBonus() {
         if let pendingTab = workGameSession.closeExitBonusPopupAndReturnPendingTab() {
             selectedTab = pendingTab
-        } else {
-            exitWorkGame()
         }
+        exitWorkGame()
     }
 
     func applyExitBonus() {
@@ -543,8 +542,10 @@ private extension MainView {
             user.wallet.addGold(bonusGold)
             user.record.record(.earnMoney(bonusGold))
         }
-        workGameSession.exitBonusToastMessage = bonusGold > 0 ? "업무 보너스 \(bonusGold.formatted) 골드를 받았습니다!" : "업무 보너스를 받을 재화가 없습니다."
-        workGameSession.showsExitBonusToast = true
+        rewardToastMessage = bonusGold > 0 ?
+                             "업무에서 얻은 보상 2배 획득!" :
+                             "업무 보너스를 받을 재화가 없습니다."
+        showRewardToast = true
     }
 
     func exitWorkGame() {
@@ -645,5 +646,5 @@ private extension MainView {
             .init(key: SkillKey(game: .stack, tier: .beginner), level: 1)
         ]
     )
-    MainView(user: user)
+    MainView(user: user, hasSeenIntro: .constant(true))
 }

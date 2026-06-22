@@ -12,7 +12,7 @@ struct ScenarioPage {
     /// 페이지 고유 ID
     let id: String
     /// 이미지
-    let image: String?
+    let imageName: String?
     /// 페이지 텍스트 내용
     let text: String
     /// 페이지 타입
@@ -20,12 +20,12 @@ struct ScenarioPage {
 
     init(
         id: String = UUID().uuidString,
-        image: String? = nil,
+        imageName: String? = nil,
         text: String,
         pageType: PageType
     ) {
         self.id = id
-        self.image = image
+        self.imageName = imageName
         self.text = text
         self.pageType = pageType
     }

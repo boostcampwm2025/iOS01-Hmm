@@ -125,18 +125,10 @@ final class ScenarioTestViewModel {
     // MARK: - Actions
 
     func startScenario() {
-        Task {
-            do {
-                if let scenario = try await repository.fetchScenario(for: selectedCareer) {
-                    await MainActor.run {
-                        currentScenario = scenario
-                        scenarioManager.startScenario(scenario)
-                        updateCurrentPage()
-                    }
-                }
-            } catch {
-                print("❌ 시나리오 로드 실패: \(error)")
-            }
+        if let scenario = repository.fetchScenario(for: selectedCareer) {
+            currentScenario = scenario
+            scenarioManager.startScenario(scenario)
+            updateCurrentPage()
         }
     }
 
@@ -256,7 +248,8 @@ struct ScenarioTestView: View {
                 urlString: "\(ShareService.baseURL)/\(viewModel.finalEnding?.type.webURLSlug ?? "")"
                     + "?share_id=\(currentShareID)"
                     + "&device_id=\(AnalyticsProperty.deviceIDValue)"
-                    + "&result_id=\(viewModel.finalEnding?.id ?? "")"
+                    + "&result_id=\(viewModel.finalEnding?.id ?? "")",
+                onLinkCopied: {}
             )
         }
     }
@@ -567,6 +560,8 @@ extension ScenarioType {
             return "이벤트"
         case .final:
             return "최종"
+        case .rebirth:
+            return "환생"
         }
     }
 
@@ -578,6 +573,8 @@ extension ScenarioType {
             return "event"
         case .final:
             return "final"
+        case .rebirth:
+            return "rebirth"
         }
     }
 }

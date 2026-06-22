@@ -28,7 +28,7 @@
 	<key>KAKAO_APP_KEY</key>
 	<string>$(KAKAO_APP_KEY)</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>이미지를 사진 앨범에 저장하기 위해 권한이 필요합니다.</string>
+	<string>이미지를 저장하기 위해 권한이 필요합니다.</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>개인화된 광고 제공 목적으로 사용됩니다.</string>
 	<key>LSApplicationQueriesSchemes</key>

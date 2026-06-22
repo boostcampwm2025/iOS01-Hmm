@@ -75,7 +75,7 @@ private extension SoloDeveloperTrainingApp {
     var gameContent: some View {
         Group {
             if hasSeenIntro, let user {
-                MainView(user: user)
+                MainView(user: user, hasSeenIntro: $hasSeenIntro)
                     .transition(.opacity)
             } else {
                 IntroView(
@@ -90,7 +90,15 @@ private extension SoloDeveloperTrainingApp {
         }
         .animation(.easeOut(duration: Constant.Animation.transitionDuration), value: hasSeenIntro)
         .onOpenURL { url in
-            print("\(url) app open")
+            guard let deeplinkInfo = parseOpenURL(url) else { return }
+
+            AnalyticsService.shared
+                .logAppOpenedFromDeeplink(
+                    entrySource: deeplinkInfo.entrySource,
+                    referrerShareID: deeplinkInfo.referrerShareID,
+                    isDeferredDeeplink: false,
+                    resultID: deeplinkInfo.resultID
+                )
         }
         .fullScreenCover(isPresented: $showNicknameSetup) {
             NicknameSetupView { nickname in
@@ -215,4 +223,39 @@ private extension SoloDeveloperTrainingApp {
         AnalyticsKeychain.getOrCreateDeviceID()
         AnalyticsService.shared.logFirstOpen(level: user.career.level)
     }
+
+    struct DeeplinkInfo {
+        let entrySource: String
+        let referrerShareID: String
+        let resultID: String
+    }
+
+    func parseOpenURL(_ url: URL) -> DeeplinkInfo? {
+        guard let components = URLComponents(
+            url: url,
+            resolvingAgainstBaseURL: false
+        ) else {
+            return nil
+        }
+
+        let queryItems = components.queryItems ?? []
+
+        guard
+            let shareID = queryItems.first(where: { $0.name == "share_id" })?.value,
+            let resultID = queryItems.first(where: { $0.name == "result_id" })?.value
+        else {
+            return nil
+        }
+
+        let entrySource = queryItems
+            .first(where: { $0.name == "entry_source" })?
+            .value ?? "unknown"
+
+        return DeeplinkInfo(
+            entrySource: entrySource,
+            referrerShareID: shareID,
+            resultID: resultID
+        )
+    }
+
 }

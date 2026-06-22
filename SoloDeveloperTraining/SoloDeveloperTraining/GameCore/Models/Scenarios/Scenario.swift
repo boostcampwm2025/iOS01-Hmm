@@ -22,7 +22,7 @@ struct Scenario {
         scenarioType: ScenarioType,
         pages: [ScenarioPage]
     ) {
-        self.id = "career_\(career.rawValue)"
+        self.id = id
         self.career = career
         self.scenarioType = scenarioType
         self.pages = pages

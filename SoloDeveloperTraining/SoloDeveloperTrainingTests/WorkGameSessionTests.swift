@@ -122,12 +122,10 @@ struct WorkGameSessionTests {
 
         session.actionGoldDeltaBinding.wrappedValue = 150
         session.exitBonusPopupBinding.wrappedValue = true
-        session.exitBonusToastBinding.wrappedValue = true
         session.resumeGameBinding.wrappedValue = { didResume = true }
 
         #expect(session.actionGoldDelta == 150)
         #expect(session.showsExitBonusPopup)
-        #expect(session.showsExitBonusToast)
 
         session.resumeGame?()
         #expect(didResume)

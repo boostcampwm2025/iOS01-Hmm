@@ -2,7 +2,7 @@
 //  Image+.swift
 //  DUDesignSystem
 //
-//  Created by SeoJunYoung on 6/19/26.
+//  Created by 김성훈 on 6/22/26.
 //
 
 import SwiftUI

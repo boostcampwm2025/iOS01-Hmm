@@ -29,7 +29,7 @@ final class RebirthTestViewModel {
 
     init() {
         self.testUser = User(nickname: "환생테스터")
-        self.rebirthStoryPages = repository.fetchRebirthStory()
+        self.rebirthStoryPages = repository.fetchRebirthScenarioPages()
     }
 
     // MARK: - Computed Properties
