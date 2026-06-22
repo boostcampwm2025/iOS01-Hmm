@@ -7,17 +7,18 @@ import SwiftUI
 import DUDesignSystem
 
 struct ComponentStoryCardView: View {
-    
+
     enum ViewMode: String, CaseIterable {
         case levelUp = "Level Up"
         case ending = "Ending"
+        case endingDownload = "Ending(download)"
     }
-    
+
     @State private var viewMode: ViewMode = .levelUp
     @State private var title: String = "유니콘 에이스"
     @State private var careerName: String = "노트북 보유자"
     @State private var description: String = "당근마켓에서 15만원짜리 중고 노트북을 샀다. 팬 소리가 비행기 이륙 수준이지만 괜찮다. 난 이제 개발자다."
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: TokenSpacing.lg) {
@@ -25,10 +26,10 @@ struct ComponentStoryCardView: View {
                     StoryCard(
                         type: storyCardType,
                         text: description,
-                        imageName: viewMode == .levelUp ? "scenario_levelup_normal_developer" : "scenario_ending_genius_hacker"
+                        imageName: viewMode == .levelUp ? "scenario_levelup_normal_developer" : "geniusHacker"
                     )
                 }
-                
+
                 Group {
                     // MARK: - Controls
                     Section("모드") {
@@ -75,13 +76,15 @@ struct ComponentStoryCardView: View {
         .background(Color.beige200)
         .navigationTitle("StoryCard")
     }
-    
+
     private var storyCardType: StoryCard.StoryCardType {
         switch viewMode {
         case .levelUp:
             return .levelUp
         case .ending:
             return .ending(title: title)
+        case .endingDownload:
+            return .endingDownload(title: title)
         }
     }
 }

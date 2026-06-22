@@ -7,37 +7,40 @@
 
 import SwiftUI
 
+import DUDesignSystem
+
 private enum Constant {
-    enum Padding {
-        static let horizontal: CGFloat = 16
-        static let toolBarBottom: CGFloat = 10
-    }
     /// 탭 사운드 최소 재생 간격 (초)
     static let tapSoundThrottleInterval: TimeInterval = 0.05
 }
 
 struct TapGameView: View {
-    // MARK: - Properties
-    /// 게임 시작 상태 (부모 뷰와 바인딩)
-    @Binding var isGameStarted: Bool
-    @Binding var gameActionGoldDelta: Int
-    @Binding var tabSwitchPause: Bool
 
-    // MARK: - State
-    /// 의존 게임
+    /// 코드짜기 게임 모델
     @State private var tapGame: TapGame
+    /// 닫기 버튼으로 인한 일시정지
     @State private var closePause: Bool = false
-    /// 터치한 위치에 표시될 EffectLabel들의 위치와 값
+    /// 터치 위치에 표시되는 골드 획득 효과
     @State private var effectLabels: [EffectLabelData] = []
     /// 탭 사운드 쓰로틀용 마지막 재생 시각
     @State private var lastTapSoundTime: Date = .distantPast
 
-    // 광고 팝업 관련
+    /// 게임 시작 여부 (false로 바꾸면 선택 화면으로 복귀)
+    @Binding var isGameStarted: Bool
+    /// 이번 세션에서 획득한 골드 누적량
+    @Binding var gameActionGoldDelta: Int
+    /// 탭 전환으로 인한 일시정지
+    @Binding var tabSwitchPause: Bool
+
+    /// 광고 시청 후 음료 지급 팝업 표시 여부
     @Binding var showDrinkAdPopup: Bool
-    @Binding var showRewardPopup: Bool
+    /// 나가기 보너스 팝업 표시 여부
     @Binding var showExitBonusPopup: Bool
+    /// 광고 팝업에서 선택된 음료 타입
     @Binding var selectedDrinkType: ConsumableType?
+    /// 팝업에서 게임 재개 시 호출되는 콜백
     @Binding var resumeGameCallback: (() -> Void)?
+    /// 팝업에서 게임 종료 시 호출되는 콜백
     @Binding var exitGameCallback: (() -> Void)?
 
     init(
@@ -47,7 +50,6 @@ struct TapGameView: View {
         tabSwitchPause: Binding<Bool>,
         animationSystem: CharacterAnimationSystem?,
         showDrinkAdPopup: Binding<Bool>,
-        showRewardPopup: Binding<Bool>,
         showExitBonusPopup: Binding<Bool>,
         selectedDrinkType: Binding<ConsumableType?>,
         resumeGameCallback: Binding<(() -> Void)?>,
@@ -58,70 +60,93 @@ struct TapGameView: View {
             buffSystem: BuffSystem(),
             animationSystem: animationSystem
         )
-        self._tapGame = State(initialValue: tapGame)
-        self._isGameStarted = isGameStarted
-        self._gameActionGoldDelta = gameActionGoldDelta
-        self._tabSwitchPause = tabSwitchPause
-        self._showDrinkAdPopup = showDrinkAdPopup
-        self._showRewardPopup = showRewardPopup
-        self._showExitBonusPopup = showExitBonusPopup
-        self._selectedDrinkType = selectedDrinkType
-        self._resumeGameCallback = resumeGameCallback
-        self._exitGameCallback = exitGameCallback
-        self.tapGame.startGame()
+        tapGame.startGame()
+        _tapGame = State(initialValue: tapGame)
+        _isGameStarted = isGameStarted
+        _gameActionGoldDelta = gameActionGoldDelta
+        _tabSwitchPause = tabSwitchPause
+        _showDrinkAdPopup = showDrinkAdPopup
+        _showExitBonusPopup = showExitBonusPopup
+        _selectedDrinkType = selectedDrinkType
+        _resumeGameCallback = resumeGameCallback
+        _exitGameCallback = exitGameCallback
     }
 
     var body: some View {
-        GeometryReader { geometry in
-            VStack(spacing: 0) {
-                // 상단 툴바 (닫기, 아이템 버튼, 피버 게이지)
-                toolbarSection
-                // 터치 가능한 게임 영역
-                tapAreaSection(geometry: geometry)
-            }
-            .onAppear {
-                // 게임 재개 콜백 설정
-                resumeGameCallback = { [weak tapGame] in
-                    tapGame?.resumeGame()
-                }
-                exitGameCallback = { handleCloseButton() }
-            }
-            .pauseGameStyle(
-                pauseBinding: pauseBinding,
-                height: geometry.size.height,
-                onLeave: { showExitBonusPopup = true },
-                onPause: {
-                    tapGame.pauseGame()
-                    SoundService.shared.stopAllSFX()
-                    lastTapSoundTime = .distantPast
-                },
-                onResume: { tapGame.resumeGame() }
-            )
+        VStack(spacing: 0) {
+            toolbarSection
+            gameAreaSection
         }
     }
 }
 
-// MARK: - View Components
+// MARK: - Sections
 private extension TapGameView {
-    /// 상단 툴바
+
     var toolbarSection: some View {
         GameToolBar(
-            closeButtonDidTapHandler: { closePause = true },
-            coffeeButtonDidTapHandler: { useConsumableItem(.coffee) },
-            energyDrinkButtonDidTapHandler: { useConsumableItem(.energyDrink) },
-            feverState: tapGame.feverSystem,
-            buffSystem: tapGame.buffSystem,
-            coffeeCount: Binding(
-                get: { tapGame.inventory.count(.coffee) ?? 0 },
-                set: { _ in }
-            ),
-            energyDrinkCount: Binding(
-                get: { tapGame.inventory.count(.energyDrink) ?? 0 },
-                set: { _ in }
-            )
+            feverStage: tapGame.feverSystem.feverStage,
+            feverProgress: {
+                let stageBase = Double(tapGame.feverSystem.feverStage) * 100.0
+                return (tapGame.feverSystem.feverPercent - stageBase) / 100.0
+            }(),
+            feverMultiplier: tapGame.feverSystem.feverStage == 0 ? 0 : tapGame.feverSystem.feverMultiplier,
+            coffeeCount: tapGame.inventory.count(.coffee) ?? 0,
+            energyDrinkCount: tapGame.inventory.count(.energyDrink) ?? 0,
+            coffeeCooldown: {
+                Double(tapGame.buffSystem.coffeeDuration) / Double(ConsumableType.coffee.duration)
+            }(),
+            energyDrinkCooldown: {
+                Double(tapGame.buffSystem.energyDrinkDuration) / Double(ConsumableType.energyDrink.duration)
+            }(),
+            onClose: {
+                closePause = true
+                SoundService.shared.stopAllSFX()
+                SoundService.shared.trigger(.buttonTap)
+            },
+            onCoffee: { useConsumableItem(.coffee) },
+            onEnergyDrink: { useConsumableItem(.energyDrink) }
         )
-        .padding(.horizontal, Constant.Padding.horizontal)
-        .padding(.bottom, Constant.Padding.toolBarBottom)
+        .padding(.bottom, TokenSpacing.md)
+    }
+
+    var gameAreaSection: some View {
+        ZStack {
+            Color.clear
+                .overlay(
+                    Image.duImage("tap_background")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                )
+                .clipped()
+
+            ForEach(effectLabels) { data in
+                EffectLabel(type: .plus, text: "\(data.value)") {
+                    removeEffectLabel(id: data.id)
+                }
+                .position(data.position)
+            }
+
+            MultiTouchView { location in
+                Task { await handleTap(at: location) }
+            }
+        }
+        .onAppear {
+            resumeGameCallback = { [weak tapGame] in
+                tapGame?.resumeGame()
+            }
+            exitGameCallback = { handleCloseButton() }
+        }
+        .gamePauseWrapper(
+            pauseBinding: pauseBinding,
+            onLeave: { showExitBonusPopup = true },
+            onPause: {
+                tapGame.pauseGame()
+                SoundService.shared.stopAllSFX()
+                lastTapSoundTime = .distantPast
+            },
+            onResume: { tapGame.resumeGame() }
+        )
     }
 
     var pauseBinding: Binding<Bool> {
@@ -133,42 +158,11 @@ private extension TapGameView {
             }
         )
     }
-
-    /// 터치 가능한 게임 영역
-    func tapAreaSection(geometry: GeometryProxy) -> some View {
-        ZStack {
-            // 배경 이미지
-            Image(.tapBackground)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-
-            // 효과 라벨들
-            ForEach(effectLabels) { effectLabel in
-                EffectLabel(
-                    value: effectLabel.value,
-                    onComplete: { removeEffectLabel(id: effectLabel.id) }
-                )
-                .position(effectLabel.position)
-            }
-
-            // 멀티터치 뷰
-            MultiTouchView { location in
-                Task { await handleTap(at: location) }
-            }
-        }
-    }
 }
 
-// MARK: - Actions
+// MARK: - Helper
 private extension TapGameView {
-    /// 닫기 버튼 클릭 처리
-    func handleCloseButton() {
-        tapGame.stopGame()
-        isGameStarted = false
-    }
 
-    /// 터치 이벤트 처리
-    /// - Parameter location: 터치한 위치
     @MainActor
     func handleTap(at location: CGPoint) async {
         let now = Date()
@@ -182,12 +176,23 @@ private extension TapGameView {
         showEffectLabel(at: location, value: gainGold)
     }
 
-    /// 소비 아이템 사용 처리
+    func showEffectLabel(at location: CGPoint, value: Int) {
+        let data = EffectLabelData(id: UUID(), position: location, value: value)
+        effectLabels.append(data)
+    }
+
+    func removeEffectLabel(id: UUID) {
+        effectLabels.removeAll { $0.id == id }
+    }
+
+    func handleCloseButton() {
+        tapGame.stopGame()
+        isGameStarted = false
+    }
+
     func useConsumableItem(_ type: ConsumableType) {
         let count = tapGame.inventory.count(type) ?? 0
-
         if count > 0 {
-            // 음료 사용
             if tapGame.inventory.drink(type) {
                 SoundService.shared.trigger(.itemConsume)
                 HapticService.shared.trigger(.success)
@@ -195,75 +200,9 @@ private extension TapGameView {
                 tapGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
             }
         } else {
-            // 광고 팝업 표시
             selectedDrinkType = type
             showDrinkAdPopup = true
             tapGame.pauseGame()
         }
     }
-
-}
-
-// MARK: - Helper Methods
-private extension TapGameView {
-    /// 터치 위치에 효과 라벨 추가
-    /// - Parameters:
-    ///   - location: 터치한 위치
-    ///   - value: 표시할 값
-    func showEffectLabel(at location: CGPoint, value: Int) {
-        let labelData = EffectLabelData(
-            id: UUID(),
-            position: location,
-            value: value
-        )
-        effectLabels.append(labelData)
-    }
-
-    /// 효과 라벨 제거 (애니메이션 완료 시 콜백으로 호출)
-    /// - Parameter id: 제거할 효과 라벨의 ID
-    func removeEffectLabel(id: UUID) {
-        effectLabels.removeAll { $0.id == id }
-    }
-}
-
-#Preview {
-    @Previewable @State var isGameStarted: Bool = true
-    @Previewable @State var gameActionGoldDelta: Int = 0
-    @Previewable @State var tabSwitchPause: Bool = true
-    @Previewable @State var showDrinkAdPopup: Bool = false
-    @Previewable @State var showRewardPopup: Bool = false
-    @Previewable @State var showExitBonusPopup: Bool = false
-    @Previewable @State var selectedDrinkType: ConsumableType?
-    @Previewable @State var resumeGameCallback: (() -> Void)?
-    @Previewable @State var exitGameCallback: (() -> Void)?
-
-    let user = User(
-        nickname: "Preview User",
-        wallet: Wallet(gold: 10000, diamond: 50),
-        inventory: Inventory(
-            consumableItems: [
-                Consumable(type: .coffee, count: 5),
-                Consumable(type: .energyDrink, count: 3)
-            ]
-        ),
-        record: Record(),
-        skills: [
-            Skill(key: SkillKey(game: .tap, tier: .beginner), level: 10),
-            Skill(key: SkillKey(game: .tap, tier: .intermediate), level: 5)
-        ]
-    )
-
-    TapGameView(
-        user: user,
-        isGameStarted: $isGameStarted,
-        gameActionGoldDelta: $gameActionGoldDelta,
-        tabSwitchPause: $tabSwitchPause,
-        animationSystem: nil,
-        showDrinkAdPopup: $showDrinkAdPopup,
-        showRewardPopup: $showRewardPopup,
-        showExitBonusPopup: $showExitBonusPopup,
-        selectedDrinkType: $selectedDrinkType,
-        resumeGameCallback: $resumeGameCallback,
-        exitGameCallback: $exitGameCallback
-    )
 }

@@ -15,14 +15,14 @@ final class CareerSystem {
     var careerProgress: Double = 0.0
     var onCareerChanged: ((Career, Career) -> Void)?
 
-    init(user: User) async {
+    init(user: User) {
         self.user = user
         self.currentCareer = user.career
-        await updateProgress()
+        updateProgress()
     }
 
     /// 누적 재산을 기반으로 현재 달성한 커리어 계산
-    func calculateCareer() async -> Career {
+    func calculateCareer() -> Career {
         let totalWealth = user.record.totalEarnedMoney
 
         var achievedCareer: Career = .unemployed
@@ -37,27 +37,32 @@ final class CareerSystem {
     }
 
     /// 커리어 업데이트
-    func updateCareer() async {
-        let newCareer = await calculateCareer()
+    func updateCareer() {
+        let newCareer = calculateCareer()
         if currentCareer != newCareer {
             let previousCareer = currentCareer
             currentCareer = newCareer
             user.updateCareer(to: newCareer)
-            user.record.scenarioProgress.enqueueLevelUp(newCareer) // 시나리오 큐에 추가
+
+            // 실제로 단계가 높아진 경우(레벨업)에만 시나리오 큐에 추가
+            if newCareer.level > previousCareer.level {
+                user.record.scenarioProgress.enqueueLevelUp(newCareer)
+            }
+
             onCareerChanged?(previousCareer, newCareer)
 
             if newCareer == .juniorDeveloper {
                 user.record.record(.juniorDeveloperAchieve)
             }
         }
-        await updateProgress()
+        updateProgress()
     }
 }
 
 // MARK: - Helper
 private extension CareerSystem {
     /// 현재 커리어의 진행도 계산 (0.0 ~ 1.0)
-    func updateProgress() async {
+    func updateProgress() {
         guard let nextCareer = currentCareer.nextCareer else {
             careerProgress = 1.0
             return

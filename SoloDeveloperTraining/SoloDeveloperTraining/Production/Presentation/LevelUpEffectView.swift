@@ -32,33 +32,31 @@ struct LevelUpEffectView: View {
     @State private var titleText: String = ""
 
     var body: some View {
-        if isPresented {
-            ZStack {
-                Color.black300EventDim
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        withAnimation {
-                            isPresented = false
-                        }
+        ZStack {
+            Color.black300EventDim
+                .ignoresSafeArea()
+                .onTapGesture {
+                    withAnimation {
+                        isPresented = false
                     }
-
-                VStack(spacing: TokenSpacing.xs) {
-                    GIFView(
-                        gifName: phase == .start
-                        ? "levelUpStart"
-                        : "levelUpRepeat",
-                        onFinished: phase == .start ? {
-                            phase = .loop
-                            switchToLoopAnimation()
-                        } : nil
-                    )
-                    .frame(maxWidth: .infinity)
-
-                    careerTitleBox
                 }
-                .onAppear { startAnimation() }
-                .onDisappear { phase = .start }
+
+            VStack(spacing: TokenSpacing.xs) {
+                GIFView(
+                    gifName: phase == .start
+                    ? "levelUpStart"
+                    : "levelUpRepeat",
+                    onFinished: phase == .start ? {
+                        phase = .loop
+                        switchToLoopAnimation()
+                    } : nil
+                )
+                .frame(maxWidth: .infinity)
+
+                careerTitleBox
             }
+            .onAppear { startAnimation() }
+            .onDisappear { phase = .start }
         }
     }
 }

@@ -13,4 +13,6 @@ enum ScenarioType {
     case event
     /// 최종 시나리오
     case final
+    /// 환생 시나리오
+    case rebirth
 }

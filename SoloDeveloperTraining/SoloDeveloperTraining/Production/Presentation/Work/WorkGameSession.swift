@@ -14,8 +14,6 @@ final class WorkGameSession {
     var isPauseRequested: Bool = false
     var actionGoldDelta: Int = 0
     var showsExitBonusPopup: Bool = false
-    var showsExitBonusToast: Bool = false
-    var exitBonusToastMessage: String = ""
     var resumeGame: (() -> Void)?
     var exitGame: (() -> Void)?
 
@@ -89,13 +87,6 @@ extension WorkGameSession {
                     self.showsExitBonusPopup = false
                 }
             }
-        )
-    }
-
-    var exitBonusToastBinding: Binding<Bool> {
-        Binding(
-            get: { self.showsExitBonusToast },
-            set: { self.showsExitBonusToast = $0 }
         )
     }
 

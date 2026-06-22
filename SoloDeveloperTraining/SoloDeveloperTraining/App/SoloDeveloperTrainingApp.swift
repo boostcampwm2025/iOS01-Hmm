@@ -83,7 +83,7 @@ private extension SoloDeveloperTrainingApp {
     var gameContent: some View {
         Group {
             if hasSeenIntro, let user {
-                MainView(user: user)
+                MainView(user: user, hasSeenIntro: $hasSeenIntro)
                     .transition(.opacity)
             } else {
                 IntroView(
