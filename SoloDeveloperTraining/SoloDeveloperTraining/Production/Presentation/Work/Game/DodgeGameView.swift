@@ -176,7 +176,7 @@ private extension DodgeGameView {
         RunningCharacter(isFacingLeft: isFacingLeft, isGamePaused: isGamePaused)
             .position(
                 x: gameAreaWidth / 2 + (isGamePaused ? 0 : game.motionSystem.characterX),
-                y: gameAreaHeight - TokenGrid.marginBugCharacter - RunningCharacter.size / 2
+                y: gameAreaHeight - TokenGrid.marginBottomLarge - RunningCharacter.size / 2
             )
             .onChange(of: game.motionSystem.characterX) { oldPositionX, newPositionX in
                 updateCharacterDirection(oldPositionX: oldPositionX, newPositionX: newPositionX)
@@ -234,7 +234,7 @@ private extension DodgeGameView {
             id: UUID(),
             position: CGPoint(
                 x: gameAreaWidth / 2 + game.motionSystem.characterX,
-                y: gameAreaHeight - TokenGrid.marginBugCharacter - RunningCharacter.size / 2 - Constant.Position.effectOffset
+                y: gameAreaHeight - TokenGrid.marginBottomLarge - RunningCharacter.size / 2 - Constant.Position.effectOffset
             ),
             value: goldDelta
         )
