@@ -121,10 +121,10 @@ public struct GameToolBar: View {
                     GeometryReader { geometry in
                         VStack(spacing: 0) {
                             Rectangle()
-                                .opacity(0.3)
+                                .opacity(TokenOpacity.opacity20)
                                 .frame(height: geometry.size.height * cooldown)
                             Rectangle()
-                                .opacity(1)
+                                .opacity(TokenOpacity.opacity100)
                                 .frame(height: geometry.size.height * (1 - cooldown))
                         }
                     }
