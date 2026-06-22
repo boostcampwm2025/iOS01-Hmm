@@ -160,8 +160,7 @@ struct QuizGameView: View {
     private var adPopupOverlay: some View {
         Group {
             if showQuizAdPopup {
-                ZStack {
-                    Color.black300PopUpDimStatusBar.ignoresSafeArea()
+                modalOverlay {
                     DiamondPopup(
                         type: .ad(
                             cancelText: "닫기",
@@ -187,8 +186,7 @@ struct QuizGameView: View {
     private var rewardPopupOverlay: some View {
         Group {
             if showQuizRewardPopup {
-                ZStack {
-                    Color.black300PopUpDimStatusBar.ignoresSafeArea()
+                modalOverlay {
                     DiamondPopup(
                         type: .default(
                             buttonText: "닫기",
@@ -220,6 +218,16 @@ private extension QuizGameView {
             quizGame.completeGame(multiplier: 1.0)
             dismiss()
         }
+    }
+
+    func modalOverlay<Content: View>(
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        ZStack {
+            Color.black300PopUpDimStatusBar
+            content()
+        }
+        .ignoresSafeArea()
     }
 }
 
