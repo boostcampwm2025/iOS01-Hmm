@@ -175,7 +175,7 @@ struct QuizGameView: View {
                                 Task { await handleWatchAd() }
                             }
                         ),
-                        title: "보너스",
+                        title: "보상 지급",
                         text: "퀴즈 풀이를 완료했습니다!\n진정한 개발자에 한 걸음 더 가까워졌습니다.",
                         diamond: quizGame.state.totalDiamondsEarned
                     )
@@ -191,14 +191,14 @@ struct QuizGameView: View {
                     Color.black300PopUpDimStatusBar.ignoresSafeArea()
                     DiamondPopup(
                         type: .default(
-                            buttonText: "확인",
+                            buttonText: "닫기",
                             action: {
                                 showQuizRewardPopup = false
                                 dismiss()
                             }
                         ),
-                        title: "보상 지급 완료!",
-                        text: "다이아를 2배로 받았습니다!",
+                        title: "보상 지급 완료",
+                        text: "다이아를 두 배로 받았습니다!",
                         diamond: finalDiamondsEarned
                     )
                 }
