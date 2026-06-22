@@ -25,7 +25,7 @@ extension ItemState {
 }
 
 extension MissionLevel {
-    var trophyType: DUDesignSystem.MissionCard.MissionTrophyType {
+    var trophyType: MissionCard.MissionTrophyType {
         switch self {
         case .gold:    return .gold
         case .silver:  return .silver
@@ -36,7 +36,7 @@ extension MissionLevel {
 }
 
 extension MissionCardState {
-    var missionCardState: DUDesignSystem.MissionCard.MissionCardState {
+    var missionCardState: MissionCard.MissionCardState {
         switch self {
         case .claimed:                              return .claimed
         case .claimable:                            return .claimable

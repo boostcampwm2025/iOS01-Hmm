@@ -23,7 +23,7 @@ struct MissionView: View {
     var body: some View {
         VStack(spacing: TokenSpacing.md) {
             ZStack {
-                DUDesignSystem.ProgressBar(
+                ProgressBar(
                     progress: missionSystem.allCount > 0 ? Double(missionSystem.claimedCount) / Double(missionSystem.allCount) : 0
                 )
                 ItemLabel(text: "\(missionSystem.claimedCount) / \(missionSystem.allCount)", font: .caption, color: .black300)
@@ -34,7 +34,7 @@ struct MissionView: View {
                     spacing: TokenSpacing.md
                 ) {
                     ForEach(missionSystem.missions, id: \.id) { mission in
-                        DUDesignSystem.MissionCard(
+                        MissionCard(
                             title: mission.title,
                             goldRewardText: mission.reward.gold > 0 ? mission.reward.gold.formatted : nil,
                             diamondRewardText: mission.reward.diamond > 0 ? mission.reward.diamond.formatted : nil,
