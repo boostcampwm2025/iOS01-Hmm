@@ -22,13 +22,22 @@ public struct ItemButton: View {
     public var type: ItemButtonType
     public var state: ItemButtonState
     public var action: () -> Void
+    public var onLongPress: (() -> Bool)?
 
     @GestureState private var isPressed: Bool = false
+    @State private var isLongPressing: Bool = false
+    @State private var repeatTimer: Timer?
 
-    public init(type: ItemButtonType, state: ItemButtonState, action: @escaping () -> Void) {
+    private enum LongPressConstant {
+        static let minimumDuration: Double = 0.5
+        static let repeatInterval: TimeInterval = 0.1
+    }
+
+    public init(type: ItemButtonType, state: ItemButtonState, action: @escaping () -> Void, onLongPress: (() -> Bool)? = nil) {
         self.type = type
         self.state = state
         self.action = action
+        self.onLongPress = onLongPress
     }
 
     private var backgroundColor: Color {
@@ -74,9 +83,43 @@ public struct ItemButton: View {
         .gesture(
             isInteractive ? DragGesture(minimumDistance: 0)
                 .updating($isPressed) { _, state, _ in state = true }
-                .onEnded { _ in action() } : nil
+                .onEnded { _ in
+                    if isLongPressing {
+                        isLongPressing = false
+                        stopRepeating()
+                    } else {
+                        action()
+                    }
+                } : nil
+        )
+        .simultaneousGesture(
+            LongPressGesture(minimumDuration: LongPressConstant.minimumDuration)
+                .onEnded { _ in
+                    guard onLongPress != nil && isInteractive else { return }
+                    isLongPressing = true
+                    startRepeating()
+                }
         )
         .animation(nil, value: isPressed)
+        .onDisappear { stopRepeating() }
+    }
+
+    private func startRepeating() {
+        guard let onLongPress, repeatTimer == nil else { return }
+        _ = onLongPress()
+        let timer = Timer.scheduledTimer(withTimeInterval: LongPressConstant.repeatInterval, repeats: true) { timer in
+            if !onLongPress() {
+                timer.invalidate()
+                repeatTimer = nil
+            }
+        }
+        RunLoop.current.add(timer, forMode: .common)
+        repeatTimer = timer
+    }
+
+    private func stopRepeating() {
+        repeatTimer?.invalidate()
+        repeatTimer = nil
     }
 }
 

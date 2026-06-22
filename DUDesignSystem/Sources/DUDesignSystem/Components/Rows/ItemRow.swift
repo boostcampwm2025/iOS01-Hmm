@@ -15,7 +15,7 @@ public struct ItemRow: View {
     public var buttonType: ItemButton.ItemButtonType
     public var buttonState: ItemButton.ItemButtonState
     public var action: () -> Void
-    public var onLongPress: (() -> Void)?
+    public var onLongPress: (() -> Bool)?
 
     public init(
         imageName: String,
@@ -24,7 +24,7 @@ public struct ItemRow: View {
         buttonType: ItemButton.ItemButtonType,
         buttonState: ItemButton.ItemButtonState = .default,
         action: @escaping () -> Void,
-        onLongPress: (() -> Void)? = nil
+        onLongPress: (() -> Bool)? = nil
     ) {
         self.imageName = imageName
         self.title = title
@@ -49,10 +49,7 @@ public struct ItemRow: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            ItemButton(type: buttonType, state: buttonState, action: action)
-                .simultaneousGesture(
-                    LongPressGesture().onEnded { _ in onLongPress?() }
-                )
+            ItemButton(type: buttonType, state: buttonState, action: action, onLongPress: onLongPress)
         }
     }
 }
