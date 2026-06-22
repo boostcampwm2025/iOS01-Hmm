@@ -23,7 +23,7 @@ struct MissionView: View {
     var body: some View {
         VStack(spacing: TokenSpacing.md) {
             ZStack {
-                ProgressBar(
+                DUDesignSystem.ProgressBar(
                     progress: missionSystem.allCount > 0 ? Double(missionSystem.claimedCount) / Double(missionSystem.allCount) : 0
                 )
                 ItemLabel(text: "\(missionSystem.claimedCount) / \(missionSystem.allCount)", font: .caption, color: .black300)

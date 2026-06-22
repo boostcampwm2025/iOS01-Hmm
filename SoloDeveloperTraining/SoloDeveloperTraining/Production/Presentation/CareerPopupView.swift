@@ -42,7 +42,7 @@ struct CareerPopupView: View {
 
     private var progressSection: some View {
         VStack(spacing: TokenSpacing.xs) {
-            ProgressBar(progress: careerSystem.careerProgress)
+            DUDesignSystem.ProgressBar(progress: careerSystem.careerProgress)
             HStack {
                 ItemLabel(text: user.record.totalEarnedMoney.formatted, icon: .coinBag, iconSize: .size16, font: .caption, color: .black300)
                 Spacer()
