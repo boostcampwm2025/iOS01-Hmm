@@ -26,12 +26,10 @@ struct LevelUpEffectView: View {
     let currentCareerTitle: String
 
     @State private var phase: Phase = .start
-    @State private var isTitleBoxVisible = false
+    @State private var showTitleBox: Bool = false
+    @State private var showGIF: Bool = false
     @State private var gradientOpacity: CGFloat = 0
-
-    private var careerTitle: String {
-        phase == .start ? previousCareerTitle : currentCareerTitle
-    }
+    @State private var titleText: String = ""
 
     var body: some View {
         if isPresented {
@@ -49,7 +47,10 @@ struct LevelUpEffectView: View {
                         gifName: phase == .start
                         ? "levelUpStart"
                         : "levelUpRepeat",
-                        onFinished: phase == .start ? { phase = .loop } : nil
+                        onFinished: phase == .start ? {
+                            phase = .loop
+                            switchToLoopAnimation()
+                        } : nil
                     )
                     .frame(maxWidth: .infinity)
 
@@ -57,7 +58,6 @@ struct LevelUpEffectView: View {
                 }
                 .onAppear { startAnimation() }
                 .onDisappear { phase = .start }
-                .onChange(of: phase) { switchToLoopAnimation() }
             }
         }
     }
@@ -85,7 +85,7 @@ private extension LevelUpEffectView {
 
     var careerTitleBox: some View {
         ZStack {
-            ItemLabel(text: careerTitle, font: .caption, color: .white300)
+            ItemLabel(text: titleText, font: .caption, color: .white300)
                 .frame(height: Constant.titleBoxHeight)
                 .frame(maxWidth: .infinity)
                 .background(titleBoxBackground)
@@ -95,7 +95,7 @@ private extension LevelUpEffectView {
 
             sidebarOverlay
         }
-        .opacity(isTitleBoxVisible ? 1 : 0)
+        .opacity(showTitleBox ? 1 : 0)
         .padding(.horizontal, TokenGrid.marginPopUp)
     }
 
@@ -106,8 +106,7 @@ private extension LevelUpEffectView {
             LinearGradient(
                 stops: [
                     .init(color: .accentYellow, location: 0),
-                    .init(color: .accentYellow, location: 0.4),
-                    .init(color: .lightOrange, location: 1)
+                    .init(color: .lightOrange, location: 0.6)
                 ],
                 startPoint: .leading,
                 endPoint: .trailing
@@ -122,21 +121,23 @@ private extension LevelUpEffectView {
     func startAnimation() {
         guard phase == .start else { return }
 
-        isTitleBoxVisible = false
+        showTitleBox = false
+        showGIF = false
         gradientOpacity = 0
+        titleText = previousCareerTitle
 
         withAnimation(.easeIn(duration: 0.3)) {
-            isTitleBoxVisible = true
+            showTitleBox = true
+            showGIF = true
         }
     }
 
     func switchToLoopAnimation() {
         guard phase == .loop else { return }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            withAnimation(.easeOut(duration: 0.3)) {
-                gradientOpacity = 1
-            }
+        withAnimation(.easeOut(duration: 0.3)) {
+            gradientOpacity = 1
+            titleText = currentCareerTitle
         }
     }
 }
