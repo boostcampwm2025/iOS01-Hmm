@@ -33,7 +33,7 @@ struct SkillView: View {
         let isActive = SkillAdRewardManager.isRewardActive(user: user, now: adRewardNow)
         let canUseToday = SkillAdRewardManager.canUseRewardToday(user: user, now: adRewardNow)
 
-        return DUDesignSystem.ItemRow(
+        return ItemRow(
             imageName: "adBoost",
             title: "업무 효율 대박",
             description: "5분간 피버타임 두배 (X1, X2, X4)",
@@ -50,7 +50,7 @@ struct SkillView: View {
             LazyVStack(spacing: TokenSpacing.md) {
                 skillAdItemRow
                 ForEach(skillSystem.skillList(), id: \.skill) { skillState in
-                    DUDesignSystem.ItemRow(
+                    ItemRow(
                         imageName: skillState.skill.imageName,
                         title: skillState.skill.title,
                         description: {

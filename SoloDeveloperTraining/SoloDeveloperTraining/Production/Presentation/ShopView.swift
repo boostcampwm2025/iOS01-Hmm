@@ -91,7 +91,7 @@ private extension ShopView {
         ScrollView {
             LazyVStack(spacing: Constant.Spacing.itemCard) {
                 ForEach(displayItems) { item in
-                    DUDesignSystem.ItemRow(
+                    ItemRow(
                         imageName: item.imageName,
                         title: item.displayTitle,
                         description: item.description,
@@ -115,9 +115,11 @@ private extension ShopView {
                     ForEach(displayItems) { item in
                         if let housing = item.item as? Housing {
                             HousingCard(
-                                housing: housing,
-                                state: ItemState(item: item),
-                                isSelected: selectedHousingTier == housing.tier,
+                                title: housing.displayTitle,
+                                price: ShopPurchaseHelper.createPriceText(for: item, shopSystem: shopSystem),
+                                rewardPerSecond: "\(housing.goldPerSecond.formatted) 골드",
+                                imageName: housing.imageName,
+                                state: housingCardState(itemState: ItemState(item: item), isSelected: selectedHousingTier == housing.tier),
                                 onTap: {
                                     selectedHousingTier = housing.tier
                                 },
@@ -136,6 +138,14 @@ private extension ShopView {
                 .id(Constant.ID.housingScrollStart)
             }
             .scrollIndicators(.never)
+        }
+    }
+
+    func housingCardState(itemState: ItemState, isSelected: Bool) -> HousingCard.HousingCardState {
+        switch itemState {
+        case .available, .insufficient: return isSelected ? .selected : .default
+        case .locked:                   return .locked
+        case .reachedMax:               return .equipped
         }
     }
 

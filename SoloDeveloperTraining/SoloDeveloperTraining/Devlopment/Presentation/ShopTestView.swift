@@ -26,7 +26,7 @@ struct ShopTestView: View {
             ScrollView {
                 LazyVStack(spacing: 0) {
                     ForEach(shopSystem.itemList(itemTypes: [.consumable, .equipment, .housing])) { item in
-                        DUDesignSystem.ItemRow(
+                        ItemRow(
                             imageName: item.imageName,
                             title: item.displayTitle + "\(item.isEquipped ? "-착용중" : "")",
                             description: item.description,
