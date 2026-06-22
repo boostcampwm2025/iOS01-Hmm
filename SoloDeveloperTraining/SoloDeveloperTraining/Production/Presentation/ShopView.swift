@@ -14,9 +14,6 @@ private enum Constant {
     }
 
     enum Text {
-        static let itemSegment = "아이템"
-        static let housingSegment = "부동산"
-
         static let enhanceSuccessTitle = "강화 성공"
         static let enhanceFailureTitle = "강화 실패"
         static let enhanceSuccessMessage = "강화에 성공했습니다!"
@@ -28,16 +25,6 @@ private enum Constant {
 
     enum ID {
         static let housingScrollStart = "housingScrollStart"
-    }
-
-    enum Spacing {
-        static let itemCard: CGFloat = 12
-    }
-
-    enum Padding {
-        static let horizontal: CGFloat = 16
-        static let housingTop: CGFloat = 15
-        static let housingBottom: CGFloat = 23
     }
 }
 
@@ -89,7 +76,7 @@ private extension ShopView {
 
     var itemView: some View {
         ScrollView {
-            LazyVStack(spacing: Constant.Spacing.itemCard) {
+            LazyVStack(spacing: TokenSpacing.md) {
                 ForEach(displayItems) { item in
                     ItemRow(
                         imageName: item.imageName,
@@ -111,7 +98,7 @@ private extension ShopView {
     var housingView: some View {
         ScrollViewReader { proxy in
             ScrollView(.horizontal) {
-                LazyHStack(spacing: Constant.Spacing.itemCard) {
+                LazyHStack(spacing: TokenSpacing.mm) {
                     ForEach(displayItems) { item in
                         if let housing = item.item as? Housing {
                             HousingCard(
