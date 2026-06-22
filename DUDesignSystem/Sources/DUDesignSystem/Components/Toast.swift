@@ -12,6 +12,7 @@ public struct Toast: ViewModifier {
     @Binding var isShowing: Bool
     public let message: String
     public let anchorY: CGFloat
+    public let alignment: Alignment
 
     @State private var showContent: Bool = false
     @State private var opacity: Double = 0
@@ -19,11 +20,13 @@ public struct Toast: ViewModifier {
     public init(
         isShowing: Binding<Bool>,
         message: String,
-        anchorY: CGFloat = 0
+        anchorY: CGFloat = 0,
+        alignment: Alignment = .bottom
     ) {
         self._isShowing = isShowing
         self.message = message
         self.anchorY = anchorY
+        self.alignment = alignment
     }
 
     public func body(content: Content) -> some View {
@@ -47,8 +50,12 @@ public struct Toast: ViewModifier {
                             )
                         )
                         .opacity(opacity)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-                        .padding(.bottom, anchorY > 0 ? geo.size.height - anchorY + geo.frame(in: .global).minY : 0)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
+                        .padding(
+                            .bottom,
+                            anchorY > 0 ? geo.size.height - anchorY + geo
+                                .frame(in: .global).minY : 0
+                        )
                 }
             }
         }
@@ -76,7 +83,7 @@ public struct Toast: ViewModifier {
 }
 
 public extension View {
-    func duToast(isShowing: Binding<Bool>, message: String, anchorY: CGFloat = 0) -> some View {
-        modifier(Toast(isShowing: isShowing, message: message, anchorY: anchorY))
+    func duToast(isShowing: Binding<Bool>, message: String, anchorY: CGFloat = 0, alignment: Alignment = .bottom) -> some View {
+        modifier(Toast(isShowing: isShowing, message: message, anchorY: anchorY, alignment: alignment))
     }
 }
