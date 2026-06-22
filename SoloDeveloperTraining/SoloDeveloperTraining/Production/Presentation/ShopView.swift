@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import DUDesignSystem
 
 private enum Constant {
     enum UserDefaultsKey {
@@ -61,12 +62,9 @@ struct ShopView: View {
     }
 
     var body: some View {
-        VStack {
-            DefaultSegmentControl(
-                selection: $selectedCategoryIndex,
-                segments: [Constant.Text.itemSegment, Constant.Text.housingSegment]
-            )
-            .padding(.horizontal, Constant.Padding.horizontal)
+        VStack(spacing: TokenSpacing.md) {
+            SegmentControl(leading: "아이템", trailing: "부동산", selectedIndex: $selectedCategoryIndex)
+                .padding(.horizontal, TokenGrid.paddingSide)
 
             if selectedCategoryIndex == 0 {
                 itemView
@@ -91,18 +89,19 @@ private extension ShopView {
         ScrollView {
             LazyVStack(spacing: Constant.Spacing.itemCard) {
                 ForEach(displayItems) { item in
-                    ItemRow(
+                    DUDesignSystem.ItemRow(
+                        imageName: item.imageName,
                         title: item.displayTitle,
                         description: item.description,
-                        imageName: item.imageName,
-                        cost: item.cost,
-                        state: ItemState(item: item)
+                        buttonType: item.cost.itemButtonType,
+                        buttonState: ItemState(item: item).itemButtonState
                     ) {
                         purchase(item: item)
                     }
                 }
             }
-            .padding(.bottom)
+            .padding(.horizontal, TokenGrid.paddingSide)
+            .padding(.bottom, TokenGrid.paddingBottom)
         }
         .scrollIndicators(.never)
     }
@@ -226,6 +225,29 @@ private extension ShopView {
     }
 }
 
+private extension ItemState {
+    var itemButtonState: ItemButton.ItemButtonState {
+        switch self {
+        case .available:    return .default
+        case .insufficient: return .disabled
+        case .locked:       return .locked
+        case .reachedMax:   return .locked
+        }
+    }
+}
+
+private extension Cost {
+    var itemButtonType: ItemButton.ItemButtonType {
+        if gold > 0 && diamond > 0 {
+            return .twoLine(firstText: gold.formatted, firstIcon: .coinBag, secondText: diamond.formatted, secondIcon: .diamond)
+        } else if diamond > 0 {
+            return .singleLine(text: diamond.formatted, icon: .diamond)
+        } else {
+            return .singleLine(text: gold.formatted, icon: .coinBag)
+        }
+    }
+}
+
 #Preview {
     let user = User(
         nickname: "테스트",
@@ -236,7 +258,5 @@ private extension ShopView {
             .init(key: SkillKey(game: .tap, tier: .beginner), level: 1)
         ]
     )
-    Spacer()
-        .frame(height: 500)
     ShopView(user: user, popupContent: .constant(nil))
 }
