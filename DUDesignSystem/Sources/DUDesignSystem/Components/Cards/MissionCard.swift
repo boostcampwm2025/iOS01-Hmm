@@ -26,7 +26,8 @@ public struct MissionCard: View {
     }
 
     public var title: String
-    public var rewardText: String
+    public var goldRewardText: String?
+    public var diamondRewardText: String?
     public var trophy: MissionTrophyType
     public var condition: String
     public var state: MissionCardState
@@ -34,14 +35,16 @@ public struct MissionCard: View {
 
     public init(
         title: String,
-        rewardText: String,
+        goldRewardText: String? = nil,
+        diamondRewardText: String? = nil,
         trophy: MissionTrophyType,
         condition: String,
         state: MissionCardState,
         action: @escaping () -> Void
     ) {
         self.title = title
-        self.rewardText = rewardText
+        self.goldRewardText = goldRewardText
+        self.diamondRewardText = diamondRewardText
         self.trophy = trophy
         self.condition = condition
         self.state = state
@@ -54,8 +57,15 @@ public struct MissionCard: View {
                 ItemLabel(text: title, font: .subheadline, color: .black300)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                ItemLabel(text: rewardText, icon: .diamond, iconSize: .size16, font: .caption, color: .black300)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                HStack(spacing: TokenSpacing.sm) {
+                    if let gold = goldRewardText {
+                        ItemLabel(text: gold, icon: .coinBag, iconSize: .size16, font: .caption, color: .black300)
+                    }
+                    if let diamond = diamondRewardText {
+                        ItemLabel(text: diamond, icon: .diamond, iconSize: .size16, font: .caption, color: .black300)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             Image(trophy.rawValue, bundle: .module)
@@ -67,6 +77,7 @@ public struct MissionCard: View {
             ItemLabel(text: condition, font: .label, color: .black300)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
+                .frame(height: 32)
 
             stateBar
         }
@@ -123,7 +134,7 @@ public struct MissionCard: View {
     HStack(spacing: TokenSpacing.sm) {
         MissionCard(
             title: "탭따구리",
-            rewardText: "20",
+            diamondRewardText: "20",
             trophy: .gold,
             condition: "탭 10,000회 달성",
             state: .default(current: 0, total: 10000),
@@ -131,7 +142,7 @@ public struct MissionCard: View {
         )
         MissionCard(
             title: "탭따구리",
-            rewardText: "20",
+            diamondRewardText: "20",
             trophy: .gold,
             condition: "탭 10,000회 달성",
             state: .inProgress(current: 9356, total: 10000),
@@ -139,7 +150,7 @@ public struct MissionCard: View {
         )
         MissionCard(
             title: "탭따구리",
-            rewardText: "20",
+            diamondRewardText: "20",
             trophy: .gold,
             condition: "탭 10,000회 달성",
             state: .claimable,
@@ -147,7 +158,7 @@ public struct MissionCard: View {
         )
         MissionCard(
             title: "탭따구리",
-            rewardText: "20",
+            diamondRewardText: "20",
             trophy: .gold,
             condition: "탭 10,000회 달성",
             state: .claimed,
