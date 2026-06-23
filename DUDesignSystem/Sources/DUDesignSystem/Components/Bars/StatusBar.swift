@@ -50,8 +50,8 @@ public struct StatusBar: View {
                         ItemLabel(text: nickname, font: .caption, color: .black300)
                     }
                     careerProgressBar
+                        .frame(width: 100)
                 }
-                .fixedSize(horizontal: true, vertical: false)
             }
 
             Spacer()
