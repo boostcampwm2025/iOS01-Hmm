@@ -51,7 +51,7 @@ public struct DUTypographyToken: Sendable, Hashable {
         self.lineHeight = lineHeight
     }
 
-    public static let title1:      DUTypographyToken = makeToken(DUFont.extraBold, size: 24, lineHeight: 32)
+    public static let title1:      DUTypographyToken = makeToken(DUFont.extraBold, size: 24, lineHeight: 30)
     public static let title2:      DUTypographyToken = makeToken(DUFont.bold,      size: 20, lineHeight: 28)
     public static let headline:    DUTypographyToken = makeToken(DUFont.extraBold, size: 16, lineHeight: 24)
     public static let subheadline: DUTypographyToken = makeToken(DUFont.extraBold, size: 14, lineHeight: 20)

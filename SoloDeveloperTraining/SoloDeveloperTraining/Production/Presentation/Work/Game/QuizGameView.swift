@@ -7,32 +7,7 @@
 
 import SwiftUI
 
-private enum Constant {
-    static let totalQuizCount: Int = 3
-    static let rewardCount: Int = 5
-
-    enum Padding {
-        static let horizontal: CGFloat = 16
-        static let top: CGFloat = 15
-        static let titleBottom: CGFloat = 14
-        static let quizCountBottom: CGFloat = 6
-        static let remainSecondsBottom: CGFloat = 30
-        static let questionTitleBottom: CGFloat = 8
-        static let rewardBottom: CGFloat = 8
-        static let optionsBottom: CGFloat = 30
-        static let submitBottom: CGFloat = 15
-    }
-
-    enum Spacing {
-        static let title: CGFloat = 2
-        static let quizButton: CGFloat = 16
-    }
-
-    enum Size {
-        static let closeButtonWidth: CGFloat = 28
-        static let closeButtonHeight: CGFloat = 28
-    }
-}
+import DUDesignSystem
 
 struct QuizGameView: View {
     @Environment(\.dismiss) private var dismiss
@@ -46,65 +21,22 @@ struct QuizGameView: View {
     }
 
     var body: some View {
-        let state = quizGame.state
-
         VStack(spacing: 0) {
-
-            /// 문제 헤더 영역
-            QuizHeaderView(
-                currentQuizNumber: state.currentQuestion != nil ? quizGame.currentQuestionIndex + 1 : 0,
-                totalQuizCount: Constant.totalQuizCount,
-                remainingSeconds: state.remainingSeconds,
-                quizTitle: state.currentQuestion?.question ?? "",
-                rewardCount: Constant.rewardCount,
-                onClose: {
-                    dismiss()
-                }
-            )
-
-            /// 해설 영역
-            QuizExplanationView(
-                isSubmitted: state.phase == .showingExplanation,
-                explanation: state.currentQuestion?.explanation ?? "",
-                isCorrect: state.currentAnswerResult?.isCorrect ?? false,
-                correctAnswerIndex: state.currentQuestion?.correctAnswerIndex
-            )
-
-            /// 선지, 제출버튼 영역
-            QuizOptionsView(
-                options: state.currentQuestion?.options ?? [],
-                selectedIndex: state.selectedAnswerIndex,
-                isShowingExplanation: state.phase == .showingExplanation,
-                submitButtonTitle: state.phase == .showingExplanation ? state.nextButtonTitle : "제출하기",
-                onSelect: { index in
-                    if state.selectedAnswerIndex == index {
-                        quizGame.deselectAnswer()
-                    } else {
-                        quizGame.selectAnswer(index)
-                    }
-                },
-                onSubmit: {
-                    if state.phase == .showingExplanation {
-                        if state.nextButtonTitle == "보상받기" {
-                            showQuizAdPopup = true
-                        } else {
-                            quizGame.proceedToNextQuestion()
-                        }
-                    } else {
-                        quizGame.submitSelectedAnswer()
-                    }
-                }
-            )
+            headerSection
+            timerSection
+            questionSection
+            explanationSection
+            Spacer()
+            optionsSection
         }
-        .padding(.horizontal, Constant.Padding.horizontal)
-        .padding(.top, Constant.Padding.top)
-        .background(AppColors.beige100)
+        .padding(.horizontal, TokenGrid.paddingSide)
+        .background(Color.beige50)
         .onAppear {
-            if quizGame.state.phase == .ready {
+            if quizGame.phase == .ready {
                 quizGame.startGame()
             }
         }
-        .onChange(of: state.remainingSeconds) { _, newValue in
+        .onChange(of: quizGame.remainingSeconds) { _, newValue in
             if newValue == 3 {
                 SoundService.shared.trigger(.quizCountdown)
             } else if newValue == 0 {
@@ -112,37 +44,160 @@ struct QuizGameView: View {
             }
         }
         .onDisappear { SoundService.shared.stopAllSFX() }
-        .overlay {
-            if showQuizAdPopup {
-                ZStack {
-                    Color.black.opacity(0.4)
-                        .ignoresSafeArea()
+        .overlay { adPopupOverlay }
+        .overlay { rewardPopupOverlay }
+    }
 
-                    QuizAdPopupView(
-                        totalDiamondsEarned: state.totalDiamondsEarned,
-                        onReceiveReward: {
-                            handleReceiveReward()
-                        },
-                        onWatchAd: {
-                            Task {
-                                await handleWatchAd()
-                            }
+    // MARK: - Sections
+
+    private var headerSection: some View {
+        HStack(spacing: 0) {
+            HStack(spacing: TokenSpacing.xs) {
+                DUIcon(.dogFace, size: .size28)
+                DUIcon(.dogFoot, size: .size28)
+                ItemLabel(text: "개발 퀴즈", font: .title1, color: .black300)
+            }
+            Spacer()
+            DUIcon(.close, size: .size28)
+                .onTapGesture { dismiss() }
+        }
+        .padding(.top, TokenGrid.paddingTop)
+        .padding(.bottom, TokenGrid.paddingBottom)
+    }
+
+    private var timerSection: some View {
+        VStack(spacing: TokenSpacing.xs) {
+            HStack(spacing: 0) {
+                ItemLabel(text: quizGame.state.progressText, font: .label, color: .black300)
+                Spacer()
+                if quizGame.remainingSeconds > 0 {
+                    HStack(spacing: TokenSpacing.xs) {
+                        ItemLabel(text: "\(quizGame.remainingSeconds)", font: .label, color: .black300)
+                        ItemLabel(text: "s", font: .label, color: .black300)
+                    }
+                } else {
+                    ItemLabel(text: "제한 시간 종료", font: .label, color: .black300)
+                }
+            }
+            ProgressBar(progress: quizGame.state.timerProgress)
+        }
+        .padding(.bottom, TokenSpacing.xl)
+    }
+
+    private var questionSection: some View {
+        VStack(spacing: TokenSpacing.xl) {
+            HStack(spacing: 0) {
+                ItemLabel(text: quizGame.currentQuestion?.question ?? "", font: .body, color: .black300)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer()
+            }
+            HStack(spacing: 0) {
+                Spacer()
+                ItemLabel(text: "\(Policy.Game.Quiz.diamondsPerCorrect)", icon: .diamond, iconSize: .size20, font: .subheadline, color: .black300)
+            }
+        }
+        .padding(.bottom, TokenSpacing.xl)
+    }
+
+    private var explanationSection: some View {
+        Group {
+            if quizGame.phase == .showingExplanation {
+                HStack(spacing: 0) {
+                    ItemLabel(
+                        text: quizGame.currentAnswerResult?.isCorrect == true ?
+                            "정답\n\(quizGame.currentQuestion?.explanation ?? "")" :
+                            "오답\n\(quizGame.currentQuestion?.explanation ?? "")",
+                        font: .label,
+                        color: quizGame.currentAnswerResult?.isCorrect == true ? .accentGreen : .accentRed
+                    )
+                    .fixedSize(horizontal: false, vertical: true)
+                    Spacer()
+                }
+            }
+        }
+    }
+
+    private var optionsSection: some View {
+        VStack(spacing: TokenSpacing.md) {
+            VStack(spacing: TokenSpacing.md) {
+                ForEach((quizGame.currentQuestion?.options ?? []).indices, id: \.self) { index in
+                    let options = quizGame.currentQuestion?.options ?? []
+                    QuizButton(
+                        text: "\(index + 1). \(options[index])",
+                        state: quizGame.selectedAnswerIndex == index ? .selected : .default
+                    ) {
+                        if quizGame.selectedAnswerIndex == index {
+                            quizGame.deselectAnswer()
+                        } else {
+                            quizGame.selectAnswer(index)
                         }
+                    }
+                    .disabled(quizGame.phase == .showingExplanation)
+                }
+            }
+
+            TextButton(
+                text: quizGame.phase == .showingExplanation ? quizGame.state.nextButtonTitle : "제출하기",
+                type: .primary,
+                state: quizGame.state.isSubmitEnabled || quizGame.phase == .showingExplanation ? .default : .disabled
+            ) {
+                if quizGame.phase == .showingExplanation {
+                    if quizGame.state.nextButtonTitle == "보상받기" {
+                        showQuizAdPopup = true
+                    } else {
+                        quizGame.proceedToNextQuestion()
+                    }
+                } else {
+                    quizGame.submitSelectedAnswer()
+                }
+            }
+            .padding(.bottom, TokenGrid.paddingBottom)
+        }
+    }
+
+    // MARK: - Overlays
+
+    private var adPopupOverlay: some View {
+        Group {
+            if showQuizAdPopup {
+                modalOverlay {
+                    DiamondPopup(
+                        type: .ad(
+                            cancelText: "닫기",
+                            adText: "2배 얻기",
+                            cancelAction: {
+                                showQuizAdPopup = false
+                                quizGame.completeGame(multiplier: 1.0)
+                                dismiss()
+                            },
+                            adAction: {
+                                Task { await handleWatchAd() }
+                            }
+                        ),
+                        title: "보상 지급",
+                        text: "퀴즈 풀이를 완료했습니다!\n진정한 개발자에 한 걸음 더 가까워졌습니다.",
+                        diamond: quizGame.state.totalDiamondsEarned
                     )
                 }
             }
         }
-        .overlay {
-            if showQuizRewardPopup {
-                ZStack {
-                    Color.black.opacity(0.4)
-                        .ignoresSafeArea()
+    }
 
-                    QuizRewardPopupView(
-                        totalDiamondsEarned: finalDiamondsEarned,
-                        onConfirm: {
-                            handleRewardConfirm()
-                        }
+    private var rewardPopupOverlay: some View {
+        Group {
+            if showQuizRewardPopup {
+                modalOverlay {
+                    DiamondPopup(
+                        type: .default(
+                            buttonText: "닫기",
+                            action: {
+                                showQuizRewardPopup = false
+                                dismiss()
+                            }
+                        ),
+                        title: "보상 지급 완료",
+                        text: "다이아를 두 배로 받았습니다!",
+                        diamond: finalDiamondsEarned
                     )
                 }
             }
@@ -150,270 +205,29 @@ struct QuizGameView: View {
     }
 }
 
-// MARK: - Help Methods
+// MARK: - Helper
 private extension QuizGameView {
-    /// "보상 받기" 버튼 처리 (광고 없이 기본 보상)
-    func handleReceiveReward() {
-        showQuizAdPopup = false
-
-        // 기본 보상 지급 (1배)
-        quizGame.completeGame(multiplier: 1.0)
-
-        // 게임 종료
-        dismiss()
-    }
-
-    /// "2배 받기(AD)" 버튼 처리 (광고 시청)
     func handleWatchAd() async {
         showQuizAdPopup = false
-
-        // 광고 시청
         let success = await AdService.shared.showAdWithResult(.interstitial)
-
         if success {
-            // 2배 보상 지급
-            let baseDiamonds = quizGame.state.totalDiamondsEarned
-            finalDiamondsEarned = baseDiamonds * 2
+            finalDiamondsEarned = quizGame.state.totalDiamondsEarned * 2
             quizGame.completeGame(multiplier: 2.0)
-
-            // 보상 완료 팝업 표시
             showQuizRewardPopup = true
         } else {
-            // 광고 실패 시 기본 보상 지급하고 종료
             quizGame.completeGame(multiplier: 1.0)
             dismiss()
         }
     }
 
-    /// "확인" 버튼 처리 (보상 완료 팝업)
-    func handleRewardConfirm() {
-        showQuizRewardPopup = false
-        dismiss()
-    }
-}
-
-// MARK: - 퀴즈 헤더 뷰
-private struct QuizHeaderView: View {
-    let currentQuizNumber: Int
-    let totalQuizCount: Int
-    let remainingSeconds: Int
-    let quizTitle: String
-    let rewardCount: Int
-    let onClose: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // 타이틀
-            HStack(spacing: Constant.Spacing.title) {
-                Image(.quizDogFace)
-                Image(.quizDogFoot)
-                Text("개발 퀴즈")
-                    .textStyle(.largeTitle)
-                Spacer()
-                Button {
-                    onClose()
-                } label: {
-                    Image(systemName: "xmark.square.fill")
-                        .resizable()
-                        .foregroundStyle(.black)
-                        .frame(
-                            width: Constant.Size.closeButtonWidth,
-                            height: Constant.Size.closeButtonHeight
-                        )
-                }
-                .buttonStyle(.soundTap)
-            }
-            .padding(.bottom, Constant.Padding.titleBottom)
-
-            // 문제 개수
-            HStack {
-                Spacer()
-                Text("\(currentQuizNumber) / \(totalQuizCount)")
-                    .textStyle(.headline)
-            }
-            .padding(.bottom, Constant.Padding.quizCountBottom)
-
-            // Progress
-            ProgressBar(
-                maxValue: Double(Policy.Game.Quiz.secondsPerQuestion),
-                currentValue: Double(remainingSeconds),
-                text: remainingSeconds > 0 ? "\(remainingSeconds)s" : "제한 시간 종료"
-            )
-            .padding(.bottom, Constant.Padding.remainSecondsBottom)
-
-            // 문제
-            Text(quizTitle)
-                .textStyle(.title2)
-                .padding(.bottom, Constant.Padding.questionTitleBottom)
-                .fixedSize(horizontal: false, vertical: true)
-
-            // 보상
-            HStack {
-                Spacer()
-                CurrencyLabel(axis: .horizontal, icon: .diamond, textStyle: .body, value: rewardCount)
-            }
-            .padding(.bottom, Constant.Padding.rewardBottom)
+    func modalOverlay<Content: View>(
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        ZStack {
+            Color.black300PopUpDimStatusBar
+            content()
         }
-    }
-}
-
-// MARK: - 해설 뷰
-private struct QuizExplanationView: View {
-    let isSubmitted: Bool
-    let explanation: String
-    let isCorrect: Bool
-    let correctAnswerIndex: Int?
-
-    var body: some View {
-        VStack(spacing: 0) {
-            if isSubmitted {
-                Text(resultPrefix+explanation)
-                    .textStyle(.callout)
-                    .foregroundColor(
-                        isCorrect ? AppColors.accentGreen : AppColors.accentRed
-                    )
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .minimumScaleFactor(0.8)
-            }
-
-            Spacer(minLength: 0)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    private var resultPrefix: String {
-        if isCorrect {
-            return "정답\n"
-        } else {
-            let answerNumber = (correctAnswerIndex ?? 0) + 1  // 0-based → 1-based
-            return "오답 / 정답은 \(answerNumber)번이다.\n"
-        }
-    }
-}
-
-// MARK: - 선지, 제출버튼 뷰
-private struct QuizOptionsView: View {
-    let options: [String]
-    let selectedIndex: Int?
-    let isShowingExplanation: Bool
-    let submitButtonTitle: String
-    let onSelect: (Int) -> Void
-    let onSubmit: () -> Void
-
-    var body: some View {
-        VStack(spacing: 0) {
-
-            // 선지
-            VStack(spacing: Constant.Spacing.quizButton) {
-                ForEach(options.indices, id: \.self) { index in
-                    QuizButton(
-                        isSelected: selectedIndex == index,
-                        title: "\(index + 1). \(options[index])"
-                    ) {
-                        onSelect(index)
-                    }
-                    .disabled(isShowingExplanation)
-                }
-            }
-            .padding(.bottom, Constant.Padding.optionsBottom)
-
-            // 제출 버튼
-            QuizButton(
-                style: .submit,
-                isEnabled: isShowingExplanation ? true : selectedIndex != nil,
-                title: submitButtonTitle
-            ) {
-                onSubmit()
-            }
-            .padding(.bottom, Constant.Padding.submitBottom)
-        }
-    }
-}
-
-// MARK: - 퀴즈 광고 팝업 뷰
-private struct QuizAdPopupView: View {
-    let totalDiamondsEarned: Int
-    let onReceiveReward: () -> Void
-    let onWatchAd: () -> Void
-
-    var body: some View {
-        Popup(title: "보상 획득") {
-            VStack(alignment: .center, spacing: 0) {
-                VStack(alignment: .leading, spacing: 0) {
-                    Text("퀴즈 풀이를 완료했습니다!\n진정한 개발자에 한걸음 더 가까워졌습니다.")
-                        .textStyle(.body)
-                        .padding(.top, 11)
-                        .padding(.bottom, 20)
-
-                    HStack(spacing: 4) {
-                        Text("획득한 다이아: ")
-                            .textStyle(.body)
-                        CurrencyLabel(
-                            axis: .horizontal,
-                            icon: .diamond,
-                            textStyle: .body,
-                            value: totalDiamondsEarned
-                        )
-                    }
-                    .padding(.bottom, 20)
-                }
-
-                HStack(spacing: 15) {
-                    MediumButton(title: "2배 받기(AD)", isFilled: true) {
-                        onWatchAd()
-                    }
-
-                    MediumButton(title: "보상 받기", isFilled: true) {
-                        onReceiveReward()
-                    }
-                }
-            }
-        }
-        .padding(.horizontal, 40)
-    }
-}
-
-// MARK: - 퀴즈 보상 완료 팝업 뷰
-private struct QuizRewardPopupView: View {
-    let totalDiamondsEarned: Int
-    let onConfirm: () -> Void
-
-    var body: some View {
-        Popup(title: "보상 지급 완료!") {
-            VStack(spacing: 11) {
-                Text("광고 시청이 완료되었습니다!\n다이아를 2배로 받았습니다.")
-                    .textStyle(.body)
-                    .foregroundColor(.black)
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 20)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                HStack(spacing: 4) {
-                    Text("획득한 다이아: ")
-                        .textStyle(.body)
-                    CurrencyLabel(
-                        axis: .horizontal,
-                        icon: .diamond,
-                        textStyle: .body,
-                        value: totalDiamondsEarned
-                    )
-                }
-                .padding(.bottom, 30)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 20)
-
-                HStack {
-                    Spacer()
-                    MediumButton(title: "확인", isFilled: true) {
-                        onConfirm()
-                    }
-                    Spacer()
-                }
-            }
-            .frame(maxWidth: .infinity)
-        }
-        .padding(.horizontal, 40)
+        .ignoresSafeArea()
     }
 }
 

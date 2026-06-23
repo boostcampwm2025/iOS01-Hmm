@@ -25,6 +25,8 @@ public enum DUIconName: String, CaseIterable {
     case logo        = "iconLogo"
     case image       = "iconImage"
     case share       = "iconShare"
+    case dogFace     = "iconDogFace"
+    case dogFoot     = "iconDogFoot"
     case movieSlate  = "iconMovieSlate"
 }
 

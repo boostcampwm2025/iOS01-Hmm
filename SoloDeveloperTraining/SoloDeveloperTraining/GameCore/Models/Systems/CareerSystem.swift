@@ -13,7 +13,7 @@ final class CareerSystem {
     private let user: User
     var currentCareer: Career
     var careerProgress: Double = 0.0
-    var onCareerChanged: ((Career) -> Void)?
+    var onCareerChanged: ((Career, Career) -> Void)?
 
     init(user: User) {
         self.user = user
@@ -40,14 +40,16 @@ final class CareerSystem {
     func updateCareer() {
         let newCareer = calculateCareer()
         if currentCareer != newCareer {
+            let previousCareer = currentCareer
+            currentCareer = newCareer
+            user.updateCareer(to: newCareer)
+
             // 실제로 단계가 높아진 경우(레벨업)에만 시나리오 큐에 추가
-            if newCareer.level > currentCareer.level {
+            if newCareer.level > previousCareer.level {
                 user.record.scenarioProgress.enqueueLevelUp(newCareer)
             }
 
-            currentCareer = newCareer
-            user.updateCareer(to: newCareer)
-            onCareerChanged?(newCareer)
+            onCareerChanged?(previousCareer, newCareer)
 
             if newCareer == .juniorDeveloper {
                 user.record.record(.juniorDeveloperAchieve)
