@@ -242,7 +242,7 @@ private extension LanguageGameView {
 
             guard !Task.isCancelled else { return }
 
-            SoundService.shared.trigger(gainedGold > 0 ? .languageCorrect : .languageWrong)
+            SoundService.shared.trigger(gainedGold > 0 ? .answerCorrect : .answerWrong)
             if gainedGold <= 0 {
                 HapticService.shared.trigger(.error)
             }

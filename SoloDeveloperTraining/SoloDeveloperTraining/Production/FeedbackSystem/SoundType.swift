@@ -14,11 +14,11 @@ enum SoundType: String {
     // MARK: - BGM
     case bgm
 
-    // MARK: - 언어 맞추기
+    // MARK: - 정답/오답 (언어 맞추기, 퀴즈 공용)
     /// 맞았을 때
-    case languageCorrect
+    case answerCorrect
     /// 틀렸을 때
-    case languageWrong
+    case answerWrong
 
     // MARK: - 버그 피하기
     /// 코인 먹는 소리
@@ -39,10 +39,6 @@ enum SoundType: String {
     case quizCountdown
     /// 퀴즈 시간 초과
     case quizTimeOver
-    /// 퀴즈 정답
-    case quizCorrect
-    /// 퀴즈 오답
-    case quizWrong
 
     // MARK: - 아이템 소비
     /// 커피/박하스 클릭 시
