@@ -209,8 +209,8 @@ struct QuizGameView: View {
 private extension QuizGameView {
     func handleWatchAd() async {
         showQuizAdPopup = false
-        let success = await AdService.shared.showAdWithResult(.interstitial)
-        if success {
+        let result = await AdService.shared.showAdWithResult(.interstitial)
+        if result.success {
             finalDiamondsEarned = quizGame.state.totalDiamondsEarned * 2
             quizGame.completeGame(multiplier: 2.0)
             showQuizRewardPopup = true

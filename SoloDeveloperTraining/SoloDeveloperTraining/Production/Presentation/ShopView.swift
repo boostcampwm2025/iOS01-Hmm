@@ -171,8 +171,8 @@ private extension ShopView {
                 adAction: {
                     storePopup = nil
                     Task {
-                        let watched = await AdService.shared.showAdWithResult(.interstitial)
-                        guard watched else { return }
+                        let result = await AdService.shared.showAdWithResult(.interstitial)
+                        guard result.success else { return }
                         adBonusAppliedTypes.insert(typeKey)
                         UserDefaults.standard.set(Array(adBonusAppliedTypes), forKey: Constant.UserDefaultsKey.equipmentAdBonus)
                         showAdBonusToast = true

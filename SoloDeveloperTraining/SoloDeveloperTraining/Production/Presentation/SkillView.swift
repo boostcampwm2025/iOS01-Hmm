@@ -110,8 +110,8 @@ private extension SkillView {
         let canUseToday = SkillAdRewardManager.canUseRewardToday(user: user, now: adRewardNow)
         guard adRewardButtonState(isActive: isActive, canUseToday: canUseToday) == .default else { return }
 
-        let success = await AdService.shared.showAdWithResult(.interstitial)
-        if success {
+        let result = await AdService.shared.showAdWithResult(.interstitial)
+        if result.success {
             noticePopup = NoticePopup(
                 type: .default(buttonText: "확인", action: {
                     noticePopup = nil

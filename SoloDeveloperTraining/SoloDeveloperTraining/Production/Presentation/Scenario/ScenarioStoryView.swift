@@ -183,9 +183,9 @@ private extension ScenarioStoryView {
                 guard !isShowingAd else { return }
                 isShowingAd = true
                 Task {
-                    let success = await AdService.shared.showAdWithResult(.interstitial)
+                    let result = await AdService.shared.showAdWithResult(.interstitial)
                     isShowingAd = false
-                    if success {
+                    if result.success {
                         selected = ""
                         withAnimation(Animation.standard) {
                             manager.reselectChoice()

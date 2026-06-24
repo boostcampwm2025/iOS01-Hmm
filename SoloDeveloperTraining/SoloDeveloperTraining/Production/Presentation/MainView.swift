@@ -517,9 +517,9 @@ private extension MainView {
         guard let drinkType = selectedDrinkType else { return }
 
         // 광고 시청
-        let success = await AdService.shared.showAdWithResult(.interstitial)
+        let result = await AdService.shared.showAdWithResult(.interstitial)
 
-        if success {
+        if result.success {
             // 보상 지급
             user.inventory.gain(consumable: drinkType)
             rewardToastMessage = "카페인 충전 완료!"
@@ -540,8 +540,8 @@ private extension MainView {
 
     func handleExitBonusAd() async {
         workGameSession.showsExitBonusPopup = false
-        let success = await AdService.shared.showAdWithResult(.interstitial)
-        if success {
+        let result = await AdService.shared.showAdWithResult(.interstitial)
+        if result.success {
             applyExitBonus()
         }
         exitWorkGame()
@@ -620,9 +620,9 @@ private extension MainView {
     func handleOfflineRewardWatchAd() async {
         showOfflineRewardPopup = false
 
-        let success = await AdService.shared.showAdWithResult(.interstitial)
+        let result = await AdService.shared.showAdWithResult(.interstitial)
 
-        if success {
+        if result.success {
             user.wallet.addGold(offlineRewardGold)
             offlineRewardToastMessage = "잠자는 시간에 일한 보상 획득!"
             showOfflineRewardToast = true
