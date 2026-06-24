@@ -22,6 +22,7 @@ struct ScenarioStoryView: View {
     @State private var selected: String = ""
     @State private var finalEnding: Ending? = nil
     @State private var isShowingAd = false
+    @State private var adRewardFlowID: String?
 
     // 토스트 상태
     @State private var showCompletedToast = false
@@ -91,6 +92,7 @@ struct ScenarioStoryView: View {
                     ))
                 } else if let page = manager.currentPage {
                     eventButtonView(for: page)
+                        .onAppear { trackReselectOfferIfNeeded(for: page) }
                 }
             }
             .frame(maxHeight: .infinity, alignment: isEnding ? .top : .center)
@@ -180,17 +182,40 @@ private extension ScenarioStoryView {
             )
         case .result:
             EventButton(type: .reselect(onReselect: {
-                guard !isShowingAd else { return }
+                guard !isShowingAd, let flowID = adRewardFlowID else { return }
                 isShowingAd = true
+
+                AnalyticsService.shared.logAdWatchClicked(
+                    adRewardFlowID: flowID,
+                    adPlacement: .reselectionReward,
+                    rewardType: .reselect,
+                    rewardAmount: 0
+                )
+
                 Task {
                     let result = await AdService.shared.showAdWithResult(.interstitial)
                     isShowingAd = false
+                    adRewardFlowID = nil
+
                     if result.success {
+                        AnalyticsService.shared.logAdWatchCompleted(
+                            adRewardFlowID: flowID,
+                            adPlacement: .reselectionReward,
+                            rewardType: .reselect,
+                            rewardAmount: 0,
+                            adWatchDurationSec: result.watchDurationSec
+                        )
                         selected = ""
                         withAnimation(Animation.standard) {
                             manager.reselectChoice()
                             currentPageIndex = manager.currentPageIndex
                         }
+                        AnalyticsService.shared.logAdRewardClaimed(
+                            adRewardFlowID: flowID,
+                            adPlacement: .reselectionReward,
+                            rewardType: .reselect,
+                            rewardAmount: 0
+                        )
                     }
                 }
             }, onComplete: handleNextTap))
@@ -200,6 +225,19 @@ private extension ScenarioStoryView {
 
 // MARK: - 헬퍼
 private extension ScenarioStoryView {
+    func trackReselectOfferIfNeeded(for page: ScenarioPage) {
+        guard case .result = page.pageType, adRewardFlowID == nil else { return }
+
+        let flowID = AnalyticsService.shared.makeAdRewardFlowID()
+        adRewardFlowID = flowID
+        AnalyticsService.shared.logAdOfferViewed(
+            adRewardFlowID: flowID,
+            adPlacement: .reselectionReward,
+            rewardType: .reselect,
+            rewardAmount: 0
+        )
+    }
+
     func restoreEndingIfNeeded() {
         guard manager.currentScenario?.scenarioType == .final,
               let finalChoice = user.record.choiceHistory[.worldClassDeveloper] else { return }
