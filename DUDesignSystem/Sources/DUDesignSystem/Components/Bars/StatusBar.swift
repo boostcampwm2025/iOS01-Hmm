@@ -50,13 +50,13 @@ public struct StatusBar: View {
                         ItemLabel(text: nickname, font: .caption, color: .black300)
                     }
                     careerProgressBar
+                        .frame(width: 100)
                 }
-                .fixedSize(horizontal: true, vertical: false)
             }
 
             Spacer()
 
-            VStack(alignment: .trailing, spacing: TokenSpacing.xs) {
+            VStack(alignment: .trailing, spacing: TokenSpacing.none) {
                 HStack(spacing: TokenSpacing.xs) {
                     ItemLabel(text: gold, icon: .coinBag, iconSize: .size16, font: .caption, color: .black300)
                     ItemLabel(text: diamond, icon: .diamond, iconSize: .size16, font: .caption, color: .black300)
@@ -69,6 +69,7 @@ public struct StatusBar: View {
                 }
             }
         }
+        .frame(height: 32)
         .padding(.top, TokenGrid.paddingTop)
         .padding(.horizontal, TokenGrid.paddingSide)
         .padding(.bottom, TokenSpacing.lg)
@@ -90,6 +91,7 @@ public struct StatusBar: View {
 }
 
 #Preview {
+    @Previewable @State var time: Bool = true
     VStack(spacing: TokenSpacing.lg) {
         StatusBar(
             imageName: "icon_coffee",
@@ -106,9 +108,14 @@ public struct StatusBar: View {
             careerProgress: 0.7,
             gold: "20,000",
             diamond: "20",
-            time: "04:34"
+            time: time ? "04:34" : nil
         )
     }
-    .padding(TokenSpacing.lg)
     .background(Color.beige200)
+    
+    Button {
+        time.toggle()
+    } label: {
+        Text("Button")
+    }
 }

@@ -21,7 +21,7 @@ struct ComponentItemRowView: View {
                     imageName: "",
                     title: title,
                     description: description,
-                    buttonText: buttonText,
+                    buttonType: .singleLine(text: buttonText, icon: .coinBag),
                     buttonState: buttonState,
                     action: {}
                 )

@@ -25,11 +25,13 @@ struct MainView: View {
     // 게임 세션 관리
     @State private var workGameSession = WorkGameSession()
 
-    @State private var popupContent: PopupConfiguration?
     @State private var showCareerPopup: Bool = false
     @State private var careerSystem: CareerSystem?
     @State private var showQuizView: Bool = false
     @State private var showSettingsView: Bool = false
+
+    @State private var storePopup: StorePopup? = nil
+    @State private var noticePopup: NoticePopup? = nil
 
     // 음료 광고 팝업 관련
     @State private var showDrinkAdPopup: Bool = false
@@ -253,11 +255,11 @@ private extension MainView {
             SkillView(
                 user: user,
                 careerSystem: careerSystem,
-                popupContent: $popupContent,
+                noticePopup: $noticePopup,
                 adRewardNow: skillAdRewardNow
             )
         case .shop:
-            ShopView(user: user, popupContent: $popupContent)
+            ShopView(user: user, storePopup: $storePopup, noticePopup: $noticePopup)
         case .mission:
             MissionView(user: user)
         }
@@ -273,6 +275,7 @@ private extension MainView {
             exitBonusPopupOverlayView
             offlineRewardPopupOverlayView
             scenarioOverlayView
+            shopPopupOverlayView
         }
     }
 
@@ -300,12 +303,6 @@ private extension MainView {
 
     @ViewBuilder
     var popupOverlayView: some View {
-        if let popupContent {
-            modalOverlay(onBackgroundTap: { self.popupContent = nil }) {
-                Popup(title: popupContent.title, contentView: popupContent.content)
-                    .frame(maxHeight: popupContent.maxHeight)
-            }
-        }
         if let careerSystem, showCareerPopup {
             CareerPopupView(careerSystem: careerSystem, user: user) {
                 showCareerPopup = false
@@ -481,6 +478,20 @@ private extension MainView {
                     title: "보너스",
                     text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다"
                 )
+            }
+        }
+    }
+
+    @ViewBuilder
+    var shopPopupOverlayView: some View {
+        if let popup = storePopup {
+            modalOverlay(onBackgroundTap: { storePopup = nil }) {
+                popup
+            }
+        }
+        if let popup = noticePopup {
+            modalOverlay(onBackgroundTap: { noticePopup = nil }) {
+                popup
             }
         }
     }

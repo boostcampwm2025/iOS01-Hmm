@@ -32,17 +32,20 @@ public struct StorePopup: View {
     public var title: String
     public var itemName: String
     public var price: String
+    public var rateHighlighted: Bool
 
     public init(
         type: StorePopupType,
         title: String,
         itemName: String,
         price: String,
+        rateHighlighted: Bool = false
     ) {
         self.type = type
         self.title = title
         self.itemName = itemName
         self.price = price
+        self.rateHighlighted = rateHighlighted
     }
 
     @ViewBuilder
@@ -72,7 +75,7 @@ public struct StorePopup: View {
                 .frame(maxWidth: .infinity, alignment: .center)
 
             if case .ad(let successRate, _, _, _, _, _, _, _) = type {
-                ItemLabel(text: "(성공 확률: \(successRate)%)", font: .body, color: .accentRed)
+                ItemLabel(text: "(성공 확률: \(successRate)%)", font: .body, color: rateHighlighted ? .accentRed : .black300)
                     .frame(maxWidth: .infinity, alignment: .center)
             }
 

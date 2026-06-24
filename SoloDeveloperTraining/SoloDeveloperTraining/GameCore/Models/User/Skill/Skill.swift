@@ -141,7 +141,7 @@ final class Skill: Hashable {
             }
         }()
 
-        return "skill_\(gameName)_\(tierNumber)"
+        return "skill\(gameName.capitalized)\(tierNumber)"
     }
 
     /// 스킬 타이틀
