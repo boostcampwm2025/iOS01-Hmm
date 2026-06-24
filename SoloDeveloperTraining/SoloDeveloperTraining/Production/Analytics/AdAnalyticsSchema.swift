@@ -29,6 +29,8 @@ enum AdRewardType: String {
     case coffee
     case energyDrink
     case reselect
+    case skillBoost
+    case enhanceRateBoost
 }
 
 enum AdOfferDismissReasonType: String {
