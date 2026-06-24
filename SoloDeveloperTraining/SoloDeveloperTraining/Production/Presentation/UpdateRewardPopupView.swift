@@ -33,6 +33,8 @@ enum RewardUserType {
 }
 
 struct UpdateRewardPopupView: View {
+    let onClose: () -> Void
+
     private let rewards: [UpdateReward] = [
         .init(userType: .newUser, rewards: [.diamond(15)]),
         .init(userType: .originUser(.unemployed), rewards: [.diamond(30)]),
@@ -92,10 +94,7 @@ struct UpdateRewardPopupView: View {
     ]
 
     var body: some View {
-        ZStack {
-            Color.black300PopUpDimStatusBar
-            popup
-        }
+        popup
     }
 
     private var popup: some View {
@@ -103,21 +102,27 @@ struct UpdateRewardPopupView: View {
             VStack(spacing: TokenSpacing.lg) {
                 ItemLabel(text: "업데이트 보상", font: .title2, color: .black300)
                 ScrollView {
-                    ItemLabel(text: """
-                              더 나은 서비스 제공을 위해\n개발자 키우기가 업데이트되었습니다.\n\n
-                              이번 업데이트로 게임이 처음부터 새롭게 시작됩니다.
-                              더 풍성한 콘텐츠와 함께 최고의 개발자를
-                              키워나갈 수 있도록 준비했습니다.\n\n
-                              함께해 주신 여정에 감사드리며,
-                              이전 레벨에 따라 특별 보상을 드립니다.
-                              """, font: .body, color: .black300)
-                    Spacer().frame(height: TokenSpacing.xxl)
-                    rewardInfoList
+                    VStack(spacing: TokenSpacing.xxl) {
+                        ItemLabel(text: """
+                                  더 나은 서비스 제공을 위해\n개발자 키우기가 업데이트되었습니다.\n\n
+                                  이번 업데이트로 게임이 처음부터 새롭게 시작됩니다.
+                                  더 풍성한 콘텐츠와 함께 최고의 개발자를
+                                  키워나갈 수 있도록 준비했습니다.\n\n
+                                  함께해 주신 여정에 감사드리며,
+                                  이전 레벨에 따라 특별 보상을 드립니다.
+                                  """, font: .body, color: .black300)
+                        rewardInfoList
+                    }
                 }
                 .frame(height: 384)
                 .scrollIndicators(.never)
             }
-            TextButton(text: "닫기", type: .primary, size: .medium, action: {})
+            TextButton(
+                text: "닫기",
+                type: .primary,
+                size: .medium,
+                action: onClose
+            )
         }
         .padding(TokenSpacing.lg)
         .background(Color.white300)
@@ -196,5 +201,5 @@ extension Reward {
 }
 
 #Preview {
-    UpdateRewardPopupView()
+    UpdateRewardPopupView(onClose: {})
 }

@@ -61,6 +61,10 @@ struct MainView: View {
     // 시나리오 관련
     @State private var scenarioManager: ScenarioManager?
     @State private var showScenarioView: Bool = false
+
+    // 업데이트 보상 관련
+    @State private var showUpdateRewardPopup = true
+
     private let scenarioRepository: ScenarioRepository = DefaultScenarioRepository()
 
     private var autoGainSystem: AutoGainSystem
@@ -70,6 +74,8 @@ struct MainView: View {
 
     init(user: User, hasSeenIntro: Binding<Bool>) {
         self._hasSeenIntro = hasSeenIntro
+        self._showUpdateRewardPopup = State(initialValue: !AppPreferences.shared.hasClaimedGameResetReward)
+
         self.autoGainSystem = AutoGainSystem(user: user)
         self.user = user
 
@@ -111,8 +117,8 @@ struct MainView: View {
                     isPresented: $showLevelUpEffect,
                     previousCareerTitle: previousCareer?.rawValue ?? "",
                     currentCareerTitle: leveledUpCareer?.rawValue ?? ""
-            )
-            .transition(.opacity.animation(.easeIn))
+                )
+                .transition(.opacity.animation(.easeIn))
             }
         }
         .onChange(of: showLevelUpEffect) { oldValue, newValue in
@@ -267,8 +273,8 @@ private extension MainView {
 
     @ViewBuilder
     var overlayView: some View {
-        ZStack {
-            popupOverlayView
+        Group {
+            careerPopupOverlayView
                 .ignoresSafeArea()
             settingsOverlayView
             drinkAdPopupOverlayView
@@ -276,6 +282,7 @@ private extension MainView {
             offlineRewardPopupOverlayView
             scenarioOverlayView
             shopPopupOverlayView
+            updateRewardOverlayView
         }
     }
 
@@ -302,20 +309,35 @@ private extension MainView {
     }
 
     @ViewBuilder
-    var popupOverlayView: some View {
+    var updateRewardOverlayView: some View {
+        if showUpdateRewardPopup {
+            modalOverlay(onBackgroundTap: {
+                showUpdateRewardPopup = false
+                AppPreferences.shared.hasClaimedGameResetReward = true
+            }, content: {
+                UpdateRewardPopupView(onClose: {
+                    showUpdateRewardPopup = false
+                    AppPreferences.shared.hasClaimedGameResetReward = true
+                })
+            })
+        }
+    }
+
+    @ViewBuilder
+    var careerPopupOverlayView: some View {
         if let careerSystem, showCareerPopup {
-            CareerPopupView(careerSystem: careerSystem, user: user) {
-                showCareerPopup = false
-            }
+            modalOverlay(onBackgroundTap: { showCareerPopup = false }, content: {
+                CareerPopupView(careerSystem: careerSystem, user: user) { showCareerPopup = false }
+            })
         }
     }
 
     @ViewBuilder
     var settingsOverlayView: some View {
         if showSettingsView {
-            modalOverlay(onBackgroundTap: { showSettingsView = false }) {
+            modalOverlay(onBackgroundTap: { showSettingsView = false }, content: {
                 FeedbackSettingView(onClose: { showSettingsView = false })
-            }
+            })
         }
     }
 
@@ -485,14 +507,10 @@ private extension MainView {
     @ViewBuilder
     var shopPopupOverlayView: some View {
         if let popup = storePopup {
-            modalOverlay(onBackgroundTap: { storePopup = nil }) {
-                popup
-            }
+            modalOverlay(onBackgroundTap: { storePopup = nil }, content: { popup })
         }
         if let popup = noticePopup {
-            modalOverlay(onBackgroundTap: { noticePopup = nil }) {
-                popup
-            }
+            modalOverlay(onBackgroundTap: { noticePopup = nil }, content: { popup })
         }
     }
 
@@ -561,8 +579,8 @@ private extension MainView {
             user.record.record(.earnMoney(bonusGold))
         }
         rewardToastMessage = bonusGold > 0 ?
-                             "업무에서 얻은 보상 2배 획득!" :
-                             "업무 보너스를 받을 재화가 없습니다."
+        "업무에서 얻은 보상 2배 획득!" :
+        "업무 보너스를 받을 재화가 없습니다."
         showRewardToast = true
     }
 

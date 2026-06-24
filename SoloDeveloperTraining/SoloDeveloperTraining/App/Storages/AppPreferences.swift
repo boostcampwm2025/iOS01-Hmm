@@ -32,6 +32,9 @@ final class AppPreferences {
 
         /// 장비 강화 광고 보상 타입
         static let equipmentAdBonus = "equipmentAdBonusTypes"
+
+        /// 업데이트 보상
+        static let hasClaimedGameResetReward = "hasClaimedGameResetReward"
     }
 
     private let storage = UserDefaultsStorage()
@@ -44,7 +47,8 @@ final class AppPreferences {
             Key.isBGMEnabled: true,
             Key.bgmVolume: 100,
             Key.sfxVolume: 100,
-            Key.lastSelectedWorkIndex: 0
+            Key.lastSelectedWorkIndex: 0,
+            Key.hasClaimedGameResetReward: false,
         ])
     }
 }
@@ -79,6 +83,11 @@ extension AppPreferences {
     var lastSelectedWorkIndex: Int {
         get { storage.integer(key: Key.lastSelectedWorkIndex) }
         set { storage.set(newValue, forKey: Key.lastSelectedWorkIndex) }
+    }
+
+    var hasClaimedGameResetReward: Bool {
+        get { storage.bool(key: Key.hasClaimedGameResetReward) }
+        set { storage.set(newValue, forKey: Key.hasClaimedGameResetReward) }
     }
 
 }
