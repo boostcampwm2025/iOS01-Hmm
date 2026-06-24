@@ -6,7 +6,7 @@
 //
 
 /// 시나리오 진행 관리 시스템
-final class ScenarioManager {
+final class ScenarioManager: Identifiable {
     /// 현재 진행 중인 시나리오
     private(set) var currentScenario: Scenario?
     /// 진행 상태가 저장되는 참조 타입 레코드

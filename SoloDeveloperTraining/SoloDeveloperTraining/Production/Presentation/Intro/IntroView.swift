@@ -17,10 +17,13 @@ private enum Constant {
 
 struct IntroView: View {
     @State private var isBlinking = true
+    @State private var scenarioManager: ScenarioManager?
+
     @Binding var hasSeenIntro: Bool
     @Binding var showNicknameSetup: Bool
 
     let user: User?
+    let scenarioRepository: ScenarioRepository
     var isPolicyReady: Bool
     var hasPolicyError: Bool
     var onRetry: () -> Void
@@ -40,13 +43,31 @@ struct IntroView: View {
                 return
             }
             guard isPolicyReady else { return }
+
             if user == nil {
-                showNicknameSetup = true
+                guard let scenario = scenarioRepository.fetchScenario(for: .unemployed) else { return }
+
+                let manager = ScenarioManager(record: Record())
+                manager.startScenario(scenario)
+                self.scenarioManager = manager
             } else {
                 withAnimation(.easeOut(duration: Constant.Animation.transitionDuration)) {
                     hasSeenIntro = true
                 }
             }
+        }
+        .fullScreenCover(item: $scenarioManager) { manager in
+            ScenarioStoryView(
+                user: nil,
+                manager: manager,
+                repository: scenarioRepository,
+                backgroundColor: .black300,
+                onComplete: {
+                    scenarioManager = nil
+                    hasSeenIntro = true
+                    showNicknameSetup = true
+                }
+            )
         }
         .ignoresSafeArea()
     }
@@ -88,6 +109,7 @@ private extension IntroView {
         hasSeenIntro: .constant(false),
         showNicknameSetup: .constant(false),
         user: nil,
+        scenarioRepository: DefaultScenarioRepository(),
         isPolicyReady: true,
         hasPolicyError: false,
         onRetry: {}
