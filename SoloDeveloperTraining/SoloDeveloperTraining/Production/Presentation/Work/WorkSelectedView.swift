@@ -10,11 +10,6 @@ import SwiftUI
 import DUDesignSystem
 
 private enum Constant {
-
-    enum UserDefaults {
-        static let lastSelectedWorkIndexKey = "lastSelectedWorkIndex"
-    }
-
     enum Description {
         static let tapGame = "모니터를 최대한 많이 누르세요."
         static let languageGame = "올바른 버튼을 누르세요."
@@ -43,8 +38,6 @@ struct WorkSelectedView: View {
     @Binding var selectedDrinkType: ConsumableType?
     @Binding var resumeGameCallback: (() -> Void)?
     @Binding var exitGameCallback: (() -> Void)?
-
-    private let localStorage: KeyValueLocalStorage = UserDefaultsStorage()
 
     init(
         user: User,
@@ -220,7 +213,7 @@ private extension WorkSelectedView {
     }
 
     func loadLastSelectedIndex() {
-        let savedIndex = localStorage.integer(key: Constant.UserDefaults.lastSelectedWorkIndexKey)
+        let savedIndex = AppPreferences.shared.lastSelectedWorkIndex
         if savedIndex >= 0 && savedIndex < workItems.count {
             selectedIndex = savedIndex
         } else {
@@ -229,7 +222,7 @@ private extension WorkSelectedView {
     }
 
     func saveLastSelectedIndex(_ index: Int) {
-        localStorage.set(index, forKey: Constant.UserDefaults.lastSelectedWorkIndexKey)
+        AppPreferences.shared.lastSelectedWorkIndex = index
     }
 }
 
