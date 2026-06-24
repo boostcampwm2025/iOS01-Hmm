@@ -15,6 +15,7 @@ struct QuizGameView: View {
     @State private var showQuizAdPopup: Bool = false
     @State private var showQuizRewardPopup: Bool = false
     @State private var finalDiamondsEarned: Int = 0
+    @State private var adRewardFlowID: String?
 
     init(user: User) {
         _quizGame = State(initialValue: QuizGame(user: user))
@@ -144,6 +145,14 @@ struct QuizGameView: View {
                 if quizGame.phase == .showingExplanation {
                     if quizGame.state.nextButtonTitle == "보상받기" {
                         showQuizAdPopup = true
+                        let flowID = AnalyticsService.shared.makeAdRewardFlowID()
+                        adRewardFlowID = flowID
+                        AnalyticsService.shared.logAdOfferViewed(
+                            adRewardFlowID: flowID,
+                            adPlacement: .quizReward,
+                            rewardType: .diamond,
+                            rewardAmount: quizGame.state.totalDiamondsEarned
+                        )
                     } else {
                         quizGame.proceedToNextQuestion()
                     }
@@ -167,6 +176,16 @@ struct QuizGameView: View {
                             adText: "2배 얻기",
                             cancelAction: {
                                 showQuizAdPopup = false
+                                if let flowID = adRewardFlowID {
+                                    AnalyticsService.shared.logAdOfferDismissed(
+                                        adRewardFlowID: flowID,
+                                        adPlacement: .quizReward,
+                                        rewardType: .diamond,
+                                        rewardAmount: quizGame.state.totalDiamondsEarned,
+                                        dismissReason: .close
+                                    )
+                                    adRewardFlowID = nil
+                                }
                                 quizGame.completeGame(multiplier: 1.0)
                                 dismiss()
                             },
@@ -209,11 +228,38 @@ struct QuizGameView: View {
 private extension QuizGameView {
     func handleWatchAd() async {
         showQuizAdPopup = false
+        guard let flowID = adRewardFlowID else { return }
+        let baseDiamonds = quizGame.state.totalDiamondsEarned
+
+        AnalyticsService.shared.logAdWatchClicked(
+            adRewardFlowID: flowID,
+            adPlacement: .quizReward,
+            rewardType: .diamond,
+            rewardAmount: baseDiamonds
+        )
+
         let result = await AdService.shared.showAdWithResult(.interstitial)
+        adRewardFlowID = nil
+
         if result.success {
-            finalDiamondsEarned = quizGame.state.totalDiamondsEarned * 2
+            finalDiamondsEarned = baseDiamonds * 2
+            let earnedByAd = finalDiamondsEarned - baseDiamonds
+
+            AnalyticsService.shared.logAdWatchCompleted(
+                adRewardFlowID: flowID,
+                adPlacement: .quizReward,
+                rewardType: .diamond,
+                rewardAmount: earnedByAd,
+                adWatchDurationSec: result.watchDurationSec
+            )
             quizGame.completeGame(multiplier: 2.0)
             showQuizRewardPopup = true
+            AnalyticsService.shared.logAdRewardClaimed(
+                adRewardFlowID: flowID,
+                adPlacement: .quizReward,
+                rewardType: .diamond,
+                rewardAmount: earnedByAd
+            )
         } else {
             quizGame.completeGame(multiplier: 1.0)
             dismiss()
