@@ -39,6 +39,7 @@ struct ShopView: View {
         let saved = UserDefaults.standard.stringArray(forKey: Constant.UserDefaultsKey.equipmentAdBonus) ?? []
         return Set(saved)
     }()
+    @State private var enhanceAdRewardFlowID: String?
 
     @Binding var storePopup: StorePopup?
     @Binding var noticePopup: NoticePopup?
@@ -160,6 +161,17 @@ private extension ShopView {
         let displayRate = hasBonus ? min(baseRate + 10, 100) : baseRate
         let priceText = ShopPurchaseHelper.createPriceText(for: item, shopSystem: shopSystem)
 
+        if !hasBonus, enhanceAdRewardFlowID == nil {
+            let flowID = AnalyticsService.shared.makeAdRewardFlowID()
+            enhanceAdRewardFlowID = flowID
+            AnalyticsService.shared.logAdOfferViewed(
+                adRewardFlowID: flowID,
+                adPlacement: .equipmentEnhance,
+                rewardType: .enhanceRateBoost,
+                rewardAmount: 0
+            )
+        }
+
         storePopup = StorePopup(
             type: .ad(
                 successRate: displayRate,
@@ -167,15 +179,51 @@ private extension ShopView {
                 cancelText: "취소",
                 adText: "확률 UP",
                 confirmText: "강화",
-                cancelAction: { storePopup = nil },
+                cancelAction: {
+                    storePopup = nil
+                    if !hasBonus, let flowID = enhanceAdRewardFlowID {
+                        AnalyticsService.shared.logAdOfferDismissed(
+                            adRewardFlowID: flowID,
+                            adPlacement: .equipmentEnhance,
+                            rewardType: .enhanceRateBoost,
+                            rewardAmount: 0,
+                            dismissReason: .close
+                        )
+                        enhanceAdRewardFlowID = nil
+                    }
+                },
                 adAction: {
                     storePopup = nil
+                    guard let flowID = enhanceAdRewardFlowID else { return }
+
+                    AnalyticsService.shared.logAdWatchClicked(
+                        adRewardFlowID: flowID,
+                        adPlacement: .equipmentEnhance,
+                        rewardType: .enhanceRateBoost,
+                        rewardAmount: 0
+                    )
+
                     Task {
                         let result = await AdService.shared.showAdWithResult(.interstitial)
+                        enhanceAdRewardFlowID = nil
                         guard result.success else { return }
+
+                        AnalyticsService.shared.logAdWatchCompleted(
+                            adRewardFlowID: flowID,
+                            adPlacement: .equipmentEnhance,
+                            rewardType: .enhanceRateBoost,
+                            rewardAmount: 0,
+                            adWatchDurationSec: result.watchDurationSec
+                        )
                         adBonusAppliedTypes.insert(typeKey)
                         UserDefaults.standard.set(Array(adBonusAppliedTypes), forKey: Constant.UserDefaultsKey.equipmentAdBonus)
                         showAdBonusToast = true
+                        AnalyticsService.shared.logAdRewardClaimed(
+                            adRewardFlowID: flowID,
+                            adPlacement: .equipmentEnhance,
+                            rewardType: .enhanceRateBoost,
+                            rewardAmount: 0
+                        )
                         showEquipmentEnhancePopup(item: item, equipment: equipment, scrollProxy: scrollProxy)
                     }
                 },
