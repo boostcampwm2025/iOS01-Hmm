@@ -40,6 +40,9 @@ struct MainView: View {
     @State private var selectedDrinkType: ConsumableType?
     @State private var drinkAdRewardFlowID: String?
 
+    // 업무 퇴장 보너스 광고 관련
+    @State private var exitBonusAdRewardFlowID: String?
+
     // 스킬 광고 보상 지속시 남은 시간
     @State private var skillAdRewardNow = Date()
 
@@ -481,6 +484,7 @@ private extension MainView {
                     text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다"
                 )
             }
+            .onAppear { trackExitBonusAdOfferIfNeeded() }
         }
     }
 
@@ -585,16 +589,67 @@ private extension MainView {
         workGameSession.resumeGame?()
     }
 
+    func trackExitBonusAdOfferIfNeeded() {
+        guard exitBonusAdRewardFlowID == nil else { return }
+
+        let flowID = AnalyticsService.shared.makeAdRewardFlowID()
+        exitBonusAdRewardFlowID = flowID
+        AnalyticsService.shared.logAdOfferViewed(
+            adRewardFlowID: flowID,
+            adPlacement: .workExit,
+            rewardType: .gold,
+            rewardAmount: max(0, workGameSession.actionGoldDelta)
+        )
+    }
+
     func handleExitBonusAd() async {
         workGameSession.showsExitBonusPopup = false
+        guard let flowID = exitBonusAdRewardFlowID else {
+            exitWorkGame()
+            return
+        }
+        let bonusGold = max(0, workGameSession.actionGoldDelta)
+
+        AnalyticsService.shared.logAdWatchClicked(
+            adRewardFlowID: flowID,
+            adPlacement: .workExit,
+            rewardType: .gold,
+            rewardAmount: bonusGold
+        )
+
         let result = await AdService.shared.showAdWithResult(.interstitial)
+        exitBonusAdRewardFlowID = nil
+
         if result.success {
+            AnalyticsService.shared.logAdWatchCompleted(
+                adRewardFlowID: flowID,
+                adPlacement: .workExit,
+                rewardType: .gold,
+                rewardAmount: bonusGold,
+                adWatchDurationSec: result.watchDurationSec
+            )
             applyExitBonus()
+            AnalyticsService.shared.logAdRewardClaimed(
+                adRewardFlowID: flowID,
+                adPlacement: .workExit,
+                rewardType: .gold,
+                rewardAmount: bonusGold
+            )
         }
         exitWorkGame()
     }
 
     func handleExitWithoutBonus() {
+        if let flowID = exitBonusAdRewardFlowID {
+            AnalyticsService.shared.logAdOfferDismissed(
+                adRewardFlowID: flowID,
+                adPlacement: .workExit,
+                rewardType: .gold,
+                rewardAmount: max(0, workGameSession.actionGoldDelta),
+                dismissReason: .close
+            )
+            exitBonusAdRewardFlowID = nil
+        }
         if let pendingTab = workGameSession.closeExitBonusPopupAndReturnPendingTab() {
             selectedTab = pendingTab
         }
