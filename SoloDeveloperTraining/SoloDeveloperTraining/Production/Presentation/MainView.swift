@@ -25,11 +25,13 @@ struct MainView: View {
     // 게임 세션 관리
     @State private var workGameSession = WorkGameSession()
 
-    @State private var popupContent: PopupConfiguration?
     @State private var showCareerPopup: Bool = false
     @State private var careerSystem: CareerSystem?
     @State private var showQuizView: Bool = false
     @State private var showSettingsView: Bool = false
+
+    @State private var storePopup: StorePopup? = nil
+    @State private var noticePopup: NoticePopup? = nil
 
     // 음료 광고 팝업 관련
     @State private var showDrinkAdPopup: Bool = false
@@ -53,6 +55,7 @@ struct MainView: View {
     // 레벨업 이펙트 관련
     @State private var isCareerSystemInitialized: Bool = false
     @State private var showLevelUpEffect: Bool = false
+    @State private var previousCareer: Career? = nil
     @State private var leveledUpCareer: Career? = nil
 
     // 시나리오 관련
@@ -104,8 +107,12 @@ struct MainView: View {
         .overlay { overlayView }
         .overlay {
             if showLevelUpEffect {
-                LevelUpEffectView(isPresented: $showLevelUpEffect, career: leveledUpCareer)
-                    .transition(.opacity.animation(.easeIn))
+                LevelUpEffectView(
+                    isPresented: $showLevelUpEffect,
+                    previousCareerTitle: previousCareer?.rawValue ?? "",
+                    currentCareerTitle: leveledUpCareer?.rawValue ?? ""
+            )
+            .transition(.opacity.animation(.easeIn))
             }
         }
         .onChange(of: showLevelUpEffect) { oldValue, newValue in
@@ -248,11 +255,11 @@ private extension MainView {
             SkillView(
                 user: user,
                 careerSystem: careerSystem,
-                popupContent: $popupContent,
+                noticePopup: $noticePopup,
                 adRewardNow: skillAdRewardNow
             )
         case .shop:
-            ShopView(user: user, popupContent: $popupContent)
+            ShopView(user: user, storePopup: $storePopup, noticePopup: $noticePopup)
         case .mission:
             MissionView(user: user)
         }
@@ -268,6 +275,7 @@ private extension MainView {
             exitBonusPopupOverlayView
             offlineRewardPopupOverlayView
             scenarioOverlayView
+            shopPopupOverlayView
         }
     }
 
@@ -295,12 +303,6 @@ private extension MainView {
 
     @ViewBuilder
     var popupOverlayView: some View {
-        if let popupContent {
-            modalOverlay(onBackgroundTap: { self.popupContent = nil }) {
-                Popup(title: popupContent.title, contentView: popupContent.content)
-                    .frame(maxHeight: popupContent.maxHeight)
-            }
-        }
         if let careerSystem, showCareerPopup {
             CareerPopupView(careerSystem: careerSystem, user: user) {
                 showCareerPopup = false
@@ -330,8 +332,9 @@ private extension MainView {
         if careerSystem == nil {
             careerSystem = CareerSystem(user: user)
             isCareerSystemInitialized = true
-            careerSystem?.onCareerChanged = { [weak scene] newCareer in
+            careerSystem?.onCareerChanged = { [weak scene] oldCareer, newCareer in
                 scene?.updateCareerAppearance(to: newCareer)
+                previousCareer = oldCareer
                 leveledUpCareer = newCareer
 
                 showLevelUpEffect = newCareer != .unemployed
@@ -350,6 +353,7 @@ private extension MainView {
 
         // 큐에 대기 중인 레벨업 커리어가 있다면 이펙트 다시 표시
         if let pendingCareer = user.record.scenarioProgress.levelupQueue.first {
+            previousCareer = user.career
             leveledUpCareer = pendingCareer
             showLevelUpEffect = pendingCareer != .unemployed
         }
@@ -474,6 +478,20 @@ private extension MainView {
                     title: "보너스",
                     text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다"
                 )
+            }
+        }
+    }
+
+    @ViewBuilder
+    var shopPopupOverlayView: some View {
+        if let popup = storePopup {
+            modalOverlay(onBackgroundTap: { storePopup = nil }) {
+                popup
+            }
+        }
+        if let popup = noticePopup {
+            modalOverlay(onBackgroundTap: { noticePopup = nil }) {
+                popup
             }
         }
     }
