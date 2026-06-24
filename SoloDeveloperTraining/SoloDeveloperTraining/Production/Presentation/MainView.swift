@@ -53,6 +53,9 @@ struct MainView: View {
     @State private var showOfflineRewardToast: Bool = false
     @State private var offlineRewardToastMessage: String = ""
     @State private var hasCheckedOfflineReward: Bool = false
+    @State private var offlineRewardAdFlowID: String?
+
+    // 팝업 Anchor 관련
     @State private var tabbarAnchorY: CGFloat = 0
     @State private var bottomAnchorY: CGFloat = 0
 
@@ -695,6 +698,7 @@ private extension MainView {
                     text: "잠자는 시간 동안 '\(user.nickname)'가 일을 했습니다.\n일한 보상을 받을까요?"
                 )
             }
+            .onAppear { trackOfflineRewardAdOfferIfNeeded() }
         }
     }
 
@@ -719,15 +723,51 @@ private extension MainView {
         }
     }
 
+    func trackOfflineRewardAdOfferIfNeeded() {
+        guard offlineRewardAdFlowID == nil else { return }
+
+        let flowID = AnalyticsService.shared.makeAdRewardFlowID()
+        offlineRewardAdFlowID = flowID
+        AnalyticsService.shared.logAdOfferViewed(
+            adRewardFlowID: flowID,
+            adPlacement: .offlineReward,
+            rewardType: .gold,
+            rewardAmount: offlineRewardGold
+        )
+    }
+
     func handleOfflineRewardWatchAd() async {
         showOfflineRewardPopup = false
+        guard let flowID = offlineRewardAdFlowID else { return }
+        let rewardGold = offlineRewardGold
+
+        AnalyticsService.shared.logAdWatchClicked(
+            adRewardFlowID: flowID,
+            adPlacement: .offlineReward,
+            rewardType: .gold,
+            rewardAmount: rewardGold
+        )
 
         let result = await AdService.shared.showAdWithResult(.interstitial)
+        offlineRewardAdFlowID = nil
 
         if result.success {
+            AnalyticsService.shared.logAdWatchCompleted(
+                adRewardFlowID: flowID,
+                adPlacement: .offlineReward,
+                rewardType: .gold,
+                rewardAmount: rewardGold,
+                adWatchDurationSec: result.watchDurationSec
+            )
             user.wallet.addGold(offlineRewardGold)
             offlineRewardToastMessage = "잠자는 시간에 일한 보상 획득!"
             showOfflineRewardToast = true
+            AnalyticsService.shared.logAdRewardClaimed(
+                adRewardFlowID: flowID,
+                adPlacement: .offlineReward,
+                rewardType: .gold,
+                rewardAmount: rewardGold
+            )
         }
         offlineRewardGold = 0
         offlineRewardHours = 0.0
@@ -735,13 +775,22 @@ private extension MainView {
 
     func handleOfflineRewardSkip() {
         showOfflineRewardPopup = false
+        if let flowID = offlineRewardAdFlowID {
+            AnalyticsService.shared.logAdOfferDismissed(
+                adRewardFlowID: flowID,
+                adPlacement: .offlineReward,
+                rewardType: .gold,
+                rewardAmount: offlineRewardGold,
+                dismissReason: .close
+            )
+            offlineRewardAdFlowID = nil
+        }
         // 데이터 초기화
         offlineRewardGold = 0
         offlineRewardHours = 0.0
         // 다음 체크를 위해 플래그 리셋
         hasCheckedOfflineReward = false
     }
-
 }
 
 #Preview {
