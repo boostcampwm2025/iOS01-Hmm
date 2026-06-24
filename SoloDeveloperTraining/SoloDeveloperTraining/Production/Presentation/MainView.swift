@@ -38,6 +38,7 @@ struct MainView: View {
     @State private var showRewardToast: Bool = false
     @State private var rewardToastMessage: String = ""
     @State private var selectedDrinkType: ConsumableType?
+    @State private var drinkAdRewardFlowID: String?
 
     // 스킬 광고 보상 지속시 남은 시간
     @State private var skillAdRewardNow = Date()
@@ -461,6 +462,7 @@ private extension MainView {
                     text: "대신에 광고를 보고\n카페인을 보충할까요?"
                 )
             }
+            .onAppear { trackDrinkAdOfferIfNeeded(drinkType: drinkType) }
         }
     }
 
@@ -511,21 +513,56 @@ private extension MainView {
         .ignoresSafeArea()
     }
 
+    func trackDrinkAdOfferIfNeeded(drinkType: ConsumableType) {
+        guard drinkAdRewardFlowID == nil else { return }
+
+        let flowID = AnalyticsService.shared.makeAdRewardFlowID()
+        drinkAdRewardFlowID = flowID
+        AnalyticsService.shared.logAdOfferViewed(
+            adRewardFlowID: flowID,
+            adPlacement: .consumable,
+            rewardType: drinkType == .coffee ? .coffee : .energyDrink,
+            rewardAmount: 1
+        )
+    }
+
     func handleWatchAdInMainView() async {
         showDrinkAdPopup = false
 
-        guard let drinkType = selectedDrinkType else { return }
+        guard let drinkType = selectedDrinkType, let flowID = drinkAdRewardFlowID else { return }
+        let rewardType: AdRewardType = drinkType == .coffee ? .coffee : .energyDrink
+
+        AnalyticsService.shared.logAdWatchClicked(
+            adRewardFlowID: flowID,
+            adPlacement: .consumable,
+            rewardType: rewardType,
+            rewardAmount: 1
+        )
 
         // 광고 시청
         let result = await AdService.shared.showAdWithResult(.interstitial)
+        drinkAdRewardFlowID = nil
 
         if result.success {
+            AnalyticsService.shared.logAdWatchCompleted(
+                adRewardFlowID: flowID,
+                adPlacement: .consumable,
+                rewardType: rewardType,
+                rewardAmount: 1,
+                adWatchDurationSec: result.watchDurationSec
+            )
             // 보상 지급
             user.inventory.gain(consumable: drinkType)
             rewardToastMessage = "카페인 충전 완료!"
             showRewardToast = true
             selectedDrinkType = nil
             workGameSession.resumeGame?()
+            AnalyticsService.shared.logAdRewardClaimed(
+                adRewardFlowID: flowID,
+                adPlacement: .consumable,
+                rewardType: rewardType,
+                rewardAmount: 1
+            )
         } else {
             // 광고 실패 시 초기화
             selectedDrinkType = nil
@@ -534,6 +571,16 @@ private extension MainView {
 
     func handleSkipAdInMainView() {
         showDrinkAdPopup = false
+        if let flowID = drinkAdRewardFlowID, let drinkType = selectedDrinkType {
+            AnalyticsService.shared.logAdOfferDismissed(
+                adRewardFlowID: flowID,
+                adPlacement: .consumable,
+                rewardType: drinkType == .coffee ? .coffee : .energyDrink,
+                rewardAmount: 1,
+                dismissReason: .close
+            )
+            drinkAdRewardFlowID = nil
+        }
         selectedDrinkType = nil
         workGameSession.resumeGame?()
     }
