@@ -16,6 +16,8 @@ struct SkillView: View {
     @Binding var noticePopup: NoticePopup?
     let adRewardNow: Date
 
+    @State private var adRewardFlowID: String?
+
     init(
         user: User,
         careerSystem: CareerSystem?,
@@ -32,13 +34,25 @@ struct SkillView: View {
     var skillAdItemRow: some View {
         let isActive = SkillAdRewardManager.isRewardActive(user: user, now: adRewardNow)
         let canUseToday = SkillAdRewardManager.canUseRewardToday(user: user, now: adRewardNow)
+        let buttonState = adRewardButtonState(isActive: isActive, canUseToday: canUseToday)
+
+        if buttonState == .default, adRewardFlowID == nil {
+            let flowID = AnalyticsService.shared.makeAdRewardFlowID()
+            adRewardFlowID = flowID
+            AnalyticsService.shared.logAdOfferViewed(
+                adRewardFlowID: flowID,
+                adPlacement: .skillReward,
+                rewardType: .skillBoost,
+                rewardAmount: 0
+            )
+        }
 
         return ItemRow(
             imageName: "adBoost",
             title: "업무 효율 대박",
             description: "5분간 피버타임 두배 (X1, X2, X4)",
             buttonType: .singleLine(text: isActive ? "사용중" : "광고보기", icon: .ad),
-            buttonState: adRewardButtonState(isActive: isActive, canUseToday: canUseToday),
+            buttonState: buttonState,
             action: {
                 Task { await handleWatchAd() }
             }
@@ -109,13 +123,36 @@ private extension SkillView {
         let isActive = SkillAdRewardManager.isRewardActive(user: user, now: adRewardNow)
         let canUseToday = SkillAdRewardManager.canUseRewardToday(user: user, now: adRewardNow)
         guard adRewardButtonState(isActive: isActive, canUseToday: canUseToday) == .default else { return }
+        guard let flowID = adRewardFlowID else { return }
+
+        AnalyticsService.shared.logAdWatchClicked(
+            adRewardFlowID: flowID,
+            adPlacement: .skillReward,
+            rewardType: .skillBoost,
+            rewardAmount: 0
+        )
 
         let result = await AdService.shared.showAdWithResult(.interstitial)
+        adRewardFlowID = nil
+
         if result.success {
+            AnalyticsService.shared.logAdWatchCompleted(
+                adRewardFlowID: flowID,
+                adPlacement: .skillReward,
+                rewardType: .skillBoost,
+                rewardAmount: 0,
+                adWatchDurationSec: result.watchDurationSec
+            )
             noticePopup = NoticePopup(
                 type: .default(buttonText: "확인", action: {
                     noticePopup = nil
                     SkillAdRewardManager.grantReward(user: user)
+                    AnalyticsService.shared.logAdRewardClaimed(
+                        adRewardFlowID: flowID,
+                        adPlacement: .skillReward,
+                        rewardType: .skillBoost,
+                        rewardAmount: 0
+                    )
                 }),
                 title: "보상 완료",
                 text: "\(Int(Policy.Ad.SkillReward.rewardDuration / 60))분간 게임 재화를 \(Int(Policy.Ad.SkillReward.rewardMultiplier))배로 획득합니다."
