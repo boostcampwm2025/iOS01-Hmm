@@ -174,11 +174,13 @@ private extension MainView {
             // SettingButton, QuizButton Area
             HStack {
                 SmallButton(type: .setting) {
+                    SoundService.shared.trigger(.click)
                     showSettingsView = true
                 }
                 Spacer()
                 if !workGameSession.isInProgress {
                     SmallButton(type: .quiz) {
+                        SoundService.shared.trigger(.click)
                         showQuizView = true
                     }
                 }
@@ -466,6 +468,8 @@ private extension MainView {
     func handleTabTap(_ newTab: AppTab) {
         guard selectedTab != newTab else { return }
 
+        SoundService.shared.trigger(.click)
+
         if workGameSession.isInProgress && selectedTab == .work && newTab != .work {
             workGameSession.requestTabSwitch(to: newTab)
             return
@@ -482,8 +486,14 @@ private extension MainView {
                     type: .ad(
                         cancelText: "그냥 하기",
                         adText: "음료 받기",
-                        cancelAction: handleSkipAdInMainView,
-                        adAction: { Task { await handleWatchAdInMainView() } }
+                        cancelAction: {
+                            SoundService.shared.trigger(.click)
+                            handleSkipAdInMainView()
+                        },
+                        adAction: {
+                            SoundService.shared.trigger(.click)
+                            Task { await handleWatchAdInMainView() }
+                        }
                     ),
                     title: drinkType == .coffee ? "커피 없음" : "박하스 없음",
                     text: "대신에 광고를 보고\n카페인을 보충할까요?"
@@ -501,8 +511,14 @@ private extension MainView {
                     type: .ad(
                         cancelText: "그냥 나가기",
                         adText: "보너스 받기",
-                        cancelAction: handleExitWithoutBonus,
-                        adAction: { Task { await handleExitBonusAd() } }
+                        cancelAction: {
+                            SoundService.shared.trigger(.click)
+                            handleExitWithoutBonus()
+                        },
+                        adAction: {
+                            SoundService.shared.trigger(.click)
+                            Task { await handleExitBonusAd() }
+                        }
                     ),
                     title: "보너스",
                     text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다"
@@ -710,9 +726,11 @@ private extension MainView {
                         cancelText: "안받기",
                         adText: "보상 받기",
                         cancelAction: {
+                            SoundService.shared.trigger(.click)
                             handleOfflineRewardSkip()
                         },
                         adAction: {
+                            SoundService.shared.trigger(.click)
                             Task { await handleOfflineRewardWatchAd() }
                         }
                     ),

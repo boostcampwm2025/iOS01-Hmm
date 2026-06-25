@@ -53,8 +53,18 @@ struct ShopView: View {
 
     var body: some View {
         VStack(spacing: TokenSpacing.md) {
-            SegmentControl(leading: "아이템", trailing: "부동산", selectedIndex: $selectedCategoryIndex)
-                .padding(.horizontal, TokenGrid.paddingSide)
+            SegmentControl(
+                leading: "아이템",
+                trailing: "부동산",
+                selectedIndex: Binding(
+                    get: { selectedCategoryIndex },
+                    set: { newValue in
+                        SoundService.shared.trigger(.click)
+                        selectedCategoryIndex = newValue
+                    }
+                )
+            )
+            .padding(.horizontal, TokenGrid.paddingSide)
 
             if selectedCategoryIndex == 0 {
                 itemView
@@ -86,6 +96,7 @@ private extension ShopView {
                         buttonType: item.cost.itemButtonType,
                         buttonState: ItemState(item: item).itemButtonState
                     ) {
+                        SoundService.shared.trigger(.click)
                         purchase(item: item)
                     }
                 }
@@ -109,9 +120,11 @@ private extension ShopView {
                                 imageName: housing.imageName,
                                 state: ItemState(item: item).housingCardState(isSelected: selectedHousingTier == housing.tier),
                                 onTap: {
+                                    SoundService.shared.trigger(.click)
                                     selectedHousingTier = housing.tier
                                 },
                                 onButtonTap: {
+                                    SoundService.shared.trigger(.click)
                                     selectedHousingTier = housing.tier
                                     purchase(item: item, scrollProxy: proxy)
                                 }
@@ -140,8 +153,12 @@ private extension ShopView {
                 type: .default(
                     cancelText: "취소",
                     confirmText: buttonTitle,
-                    cancelAction: { storePopup = nil },
+                    cancelAction: {
+                        SoundService.shared.trigger(.click)
+                        storePopup = nil
+                    },
                     confirmAction: {
+                        SoundService.shared.trigger(.click)
                         storePopup = nil
                         executePurchase(item: item, scrollProxy: scrollProxy)
                     }
@@ -171,16 +188,19 @@ private extension ShopView {
                 adText: "확률 UP",
                 confirmText: "강화",
                 cancelAction: {
+                    SoundService.shared.trigger(.click)
                     storePopup = nil
                     trackEnhanceAdDismissIfNeeded(hasBonus: hasBonus)
                 },
                 adAction: {
+                    SoundService.shared.trigger(.click)
                     storePopup = nil
                     Task {
                         await handleEnhanceAdWatch(item: item, equipment: equipment, scrollProxy: scrollProxy, typeKey: typeKey)
                     }
                 },
                 confirmAction: {
+                    SoundService.shared.trigger(.click)
                     storePopup = nil
                     executePurchase(item: item, bonusRate: hasBonus ? 0.1 : 0.0, scrollProxy: scrollProxy)
                 }

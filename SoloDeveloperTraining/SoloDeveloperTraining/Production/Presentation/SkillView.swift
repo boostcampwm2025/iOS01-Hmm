@@ -54,6 +54,7 @@ struct SkillView: View {
             buttonType: .singleLine(text: isActive ? "사용중" : "광고보기", icon: .ad),
             buttonState: buttonState,
             action: {
+                SoundService.shared.trigger(.click)
                 Task { await handleWatchAd() }
             }
         )
@@ -74,7 +75,10 @@ struct SkillView: View {
                         }(),
                         buttonType: skillState.skill.upgradeCost.itemButtonType,
                         buttonState: skillState.itemState.itemButtonState,
-                        action: { upgrade(skill: skillState.skill) },
+                        action: {
+                            SoundService.shared.trigger(.click)
+                            upgrade(skill: skillState.skill)
+                        },
                         onLongPress: { upgradeRepeating(skill: skillState.skill) }
                     )
                 }
@@ -113,6 +117,7 @@ private extension SkillView {
     func upgradeRepeating(skill: Skill) -> Bool {
         do {
             try skillSystem.upgrade(skill: skill)
+            SoundService.shared.trigger(.click)
             return true
         } catch {
             return false
