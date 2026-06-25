@@ -13,5 +13,5 @@ public enum TokenGrid {
     public static let paddingTop:         CGFloat = 60
     public static let paddingBottom:      CGFloat = 36
     public static let marginPopUp:        CGFloat = 24
-    public static let marginBugCharacter: CGFloat = 60
+    public static let marginBottomLarge:  CGFloat = 60
 }

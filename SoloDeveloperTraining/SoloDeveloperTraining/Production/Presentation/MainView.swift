@@ -68,17 +68,22 @@ struct MainView: View {
     // 시나리오 관련
     @State private var scenarioManager: ScenarioManager?
     @State private var showScenarioView: Bool = false
-    private let scenarioRepository: ScenarioRepository = DefaultScenarioRepository()
+    let scenarioRepository: ScenarioRepository
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
     private let scene: CharacterScene
     private let animationSystem: CharacterAnimationSystem
 
-    init(user: User, hasSeenIntro: Binding<Bool>) {
+    init(
+        user: User,
+        hasSeenIntro: Binding<Bool>,
+        scenarioRepository: ScenarioRepository
+    ) {
         self._hasSeenIntro = hasSeenIntro
         self.autoGainSystem = AutoGainSystem(user: user)
         self.user = user
+        self.scenarioRepository = scenarioRepository
 
         self.scene = CharacterScene(size: Constant.characterSceneSize, user: user)
         self.scene.scaleMode = .aspectFit
@@ -815,5 +820,9 @@ private extension MainView {
             .init(key: SkillKey(game: .stack, tier: .beginner), level: 1)
         ]
     )
-    MainView(user: user, hasSeenIntro: .constant(true))
+    MainView(
+        user: user,
+        hasSeenIntro: .constant(true),
+        scenarioRepository: DefaultScenarioRepository()
+    )
 }

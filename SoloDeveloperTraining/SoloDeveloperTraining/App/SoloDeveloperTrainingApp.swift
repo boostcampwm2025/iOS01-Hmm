@@ -52,6 +52,7 @@ struct SoloDeveloperTrainingApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     private let userRepository: UserRepository = FileManagerUserRepository()
+    private let scenarioRepository: ScenarioRepository = DefaultScenarioRepository()
 
     var body: some Scene {
         WindowGroup {
@@ -75,13 +76,27 @@ private extension SoloDeveloperTrainingApp {
     var gameContent: some View {
         Group {
             if hasSeenIntro, let user {
-                MainView(user: user, hasSeenIntro: $hasSeenIntro)
-                    .transition(.opacity)
+                MainView(
+                    user: user,
+                    hasSeenIntro: $hasSeenIntro,
+                    scenarioRepository: scenarioRepository
+                )
+                .transition(.opacity)
+            } else if hasSeenIntro, showNicknameSetup {
+                NicknameSetupView { nickname in
+                    let newUser = User(nickname: nickname)
+                    user = newUser
+                    checkFirstOpen(user: newUser)
+                    user?.record.tutorialCompleted = true
+                    hasSeenIntro = true
+                    showNicknameSetup = false
+                }
             } else {
                 IntroView(
                     hasSeenIntro: $hasSeenIntro,
                     showNicknameSetup: $showNicknameSetup,
                     user: user,
+                    scenarioRepository: scenarioRepository,
                     isPolicyReady: !isPolicyLoading && !hasPolicyError,
                     hasPolicyError: hasPolicyError,
                     onRetry: { Task { await loadPolicy() } }
@@ -99,17 +114,6 @@ private extension SoloDeveloperTrainingApp {
                     isDeferredDeeplink: false,
                     resultID: deeplinkInfo.resultID
                 )
-        }
-        .fullScreenCover(isPresented: $showNicknameSetup) {
-            NicknameSetupView { nickname in
-                let newUser = User(nickname: nickname)
-                user = newUser
-                checkFirstOpen(user: newUser)
-                user?.record.tutorialCompleted = true
-                user?.record.scenarioProgress.startScenario(career: .unemployed)
-                hasSeenIntro = true
-                showNicknameSetup = false
-            }
         }
         .overlay {
             errorPopupOverlay
