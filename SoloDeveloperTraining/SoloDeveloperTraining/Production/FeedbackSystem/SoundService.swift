@@ -23,6 +23,8 @@ final class SoundService {
 
     private var sfxPlayers: [AVAudioPlayer] = []
     private var bgmPlayer: AVAudioPlayer?
+    /// 마지막으로 재생(요청)된 BGM. isBGMEnabled를 다시 켤 때 동일 곡으로 재생
+    private var currentBGM: SoundType = .main
 
     var isSFXEnabled: Bool {
         didSet {
@@ -34,7 +36,7 @@ final class SoundService {
         didSet {
             AppPreferences.shared.isBGMEnabled = isBGMEnabled
             if isBGMEnabled {
-                playBGM()
+                playBGM(currentBGM)
             } else {
                 stopBGM()
             }
@@ -100,9 +102,10 @@ final class SoundService {
 
     // MARK: - BGM
 
-    func playBGM() {
+    func playBGM(_ type: SoundType) {
+        currentBGM = type
         guard isBGMEnabled else { return }
-        guard let url = SoundType.main.url else { return }
+        guard let url = type.url else { return }
         stopBGM()
         do {
             let player = try AVAudioPlayer(contentsOf: url)

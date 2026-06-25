@@ -312,6 +312,7 @@ private extension MainView {
                 manager.completeScenario()
 
                 showScenarioView = false
+                SoundService.shared.playBGM(.main)
 
                 if isRebirth {
                     hasSeenIntro = false
@@ -350,7 +351,7 @@ private extension MainView {
     }
 
     func setupOnAppear() {
-        SoundService.shared.playBGM()
+        SoundService.shared.playBGM(.main)
         skillAdRewardNow = Date()
         autoGainSystem.startSystem()
 
@@ -403,6 +404,7 @@ private extension MainView {
             manager.restoreScenario(scenario)
             self.scenarioManager = manager
             showScenarioView = true
+            SoundService.shared.playBGM(.scenario)
         }
     }
 
@@ -429,6 +431,7 @@ private extension MainView {
             manager.startScenario(scenario)
             self.scenarioManager = manager
             showScenarioView = true
+            SoundService.shared.playBGM(.scenario)
         }
     }
 
