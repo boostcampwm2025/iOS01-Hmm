@@ -82,7 +82,7 @@ private extension SoloDeveloperTrainingApp {
                     scenarioRepository: scenarioRepository
                 )
                 .transition(.opacity)
-            } else if hasSeenIntro, showNicknameSetup {
+            } else if hasSeenIntro, user == nil, showNicknameSetup {
                 NicknameSetupView { nickname in
                     let newUser = User(nickname: nickname)
                     user = newUser
