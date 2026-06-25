@@ -208,7 +208,7 @@ private extension ShopView {
                 }
             }
             if item.category == .equipment {
-                SoundService.shared.trigger(isSuccess ? .upgradeSuccess : .upgradeFailure)
+                SoundService.shared.trigger(isSuccess ? .success : .failure)
                 if !isSuccess {
                     HapticService.shared.trigger(.error)
                 }

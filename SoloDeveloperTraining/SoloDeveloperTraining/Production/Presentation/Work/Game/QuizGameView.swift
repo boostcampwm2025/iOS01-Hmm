@@ -38,9 +38,9 @@ struct QuizGameView: View {
         }
         .onChange(of: quizGame.remainingSeconds) { _, newValue in
             if newValue == 3 {
-                SoundService.shared.trigger(.quizCountdown)
+                SoundService.shared.trigger(.count)
             } else if newValue == 0 {
-                SoundService.shared.trigger(.quizTimeOver)
+                SoundService.shared.trigger(.over)
             }
         }
         .onDisappear { SoundService.shared.stopAllSFX() }

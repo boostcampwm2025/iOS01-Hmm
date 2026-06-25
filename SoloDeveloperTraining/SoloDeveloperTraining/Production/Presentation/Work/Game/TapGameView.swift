@@ -102,7 +102,7 @@ private extension TapGameView {
             onClose: {
                 closePause = true
                 SoundService.shared.stopAllSFX()
-                SoundService.shared.trigger(.buttonTap)
+                SoundService.shared.trigger(.click)
             },
             onCoffee: { useConsumableItem(.coffee) },
             onEnergyDrink: { useConsumableItem(.energyDrink) }
@@ -168,7 +168,7 @@ private extension TapGameView {
         let now = Date()
         if !tapGame.isPaused,
            now.timeIntervalSince(lastTapSoundTime) >= Constant.tapSoundThrottleInterval {
-            SoundService.shared.trigger(.tapGameTyping)
+            SoundService.shared.trigger(.typing)
             lastTapSoundTime = now
         }
         let gainGold = await tapGame.didPerformAction()
@@ -194,7 +194,7 @@ private extension TapGameView {
         let count = tapGame.inventory.count(type) ?? 0
         if count > 0 {
             if tapGame.inventory.drink(type) {
-                SoundService.shared.trigger(.itemConsume)
+                SoundService.shared.trigger(.drink)
                 HapticService.shared.trigger(.success)
                 tapGame.buffSystem.useConsumableItem(type: type)
                 tapGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)

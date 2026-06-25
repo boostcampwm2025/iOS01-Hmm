@@ -112,7 +112,7 @@ final class SoundService {
 
     func playBGM() {
         guard isBGMEnabled else { return }
-        guard let url = SoundType.bgm.url else { return }
+        guard let url = SoundType.main.url else { return }
         stopBGM()
         do {
             let player = try AVAudioPlayer(contentsOf: url)

@@ -114,7 +114,7 @@ struct PriceButton: View {
                     return
                 }
                 if !isDisabled {
-                    SoundService.shared.trigger(.buttonTap)
+                    SoundService.shared.trigger(.click)
                     action()
                 }
             }
