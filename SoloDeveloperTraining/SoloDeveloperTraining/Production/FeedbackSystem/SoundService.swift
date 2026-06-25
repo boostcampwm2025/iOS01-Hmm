@@ -9,10 +9,6 @@ import SwiftUI
 import AVFoundation
 
 private enum Constant {
-    static let sfxEnabledKey: String = "isSFXEnabled"
-    static let bgmEnabledKey: String = "isBGMEnabled"
-    static let bgmVolumeKey: String = "bgmVolume"
-    static let sfxVolumeKey: String = "sfxVolume"
     static let volumeRange: ClosedRange<Int> = 0 ... 100
     static let defaultVolume: Int = 100
     /// 효과음 동시 재생 상한 (중첩 허용)
@@ -23,20 +19,20 @@ private enum Constant {
 final class SoundService {
     static let shared = SoundService()
 
+    private let sfxDelegate = SoundPlayerDelegate()
+
     private var sfxPlayers: [AVAudioPlayer] = []
     private var bgmPlayer: AVAudioPlayer?
-    private let sfxDelegate = SoundPlayerDelegate()
-    private let localStorage: KeyValueLocalStorage = UserDefaultsStorage()
 
     var isSFXEnabled: Bool {
         didSet {
-            localStorage.set(isSFXEnabled, forKey: Constant.sfxEnabledKey)
+            AppPreferences.shared.isSfxEnabled = isSFXEnabled
         }
     }
 
     var isBGMEnabled: Bool {
         didSet {
-            localStorage.set(isBGMEnabled, forKey: Constant.bgmEnabledKey)
+            AppPreferences.shared.isBGMEnabled = isBGMEnabled
             if isBGMEnabled {
                 playBGM()
             } else {
@@ -47,29 +43,23 @@ final class SoundService {
 
     var bgmVolume: Int {
         didSet {
-            localStorage.set(bgmVolume, forKey: Constant.bgmVolumeKey)
+            AppPreferences.shared.bgmVolume = bgmVolume
             bgmPlayer?.volume = Float(bgmVolume) / 100
         }
     }
 
     var sfxVolume: Int {
         didSet {
-            localStorage.set(sfxVolume, forKey: Constant.sfxVolumeKey)
+            AppPreferences.shared.sfxVolume = sfxVolume
         }
     }
 
     private init() {
-        localStorage.register(defaults: [
-            Constant.sfxEnabledKey: true,
-            Constant.bgmEnabledKey: true,
-            Constant.bgmVolumeKey: Constant.defaultVolume,
-            Constant.sfxVolumeKey: Constant.defaultVolume
-        ])
+        self.isSFXEnabled = AppPreferences.shared.isSfxEnabled
+        self.isBGMEnabled = AppPreferences.shared.isBGMEnabled
 
-        self.isSFXEnabled = localStorage.bool(key: Constant.sfxEnabledKey)
-        self.isBGMEnabled = localStorage.bool(key: Constant.bgmEnabledKey)
-        let storedBgm = localStorage.integer(key: Constant.bgmVolumeKey)
-        let storedSfx = localStorage.integer(key: Constant.sfxVolumeKey)
+        let storedBgm = AppPreferences.shared.bgmVolume
+        let storedSfx = AppPreferences.shared.sfxVolume
         self.bgmVolume = Constant.volumeRange.contains(storedBgm) ? storedBgm : Constant.defaultVolume
         self.sfxVolume = Constant.volumeRange.contains(storedSfx) ? storedSfx : Constant.defaultVolume
 
