@@ -118,7 +118,7 @@ struct UpdateRewardPopupView: View {
                 .scrollIndicators(.never)
             }
             TextButton(
-                text: "닫기",
+                text: "보상 받기",
                 type: .primary,
                 size: .medium,
                 action: onClose
