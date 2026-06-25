@@ -5,74 +5,62 @@
 //  Created by sunjae on 6/25/26.
 //
 
-import Foundation
-
 final class DefaultRewardRepository {
 
     func fetchAllRewards(for userType: RewardUserType) -> [Reward]? {
-        rewards[userType]
+        orderedRewards.first { $0.userType == userType }?.rewards
     }
 
-    func fetchAllRewards() -> [RewardUserType: [Reward]] {
-        rewards
+    func fetchAllRewards() -> [UpdateReward] {
+        orderedRewards
     }
 
-    private let rewards: [RewardUserType: [Reward]] = [
-        .newUser: [.diamond(15)],
-
-        .originUser(.unemployed): [.diamond(30)],
-
-        .originUser(.laptopOwner): [
-            .diamond(30),
+    private let orderedRewards: [UpdateReward] = [
+        .init(userType: .newUser, rewards: [.diamond(15)]),
+        .init(userType: .originUser(.unemployed), rewards: [.diamond(30)]),
+        .init(userType: .originUser(.laptopOwner), rewards: [
+            .diamond(60),
             .consumable(.coffee, count: 3)
-        ],
-
-        .originUser(.aspiringDeveloper): [
+        ]),
+        .init(userType: .originUser(.aspiringDeveloper), rewards: [
             .diamond(90),
             .consumable(.coffee, count: 6),
             .consumable(.energyDrink, count: 1)
-        ],
-
-        .originUser(.juniorDeveloper): [
+        ]),
+        .init(userType: .originUser(.juniorDeveloper), rewards: [
             .diamond(120),
             .consumable(.coffee, count: 10),
             .consumable(.energyDrink, count: 2)
-        ],
-
-        .originUser(.normalDeveloper): [
+        ]),
+        .init(userType: .originUser(.normalDeveloper), rewards: [
             .diamond(150),
             .consumable(.coffee, count: 15),
             .consumable(.energyDrink, count: 7)
-        ],
-
-        .originUser(.nightOwlDeveloper): [
+        ]),
+        .init(userType: .originUser(.nightOwlDeveloper), rewards: [
             .diamond(180),
             .consumable(.coffee, count: 18),
             .consumable(.energyDrink, count: 12)
-        ],
-
-        .originUser(.skilledDeveloper): [
+        ]),
+        .init(userType: .originUser(.skilledDeveloper), rewards: [
             .diamond(210),
             .consumable(.coffee, count: 21),
             .consumable(.energyDrink, count: 17)
-        ],
-
-        .originUser(.famousDeveloper): [
+        ]),
+        .init(userType: .originUser(.famousDeveloper), rewards: [
             .diamond(240),
             .consumable(.coffee, count: 24),
             .consumable(.energyDrink, count: 22)
-        ],
-
-        .originUser(.allRounderDeveloper): [
+        ]),
+        .init(userType: .originUser(.allRounderDeveloper), rewards: [
             .diamond(270),
             .consumable(.coffee, count: 27),
             .consumable(.energyDrink, count: 27)
-        ],
-
-        .originUser(.worldClassDeveloper): [
+        ]),
+        .init(userType: .originUser(.worldClassDeveloper), rewards: [
             .diamond(300),
             .consumable(.coffee, count: 30),
             .consumable(.energyDrink, count: 30)
-        ]
+        ])
     ]
 }

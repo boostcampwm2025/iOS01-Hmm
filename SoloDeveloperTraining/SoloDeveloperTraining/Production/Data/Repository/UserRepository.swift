@@ -12,6 +12,10 @@ protocol UserRepository {
     func load() async throws -> User?
 }
 
+protocol UserMigrationSupportable {
+    func loadLegacyCareer() throws -> Career?
+}
+
 final class FileManagerUserRepository: UserRepository {
     private let fileManager = FileManager()
     private let fileName = "user_data.json"
@@ -63,5 +67,16 @@ final class FileManagerUserRepository: UserRepository {
             record: userDTO.record.toRecord(),
             skills: Set(userDTO.skills.map { $0.toSkill() })
         )
+    }
+}
+
+extension FileManagerUserRepository: UserMigrationSupportable {
+    /// 이전 버전의 커리어 정보를 반환합니다.
+    func loadLegacyCareer() throws -> Career? {
+        guard fileManager.fileExists(atPath: fileURL.path) else { return nil }
+        let data = try Data(contentsOf: fileURL)
+        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+        let careerRaw = (json?["career"] as? [String: Any])?["rawValue"] as? String
+        return careerRaw.flatMap { Career(rawValue: $0) }
     }
 }

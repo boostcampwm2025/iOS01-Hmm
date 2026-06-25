@@ -42,16 +42,18 @@ struct SoloDeveloperTrainingApp: App {
 #endif
     }
 
+    @State private var user: User?
+    @State private var legacyUserType: RewardUserType? = nil
+
     @State private var hasSeenIntro = false
     @State private var showNicknameSetup = false
-    @State private var user: User?
     @State private var showErrorPopup = false
     @State private var errorMessage: String = ""
     @State private var isPolicyLoading = true
     @State private var hasPolicyError = false
     @Environment(\.scenePhase) private var scenePhase
 
-    private let userRepository: UserRepository = FileManagerUserRepository()
+    private let userRepository: UserRepository & UserMigrationSupportable = FileManagerUserRepository()
     private let scenarioRepository: ScenarioRepository = DefaultScenarioRepository()
 
     var body: some Scene {
@@ -78,6 +80,7 @@ private extension SoloDeveloperTrainingApp {
             if hasSeenIntro, let user {
                 MainView(
                     user: user,
+                    userType: legacyUserType ?? .newUser,
                     hasSeenIntro: $hasSeenIntro,
                     scenarioRepository: scenarioRepository
                 )
@@ -152,6 +155,9 @@ private extension SoloDeveloperTrainingApp {
                         checkFirstOpen(user: loadedUser)
                     }
                 }
+            } catch is DecodingError {
+                let legacyCareer = try? userRepository.loadLegacyCareer()
+                legacyUserType = .originUser(legacyCareer ?? .unemployed)
             } catch {
                 await MainActor.run {
                     self.errorMessage = "사용자 데이터를 불러오는데 실패했습니다.\n\(error.localizedDescription)"
