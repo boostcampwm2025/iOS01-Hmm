@@ -35,6 +35,5 @@ enum AdRewardType: String {
 
 enum AdOfferDismissReasonType: String {
     case close
-    case background
     case unknown
 }
