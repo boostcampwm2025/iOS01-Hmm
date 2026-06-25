@@ -367,7 +367,11 @@ private extension MainView {
                 previousCareer = oldCareer
                 leveledUpCareer = newCareer
 
-                showLevelUpEffect = newCareer != .unemployed
+                let isLevelUp = newCareer != .unemployed
+                showLevelUpEffect = isLevelUp
+                if isLevelUp {
+                    SoundService.shared.trigger(.levelUp)
+                }
             }
         }
         // 저장된 시나리오 복구 체크
