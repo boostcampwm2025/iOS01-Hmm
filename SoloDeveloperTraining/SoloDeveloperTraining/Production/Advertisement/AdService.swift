@@ -11,6 +11,11 @@ enum AdType: String {
     case interstitial
 }
 
+struct AdShowResult {
+    let success: Bool
+    let watchDurationSec: Int
+}
+
 @MainActor
 final class AdService {
     static let shared: AdService = {
@@ -31,9 +36,9 @@ final class AdService {
         await loadAdIfNeeded(type)
     }
 
-    // 광고 표시 후 결과 반환 (true: 정상 시청 완료, false: 실패)
-    func showAdWithResult(_ type: AdType) async -> Bool {
-        guard !isShowing else { return false }
+    // 광고 표시 후 결과 반환 (success: 정상 시청 완료 여부, watchDurationSec: 순수 시청 시간)
+    func showAdWithResult(_ type: AdType) async -> AdShowResult {
+        guard !isShowing else { return AdShowResult(success: false, watchDurationSec: 0) }
         isShowing = true
         defer { isShowing = false }
 
@@ -41,17 +46,20 @@ final class AdService {
 
         guard let ads = await loadAdIfNeeded(type) else {
             print("⚠️ Ad not ready")
-            return false
+            return AdShowResult(success: false, watchDurationSec: 0)
         }
 
         loadedAds.removeValue(forKey: type)
+
+        let startedAt = Date()
         let result = await ads.showWithResult()
+        let watchDurationSec = Int(Date().timeIntervalSince(startedAt).rounded())
 
         Task {
             await loadAd(type)
         }
 
-        return result
+        return AdShowResult(success: result, watchDurationSec: watchDurationSec)
     }
 }
 

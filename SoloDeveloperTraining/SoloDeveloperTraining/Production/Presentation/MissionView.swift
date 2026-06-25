@@ -6,12 +6,7 @@
 //
 
 import SwiftUI
-
-private enum Constant {
-    static let vertical: CGFloat = 15
-    static let gridVeticalSpacing: CGFloat = 14
-    static let minWidth: CGFloat = 115
-}
+import DUDesignSystem
 
 struct MissionView: View {
     private let user: User
@@ -26,54 +21,40 @@ struct MissionView: View {
     }
 
     var body: some View {
-        VStack(spacing: Constant.vertical) {
-            OldProgressBar(
-                maxValue: Double(missionSystem.allCount),
-                currentValue: Double(missionSystem.claimedCount),
-                text: "\(missionSystem.claimedCount) / \(missionSystem.allCount)"
-            )
+        VStack(spacing: TokenSpacing.md) {
+            ZStack {
+                DUDesignSystem.ProgressBar(
+                    progress: missionSystem.allCount > 0 ? Double(missionSystem.claimedCount) / Double(missionSystem.allCount) : 0
+                )
+                ItemLabel(text: "\(missionSystem.claimedCount) / \(missionSystem.allCount)", font: .caption, color: .black300)
+            }
             ScrollView {
                 LazyVGrid(
-                    columns: [GridItem(.adaptive(minimum: Constant.minWidth))],
-                    spacing: Constant.gridVeticalSpacing
+                    columns: Array(repeating: GridItem(.flexible(), spacing: TokenSpacing.xs), count: 3),
+                    spacing: TokenSpacing.md
                 ) {
                     ForEach(missionSystem.missions, id: \.id) { mission in
                         MissionCard(
                             title: mission.title,
-                            reward: mission.reward,
-                            imageName: mission.type.level.imageName,
+                            goldRewardText: mission.reward.gold > 0 ? mission.reward.gold.formatted : nil,
+                            diamondRewardText: mission.reward.diamond > 0 ? mission.reward.diamond.formatted : nil,
+                            trophy: mission.type.level.trophyType,
                             condition: mission.description,
-                            buttonState: toButtonState(
-                                missionCardState: mission
-                                    .missionCardState),
-                            onButtonTap: {
-                                missionCardDidTapHandler(
-                                    mission: mission
-                                )
-                            }
+                            state: mission.missionCardState.missionCardState,
+                            action: { missionCardDidTapHandler(mission: mission) }
                         )
                     }
                 }
+                .padding(.bottom, TokenGrid.paddingBottom)
             }
             .scrollIndicators(.never)
         }
-        .padding(.horizontal)
+        .padding(.horizontal, TokenGrid.paddingSide)
         .toast(isShowing: $showToast, message: toastMessage)
     }
 }
 
 private extension MissionView {
-    func toButtonState(missionCardState: MissionCardState) -> MissionCardButton.ButtonState {
-        switch missionCardState {
-        case .claimed:
-                .claimed
-        case .claimable:
-                .claimable
-        case .inProgress(let currentValue, let totalValue):
-                .inProgress(currentValue: currentValue, totalValue: totalValue)
-        }
-    }
-
     func missionCardDidTapHandler(mission: Mission) {
         if mission.missionCardState == .claimable {
             missionSystem.claimMissionReward(mission: mission, wallet: user.wallet)

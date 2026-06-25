@@ -25,17 +25,23 @@ struct MainView: View {
     // 게임 세션 관리
     @State private var workGameSession = WorkGameSession()
 
-    @State private var popupContent: PopupConfiguration?
     @State private var showCareerPopup: Bool = false
     @State private var careerSystem: CareerSystem?
     @State private var showQuizView: Bool = false
     @State private var showSettingsView: Bool = false
+
+    @State private var storePopup: StorePopup? = nil
+    @State private var noticePopup: NoticePopup? = nil
 
     // 음료 광고 팝업 관련
     @State private var showDrinkAdPopup: Bool = false
     @State private var showRewardToast: Bool = false
     @State private var rewardToastMessage: String = ""
     @State private var selectedDrinkType: ConsumableType?
+    @State private var drinkAdRewardFlowID: String?
+
+    // 업무 퇴장 보너스 광고 관련
+    @State private var exitBonusAdRewardFlowID: String?
 
     // 스킬 광고 보상 지속시 남은 시간
     @State private var skillAdRewardNow = Date()
@@ -47,6 +53,9 @@ struct MainView: View {
     @State private var showOfflineRewardToast: Bool = false
     @State private var offlineRewardToastMessage: String = ""
     @State private var hasCheckedOfflineReward: Bool = false
+    @State private var offlineRewardAdFlowID: String?
+
+    // 팝업 Anchor 관련
     @State private var tabbarAnchorY: CGFloat = 0
     @State private var bottomAnchorY: CGFloat = 0
 
@@ -59,17 +68,28 @@ struct MainView: View {
     // 시나리오 관련
     @State private var scenarioManager: ScenarioManager?
     @State private var showScenarioView: Bool = false
-    private let scenarioRepository: ScenarioRepository = DefaultScenarioRepository()
+
+    // 업데이트 보상 관련
+    @State private var showUpdateRewardPopup = true
+
+    let scenarioRepository: ScenarioRepository
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
     private let scene: CharacterScene
     private let animationSystem: CharacterAnimationSystem
 
-    init(user: User, hasSeenIntro: Binding<Bool>) {
+    init(
+        user: User,
+        hasSeenIntro: Binding<Bool>,
+        scenarioRepository: ScenarioRepository
+    ) {
         self._hasSeenIntro = hasSeenIntro
+        self._showUpdateRewardPopup = State(initialValue: !AppPreferences.shared.hasClaimedGameResetReward)
+
         self.autoGainSystem = AutoGainSystem(user: user)
         self.user = user
+        self.scenarioRepository = scenarioRepository
 
         self.scene = CharacterScene(size: Constant.characterSceneSize, user: user)
         self.scene.scaleMode = .aspectFit
@@ -109,8 +129,8 @@ struct MainView: View {
                     isPresented: $showLevelUpEffect,
                     previousCareerTitle: previousCareer?.rawValue ?? "",
                     currentCareerTitle: leveledUpCareer?.rawValue ?? ""
-            )
-            .transition(.opacity.animation(.easeIn))
+                )
+                .transition(.opacity.animation(.easeIn))
             }
         }
         .onChange(of: showLevelUpEffect) { oldValue, newValue in
@@ -253,11 +273,11 @@ private extension MainView {
             SkillView(
                 user: user,
                 careerSystem: careerSystem,
-                popupContent: $popupContent,
+                noticePopup: $noticePopup,
                 adRewardNow: skillAdRewardNow
             )
         case .shop:
-            ShopView(user: user, popupContent: $popupContent)
+            ShopView(user: user, storePopup: $storePopup, noticePopup: $noticePopup)
         case .mission:
             MissionView(user: user)
         }
@@ -265,14 +285,16 @@ private extension MainView {
 
     @ViewBuilder
     var overlayView: some View {
-        ZStack {
-            popupOverlayView
+        Group {
+            careerPopupOverlayView
                 .ignoresSafeArea()
             settingsOverlayView
             drinkAdPopupOverlayView
             exitBonusPopupOverlayView
             offlineRewardPopupOverlayView
             scenarioOverlayView
+            shopPopupOverlayView
+            updateRewardOverlayView
         }
     }
 
@@ -299,26 +321,29 @@ private extension MainView {
     }
 
     @ViewBuilder
-    var popupOverlayView: some View {
-        if let popupContent {
-            modalOverlay(onBackgroundTap: { self.popupContent = nil }) {
-                Popup(title: popupContent.title, contentView: popupContent.content)
-                    .frame(maxHeight: popupContent.maxHeight)
-            }
+    var updateRewardOverlayView: some View {
+        if showUpdateRewardPopup {
+            modalOverlay(onBackgroundTap: handleClaimUpdateReward, content: {
+                UpdateRewardPopupView(onClose: handleClaimUpdateReward)
+            })
         }
+    }
+
+    @ViewBuilder
+    var careerPopupOverlayView: some View {
         if let careerSystem, showCareerPopup {
-            CareerPopupView(careerSystem: careerSystem, user: user) {
-                showCareerPopup = false
-            }
+            modalOverlay(onBackgroundTap: { showCareerPopup = false }, content: {
+                CareerPopupView(careerSystem: careerSystem, user: user) { showCareerPopup = false }
+            })
         }
     }
 
     @ViewBuilder
     var settingsOverlayView: some View {
         if showSettingsView {
-            modalOverlay(onBackgroundTap: { showSettingsView = false }) {
+            modalOverlay(onBackgroundTap: { showSettingsView = false }, content: {
                 FeedbackSettingView(onClose: { showSettingsView = false })
-            }
+            })
         }
     }
 
@@ -464,6 +489,7 @@ private extension MainView {
                     text: "대신에 광고를 보고\n카페인을 보충할까요?"
                 )
             }
+            .onAppear { trackDrinkAdOfferIfNeeded(drinkType: drinkType) }
         }
     }
 
@@ -482,6 +508,17 @@ private extension MainView {
                     text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다"
                 )
             }
+            .onAppear { trackExitBonusAdOfferIfNeeded() }
+        }
+    }
+
+    @ViewBuilder
+    var shopPopupOverlayView: some View {
+        if let popup = storePopup {
+            modalOverlay(onBackgroundTap: { storePopup = nil }, content: { popup })
+        }
+        if let popup = noticePopup {
+            modalOverlay(onBackgroundTap: { noticePopup = nil }, content: { popup })
         }
     }
 
@@ -500,21 +537,56 @@ private extension MainView {
         .ignoresSafeArea()
     }
 
+    func trackDrinkAdOfferIfNeeded(drinkType: ConsumableType) {
+        guard drinkAdRewardFlowID == nil else { return }
+
+        let flowID = AnalyticsService.shared.makeAdRewardFlowID()
+        drinkAdRewardFlowID = flowID
+        AnalyticsService.shared.logAdOfferViewed(
+            adRewardFlowID: flowID,
+            adPlacement: .consumable,
+            rewardType: drinkType == .coffee ? .coffee : .energyDrink,
+            rewardAmount: 1
+        )
+    }
+
     func handleWatchAdInMainView() async {
         showDrinkAdPopup = false
 
-        guard let drinkType = selectedDrinkType else { return }
+        guard let drinkType = selectedDrinkType, let flowID = drinkAdRewardFlowID else { return }
+        let rewardType: AdRewardType = drinkType == .coffee ? .coffee : .energyDrink
+
+        AnalyticsService.shared.logAdWatchClicked(
+            adRewardFlowID: flowID,
+            adPlacement: .consumable,
+            rewardType: rewardType,
+            rewardAmount: 1
+        )
 
         // 광고 시청
-        let success = await AdService.shared.showAdWithResult(.interstitial)
+        let result = await AdService.shared.showAdWithResult(.interstitial)
+        drinkAdRewardFlowID = nil
 
-        if success {
+        if result.success {
+            AnalyticsService.shared.logAdWatchCompleted(
+                adRewardFlowID: flowID,
+                adPlacement: .consumable,
+                rewardType: rewardType,
+                rewardAmount: 1,
+                adWatchDurationSec: result.watchDurationSec
+            )
             // 보상 지급
             user.inventory.gain(consumable: drinkType)
             rewardToastMessage = "카페인 충전 완료!"
             showRewardToast = true
             selectedDrinkType = nil
             workGameSession.resumeGame?()
+            AnalyticsService.shared.logAdRewardClaimed(
+                adRewardFlowID: flowID,
+                adPlacement: .consumable,
+                rewardType: rewardType,
+                rewardAmount: 1
+            )
         } else {
             // 광고 실패 시 초기화
             selectedDrinkType = nil
@@ -523,24 +595,90 @@ private extension MainView {
 
     func handleSkipAdInMainView() {
         showDrinkAdPopup = false
+        if let flowID = drinkAdRewardFlowID, let drinkType = selectedDrinkType {
+            AnalyticsService.shared.logAdOfferDismissed(
+                adRewardFlowID: flowID,
+                adPlacement: .consumable,
+                rewardType: drinkType == .coffee ? .coffee : .energyDrink,
+                rewardAmount: 1,
+                dismissReason: .close
+            )
+            drinkAdRewardFlowID = nil
+        }
         selectedDrinkType = nil
         workGameSession.resumeGame?()
     }
 
+    func trackExitBonusAdOfferIfNeeded() {
+        guard exitBonusAdRewardFlowID == nil else { return }
+
+        let flowID = AnalyticsService.shared.makeAdRewardFlowID()
+        exitBonusAdRewardFlowID = flowID
+        AnalyticsService.shared.logAdOfferViewed(
+            adRewardFlowID: flowID,
+            adPlacement: .workExit,
+            rewardType: .gold,
+            rewardAmount: max(0, workGameSession.actionGoldDelta)
+        )
+    }
+
     func handleExitBonusAd() async {
         workGameSession.showsExitBonusPopup = false
-        let success = await AdService.shared.showAdWithResult(.interstitial)
-        if success {
+        guard let flowID = exitBonusAdRewardFlowID else {
+            exitWorkGame()
+            return
+        }
+        let bonusGold = max(0, workGameSession.actionGoldDelta)
+
+        AnalyticsService.shared.logAdWatchClicked(
+            adRewardFlowID: flowID,
+            adPlacement: .workExit,
+            rewardType: .gold,
+            rewardAmount: bonusGold
+        )
+
+        let result = await AdService.shared.showAdWithResult(.interstitial)
+        exitBonusAdRewardFlowID = nil
+
+        if result.success {
+            AnalyticsService.shared.logAdWatchCompleted(
+                adRewardFlowID: flowID,
+                adPlacement: .workExit,
+                rewardType: .gold,
+                rewardAmount: bonusGold,
+                adWatchDurationSec: result.watchDurationSec
+            )
             applyExitBonus()
+            AnalyticsService.shared.logAdRewardClaimed(
+                adRewardFlowID: flowID,
+                adPlacement: .workExit,
+                rewardType: .gold,
+                rewardAmount: bonusGold
+            )
         }
         exitWorkGame()
     }
 
     func handleExitWithoutBonus() {
+        if let flowID = exitBonusAdRewardFlowID {
+            AnalyticsService.shared.logAdOfferDismissed(
+                adRewardFlowID: flowID,
+                adPlacement: .workExit,
+                rewardType: .gold,
+                rewardAmount: max(0, workGameSession.actionGoldDelta),
+                dismissReason: .close
+            )
+            exitBonusAdRewardFlowID = nil
+        }
         if let pendingTab = workGameSession.closeExitBonusPopupAndReturnPendingTab() {
             selectedTab = pendingTab
         }
         exitWorkGame()
+    }
+
+    func handleClaimUpdateReward() {
+        showUpdateRewardPopup = false
+        AppPreferences.shared.hasClaimedGameResetReward = true
     }
 
     func applyExitBonus() {
@@ -550,8 +688,8 @@ private extension MainView {
             user.record.record(.earnMoney(bonusGold))
         }
         rewardToastMessage = bonusGold > 0 ?
-                             "업무에서 얻은 보상 2배 획득!" :
-                             "업무 보너스를 받을 재화가 없습니다."
+        "업무에서 얻은 보상 2배 획득!" :
+        "업무 보너스를 받을 재화가 없습니다."
         showRewardToast = true
     }
 
@@ -582,6 +720,7 @@ private extension MainView {
                     text: "잠자는 시간 동안 '\(user.nickname)'가 일을 했습니다.\n일한 보상을 받을까요?"
                 )
             }
+            .onAppear { trackOfflineRewardAdOfferIfNeeded() }
         }
     }
 
@@ -606,15 +745,51 @@ private extension MainView {
         }
     }
 
+    func trackOfflineRewardAdOfferIfNeeded() {
+        guard offlineRewardAdFlowID == nil else { return }
+
+        let flowID = AnalyticsService.shared.makeAdRewardFlowID()
+        offlineRewardAdFlowID = flowID
+        AnalyticsService.shared.logAdOfferViewed(
+            adRewardFlowID: flowID,
+            adPlacement: .offlineReward,
+            rewardType: .gold,
+            rewardAmount: offlineRewardGold
+        )
+    }
+
     func handleOfflineRewardWatchAd() async {
         showOfflineRewardPopup = false
+        guard let flowID = offlineRewardAdFlowID else { return }
+        let rewardGold = offlineRewardGold
 
-        let success = await AdService.shared.showAdWithResult(.interstitial)
+        AnalyticsService.shared.logAdWatchClicked(
+            adRewardFlowID: flowID,
+            adPlacement: .offlineReward,
+            rewardType: .gold,
+            rewardAmount: rewardGold
+        )
 
-        if success {
+        let result = await AdService.shared.showAdWithResult(.interstitial)
+        offlineRewardAdFlowID = nil
+
+        if result.success {
+            AnalyticsService.shared.logAdWatchCompleted(
+                adRewardFlowID: flowID,
+                adPlacement: .offlineReward,
+                rewardType: .gold,
+                rewardAmount: rewardGold,
+                adWatchDurationSec: result.watchDurationSec
+            )
             user.wallet.addGold(offlineRewardGold)
             offlineRewardToastMessage = "잠자는 시간에 일한 보상 획득!"
             showOfflineRewardToast = true
+            AnalyticsService.shared.logAdRewardClaimed(
+                adRewardFlowID: flowID,
+                adPlacement: .offlineReward,
+                rewardType: .gold,
+                rewardAmount: rewardGold
+            )
         }
         offlineRewardGold = 0
         offlineRewardHours = 0.0
@@ -622,13 +797,22 @@ private extension MainView {
 
     func handleOfflineRewardSkip() {
         showOfflineRewardPopup = false
+        if let flowID = offlineRewardAdFlowID {
+            AnalyticsService.shared.logAdOfferDismissed(
+                adRewardFlowID: flowID,
+                adPlacement: .offlineReward,
+                rewardType: .gold,
+                rewardAmount: offlineRewardGold,
+                dismissReason: .close
+            )
+            offlineRewardAdFlowID = nil
+        }
         // 데이터 초기화
         offlineRewardGold = 0
         offlineRewardHours = 0.0
         // 다음 체크를 위해 플래그 리셋
         hasCheckedOfflineReward = false
     }
-
 }
 
 #Preview {
@@ -653,5 +837,9 @@ private extension MainView {
             .init(key: SkillKey(game: .stack, tier: .beginner), level: 1)
         ]
     )
-    MainView(user: user, hasSeenIntro: .constant(true))
+    MainView(
+        user: user,
+        hasSeenIntro: .constant(true),
+        scenarioRepository: DefaultScenarioRepository()
+    )
 }

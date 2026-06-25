@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import DUDesignSystem
 
 private enum Constant {
     enum UserDefaultsKey {
@@ -13,30 +14,17 @@ private enum Constant {
     }
 
     enum Text {
-        static let itemSegment = "아이템"
-        static let housingSegment = "부동산"
-        
         static let enhanceSuccessTitle = "강화 성공"
         static let enhanceFailureTitle = "강화 실패"
         static let enhanceSuccessMessage = "강화에 성공했습니다!"
         static let enhanceFailureMessage = "강화에 실패했습니다.\n비용은 소모되었습니다."
-        
+
         static let purchaseFailureTitle = "구매 실패"
         static let purchaseFailureMessage = "구매에 실패했습니다."
     }
-    
+
     enum ID {
         static let housingScrollStart = "housingScrollStart"
-    }
-
-    enum Spacing {
-        static let itemCard: CGFloat = 12
-    }
-
-    enum Padding {
-        static let horizontal: CGFloat = 16
-        static let housingTop: CGFloat = 15
-        static let housingBottom: CGFloat = 23
     }
 }
 
@@ -51,22 +39,22 @@ struct ShopView: View {
         let saved = UserDefaults.standard.stringArray(forKey: Constant.UserDefaultsKey.equipmentAdBonus) ?? []
         return Set(saved)
     }()
+    @State private var enhanceAdRewardFlowID: String?
 
-    @Binding var popupContent: PopupConfiguration?
+    @Binding var storePopup: StorePopup?
+    @Binding var noticePopup: NoticePopup?
 
-    init(user: User, popupContent: Binding<PopupConfiguration?>) {
+    init(user: User, storePopup: Binding<StorePopup?>, noticePopup: Binding<NoticePopup?>) {
         self.user = user
         self.shopSystem = ShopSystem(user: user)
-        self._popupContent = popupContent
+        self._storePopup = storePopup
+        self._noticePopup = noticePopup
     }
 
     var body: some View {
-        VStack {
-            DefaultSegmentControl(
-                selection: $selectedCategoryIndex,
-                segments: [Constant.Text.itemSegment, Constant.Text.housingSegment]
-            )
-            .padding(.horizontal, Constant.Padding.horizontal)
+        VStack(spacing: TokenSpacing.md) {
+            SegmentControl(leading: "아이템", trailing: "부동산", selectedIndex: $selectedCategoryIndex)
+                .padding(.horizontal, TokenGrid.paddingSide)
 
             if selectedCategoryIndex == 0 {
                 itemView
@@ -89,20 +77,21 @@ private extension ShopView {
 
     var itemView: some View {
         ScrollView {
-            LazyVStack(spacing: Constant.Spacing.itemCard) {
+            LazyVStack(spacing: TokenSpacing.md) {
                 ForEach(displayItems) { item in
                     ItemRow(
+                        imageName: item.imageName,
                         title: item.displayTitle,
                         description: item.description,
-                        imageName: item.imageName,
-                        cost: item.cost,
-                        state: ItemState(item: item)
+                        buttonType: item.cost.itemButtonType,
+                        buttonState: ItemState(item: item).itemButtonState
                     ) {
                         purchase(item: item)
                     }
                 }
             }
-            .padding(.bottom)
+            .padding(.horizontal, TokenGrid.paddingSide)
+            .padding(.bottom, TokenGrid.paddingBottom)
         }
         .scrollIndicators(.never)
     }
@@ -110,13 +99,15 @@ private extension ShopView {
     var housingView: some View {
         ScrollViewReader { proxy in
             ScrollView(.horizontal) {
-                LazyHStack(spacing: Constant.Spacing.itemCard) {
+                LazyHStack(spacing: TokenSpacing.mm) {
                     ForEach(displayItems) { item in
                         if let housing = item.item as? Housing {
                             HousingCard(
-                                housing: housing,
-                                state: ItemState(item: item),
-                                isSelected: selectedHousingTier == housing.tier,
+                                title: housing.displayTitle,
+                                price: ShopPurchaseHelper.createPriceText(for: item, shopSystem: shopSystem),
+                                rewardPerSecond: "\(housing.goldPerSecond.formatted) 골드",
+                                imageName: housing.imageName,
+                                state: ItemState(item: item).housingCardState(isSelected: selectedHousingTier == housing.tier),
                                 onTap: {
                                     selectedHousingTier = housing.tier
                                 },
@@ -129,11 +120,11 @@ private extension ShopView {
                         }
                     }
                 }
-                .padding(.horizontal, Constant.Padding.horizontal)
-                .padding(.top, Constant.Padding.housingTop)
-                .padding(.bottom, Constant.Padding.housingBottom)
+                .padding(.horizontal, TokenGrid.paddingSide)
                 .id(Constant.ID.housingScrollStart)
             }
+            .scrollClipDisabled()
+            .padding(.bottom, TokenGrid.paddingBottom)
             .scrollIndicators(.never)
         }
     }
@@ -143,16 +134,22 @@ private extension ShopView {
         if item.category == .equipment, let equipment = item.item as? Equipment {
             showEquipmentEnhancePopup(item: item, equipment: equipment, scrollProxy: scrollProxy)
         } else {
-            let (title, message, buttonTitle) = ShopPurchaseHelper.purchaseInfo(for: item)
-            let fullMessage = ShopPurchaseHelper.createPurchaseMessage(item: item, baseMessage: message, shopSystem: shopSystem)
-            ShopPurchaseHelper.showConfirm(
-                popupContent: $popupContent,
+            let (title, _, buttonTitle) = ShopPurchaseHelper.purchaseInfo(for: item)
+            let priceText = ShopPurchaseHelper.createPriceText(for: item, shopSystem: shopSystem)
+            storePopup = StorePopup(
+                type: .default(
+                    cancelText: "취소",
+                    confirmText: buttonTitle,
+                    cancelAction: { storePopup = nil },
+                    confirmAction: {
+                        storePopup = nil
+                        executePurchase(item: item, scrollProxy: scrollProxy)
+                    }
+                ),
                 title: title,
-                message: fullMessage,
-                confirmTitle: buttonTitle
-            ) {
-                executePurchase(item: item, scrollProxy: scrollProxy)
-            }
+                itemName: item.displayTitle,
+                price: priceText
+            )
         }
     }
 
@@ -164,25 +161,94 @@ private extension ShopView {
         let displayRate = hasBonus ? min(baseRate + 10, 100) : baseRate
         let priceText = ShopPurchaseHelper.createPriceText(for: item, shopSystem: shopSystem)
 
-        ShopPurchaseHelper.showEquipmentEnhanceConfirm(
-            popupContent: $popupContent,
-            priceText: priceText,
-            displayRate: displayRate,
-            hasAdBonus: hasBonus,
-            onWatchAd: {
-                Task {
-                    let watched = await AdService.shared.showAdWithResult(.interstitial)
-                    guard watched else { return }
-                    adBonusAppliedTypes.insert(typeKey)
-                    UserDefaults.standard.set(Array(adBonusAppliedTypes), forKey: Constant.UserDefaultsKey.equipmentAdBonus)
-                    showAdBonusToast = true
-                    showEquipmentEnhancePopup(item: item, equipment: equipment, scrollProxy: scrollProxy)
+        trackEnhanceAdOfferIfNeeded(hasBonus: hasBonus)
+
+        storePopup = StorePopup(
+            type: .ad(
+                successRate: displayRate,
+                adState: hasBonus ? .disabled : .default,
+                cancelText: "취소",
+                adText: "확률 UP",
+                confirmText: "강화",
+                cancelAction: {
+                    storePopup = nil
+                    trackEnhanceAdDismissIfNeeded(hasBonus: hasBonus)
+                },
+                adAction: {
+                    storePopup = nil
+                    Task {
+                        await handleEnhanceAdWatch(item: item, equipment: equipment, scrollProxy: scrollProxy, typeKey: typeKey)
+                    }
+                },
+                confirmAction: {
+                    storePopup = nil
+                    executePurchase(item: item, bonusRate: hasBonus ? 0.1 : 0.0, scrollProxy: scrollProxy)
                 }
-            },
-            onConfirm: {
-                executePurchase(item: item, bonusRate: hasBonus ? 0.1 : 0.0, scrollProxy: scrollProxy)
-            }
+            ),
+            title: "장비 강화",
+            itemName: item.displayTitle,
+            price: priceText,
+            rateHighlighted: hasBonus
         )
+    }
+
+    func trackEnhanceAdOfferIfNeeded(hasBonus: Bool) {
+        guard !hasBonus, enhanceAdRewardFlowID == nil else { return }
+
+        let flowID = AnalyticsService.shared.makeAdRewardFlowID()
+        enhanceAdRewardFlowID = flowID
+        AnalyticsService.shared.logAdOfferViewed(
+            adRewardFlowID: flowID,
+            adPlacement: .equipmentEnhance,
+            rewardType: .enhanceRateBoost,
+            rewardAmount: 0
+        )
+    }
+
+    func trackEnhanceAdDismissIfNeeded(hasBonus: Bool) {
+        guard !hasBonus, let flowID = enhanceAdRewardFlowID else { return }
+
+        AnalyticsService.shared.logAdOfferDismissed(
+            adRewardFlowID: flowID,
+            adPlacement: .equipmentEnhance,
+            rewardType: .enhanceRateBoost,
+            rewardAmount: 0,
+            dismissReason: .close
+        )
+        enhanceAdRewardFlowID = nil
+    }
+
+    func handleEnhanceAdWatch(item: DisplayItem, equipment: Equipment, scrollProxy: ScrollViewProxy?, typeKey: String) async {
+        guard let flowID = enhanceAdRewardFlowID else { return }
+
+        AnalyticsService.shared.logAdWatchClicked(
+            adRewardFlowID: flowID,
+            adPlacement: .equipmentEnhance,
+            rewardType: .enhanceRateBoost,
+            rewardAmount: 0
+        )
+
+        let result = await AdService.shared.showAdWithResult(.interstitial)
+        enhanceAdRewardFlowID = nil
+        guard result.success else { return }
+
+        AnalyticsService.shared.logAdWatchCompleted(
+            adRewardFlowID: flowID,
+            adPlacement: .equipmentEnhance,
+            rewardType: .enhanceRateBoost,
+            rewardAmount: 0,
+            adWatchDurationSec: result.watchDurationSec
+        )
+        adBonusAppliedTypes.insert(typeKey)
+        UserDefaults.standard.set(Array(adBonusAppliedTypes), forKey: Constant.UserDefaultsKey.equipmentAdBonus)
+        showAdBonusToast = true
+        AnalyticsService.shared.logAdRewardClaimed(
+            adRewardFlowID: flowID,
+            adPlacement: .equipmentEnhance,
+            rewardType: .enhanceRateBoost,
+            rewardAmount: 0
+        )
+        showEquipmentEnhancePopup(item: item, equipment: equipment, scrollProxy: scrollProxy)
     }
 
     /// 실제 구매 실행
@@ -214,14 +280,26 @@ private extension ShopView {
                 }
                 let title = isSuccess ? Constant.Text.enhanceSuccessTitle : Constant.Text.enhanceFailureTitle
                 let message = isSuccess ? Constant.Text.enhanceSuccessMessage : Constant.Text.enhanceFailureMessage
-                ShopPurchaseHelper.showAlert(popupContent: $popupContent, title: title, message: message)
+                noticePopup = NoticePopup(
+                    type: .default(buttonText: "확인", action: { noticePopup = nil }),
+                    title: title,
+                    text: message
+                )
             }
         } catch let error as PurchasingError {
             HapticService.shared.trigger(.error)
-            ShopPurchaseHelper.showAlert(popupContent: $popupContent, title: Constant.Text.purchaseFailureTitle, message: error.message)
+            noticePopup = NoticePopup(
+                type: .default(buttonText: "확인", action: { noticePopup = nil }),
+                title: Constant.Text.purchaseFailureTitle,
+                text: error.message
+            )
         } catch {
             HapticService.shared.trigger(.error)
-            ShopPurchaseHelper.showAlert(popupContent: $popupContent, title: Constant.Text.purchaseFailureTitle, message: Constant.Text.purchaseFailureMessage)
+            noticePopup = NoticePopup(
+                type: .default(buttonText: "확인", action: { noticePopup = nil }),
+                title: Constant.Text.purchaseFailureTitle,
+                text: Constant.Text.purchaseFailureMessage
+            )
         }
     }
 }
@@ -236,7 +314,5 @@ private extension ShopView {
             .init(key: SkillKey(game: .tap, tier: .beginner), level: 1)
         ]
     )
-    Spacer()
-        .frame(height: 500)
-    ShopView(user: user, popupContent: .constant(nil))
+    ShopView(user: user, storePopup: .constant(nil), noticePopup: .constant(nil))
 }

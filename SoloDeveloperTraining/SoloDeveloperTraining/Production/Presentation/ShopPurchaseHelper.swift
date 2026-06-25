@@ -6,140 +6,8 @@
 //
 
 import Foundation
-import SwiftUI
-
-private enum Constant {
-    enum Spacing {
-        static let popupContent: CGFloat = 11
-        static let popupButton: CGFloat = 15
-    }
-
-    enum Padding {
-        static let popupTop: CGFloat = 11
-        static let popupHorizontal: CGFloat = 25
-    }
-}
 
 enum ShopPurchaseHelper {
-    /// 확인 팝업 표시 (취소/확인 버튼)
-    static func showConfirm(
-        popupContent: Binding<PopupConfiguration?>,
-        title: String,
-        message: String,
-        confirmTitle: String,
-        onConfirm: @escaping () -> Void
-    ) {
-        var didPurchasingButtonTapped = false
-
-        popupContent.wrappedValue = PopupConfiguration(
-            title: title,
-            maxHeight: nil
-        ) {
-            VStack(spacing: Constant.Spacing.popupContent) {
-                Text(message)
-                    .textStyle(.body)
-                    .foregroundColor(.black)
-                    .multilineTextAlignment(.center)
-
-                HStack(spacing: Constant.Spacing.popupButton) {
-                    MediumButton(title: "취소", isFilled: true, isCancelButton: true) {
-                        popupContent.wrappedValue = nil
-                    }
-                    MediumButton(title: confirmTitle, isFilled: true) {
-                        guard !didPurchasingButtonTapped else { return }
-                        didPurchasingButtonTapped = true
-                        onConfirm()
-                        popupContent.wrappedValue = nil
-                    }
-                }
-            }
-            .padding(.top, Constant.Padding.popupTop)
-        }
-    }
-
-    /// 알림 팝업 표시 (확인 버튼만)
-    static func showAlert(
-        popupContent: Binding<PopupConfiguration?>,
-        title: String,
-        message: String
-    ) {
-        popupContent.wrappedValue = PopupConfiguration(
-            title: title,
-            maxHeight: nil
-        ) {
-            VStack(spacing: Constant.Spacing.popupContent) {
-                Text(message)
-                    .textStyle(.body)
-                    .foregroundColor(.black)
-                    .multilineTextAlignment(.center)
-
-                MediumButton(title: "확인", isFilled: true) {
-                    popupContent.wrappedValue = nil
-                }
-            }
-            .padding(.top, Constant.Padding.popupTop)
-        }
-    }
-
-    /// 장비 강화 확인 팝업 표시 (광고 보너스 적용 여부에 따라 버튼 구성 변경)
-    static func showEquipmentEnhanceConfirm(
-        popupContent: Binding<PopupConfiguration?>,
-        priceText: String,
-        displayRate: Int,
-        hasAdBonus: Bool,
-        onWatchAd: @escaping () -> Void,
-        onConfirm: @escaping () -> Void
-    ) {
-        var didEnhanceButtonTapped = false
-
-        var attributed = AttributedString("\(priceText)를 사용하여\n강화하시겠습니까?\n(성공 확률: \(displayRate)%)")
-        if hasAdBonus, let range = attributed.range(of: "(성공 확률: \(displayRate)%)") {
-            attributed[range].foregroundColor = Color(red: 170 / 255.0, green: 0, blue: 0)
-        }
-
-        popupContent.wrappedValue = PopupConfiguration(
-            title: "장비 강화",
-            maxHeight: nil
-        ) {
-            VStack(spacing: Constant.Spacing.popupContent) {
-                Text(attributed)
-                    .textStyle(.body)
-                    .multilineTextAlignment(.center)
-
-                if hasAdBonus {
-                    HStack(spacing: Constant.Spacing.popupButton) {
-                        MediumButton(title: "취소", isFilled: true, isCancelButton: true) {
-                            popupContent.wrappedValue = nil
-                        }
-                        MediumButton(title: "강화", isFilled: true) {
-                            guard !didEnhanceButtonTapped else { return }
-                            didEnhanceButtonTapped = true
-                            onConfirm()
-                            popupContent.wrappedValue = nil
-                        }
-                    }
-                } else {
-                    HStack(spacing: Constant.Spacing.popupButton) {
-                        MediumButton(title: "취소", isFilled: true, isCancelButton: true) {
-                            popupContent.wrappedValue = nil
-                        }
-                        MediumButton(title: "확률 높이기", isFilled: true) {
-                            popupContent.wrappedValue = nil
-                            onWatchAd()
-                        }
-                        MediumButton(title: "강화", isFilled: true) {
-                            guard !didEnhanceButtonTapped else { return }
-                            didEnhanceButtonTapped = true
-                            onConfirm()
-                            popupContent.wrappedValue = nil
-                        }
-                    }
-                }
-            }
-            .padding(.top, Constant.Padding.popupTop)
-        }
-    }
-
     /// 구매 정보 생성
     static func purchaseInfo(for item: DisplayItem) -> (title: String, message: String, buttonTitle: String) {
         switch item.category {
@@ -152,13 +20,6 @@ enum ShopPurchaseHelper {
         case .consumable:
             return ("아이템 구매", "구매하시겠습니까?", "구매")
         }
-    }
-
-    /// 구매 메시지 생성
-    static func createPurchaseMessage(item: DisplayItem, baseMessage: String, shopSystem: ShopSystem) -> String {
-        let priceText = createPriceText(for: item, shopSystem: shopSystem)
-        let prefix = "를 사용하여"
-        return "\(priceText)\(prefix)\n\(baseMessage)"
     }
 
     /// 가격 텍스트 생성

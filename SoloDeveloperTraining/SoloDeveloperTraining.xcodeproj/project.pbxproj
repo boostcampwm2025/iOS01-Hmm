@@ -110,6 +110,7 @@
 				Production/Presentation/MissionView.swift,
 				Production/Presentation/ShopView.swift,
 				Production/Presentation/SkillView.swift,
+				Production/Presentation/UpdateRewardPopupView.swift,
 				Production/Presentation/Work/Game/DodgeGameView.swift,
 				Production/Presentation/Work/Game/EffectLabelData.swift,
 				Production/Presentation/Work/Game/LanguageGameView.swift,

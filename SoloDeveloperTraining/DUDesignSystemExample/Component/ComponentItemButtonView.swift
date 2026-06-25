@@ -9,11 +9,19 @@ import DUDesignSystem
 struct ComponentItemButtonView: View {
 
     @State private var text: String = "20,000"
+    @State private var secondText: String = "구매"
     @State private var selectedState: ItemButton.ItemButtonState = .default
+    @State private var isTwoLine: Bool = false
     @State private var isPressed: Bool = false
 
     private var stateLabel: String {
         "isPressed: \(isPressed)"
+    }
+
+    private var buttonType: ItemButton.ItemButtonType {
+        isTwoLine
+            ? .twoLine(firstText: text, firstIcon: .coinBag, secondText: secondText, secondIcon: .coinBag)
+            : .singleLine(text: text, icon: .coinBag)
     }
 
     var body: some View {
@@ -25,7 +33,7 @@ struct ComponentItemButtonView: View {
                         .duFont(.caption)
                         .foregroundStyle(Color.gray400)
 
-                    ItemButton(text: text, state: selectedState) { }
+                    ItemButton(type: buttonType, state: selectedState) { }
                         .simultaneousGesture(
                             DragGesture(minimumDistance: 0)
                                 .onChanged { _ in isPressed = true }
@@ -38,15 +46,31 @@ struct ComponentItemButtonView: View {
 
             // MARK: - Controls
             List {
+                Section("타입") {
+                    Toggle("두 줄", isOn: $isTwoLine)
+                }
+
                 Section("텍스트") {
                     HStack {
-                        TextField("텍스트 입력", text: $text)
+                        TextField(isTwoLine ? "첫번째 줄" : "텍스트 입력", text: $text)
                         if !text.isEmpty {
                             Button { text = "" } label: {
                                 Image(systemName: "xmark.circle.fill")
                                     .foregroundStyle(Color.gray400)
                             }
                             .buttonStyle(.plain)
+                        }
+                    }
+                    if isTwoLine {
+                        HStack {
+                            TextField("두번째 줄", text: $secondText)
+                            if !secondText.isEmpty {
+                                Button { secondText = "" } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundStyle(Color.gray400)
+                                }
+                                .buttonStyle(.plain)
+                            }
                         }
                     }
                 }

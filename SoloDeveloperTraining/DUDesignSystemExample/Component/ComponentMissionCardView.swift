@@ -30,7 +30,8 @@ struct ComponentMissionCardView: View {
             PreviewArea {
                 MissionCard(
                     title: "탭따구리",
-                    rewardText: "20",
+                    goldRewardText: "10,000",
+                    diamondRewardText: "20",
                     trophy: selectedTrophy,
                     condition: "탭 10,000회 달성",
                     state: cardState,

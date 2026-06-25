@@ -101,13 +101,26 @@ final class DefaultScenarioRepository: ScenarioRepository {
             scenarioType: .normal,
             pages: [
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "졸업 후 +48d\n오늘 한 일: 이불 정리 (생략), 배달 앱 열기 (성공), 링크드인 프로필 사진 변경 (3시간 소요).",
+                    imageName: "unemployed1",
+                    text: "졸업 한지 벌써 세 달.\n오늘은 생산적인 하루를 보내기로 했다.",
                     pageType: .story
                 ),
+
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "그리고... 알고리즘 추천 영상 6시간째 시청중\n\n\"비전공자 6개월만에 개발자 되는 법\"",
+                    imageName: "unemployed2",
+                    text: "오늘 내가 한일 정리해볼까?\n(사실은 유튜브만 3시간째 보는중)",
+                    pageType: .story
+                ),
+
+                ScenarioPage(
+                    imageName: "unemployed3",
+                    text: "비전공자 개발자되기? 이게 뭐지...",
+                    pageType: .story
+                ),
+
+                ScenarioPage(
+                    imageName: "unemployed4",
+                    text: "개발자라... 나도 도전해볼까?",
                     pageType: .story
                 )
             ]
