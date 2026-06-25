@@ -53,7 +53,7 @@ struct SoloDeveloperTrainingApp: App {
     @State private var hasPolicyError = false
     @Environment(\.scenePhase) private var scenePhase
 
-    private let userRepository: UserRepository & UserMigrationSupportable = FileManagerUserRepository()
+    private let userRepository: UserRepository = FileManagerUserRepository()
     private let scenarioRepository: ScenarioRepository = DefaultScenarioRepository()
 
     var body: some Scene {
@@ -149,15 +149,19 @@ private extension SoloDeveloperTrainingApp {
     func loadUser() {
         Task {
             do {
-                if let loadedUser = try await userRepository.load() {
+                switch try await userRepository.load() {
+                case .current(let user):
                     await MainActor.run {
-                        self.user = loadedUser
-                        checkFirstOpen(user: loadedUser)
+                        self.user = user
+                        checkFirstOpen(user: user)
                     }
+                case .legacy(let career):
+                    await MainActor.run {
+                        legacyUserType = .originUser(career ?? .unemployed)
+                    }
+                case .empty:
+                    break
                 }
-            } catch is DecodingError {
-                let legacyCareer = try? userRepository.loadLegacyCareer()
-                legacyUserType = .originUser(legacyCareer ?? .unemployed)
             } catch {
                 await MainActor.run {
                     self.errorMessage = "사용자 데이터를 불러오는데 실패했습니다.\n\(error.localizedDescription)"
