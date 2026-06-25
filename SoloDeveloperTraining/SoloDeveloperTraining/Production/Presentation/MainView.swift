@@ -311,14 +311,8 @@ private extension MainView {
     @ViewBuilder
     var updateRewardOverlayView: some View {
         if showUpdateRewardPopup {
-            modalOverlay(onBackgroundTap: {
-                showUpdateRewardPopup = false
-                AppPreferences.shared.hasClaimedGameResetReward = true
-            }, content: {
-                UpdateRewardPopupView(onClose: {
-                    showUpdateRewardPopup = false
-                    AppPreferences.shared.hasClaimedGameResetReward = true
-                })
+            modalOverlay(onBackgroundTap: handleClaimUpdateReward, content: {
+                UpdateRewardPopupView(onClose: handleClaimUpdateReward)
             })
         }
     }
@@ -570,6 +564,11 @@ private extension MainView {
             selectedTab = pendingTab
         }
         exitWorkGame()
+    }
+
+    func handleClaimUpdateReward() {
+        showUpdateRewardPopup = false
+        AppPreferences.shared.hasClaimedGameResetReward = true
     }
 
     func applyExitBonus() {
