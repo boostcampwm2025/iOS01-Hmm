@@ -117,7 +117,6 @@ struct MainView: View {
         .task {
             await updateSkillAdRewardTimer()
         }
-        .onDisappear { SoundService.shared.stopBGM() }
         .onChange(of: scenePhase, handleScenePhaseChange)
         .onChange(of: user.record.totalEarnedMoney) {
             careerSystem?.updateCareer()
@@ -312,10 +311,11 @@ private extension MainView {
                 manager.completeScenario()
 
                 showScenarioView = false
-                SoundService.shared.playBGM(.main)
 
                 if isRebirth {
                     hasSeenIntro = false
+                } else {
+                    SoundService.shared.playBGM(.main)
                 }
             }
             .ignoresSafeArea()

@@ -316,6 +316,7 @@ private extension ScenarioStoryView {
         withAnimation(Animation.standard) {
             finalEnding = ending
         }
+        SoundService.shared.playBGM(.ending)
     }
 
     func handleRebirthScenario() {
@@ -338,6 +339,7 @@ private extension ScenarioStoryView {
             finalEnding = nil
 
             isRebirthConfirmPopupPresented = false
+            SoundService.shared.playBGM(.rebirth)
         }
     }
 }
