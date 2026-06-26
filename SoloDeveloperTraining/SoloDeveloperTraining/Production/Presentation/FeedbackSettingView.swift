@@ -4,105 +4,174 @@
 //
 
 import SwiftUI
-
-private enum Constant {
-    static let title: String = "설정"
-    static let rowSpacing: CGFloat = 30
-    static let horizontalPadding: CGFloat = 20
-    static let volumeRange: ClosedRange<Double> = 0 ... 100
-    static let volumeStep: Double = 1
-}
+import DUDesignSystem
 
 struct FeedbackSettingView: View {
     let onClose: (() -> Void)?
 
+    @Bindable private var sound = SoundService.shared
+    @Bindable private var haptic = HapticService.shared
+
     var body: some View {
-        Popup(title: "") {
-            Text("설정")
-                .textStyle(.largeTitle)
-            VStack(alignment: .leading, spacing: Constant.rowSpacing) {
-                soundSettingSection(
-                    title: "배경음",
-                    isOn: SoundService.shared.isBGMEnabled,
-                    setOn: { SoundService.shared.isBGMEnabled = $0 },
-                    volume: bgmVolumeBinding
-                )
-                soundSettingSection(
-                    title: "효과음",
-                    isOn: SoundService.shared.isSFXEnabled,
-                    setOn: { SoundService.shared.isSFXEnabled = $0 },
-                    volume: sfxVolumeBinding
-                )
-                settingRow(
-                    title: "햅틱",
-                    isOn: HapticService.shared.isEnabled,
-                    setOn: { HapticService.shared.isEnabled = $0 }
-                )
-                closeButton
+        VStack(spacing: TokenSpacing.xxl) {
+            VStack(spacing: TokenSpacing.xl) {
+                ItemLabel(text: "설정", font: .title2, color: .black300)
+                    .frame(maxWidth: .infinity, alignment: .center)
+
+                VStack(spacing: TokenSpacing.xl) {
+                    soundSettingRow(
+                        title: "배경음",
+                        isOn: sound.isBGMEnabled,
+                        setOn: { sound.isBGMEnabled = $0 },
+                        volume: bgmVolumeBinding
+                    )
+                    soundSettingRow(
+                        title: "효과음",
+                        isOn: sound.isSFXEnabled,
+                        setOn: { sound.isSFXEnabled = $0 },
+                        volume: sfxVolumeBinding
+                    )
+                    settingRow(
+                        title: "햅틱",
+                        isOn: haptic.isEnabled,
+                        setOn: { haptic.isEnabled = $0 }
+                    )
+                }
+
+                Divider()
+                    .frame(height: 1)
+                    .background(Color.black300GrayBar)
+
+                appInfoSection
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, Constant.horizontalPadding)
+
+            TextButton(text: "닫기", type: .primary, size: .medium, action: { onClose?() })
         }
+        .padding(TokenSpacing.lg)
+        .background(Color.white300)
+        .clipShape(RoundedRectangle(cornerRadius: TokenRadius.lg))
+        .overlay(RoundedRectangle(cornerRadius: TokenRadius.lg).stroke(Color.gray700, lineWidth: 2))
+        .padding(.horizontal, TokenGrid.marginPopUp)
     }
 }
 
 private extension FeedbackSettingView {
     var bgmVolumeBinding: Binding<Double> {
         Binding(
-            get: { Double(SoundService.shared.bgmVolume) },
-            set: { SoundService.shared.bgmVolume = min(max(Int($0), 0), 100) }
+            get: { Double(sound.bgmVolume) },
+            set: { sound.bgmVolume = min(max(Int($0), 0), 100) }
         )
     }
 
     var sfxVolumeBinding: Binding<Double> {
         Binding(
-            get: { Double(SoundService.shared.sfxVolume) },
-            set: { SoundService.shared.sfxVolume = min(max(Int($0), 0), 100) }
+            get: { Double(sound.sfxVolume) },
+            set: { sound.sfxVolume = min(max(Int($0), 0), 100) }
         )
     }
 
-    var closeButton: some View {
+    func settingRow(title: String, isOn: Bool, setOn: @escaping (Bool) -> Void) -> some View {
         HStack {
+            ItemLabel(text: title, font: .subheadline, color: .black300)
             Spacer()
-            MediumButton(title: "닫기", isFilled: true) {
-                onClose?()
-            }
-            Spacer()
+            Image(isOn ? "settingOn" : "settingOff")
+                .resizable()
+                .frame(width: 28, height: 28)
+                .onTapGesture {
+                    var transaction = Transaction()
+                    transaction.animation = nil
+                    withTransaction(transaction) { setOn(!isOn) }
+                }
         }
     }
 
-    func soundSettingSection(
+    func soundSettingRow(
         title: String,
         isOn: Bool,
         setOn: @escaping (Bool) -> Void,
         volume: Binding<Double>
     ) -> some View {
-        VStack(alignment: .leading, spacing: 15) {
+        VStack(spacing: TokenSpacing.sm) {
             settingRow(title: title, isOn: isOn, setOn: setOn)
-            SettingSlider(value: volume, range: Constant.volumeRange, step: Constant.volumeStep, isEnabled: isOn)
+            SettingSliderView(value: volume, isEnabled: isOn)
         }
     }
 
-    func settingRow(title: String, isOn: Bool, setOn: @escaping (Bool) -> Void) -> some View {
-        HStack {
-            Text(title)
-                .textStyle(.title2)
-            Spacer()
-            MediumButton(title: isOn ? "ON" : "OFF", isFilled: isOn) {
-                var transaction = Transaction()
-                transaction.animation = nil
-                withTransaction(transaction) {
-                    setOn(!isOn)
+    var appInfoSection: some View {
+        VStack(alignment: .leading, spacing: TokenSpacing.md) {
+            ItemLabel(text: "앱 정보", font: .caption, color: .black300)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            HStack(spacing: TokenSpacing.sm) {
+                ItemLabel(text: "버전", font: .caption, color: .black300)
+                ItemLabel(
+                    text: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-",
+                    font: .caption,
+                    color: .black300
+                )
+            }
+
+            HStack(alignment: .top, spacing: TokenSpacing.sm) {
+                ItemLabel(text: "라이선스", font: .caption, color: .black300)
+                VStack(alignment: .leading, spacing: TokenSpacing.none) {
+                    ItemLabel(
+                        text: "개발자키우기 앱에는 오픈소스가 사용되었습니다.",
+                        font: .label,
+                        color: .black300,
+                        textAlignment: .leading
+                    )
                 }
             }
-            .transaction { $0.animation = nil }
         }
     }
 }
 
-#Preview {
-    FeedbackSettingView {
+private struct SettingSliderView: View {
+    @Binding var value: Double
+    var isEnabled: Bool
 
+    private var progress: Double {
+        max(0, min(1, value / 100))
     }
-        .padding(25)
+
+    var body: some View {
+        GeometryReader { geo in
+            let width = geo.size.width
+            let thumbX = width * progress
+
+            ZStack(alignment: .leading) {
+                DUDesignSystem.ProgressBar(progress: progress)
+
+                Rectangle()
+                    .fill(isEnabled ? Color.orange500 : Color.gray200)
+                    .frame(width: 20, height: 20)
+                    .clipShape(RoundedRectangle(cornerRadius: TokenRadius.ss))
+                    .offset(x: max(0, min(thumbX - 8, width - 16)))
+            }
+            .frame(height: 16)
+            .contentShape(Rectangle())
+            .allowsHitTesting(isEnabled)
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { gesture in
+                        guard isEnabled else { return }
+                        let ratio = max(0, min(1, gesture.location.x / width))
+                        value = (ratio * 100 / 1).rounded() * 1
+                    }
+            )
+            .onTapGesture { location in
+                guard isEnabled else { return }
+                let ratio = max(0, min(1, location.x / width))
+                value = (ratio * 100 / 1).rounded() * 1
+            }
+        }
+        .frame(height: 16)
+    }
+}
+
+#Preview {
+    ZStack {
+        Color.beige200.ignoresSafeArea()
+        FeedbackSettingView(onClose: {})
+    }
 }
