@@ -36,17 +36,6 @@ struct SkillView: View {
         let canUseToday = SkillAdRewardManager.canUseRewardToday(user: user, now: adRewardNow)
         let buttonState = adRewardButtonState(isActive: isActive, canUseToday: canUseToday)
 
-        if buttonState == .default, adRewardFlowID == nil {
-            let flowID = AnalyticsService.shared.makeAdRewardFlowID()
-            adRewardFlowID = flowID
-            AnalyticsService.shared.logAdOfferViewed(
-                adRewardFlowID: flowID,
-                adPlacement: .skillReward,
-                rewardType: .skillBoost,
-                rewardAmount: 0
-            )
-        }
-
         return ItemRow(
             imageName: "adBoost",
             title: "업무 효율 대박",
@@ -58,6 +47,9 @@ struct SkillView: View {
                 Task { await handleWatchAd() }
             }
         )
+        .onAppear {
+            trackAdOfferIfNeeded(buttonState: buttonState)
+        }
     }
 
     var body: some View {
@@ -163,6 +155,19 @@ private extension SkillView {
                 text: "\(Int(Policy.Ad.SkillReward.rewardDuration / 60))분간 게임 재화를 \(Int(Policy.Ad.SkillReward.rewardMultiplier))배로 획득합니다."
             )
         }
+    }
+
+    func trackAdOfferIfNeeded(buttonState: ItemButton.ItemButtonState) {
+        guard buttonState == .default, adRewardFlowID == nil else { return }
+
+        let flowID = AnalyticsService.shared.makeAdRewardFlowID()
+        adRewardFlowID = flowID
+        AnalyticsService.shared.logAdOfferViewed(
+            adRewardFlowID: flowID,
+            adPlacement: .skillReward,
+            rewardType: .skillBoost,
+            rewardAmount: 0
+        )
     }
 }
 

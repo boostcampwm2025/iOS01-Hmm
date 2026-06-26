@@ -103,7 +103,6 @@ struct ScenarioStoryView: View {
                     ))
                 } else if let page = manager.currentPage {
                     eventButtonView(for: page)
-                        .onAppear { trackReselectOfferIfNeeded(for: page) }
                 }
             }
             .frame(maxHeight: .infinity, alignment: isEnding ? .top : .center)
@@ -247,6 +246,7 @@ private extension ScenarioStoryView {
                 SoundService.shared.trigger(.click)
                 handleNextTap()
             }))
+            .onAppear { trackReselectOfferIfNeeded(for: page) }
         }
     }
 }
