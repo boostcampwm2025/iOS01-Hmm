@@ -131,13 +131,23 @@ final class DefaultScenarioRepository: ScenarioRepository {
             scenarioType: .normal,
             pages: [
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "당근마켓에서 15만원짜리 중고 노트북을 샀다. 팬 소리가 비행기 이륙 수준이지만 괜찮다.",
+                    imageName: "laptopOwner1",
+                    text: "당근나라에서 15만원짜리 중고 노트북을 샀다.",
                     pageType: .story
                 ),
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "(노트북에 스티커를 잔뜩 붙인 후) 난 이제 개발자다.",
+                    imageName: "laptopOwner2",
+                    text: "노트북에서 비행기 이륙할 때 소리가 나긴 하지만",
+                    pageType: .story
+                ),
+                ScenarioPage(
+                    imageName: "laptopOwner3",
+                    text: "일단 노트북에 스티커를 붙여본다.",
+                    pageType: .story
+                ),
+                ScenarioPage(
+                    imageName: "laptopOwner4",
+                    text: "됐다! 난 이제 개발자다.",
                     pageType: .story
                 )
             ]
@@ -148,13 +158,23 @@ final class DefaultScenarioRepository: ScenarioRepository {
             scenarioType: .normal,
             pages: [
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "print(\"Hello World\")\n엔터를 눌렀다.\n화면에 글자가 찍혔다.\n\"Hello World\"",
+                    imageName: "aspiringDeveloper1",
+                    text: "print... hello world... 이게 진짜될까?",
                     pageType: .story
                 ),
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "이건 좀... 감동이잖아?",
+                    imageName: "aspiringDeveloper2",
+                    text: "일단 엔터~ 가보자고!! 으아아아앗!!",
+                    pageType: .story
+                ),
+                ScenarioPage(
+                    imageName: "aspiringDeveloper3",
+                    text: "화면에... 글자가 찍혔다.",
+                    pageType: .story
+                ),
+                ScenarioPage(
+                    imageName: "aspiringDeveloper4",
+                    text: "이건 좀... 감동이잖아? (글썽)",
                     pageType: .story
                 )
             ]
@@ -165,23 +185,23 @@ final class DefaultScenarioRepository: ScenarioRepository {
             scenarioType: .event,
             pages: [
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "\"저 사람 개발자 같다\"\n(카페에서 유튜브 보고 있음)\n나한테 하는 말인가?... 기분이 나쁜것 같기도, 좋은것 같기도...",
+                    imageName: "juniorDeveloper1",
+                    text: "나한텐 하는 말인가?...\n기분이 나쁜것 같기도, 좋은것 같기도...",
                     pageType: .story
                 ),
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "띠링. 메일이 왔다. \"축하드립니다\"\n그런데 두 개의 메일이 기다리고 있다.\n뭘 열어보지...?",
+                    imageName: "juniorDeveloper2",
+                    text: "메일이 왔다. \"축하드립니다\"\n그런데 두 개의 메일이 기다리고 있다. 뭘 열어보지...?",
                     pageType: .choice(Choice(optionA: "모 기업 최종 합격 메일", optionB: "발신자 불명의 고수익 의뢰"))
                 ),
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
+                    imageName: "juniorDeveloper3",
                     text: "드디어 나도 진짜 개발자구나",
                     pageType: .result(.optionA)
                 ),
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "(메일에 개발 의뢰 비용 100억)\n오... 이거 돈이 되는데?",
+                    imageName: "juniorDeveloper4",
+                    text: "오... 이거 돈이 되는데?",
                     pageType: .result(.optionB)
                 )
             ]
@@ -192,13 +212,28 @@ final class DefaultScenarioRepository: ScenarioRepository {
             scenarioType: .normal,
             pages: [
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "첫 출근!\n\"간단한 버그 하나만 고쳐주세요\"\n\n30분 후 : print 12개 추가\n1시간 후 : print 27개 추가\n2시간 후 : 문제 위치를 찾았다.",
+                    imageName: "normalDeveloper1",
+                    text: "오늘은 내 첫 출근일! 화이팅 해보자고~",
                     pageType: .story
                 ),
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "…\n\n문제는 모르겠지만\n위치는 안다",
+                    imageName: "normalDeveloper2",
+                    text: "첫 미션인가...? 간단한거면 본인이 하지 왜..",
+                    pageType: .story
+                ),
+                ScenarioPage(
+                    imageName: "normalDeveloper3",
+                    text: "흠... 간단한 문제긴 한데... 쉽지 않네.",
+                    pageType: .story
+                ),
+                ScenarioPage(
+                    imageName: "normalDeveloper4",
+                    text: "어디가 문제지...?! 어디야 !! 어디냐고 !!!",
+                    pageType: .story
+                ),
+                ScenarioPage(
+                    imageName: "normalDeveloper5",
+                    text: "문제는 몰라도 위치는 찾았다.\n헤헷! 역시 나야 ~",
                     pageType: .story
                 )
             ]
