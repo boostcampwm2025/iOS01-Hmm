@@ -74,7 +74,7 @@ private extension FeedbackSettingView {
         HStack {
             ItemLabel(text: title, font: .subheadline, color: .black300)
             Spacer()
-            Image(isOn ? "settingOn" : "settingOff")
+            Image.duImage(isOn ? "settingOn" : "settingOff")
                 .resizable()
                 .frame(width: 28, height: 28)
                 .onTapGesture {
