@@ -42,9 +42,11 @@ struct SoloDeveloperTrainingApp: App {
 #endif
     }
 
+    @State private var user: User?
+    @State private var legacyUserType: RewardUserType? = nil
+
     @State private var hasSeenIntro = false
     @State private var showNicknameSetup = false
-    @State private var user: User?
     @State private var showErrorPopup = false
     @State private var errorMessage: String = ""
     @State private var isPolicyLoading = true
@@ -78,11 +80,12 @@ private extension SoloDeveloperTrainingApp {
             if hasSeenIntro, let user {
                 MainView(
                     user: user,
+                    userType: legacyUserType ?? .newUser,
                     hasSeenIntro: $hasSeenIntro,
                     scenarioRepository: scenarioRepository
                 )
                 .transition(.opacity)
-            } else if hasSeenIntro, showNicknameSetup {
+            } else if hasSeenIntro, user == nil, showNicknameSetup {
                 NicknameSetupView { nickname in
                     let newUser = User(nickname: nickname)
                     user = newUser
@@ -146,11 +149,18 @@ private extension SoloDeveloperTrainingApp {
     func loadUser() {
         Task {
             do {
-                if let loadedUser = try await userRepository.load() {
+                switch try await userRepository.load() {
+                case .current(let user):
                     await MainActor.run {
-                        self.user = loadedUser
-                        checkFirstOpen(user: loadedUser)
+                        self.user = user
+                        checkFirstOpen(user: user)
                     }
+                case .legacy(let career):
+                    await MainActor.run {
+                        legacyUserType = .originUser(career ?? .unemployed)
+                    }
+                case .empty:
+                    break
                 }
             } catch {
                 await MainActor.run {

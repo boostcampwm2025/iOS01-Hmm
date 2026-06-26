@@ -54,8 +54,10 @@ final class Inventory {
         return targetItem.count
     }
 
-    func gain(consumable: ConsumableType) {
-        consumableItems.filter { $0.type == consumable }.first?.addItem()
+    func gain(consumable: ConsumableType, count: Int = 1) {
+        consumableItems
+            .first(where: { $0.type == consumable })?
+            .addItem(count: count)
     }
 
     /// 환생 시 인벤토리 초기화

@@ -71,16 +71,19 @@ struct MainView: View {
 
     // 업데이트 보상 관련
     @State private var showUpdateRewardPopup = true
+    private let rewardRepository = DefaultRewardRepository()
 
     let scenarioRepository: ScenarioRepository
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
+    private let userType: RewardUserType
     private let scene: CharacterScene
     private let animationSystem: CharacterAnimationSystem
 
     init(
         user: User,
+        userType: RewardUserType,
         hasSeenIntro: Binding<Bool>,
         scenarioRepository: ScenarioRepository
     ) {
@@ -89,6 +92,7 @@ struct MainView: View {
 
         self.autoGainSystem = AutoGainSystem(user: user)
         self.user = user
+        self.userType = userType
         self.scenarioRepository = scenarioRepository
 
         self.scene = CharacterScene(size: Constant.characterSceneSize, user: user)
@@ -326,9 +330,15 @@ private extension MainView {
     @ViewBuilder
     var updateRewardOverlayView: some View {
         if showUpdateRewardPopup {
-            modalOverlay(onBackgroundTap: handleClaimUpdateReward, content: {
-                UpdateRewardPopupView(onClose: handleClaimUpdateReward)
-            })
+            let updateRewardItems = rewardRepository.fetchAllRewards()
+            UpdateRewardPopupView(
+                userType: userType,
+                rewards: updateRewardItems,
+                onClose: {
+                    let rewards = rewardRepository.fetchAllRewards(for: userType)
+                    rewards?.forEach { handleClaimUpdateReward($0) }
+                }
+            )
         }
     }
 
@@ -699,7 +709,13 @@ private extension MainView {
         exitWorkGame()
     }
 
-    func handleClaimUpdateReward() {
+    func handleClaimUpdateReward(_ reward: Reward) {
+        switch reward {
+        case .diamond(let count):
+            user.wallet.addDiamond(count)
+        case .consumable(let type, count: let count):
+            user.inventory.gain(consumable: type, count: count)
+        }
         showUpdateRewardPopup = false
         AppPreferences.shared.hasClaimedGameResetReward = true
     }
@@ -864,6 +880,7 @@ private extension MainView {
     )
     MainView(
         user: user,
+        userType: .newUser,
         hasSeenIntro: .constant(true),
         scenarioRepository: DefaultScenarioRepository()
     )
