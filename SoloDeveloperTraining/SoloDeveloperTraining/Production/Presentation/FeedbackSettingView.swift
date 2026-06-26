@@ -140,10 +140,13 @@ private struct SettingSliderView: View {
             let thumbX = width * progress
 
             ZStack(alignment: .leading) {
-                DUDesignSystem.ProgressBar(progress: progress)
+                DUDesignSystem.ProgressBar(
+                    progress: progress,
+                    fillColor: isEnabled ? .orange300 : .gray200
+                )
 
                 Rectangle()
-                    .fill(isEnabled ? Color.orange500 : Color.gray200)
+                    .fill(isEnabled ? Color.orange500 : Color.gray400)
                     .frame(width: 20, height: 20)
                     .clipShape(RoundedRectangle(cornerRadius: TokenRadius.ss))
                     .offset(x: max(0, min(thumbX - 8, width - 16)))
