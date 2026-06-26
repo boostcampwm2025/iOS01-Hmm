@@ -6,33 +6,24 @@
 //
 
 import SwiftUI
+import DUDesignSystem
 
 private enum Constant {
     enum Animation {
         static let transitionDuration: Double = 0.5
         static let blinkingDuration: Double = 1.0
     }
-
-    enum Layout {
-        static let bottomPadding: CGFloat = 100
-    }
-
-    enum Opacity {
-        static let blinking: Double = 0.3
-        static let normal: Double = 1.0
-    }
-
-    enum Text {
-        static let touchPrompt = "화면을 터치해 주세요"
-        static let networkError = "네트워크 오류가 발생했습니다.\n화면을 터치하여 재시도해 주세요."
-    }
 }
 
 struct IntroView: View {
     @State private var isBlinking = true
+    @State private var scenarioManager: ScenarioManager?
+
     @Binding var hasSeenIntro: Bool
     @Binding var showNicknameSetup: Bool
+
     let user: User?
+    let scenarioRepository: ScenarioRepository
     var isPolicyReady: Bool
     var hasPolicyError: Bool
     var onRetry: () -> Void
@@ -52,13 +43,31 @@ struct IntroView: View {
                 return
             }
             guard isPolicyReady else { return }
+
             if user == nil {
-                showNicknameSetup = true
+                guard let scenario = scenarioRepository.fetchScenario(for: .unemployed) else { return }
+
+                let manager = ScenarioManager(record: Record())
+                manager.startScenario(scenario)
+                self.scenarioManager = manager
             } else {
                 withAnimation(.easeOut(duration: Constant.Animation.transitionDuration)) {
                     hasSeenIntro = true
                 }
             }
+        }
+        .fullScreenCover(item: $scenarioManager) { manager in
+            ScenarioStoryView(
+                user: nil,
+                manager: manager,
+                repository: scenarioRepository,
+                backgroundColor: .black300,
+                onComplete: {
+                    scenarioManager = nil
+                    hasSeenIntro = true
+                    showNicknameSetup = true
+                }
+            )
         }
         .ignoresSafeArea()
     }
@@ -78,12 +87,10 @@ private extension IntroView {
     var touchPromptView: some View {
         VStack {
             Spacer()
-            Text(Constant.Text.touchPrompt)
-                .textStyle(.title2)
-                .foregroundColor(.white)
-                .opacity(isBlinking ? Constant.Opacity.blinking : Constant.Opacity.normal)
+            ItemLabel(text: "화면을 터치해 주세요.", font: .title2, color: .white300)
+                .opacity(isBlinking ? TokenOpacity.opacity60 : TokenOpacity.opacity100)
                 .animation(.easeInOut(duration: Constant.Animation.blinkingDuration).repeatForever(autoreverses: true), value: isBlinking)
-                .padding(.bottom, Constant.Layout.bottomPadding)
+                .padding(.bottom, TokenGrid.marginBottomLarge)
                 .onAppear { isBlinking = false }
         }
     }
@@ -91,11 +98,8 @@ private extension IntroView {
     var errorView: some View {
         VStack {
             Spacer()
-            Text(Constant.Text.networkError)
-                .textStyle(.body)
-                .foregroundColor(.white.opacity(0.8))
-                .multilineTextAlignment(.center)
-                .padding(.bottom, Constant.Layout.bottomPadding)
+            ItemLabel(text: "네트워크 오류가 발생했습니다.\n화면을 터치하여 재시도해 주세요.", font: .title2, color: .white300)
+                .padding(.bottom, TokenGrid.marginBottomLarge)
         }
     }
 }
@@ -105,6 +109,7 @@ private extension IntroView {
         hasSeenIntro: .constant(false),
         showNicknameSetup: .constant(false),
         user: nil,
+        scenarioRepository: DefaultScenarioRepository(),
         isPolicyReady: true,
         hasPolicyError: false,
         onRetry: {}

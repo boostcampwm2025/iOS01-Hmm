@@ -13,15 +13,17 @@ private enum Animation {
 }
 
 struct ScenarioStoryView: View {
-    let user: User
+    let user: User?
     let manager: ScenarioManager
     let repository: ScenarioRepository
+    let backgroundColor: Color?
     let onComplete: () -> Void
 
     @State private var currentPageIndex: Int
     @State private var selected: String = ""
     @State private var finalEnding: Ending? = nil
     @State private var isShowingAd = false
+    @State private var adRewardFlowID: String?
 
     // 토스트 상태
     @State private var showCompletedToast = false
@@ -32,10 +34,17 @@ struct ScenarioStoryView: View {
     // 환생하기
     @State private var isRebirthConfirmPopupPresented = false
 
-    init(user: User, manager: ScenarioManager, repository: ScenarioRepository, onComplete: @escaping () -> Void) {
+    init(
+        user: User?,
+        manager: ScenarioManager,
+        repository: ScenarioRepository,
+        backgroundColor: Color = .black300EventDim,
+        onComplete: @escaping () -> Void
+    ) {
         self.user = user
         self.manager = manager
         self.repository = repository
+        self.backgroundColor = backgroundColor
         self.onComplete = onComplete
         // 저장된 인덱스로 초기화하여 앱 재시작 시 해당 페이지부터 시작하게 함
         self._currentPageIndex = State(initialValue: manager.currentPageIndex)
@@ -45,7 +54,7 @@ struct ScenarioStoryView: View {
 
     var body: some View {
         ZStack {
-            Color.black300EventDim
+            backgroundColor
 
             VStack(spacing: isEnding ? TokenSpacing.xl : TokenSpacing.lg) {
                 if isEnding { endingResultView }
@@ -91,6 +100,7 @@ struct ScenarioStoryView: View {
                     ))
                 } else if let page = manager.currentPage {
                     eventButtonView(for: page)
+                        .onAppear { trackReselectOfferIfNeeded(for: page) }
                 }
             }
             .frame(maxHeight: .infinity, alignment: isEnding ? .top : .center)
@@ -180,17 +190,40 @@ private extension ScenarioStoryView {
             )
         case .result:
             EventButton(type: .reselect(onReselect: {
-                guard !isShowingAd else { return }
+                guard !isShowingAd, let flowID = adRewardFlowID else { return }
                 isShowingAd = true
+
+                AnalyticsService.shared.logAdWatchClicked(
+                    adRewardFlowID: flowID,
+                    adPlacement: .reselectionReward,
+                    rewardType: .reselect,
+                    rewardAmount: 0
+                )
+
                 Task {
-                    let success = await AdService.shared.showAdWithResult(.interstitial)
+                    let result = await AdService.shared.showAdWithResult(.interstitial)
                     isShowingAd = false
-                    if success {
+                    adRewardFlowID = nil
+
+                    if result.success {
+                        AnalyticsService.shared.logAdWatchCompleted(
+                            adRewardFlowID: flowID,
+                            adPlacement: .reselectionReward,
+                            rewardType: .reselect,
+                            rewardAmount: 0,
+                            adWatchDurationSec: result.watchDurationSec
+                        )
                         selected = ""
                         withAnimation(Animation.standard) {
                             manager.reselectChoice()
                             currentPageIndex = manager.currentPageIndex
                         }
+                        AnalyticsService.shared.logAdRewardClaimed(
+                            adRewardFlowID: flowID,
+                            adPlacement: .reselectionReward,
+                            rewardType: .reselect,
+                            rewardAmount: 0
+                        )
                     }
                 }
             }, onComplete: handleNextTap))
@@ -200,9 +233,22 @@ private extension ScenarioStoryView {
 
 // MARK: - 헬퍼
 private extension ScenarioStoryView {
+    func trackReselectOfferIfNeeded(for page: ScenarioPage) {
+        guard case .result = page.pageType, adRewardFlowID == nil else { return }
+
+        let flowID = AnalyticsService.shared.makeAdRewardFlowID()
+        adRewardFlowID = flowID
+        AnalyticsService.shared.logAdOfferViewed(
+            adRewardFlowID: flowID,
+            adPlacement: .reselectionReward,
+            rewardType: .reselect,
+            rewardAmount: 0
+        )
+    }
+
     func restoreEndingIfNeeded() {
         guard manager.currentScenario?.scenarioType == .final,
-              let finalChoice = user.record.choiceHistory[.worldClassDeveloper] else { return }
+              let finalChoice = user?.record.choiceHistory[.worldClassDeveloper] else { return }
         calculateAndShowEnding(with: finalChoice)
     }
 
@@ -216,7 +262,7 @@ private extension ScenarioStoryView {
 
     func handleChoice(_ result: ChoiceResult) {
         if let career = manager.currentScenario?.career {
-            user.record.choiceHistory[career] = result
+            user?.record.choiceHistory[career] = result
         }
 
         if manager.currentScenario?.scenarioType == .final {
@@ -235,9 +281,9 @@ private extension ScenarioStoryView {
     }
 
     func calculateAndShowEnding(with finalChoice: ChoiceResult) {
-        let evt01 = user.record.choiceHistory[.juniorDeveloper] ?? .optionA
-        let evt02 = user.record.choiceHistory[.nightOwlDeveloper] ?? .optionA
-        let evt03 = user.record.choiceHistory[.famousDeveloper] ?? .optionA
+        let evt01 = user?.record.choiceHistory[.juniorDeveloper] ?? .optionA
+        let evt02 = user?.record.choiceHistory[.nightOwlDeveloper] ?? .optionA
+        let evt03 = user?.record.choiceHistory[.famousDeveloper] ?? .optionA
         let evt04 = finalChoice
 
         let ending = repository.calculateEnding(
@@ -254,7 +300,7 @@ private extension ScenarioStoryView {
 
     func handleRebirthScenario() {
         if let ending = finalEnding {
-            user.resetForRebirth(ending: ending)
+            user?.resetForRebirth(ending: ending)
 
             let pages = repository.fetchRebirthScenarioPages()
 

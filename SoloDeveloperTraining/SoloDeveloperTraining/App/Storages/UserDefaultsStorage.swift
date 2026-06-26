@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct UserDefaultsStorage: KeyValueLocalStorage {
+struct UserDefaultsStorage {
     private let userDefaults: UserDefaults
 
     init(userDefaults: UserDefaults = .standard) {
@@ -25,7 +25,7 @@ struct UserDefaultsStorage: KeyValueLocalStorage {
     func integer(key: String) -> Int {
         return userDefaults.integer(forKey: key)
     }
-    
+
     func bool(key: String) -> Bool {
         return userDefaults.bool(forKey: key)
     }

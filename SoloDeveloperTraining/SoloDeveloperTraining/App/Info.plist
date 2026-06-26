@@ -30,7 +30,7 @@
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>이미지를 저장하기 위해 권한이 필요합니다.</string>
 	<key>NSUserTrackingUsageDescription</key>
-	<string>개인화된 광고 제공 목적으로 사용됩니다.</string>
+	<string>맞춤형 광고 제공 및 광고 성과 측정을 위해 사용됩니다.</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>kakaokompassauth</string>
