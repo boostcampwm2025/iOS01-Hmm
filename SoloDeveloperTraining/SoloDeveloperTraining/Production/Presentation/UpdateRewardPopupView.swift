@@ -52,7 +52,7 @@ struct UpdateRewardPopupView: View {
             ItemLabel(text: "보상 정보", font: .subheadline, color: .white300)
                 .frame(height: 36)
                 .frame(maxWidth: .infinity)
-                .background(.orange500)
+                .background(.orange300)
             ForEach(rewards.indices, id: \.self) { index in
                 rewardInfoRow(rewards[index])
                     .frame(maxWidth: .infinity, alignment: .leading)
