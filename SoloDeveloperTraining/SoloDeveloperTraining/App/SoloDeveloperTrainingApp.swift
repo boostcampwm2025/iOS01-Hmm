@@ -49,6 +49,7 @@ struct SoloDeveloperTrainingApp: App {
     @State private var errorMessage: String = ""
     @State private var isPolicyLoading = true
     @State private var hasPolicyError = false
+    @State private var updateType: AppUpdateType = .none
     @Environment(\.scenePhase) private var scenePhase
 
     private let userRepository: UserRepository = FileManagerUserRepository()
@@ -117,6 +118,17 @@ private extension SoloDeveloperTrainingApp {
         }
         .overlay {
             errorPopupOverlay
+        }
+        .overlay {
+            updateOverlay
+        }
+        .task {
+            let type = await AppUpdateChecker.checkUpdate()
+            if type == .force {
+                updateType = .force
+            } else if type == .optional && !AppUpdateChecker.isOptionalUpdateSnoozed() {
+                updateType = .optional
+            }
         }
         .onAppear {
             guard user == nil else { return }
@@ -197,6 +209,40 @@ private extension SoloDeveloperTrainingApp {
     }
 
     // MARK: - Overlays
+
+    @ViewBuilder
+    var updateOverlay: some View {
+        if updateType == .force {
+            ZStack {
+                Color.black300PopUpDimStatusBar.ignoresSafeArea()
+                NoticePopup(
+                    type: .default(
+                        buttonText: "업데이트",
+                        action: { AppUpdateChecker.openAppStore() }
+                    ),
+                    title: "업데이트 안내",
+                    text: "원활한 앱 사용을 위해서 업데이트가 필요합니다.\n지금 바로 업데이트를 진행해주세요."
+                )
+            }
+        } else if updateType == .optional {
+            ZStack {
+                Color.black300PopUpDimStatusBar.ignoresSafeArea()
+                NoticePopup(
+                    type: .confirm(
+                        cancelText: "다음에",
+                        confirmText: "업데이트",
+                        cancelAction: {
+                            AppUpdateChecker.snoozeOptionalUpdate()
+                            updateType = .none
+                        },
+                        confirmAction: { AppUpdateChecker.openAppStore() }
+                    ),
+                    title: "업데이트 안내",
+                    text: "원활한 앱 사용을 위해서 업데이트가 필요합니다.\n지금 바로 업데이트를 진행해주세요."
+                )
+            }
+        }
+    }
 
     @ViewBuilder
     var errorPopupOverlay: some View {
