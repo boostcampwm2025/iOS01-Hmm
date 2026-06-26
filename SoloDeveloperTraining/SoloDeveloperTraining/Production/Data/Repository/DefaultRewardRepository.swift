@@ -24,13 +24,12 @@ final class DefaultRewardRepository {
         ]),
         .init(userType: .originUser(.aspiringDeveloper), rewards: [
             .diamond(90),
-            .consumable(.coffee, count: 6),
-            .consumable(.energyDrink, count: 1)
+            .consumable(.coffee, count: 6)
         ]),
         .init(userType: .originUser(.juniorDeveloper), rewards: [
             .diamond(120),
             .consumable(.coffee, count: 10),
-            .consumable(.energyDrink, count: 2)
+            .consumable(.energyDrink, count: 3)
         ]),
         .init(userType: .originUser(.normalDeveloper), rewards: [
             .diamond(150),
