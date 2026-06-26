@@ -121,7 +121,10 @@ struct UpdateRewardPopupView: View {
                 text: "보상 받기",
                 type: .primary,
                 size: .medium,
-                action: onClose
+                action: {
+                    SoundService.shared.trigger(.click)
+                    onClose()
+                }
             )
         }
         .padding(TokenSpacing.lg)

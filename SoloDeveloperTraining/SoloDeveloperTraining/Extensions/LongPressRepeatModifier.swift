@@ -41,11 +41,11 @@ private extension LongPressRepeatModifier {
         guard let onLongPressRepeat, repeatTimer == nil else { return }
 
         isLongPressing = true
-        if onLongPressRepeat() { SoundService.shared.trigger(.buttonTap) }
+        if onLongPressRepeat() { SoundService.shared.trigger(.click) }
 
         let timer = Timer.scheduledTimer(withTimeInterval: Constant.repeatInterval, repeats: true) { [onLongPressRepeat, isLongPressingBinding = $isLongPressing] timer in
             if onLongPressRepeat() {
-                SoundService.shared.trigger(.buttonTap)
+                SoundService.shared.trigger(.click)
             } else {
                 timer.invalidate()
                 repeatTimer = nil

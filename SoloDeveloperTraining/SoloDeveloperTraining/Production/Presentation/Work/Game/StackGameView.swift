@@ -103,7 +103,7 @@ private extension StackGameView {
             onClose: {
                 closePause = true
                 SoundService.shared.stopAllSFX()
-                SoundService.shared.trigger(.buttonTap)
+                SoundService.shared.trigger(.click)
             },
             onCoffee: { useConsumableItem(.coffee) },
             onEnergyDrink: { useConsumableItem(.energyDrink) }
@@ -192,7 +192,7 @@ private extension StackGameView {
         let count = stackGame.user.inventory.count(type) ?? 0
         if count > 0 {
             if stackGame.user.inventory.drink(type) {
-                SoundService.shared.trigger(.itemConsume)
+                SoundService.shared.trigger(.drink)
                 HapticService.shared.trigger(.success)
                 stackGame.buffSystem.useConsumableItem(type: type)
                 stackGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
