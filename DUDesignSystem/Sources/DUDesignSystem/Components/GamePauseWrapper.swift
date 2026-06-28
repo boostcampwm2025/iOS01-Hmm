@@ -36,7 +36,7 @@ public struct GamePauseWrapper: ViewModifier {
                 .blur(radius: isPaused ? 2 : 0)
             if isPaused {
                 pauseOverlay
-                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                    .transition(TokenTransition.overlay.effect)
             }
         }
         .onChange(of: scenePhase) { oldPhase, newPhase in
