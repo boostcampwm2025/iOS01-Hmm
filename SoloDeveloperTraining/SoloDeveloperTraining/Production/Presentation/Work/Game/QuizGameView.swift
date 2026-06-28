@@ -39,9 +39,9 @@ struct QuizGameView: View {
         }
         .onChange(of: quizGame.remainingSeconds) { _, newValue in
             if newValue == 3 {
-                SoundService.shared.trigger(.quizCountdown)
+                SoundService.shared.trigger(.count)
             } else if newValue == 0 {
-                SoundService.shared.trigger(.quizTimeOver)
+                SoundService.shared.trigger(.over)
             }
         }
         .onDisappear { SoundService.shared.stopAllSFX() }
@@ -60,7 +60,10 @@ struct QuizGameView: View {
             }
             Spacer()
             DUIcon(.close, size: .size28)
-                .onTapGesture { dismiss() }
+                .onTapGesture {
+                    SoundService.shared.trigger(.click)
+                    dismiss()
+                }
         }
         .padding(.top, TokenGrid.paddingTop)
         .padding(.bottom, TokenGrid.paddingBottom)
@@ -142,6 +145,7 @@ struct QuizGameView: View {
                 type: .primary,
                 state: quizGame.state.isSubmitEnabled || quizGame.phase == .showingExplanation ? .default : .disabled
             ) {
+                SoundService.shared.trigger(.click)
                 if quizGame.phase == .showingExplanation {
                     if quizGame.state.nextButtonTitle == "보상받기" {
                         showQuizAdPopup = true
@@ -175,6 +179,7 @@ struct QuizGameView: View {
                             cancelText: "닫기",
                             adText: "2배 얻기",
                             cancelAction: {
+                                SoundService.shared.trigger(.click)
                                 showQuizAdPopup = false
                                 if let flowID = adRewardFlowID {
                                     AnalyticsService.shared.logAdOfferDismissed(
@@ -190,6 +195,7 @@ struct QuizGameView: View {
                                 dismiss()
                             },
                             adAction: {
+                                SoundService.shared.trigger(.click)
                                 Task { await handleWatchAd() }
                             }
                         ),
@@ -210,6 +216,7 @@ struct QuizGameView: View {
                         type: .default(
                             buttonText: "닫기",
                             action: {
+                                SoundService.shared.trigger(.click)
                                 showQuizRewardPopup = false
                                 dismiss()
                             }

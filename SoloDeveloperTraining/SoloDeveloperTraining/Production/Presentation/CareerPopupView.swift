@@ -31,7 +31,10 @@ struct CareerPopupView: View {
                 progressSection
                 careerList
             }
-            TextButton(text: "닫기", type: .primary, size: .medium, action: onClose)
+            TextButton(text: "닫기", type: .primary, size: .medium, action: {
+                SoundService.shared.trigger(.click)
+                onClose()
+            })
         }
         .padding(TokenSpacing.lg)
         .background(Color.white300)

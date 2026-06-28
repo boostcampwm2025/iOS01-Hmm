@@ -37,6 +37,9 @@ struct IntroView: View {
                 touchPromptView
             }
         }
+        .onAppear {
+            SoundService.shared.playBGM(.splash)
+        }
         .onTapGesture {
             if hasPolicyError {
                 onRetry()
@@ -50,6 +53,7 @@ struct IntroView: View {
                 let manager = ScenarioManager(record: Record())
                 manager.startScenario(scenario)
                 self.scenarioManager = manager
+                SoundService.shared.playBGM(.scenario)
             } else {
                 withAnimation(.easeOut(duration: Constant.Animation.transitionDuration)) {
                     hasSeenIntro = true
@@ -66,6 +70,7 @@ struct IntroView: View {
                     scenarioManager = nil
                     hasSeenIntro = true
                     showNicknameSetup = true
+                    SoundService.shared.playBGM(.splash)
                 }
             )
         }

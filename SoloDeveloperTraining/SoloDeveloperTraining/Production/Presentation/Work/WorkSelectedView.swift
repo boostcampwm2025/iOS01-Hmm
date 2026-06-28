@@ -93,15 +93,23 @@ private extension WorkSelectedView {
         VStack(spacing: TokenSpacing.lg) {
             WorkSegmentControl(
                 items: workItems,
-                selectedIndex: $selectedIndex,
+                selectedIndex: Binding(
+                    get: { selectedIndex },
+                    set: { newValue in
+                        SoundService.shared.trigger(.click)
+                        selectedIndex = newValue
+                    }
+                ),
                 onLockedTap: { index in
                     guard index < requiredCareers.count, let career = requiredCareers[index] else { return }
+                    SoundService.shared.trigger(.click)
                     toastMessage = "\(career.rawValue)부터 플레이할 수 있습니다."
                     showToast = true
                 }
             )
             ItemLabel(text: actionDescription(for: selectedIndex), font: .body2, color: .black300)
             TextButton(text: "시작하기", type: .primary, size: .large) {
+                SoundService.shared.trigger(.click)
                 isGameStarted = true
             }
             .padding(.bottom, TokenGrid.paddingBottom)

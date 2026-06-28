@@ -8,96 +8,12 @@
 import SwiftUI
 import DUDesignSystem
 
-struct UpdateReward {
-    let userType: RewardUserType
-    let rewards: [Reward]
-}
-
-enum RewardUserType {
-    case newUser
-    case originUser(Career)
-
-    var title: String {
-        switch self {
-        case .newUser: return "신규 유저"
-        case .originUser(let career): return career.rawValue
-        }
-    }
-
-    var imagePrefix: String {
-        switch self {
-        case .newUser: return "profileNewUser"
-        case .originUser(let career): return career.imageName
-        }
-    }
-}
-
 struct UpdateRewardPopupView: View {
+    let userType: RewardUserType
+    let rewards: [UpdateReward]
     let onClose: () -> Void
 
-    private let rewards: [UpdateReward] = [
-        .init(userType: .newUser, rewards: [.diamond(15)]),
-        .init(userType: .originUser(.unemployed), rewards: [.diamond(30)]),
-        .init(
-            userType: .originUser(.laptopOwner),
-            rewards: [.diamond(30), .consumable(.coffee, count: 3)]
-        ),
-        .init(
-            userType: .originUser(.aspiringDeveloper),
-            rewards: [
-                .diamond(90),
-                .consumable(.coffee, count: 6),
-                .consumable(.energyDrink, count: 1)
-            ]),
-        .init(userType: .originUser(.juniorDeveloper),
-              rewards: [
-                .diamond(120),
-                .consumable(.coffee, count: 10),
-                .consumable(.energyDrink, count: 2)
-              ]),
-        .init(userType: .originUser(.normalDeveloper),
-              rewards: [
-                .diamond(150),
-                .consumable(.coffee, count: 15),
-                .consumable(.energyDrink, count: 7)
-              ]),
-        .init(userType: .originUser(.nightOwlDeveloper),
-              rewards: [
-                .diamond(180),
-                .consumable(.coffee, count: 18),
-                .consumable(.energyDrink, count: 12)
-              ]),
-        .init(userType: .originUser(.skilledDeveloper),
-              rewards: [
-                .diamond(210),
-                .consumable(.coffee, count: 21),
-                .consumable(.energyDrink, count: 17)
-              ]),
-        .init(userType: .originUser(.famousDeveloper),
-              rewards: [
-                .diamond(240),
-                .consumable(.coffee, count: 24),
-                .consumable(.energyDrink, count: 22)
-              ]),
-        .init(userType: .originUser(.allRounderDeveloper),
-              rewards: [
-                .diamond(270),
-                .consumable(.coffee, count: 27),
-                .consumable(.energyDrink, count: 27)
-              ]),
-        .init(userType: .originUser(.worldClassDeveloper),
-              rewards: [
-                .diamond(300),
-                .consumable(.coffee, count: 30),
-                .consumable(.energyDrink, count: 30)
-              ])
-    ]
-
     var body: some View {
-        popup
-    }
-
-    private var popup: some View {
         VStack(spacing: TokenSpacing.xxl) {
             VStack(spacing: TokenSpacing.lg) {
                 ItemLabel(text: "업데이트 보상", font: .title2, color: .black300)
@@ -121,7 +37,10 @@ struct UpdateRewardPopupView: View {
                 text: "보상 받기",
                 type: .primary,
                 size: .medium,
-                action: onClose
+                action: {
+                    SoundService.shared.trigger(.click)
+                    onClose()
+                }
             )
         }
         .padding(TokenSpacing.lg)
@@ -136,7 +55,7 @@ struct UpdateRewardPopupView: View {
             ItemLabel(text: "보상 정보", font: .subheadline, color: .white300)
                 .frame(height: 36)
                 .frame(maxWidth: .infinity)
-                .background(.orange500)
+                .background(.orange300)
             ForEach(rewards.indices, id: \.self) { index in
                 rewardInfoRow(rewards[index])
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -180,6 +99,22 @@ struct UpdateRewardPopupView: View {
     }
 }
 
+extension RewardUserType {
+    var title: String {
+        switch self {
+        case .newUser: return "신규 유저"
+        case .originUser(let career): return career.rawValue
+        }
+    }
+
+    var imagePrefix: String {
+        switch self {
+        case .newUser: return "profileNewUser"
+        case .originUser(let career): return career.imageName
+        }
+    }
+}
+
 extension Reward {
     var countString: String {
         switch self {
@@ -201,5 +136,5 @@ extension Reward {
 }
 
 #Preview {
-    UpdateRewardPopupView(onClose: {})
+    UpdateRewardPopupView(userType: .newUser, rewards: [], onClose: {})
 }

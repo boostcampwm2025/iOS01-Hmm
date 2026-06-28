@@ -116,7 +116,10 @@ private extension ShareSheetView {
                 text: "닫기",
                 type: .primary,
                 size: .medium,
-                action: { isPresented = false }
+                action: {
+                    SoundService.shared.trigger(.click)
+                    isPresented = false
+                }
             )
             Spacer()
         }

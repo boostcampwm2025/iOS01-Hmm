@@ -175,7 +175,7 @@ final class DodgeGame: Game {
 
             // 재화 획득 시 캐릭터 웃게 만들기
             animationSystem?.playSmile()
-            SoundService.shared.trigger(.coinCollect)
+            SoundService.shared.trigger(.coin)
             return gainGold
 
         case .largeGold:
@@ -195,7 +195,7 @@ final class DodgeGame: Game {
 
             // 재화 획득 시 캐릭터 웃게 만들기
             animationSystem?.playSmile()
-            SoundService.shared.trigger(.coinCollect)
+            SoundService.shared.trigger(.coin)
             return gainGold
 
         case .bug:
@@ -214,7 +214,7 @@ final class DodgeGame: Game {
             /// 실패 기록
             user.record.record(.dodgeFail)
 
-            SoundService.shared.trigger(.bugHit)
+            SoundService.shared.trigger(.hit)
             HapticService.shared.trigger(.error)
             return didSpendGold ? -loseGold : 0
         }

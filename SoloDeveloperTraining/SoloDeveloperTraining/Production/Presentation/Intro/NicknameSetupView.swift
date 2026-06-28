@@ -70,6 +70,7 @@ struct NicknameSetupView: View {
                         .opacity(TokenOpacity.opacity40)
                 )
                 TextButton(text: "완료", type: .primary, state: isValid ? .default : .disabled) {
+                    SoundService.shared.trigger(.click)
                     confirmedNickname = nickname
                     showTutorial = true
                 }

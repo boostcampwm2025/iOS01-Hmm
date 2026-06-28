@@ -109,7 +109,7 @@ private extension LanguageGameView {
             onClose: {
                 closePause = true
                 SoundService.shared.stopAllSFX()
-                SoundService.shared.trigger(.buttonTap)
+                SoundService.shared.trigger(.click)
             },
             onCoffee: { useConsumableItem(.coffee) },
             onEnergyDrink: { useConsumableItem(.energyDrink) }
@@ -242,7 +242,7 @@ private extension LanguageGameView {
 
             guard !Task.isCancelled else { return }
 
-            SoundService.shared.trigger(gainedGold > 0 ? .languageCorrect : .languageWrong)
+            SoundService.shared.trigger(gainedGold > 0 ? .normal : .error)
             if gainedGold <= 0 {
                 HapticService.shared.trigger(.error)
             }
@@ -271,7 +271,7 @@ private extension LanguageGameView {
         let count = game.user.inventory.count(type) ?? 0
         if count > 0 {
             if game.user.inventory.drink(type) {
-                SoundService.shared.trigger(.itemConsume)
+                SoundService.shared.trigger(.drink)
                 HapticService.shared.trigger(.success)
                 game.buffSystem.useConsumableItem(type: type)
                 game.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)

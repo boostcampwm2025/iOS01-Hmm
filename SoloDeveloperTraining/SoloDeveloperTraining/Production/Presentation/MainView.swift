@@ -71,16 +71,19 @@ struct MainView: View {
 
     // 업데이트 보상 관련
     @State private var showUpdateRewardPopup = true
+    private let rewardRepository = DefaultRewardRepository()
 
     let scenarioRepository: ScenarioRepository
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
+    private let userType: RewardUserType
     private let scene: CharacterScene
     private let animationSystem: CharacterAnimationSystem
 
     init(
         user: User,
+        userType: RewardUserType,
         hasSeenIntro: Binding<Bool>,
         scenarioRepository: ScenarioRepository
     ) {
@@ -89,6 +92,7 @@ struct MainView: View {
 
         self.autoGainSystem = AutoGainSystem(user: user)
         self.user = user
+        self.userType = userType
         self.scenarioRepository = scenarioRepository
 
         self.scene = CharacterScene(size: Constant.characterSceneSize, user: user)
@@ -117,7 +121,6 @@ struct MainView: View {
         .task {
             await updateSkillAdRewardTimer()
         }
-        .onDisappear { SoundService.shared.stopBGM() }
         .onChange(of: scenePhase, handleScenePhaseChange)
         .onChange(of: user.record.totalEarnedMoney) {
             careerSystem?.updateCareer()
@@ -174,11 +177,13 @@ private extension MainView {
             // SettingButton, QuizButton Area
             HStack {
                 SmallButton(type: .setting) {
+                    SoundService.shared.trigger(.click)
                     showSettingsView = true
                 }
                 Spacer()
                 if !workGameSession.isInProgress {
                     SmallButton(type: .quiz) {
+                        SoundService.shared.trigger(.click)
                         showQuizView = true
                     }
                 }
@@ -313,6 +318,8 @@ private extension MainView {
 
                 if isRebirth {
                     hasSeenIntro = false
+                } else {
+                    SoundService.shared.playBGM(.main)
                 }
             }
             .ignoresSafeArea()
@@ -323,9 +330,15 @@ private extension MainView {
     @ViewBuilder
     var updateRewardOverlayView: some View {
         if showUpdateRewardPopup {
-            modalOverlay(onBackgroundTap: handleClaimUpdateReward, content: {
-                UpdateRewardPopupView(onClose: handleClaimUpdateReward)
-            })
+            let updateRewardItems = rewardRepository.fetchAllRewards()
+            UpdateRewardPopupView(
+                userType: userType,
+                rewards: updateRewardItems,
+                onClose: {
+                    let rewards = rewardRepository.fetchAllRewards(for: userType)
+                    rewards?.forEach { handleClaimUpdateReward($0) }
+                }
+            )
         }
     }
 
@@ -348,7 +361,7 @@ private extension MainView {
     }
 
     func setupOnAppear() {
-        SoundService.shared.playBGM()
+        SoundService.shared.playBGM(.main)
         skillAdRewardNow = Date()
         autoGainSystem.startSystem()
 
@@ -365,7 +378,11 @@ private extension MainView {
                 previousCareer = oldCareer
                 leveledUpCareer = newCareer
 
-                showLevelUpEffect = newCareer != .unemployed
+                let isLevelUp = newCareer != .unemployed
+                showLevelUpEffect = isLevelUp
+                if isLevelUp {
+                    SoundService.shared.trigger(.levelUp)
+                }
             }
         }
         // 저장된 시나리오 복구 체크
@@ -397,6 +414,7 @@ private extension MainView {
             manager.restoreScenario(scenario)
             self.scenarioManager = manager
             showScenarioView = true
+            SoundService.shared.playBGM(.scenario)
         }
     }
 
@@ -423,6 +441,7 @@ private extension MainView {
             manager.startScenario(scenario)
             self.scenarioManager = manager
             showScenarioView = true
+            SoundService.shared.playBGM(.scenario)
         }
     }
 
@@ -466,6 +485,8 @@ private extension MainView {
     func handleTabTap(_ newTab: AppTab) {
         guard selectedTab != newTab else { return }
 
+        SoundService.shared.trigger(.click)
+
         if workGameSession.isInProgress && selectedTab == .work && newTab != .work {
             workGameSession.requestTabSwitch(to: newTab)
             return
@@ -482,8 +503,14 @@ private extension MainView {
                     type: .ad(
                         cancelText: "그냥 하기",
                         adText: "음료 받기",
-                        cancelAction: handleSkipAdInMainView,
-                        adAction: { Task { await handleWatchAdInMainView() } }
+                        cancelAction: {
+                            SoundService.shared.trigger(.click)
+                            handleSkipAdInMainView()
+                        },
+                        adAction: {
+                            SoundService.shared.trigger(.click)
+                            Task { await handleWatchAdInMainView() }
+                        }
                     ),
                     title: drinkType == .coffee ? "커피 없음" : "박하스 없음",
                     text: "대신에 광고를 보고\n카페인을 보충할까요?"
@@ -501,8 +528,14 @@ private extension MainView {
                     type: .ad(
                         cancelText: "그냥 나가기",
                         adText: "보너스 받기",
-                        cancelAction: handleExitWithoutBonus,
-                        adAction: { Task { await handleExitBonusAd() } }
+                        cancelAction: {
+                            SoundService.shared.trigger(.click)
+                            handleExitWithoutBonus()
+                        },
+                        adAction: {
+                            SoundService.shared.trigger(.click)
+                            Task { await handleExitBonusAd() }
+                        }
                     ),
                     title: "보너스",
                     text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다"
@@ -676,7 +709,13 @@ private extension MainView {
         exitWorkGame()
     }
 
-    func handleClaimUpdateReward() {
+    func handleClaimUpdateReward(_ reward: Reward) {
+        switch reward {
+        case .diamond(let count):
+            user.wallet.addDiamond(count)
+        case .consumable(let type, count: let count):
+            user.inventory.gain(consumable: type, count: count)
+        }
         showUpdateRewardPopup = false
         AppPreferences.shared.hasClaimedGameResetReward = true
     }
@@ -710,9 +749,11 @@ private extension MainView {
                         cancelText: "안받기",
                         adText: "보상 받기",
                         cancelAction: {
+                            SoundService.shared.trigger(.click)
                             handleOfflineRewardSkip()
                         },
                         adAction: {
+                            SoundService.shared.trigger(.click)
                             Task { await handleOfflineRewardWatchAd() }
                         }
                     ),
@@ -839,6 +880,7 @@ private extension MainView {
     )
     MainView(
         user: user,
+        userType: .newUser,
         hasSeenIntro: .constant(true),
         scenarioRepository: DefaultScenarioRepository()
     )

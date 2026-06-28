@@ -78,6 +78,7 @@ struct ScenarioStoryView: View {
                 if let ending = finalEnding {
                     EventButton(type: .ending(
                         onSave: {
+                            SoundService.shared.trigger(.click)
                             guard let image = renderEndingImage(ending) else { return }
                             PhotoLibraryService.saveImageToPhotoLibrary(image) { success in
                                 showCompletedToast = true
@@ -85,6 +86,7 @@ struct ScenarioStoryView: View {
                             }
                         },
                         onShare: {
+                            SoundService.shared.trigger(.click)
                             currentShareID = UUID().uuidString
                             AnalyticsService.shared
                                 .logShareButtonClicked(
@@ -95,12 +97,12 @@ struct ScenarioStoryView: View {
                             isShareSheetPresented = true
                         },
                         onRebirth: {
+                            SoundService.shared.trigger(.click)
                             isRebirthConfirmPopupPresented = true
                         }
                     ))
                 } else if let page = manager.currentPage {
                     eventButtonView(for: page)
-                        .onAppear { trackReselectOfferIfNeeded(for: page) }
                 }
             }
             .frame(maxHeight: .infinity, alignment: isEnding ? .top : .center)
@@ -147,7 +149,10 @@ private extension ScenarioStoryView {
             DUIcon(.movieSlate, size: .size28)
             Text("엔딩 결과").duFont(.title1).foregroundStyle(Color.white300)
             Spacer()
-            Button(action: onComplete) {
+            Button(action: {
+                SoundService.shared.trigger(.click)
+                onComplete()
+            }) {
                 DUIcon(.close, size: .size28)
             }
         }
@@ -161,8 +166,14 @@ private extension ScenarioStoryView {
             type: .confirm(
                 cancelText: "그냥 살기",
                 confirmText: "환생하기",
-                cancelAction: onComplete,
-                confirmAction: { handleRebirthScenario() }
+                cancelAction: {
+                    SoundService.shared.trigger(.click)
+                    onComplete()
+                },
+                confirmAction: {
+                    SoundService.shared.trigger(.click)
+                    handleRebirthScenario()
+                }
             ),
             title: "환생하기",
             text: "전생의 기억은 모두 잃고 새로 태어나게됩니다.\n환생하시겠습니까?"
@@ -173,7 +184,10 @@ private extension ScenarioStoryView {
     func eventButtonView(for page: ScenarioPage) -> some View {
         switch page.pageType {
         case .story:
-            EventButton(type: .next(action: { handleNextTap() }))
+            EventButton(type: .next(action: {
+                SoundService.shared.trigger(.click)
+                handleNextTap()
+            }))
         case .choice(let choice):
             EventButton(
                 type: .choice(
@@ -181,6 +195,7 @@ private extension ScenarioStoryView {
                     optionB: choice.optionB,
                     selected: selected,
                     onSelect: { selection in
+                        SoundService.shared.trigger(.click)
                         selected = selection
                         handleChoice(
                             selection == choice.optionA ? .optionA : .optionB
@@ -190,6 +205,7 @@ private extension ScenarioStoryView {
             )
         case .result:
             EventButton(type: .reselect(onReselect: {
+                SoundService.shared.trigger(.click)
                 guard !isShowingAd, let flowID = adRewardFlowID else { return }
                 isShowingAd = true
 
@@ -226,7 +242,11 @@ private extension ScenarioStoryView {
                         )
                     }
                 }
-            }, onComplete: handleNextTap))
+            }, onComplete: {
+                SoundService.shared.trigger(.click)
+                handleNextTap()
+            }))
+            .onAppear { trackReselectOfferIfNeeded(for: page) }
         }
     }
 }
@@ -296,6 +316,7 @@ private extension ScenarioStoryView {
         withAnimation(Animation.standard) {
             finalEnding = ending
         }
+        SoundService.shared.playBGM(.ending)
     }
 
     func handleRebirthScenario() {
@@ -318,6 +339,7 @@ private extension ScenarioStoryView {
             finalEnding = nil
 
             isRebirthConfirmPopupPresented = false
+            SoundService.shared.playBGM(.rebirth)
         }
     }
 }

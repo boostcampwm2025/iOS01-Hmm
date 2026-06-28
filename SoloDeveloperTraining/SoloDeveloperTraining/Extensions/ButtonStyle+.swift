@@ -15,7 +15,7 @@ struct PressableButtonStyle: ButtonStyle {
             .onChange(of: configuration.isPressed) { _, newValue in
                 isPressed = newValue
                 if newValue {
-                    SoundService.shared.trigger(.buttonTap)
+                    SoundService.shared.trigger(.click)
                 }
             }
     }
@@ -26,7 +26,7 @@ struct SoundTapButtonStyle: ButtonStyle {
         configuration.label
             .onChange(of: configuration.isPressed) { _, newValue in
                 if newValue {
-                    SoundService.shared.trigger(.buttonTap)
+                    SoundService.shared.trigger(.click)
                 }
             }
     }

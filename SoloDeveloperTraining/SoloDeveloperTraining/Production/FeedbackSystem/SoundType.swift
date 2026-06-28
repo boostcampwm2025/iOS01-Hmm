@@ -8,58 +8,71 @@
 import Foundation
 
 enum SoundType: String {
-    /// 전체 버튼 클릭음
-    case buttonTap
+    // MARK: - 01. 배경음
+    /// 스플래시, 튜토리얼
+    case splash
+    /// 메인/공통
+    case main
+    /// 시나리오 배경음
+    case scenario
+    /// 엔딩 카드 배경음
+    case ending
+    /// 환생 시나리오 배경음
+    case rebirth
 
-    // MARK: - BGM
-    case bgm
+    // MARK: - 02. 레벨업
+    case levelUp
 
-    // MARK: - 언어 맞추기
-    /// 맞았을 때
-    case languageCorrect
-    /// 틀렸을 때
-    case languageWrong
+    // MARK: - 03. 일반
+    /// 버튼 클릭음
+    case click
 
-    // MARK: - 버그 피하기
-    /// 코인 먹는 소리
-    case coinCollect
-    /// 버그 맞는 소리
-    case bugHit
+    // MARK: - 04. 업무 - 코드짜기
+    case typing
 
-    // MARK: - 데이터 쌓기
-    /// 블록 쌓기
-    case blockStack
-    /// 블록 떨굼
-    case blockDrop
-    /// 폭탄 쌓기
-    case bombStack
+    // MARK: - 04. 업무 - 언어 맞추기
+    /// 정답일 때
+    case normal
+    /// 오답일 때
+    case error
 
-    // MARK: - 퀴즈
-    /// 끝나기 3초 전 째깍
-    case quizCountdown
-    /// 퀴즈 시간 초과
-    case quizTimeOver
-    /// 퀴즈 정답
-    case quizCorrect
-    /// 퀴즈 오답
-    case quizWrong
+    // MARK: - 04. 업무 - 버그피하기
+    /// 코인 수집 시
+    case coin
+    /// 버그에 맞을 때
+    case hit
 
-    // MARK: - 아이템 소비
-    /// 커피/박하스 클릭 시
-    case itemConsume
+    // MARK: - 04. 업무 - 데이터 쌓기
+    /// 블록을 올바르게 쌓을 때
+    case stack
+    /// 블록이 떨어질 때 (미스)
+    case drop
+    /// 폭탄 블록 쌓을 때
+    case pop
 
-    // MARK: - 장비 강화
-    /// 강화 성공 (팝업 뜰 때)
-    case upgradeSuccess
-    /// 강화 실패 (팝업 뜰 때)
-    case upgradeFailure
+    // MARK: - 04. 업무 - 공통
+    /// 아이템(커피/박하스) 소비 시
+    case drink
 
-    // MARK: - 미션
-    /// 미션 획득 시
-    case missionAcquired
+    // MARK: - 05. 상점 - 아이템
+    /// 강화 성공
+    case success
+    /// 강화 실패
+    case failure
 
-    /// 탭게임 탭 시
-    case tapGameTyping
+    // MARK: - 06. 퀴즈
+    /// 정답일 때
+    case correct
+    /// 오답일 때
+    case wrong
+    /// 종료 3초 전 카운트다운
+    case count
+    /// 시간 초과 시
+    case over
+
+    // MARK: - 07. 미션
+    /// 미션 보상 수령 시
+    case mission
 
     /// wav 우선, 없으면 mp3 로드
     var url: URL? {
