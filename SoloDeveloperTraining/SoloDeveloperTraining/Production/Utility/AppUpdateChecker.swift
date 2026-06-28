@@ -14,10 +14,6 @@ enum AppUpdateType {
 
 struct AppUpdateChecker {
 
-    private enum UserDefaultsKey {
-        static let optionalUpdateSnoozedUntil = "optionalUpdateSnoozedUntil"
-    }
-
     private static let appStoreID = "6758282441"
     private static let appStoreURL = URL(string: "https://apps.apple.com/kr/app/id\(appStoreID)")!
     private static let lookupURL = URL(string: "https://itunes.apple.com/lookup?id=\(appStoreID)&country=kr")!
@@ -35,14 +31,11 @@ struct AppUpdateChecker {
     }
 
     static func snoozeOptionalUpdate() {
-        let snoozedUntil = Date().addingTimeInterval(60 * 60 * 24 * 7)
-        UserDefaults.standard.set(snoozedUntil, forKey: UserDefaultsKey.optionalUpdateSnoozedUntil)
+        AppPreferences.shared.optionalUpdateSnoozedUntil = Date().addingTimeInterval(60 * 60 * 24 * 7)
     }
 
     static func isOptionalUpdateSnoozed() -> Bool {
-        guard let snoozedUntil = UserDefaults.standard.object(forKey: UserDefaultsKey.optionalUpdateSnoozedUntil) as? Date else {
-            return false
-        }
+        guard let snoozedUntil = AppPreferences.shared.optionalUpdateSnoozedUntil else { return false }
         return Date() < snoozedUntil
     }
 
