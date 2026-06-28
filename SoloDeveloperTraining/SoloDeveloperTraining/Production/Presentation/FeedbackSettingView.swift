@@ -45,7 +45,10 @@ struct FeedbackSettingView: View {
                 appInfoSection
             }
 
-            TextButton(text: "닫기", type: .primary, size: .medium, action: { onClose?() })
+            TextButton(text: "닫기", type: .primary, size: .medium) {
+                SoundService.shared.trigger(.buttonTap)
+                onClose?()
+            }
         }
         .padding(TokenSpacing.lg)
         .background(Color.white300)
@@ -142,7 +145,7 @@ private struct SettingSliderView: View {
             ZStack(alignment: .leading) {
                 DUDesignSystem.ProgressBar(
                     progress: progress,
-                    fillColor: isEnabled ? .orange300 : .gray200
+                    fillColor: isEnabled ? Color.orange300 : Color.gray200
                 )
 
                 Rectangle()
