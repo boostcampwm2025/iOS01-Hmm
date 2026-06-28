@@ -8,10 +8,6 @@
 import SwiftUI
 import DUDesignSystem
 
-private enum Animation {
-    static let standard = SwiftUI.Animation.easeInOut(duration: 0.25)
-}
-
 struct ScenarioStoryView: View {
     let user: User?
     let manager: ScenarioManager
@@ -224,7 +220,7 @@ private extension ScenarioStoryView {
                             adWatchDurationSec: result.watchDurationSec
                         )
                         selected = ""
-                        withAnimation(Animation.standard) {
+                        withAnimation(TokenAnimation.crossFade.animation) {
                             manager.reselectChoice()
                             currentPageIndex = manager.currentPageIndex
                         }
@@ -288,7 +284,7 @@ private extension ScenarioStoryView {
     }
 
     func updatePage() {
-        withAnimation(Animation.standard) {
+        withAnimation(TokenAnimation.crossFade.animation) {
             manager.moveToNextPage()
             currentPageIndex = manager.currentPageIndex
         }
@@ -307,7 +303,7 @@ private extension ScenarioStoryView {
             evt04: evt04
         )
 
-        withAnimation(Animation.standard) {
+        withAnimation(TokenAnimation.fadeInSlow.animation) {
             finalEnding = ending
         }
         SoundService.shared.playBGM(.ending)
