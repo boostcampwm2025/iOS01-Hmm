@@ -26,15 +26,48 @@ extension TokenTransition {
 @MainActor
 public struct TokenAnimation {
     public let animation: Animation
+    public let duration: Duration
+
+    public init(
+        animation: Animation,
+        duration: Duration
+    ) {
+        self.animation = animation
+        self.duration = duration
+    }
 }
 
 extension TokenAnimation {
-    public static let fadeInSlow     = TokenAnimation(animation: .easeOut(duration: 0.5))
-    public static let crossFade      = TokenAnimation(animation: .easeInOut(duration: 0.25))
-    public static let floatingFadeOut = TokenAnimation(animation: .easeOut(duration: 1.0))
-    public static let offsetMove     = TokenAnimation(animation: .easeOut(duration: 0.25))
-    public static let blinkLoop      = TokenAnimation(animation: .easeInOut(duration: 1.0).repeatForever(autoreverses: true))
-    public static let springMove     = TokenAnimation(animation: .spring(duration: 0.3))
+    public static let fadeInSlow = TokenAnimation(
+        animation: .easeOut(duration: 0.5),
+        duration: .milliseconds(500)
+    )
+
+    public static let crossFade = TokenAnimation(
+        animation: .easeInOut(duration: 0.25),
+        duration: .milliseconds(250)
+    )
+
+    public static let floatingFadeOut = TokenAnimation(
+        animation: .easeOut(duration: 1.0),
+        duration: .seconds(1)
+    )
+
+    public static let offsetMove = TokenAnimation(
+        animation: .easeOut(duration: 0.25),
+        duration: .milliseconds(250)
+    )
+
+    public static let blinkLoop = TokenAnimation(
+        animation: .easeInOut(duration: 1.0)
+            .repeatForever(autoreverses: true),
+        duration: .seconds(1)
+    )
+
+    public static let springMove = TokenAnimation(
+        animation: .spring(duration: 0.3),
+        duration: .milliseconds(300)
+    )
 }
 
 // MARK: - FadeInSlowModifier
