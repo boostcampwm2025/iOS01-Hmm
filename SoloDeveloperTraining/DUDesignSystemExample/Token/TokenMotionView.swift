@@ -134,7 +134,7 @@ private struct AnimationPreviewRow: View {
 // MARK: - FloatingFadeOut Preview
 
 private struct FloatingFadeOutPreviewRow: View {
-    @State private var isVisible = true
+    @State private var isActive = true
     @State private var isPlaying = false
 
     var body: some View {
@@ -142,7 +142,7 @@ private struct FloatingFadeOutPreviewRow: View {
             RoundedRectangle(cornerRadius: TokenRadius.xs)
                 .fill(Color.orange300)
                 .frame(width: 44, height: 44)
-                .floatingFadeOut(isVisible: isVisible)
+                .floatingFadeOut(isActive: isActive)
 
             Text("floatingFadeOut")
                 .font(.system(.body, design: .monospaced))
@@ -153,9 +153,9 @@ private struct FloatingFadeOutPreviewRow: View {
             Button {
                 guard !isPlaying else { return }
                 isPlaying = true
-                isVisible = false
+                isActive = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-                    isVisible = true
+                    isActive = true
                     isPlaying = false
                 }
             } label: {

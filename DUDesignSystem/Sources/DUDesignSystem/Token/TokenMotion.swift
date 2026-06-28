@@ -96,13 +96,16 @@ struct CrossFadeModifier: ViewModifier {
 
 // MARK: - FloatingFadeOutModifier
 struct FloatingFadeOutModifier: ViewModifier {
-    let isVisible: Bool
+    let isActive: Bool
 
     func body(content: Content) -> some View {
         content
-            .opacity(isVisible ? 1 : 0)
-            .offset(y: isVisible ? 0 : -12)
-            .animation(TokenAnimation.floatingFadeOut.animation, value: isVisible)
+            .opacity(isActive ? 1 : 0)
+            .offset(y: isActive ? 0 : -12)
+            .animation(
+                TokenAnimation.floatingFadeOut.animation,
+                value: isActive
+            )
     }
 }
 
@@ -148,8 +151,8 @@ public extension View {
         modifier(CrossFadeModifier(isVisible: isVisible))
     }
 
-    func floatingFadeOut(isVisible: Bool) -> some View {
-        modifier(FloatingFadeOutModifier(isVisible: isVisible))
+    func floatingFadeOut(isActive: Bool) -> some View {
+        modifier(FloatingFadeOutModifier(isActive: isActive))
     }
 
     func offsetMove(isVisible: Bool) -> some View {
