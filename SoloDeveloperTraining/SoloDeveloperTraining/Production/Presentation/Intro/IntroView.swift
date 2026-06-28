@@ -48,7 +48,7 @@ struct IntroView: View {
                 self.scenarioManager = manager
                 SoundService.shared.playBGM(.scenario)
             } else {
-                withAnimation(TokenAnimation.fadeInPage.animation) {
+                withAnimation(TokenAnimation.fadeInSlow.animation) {
                     hasSeenIntro = true
                 }
             }

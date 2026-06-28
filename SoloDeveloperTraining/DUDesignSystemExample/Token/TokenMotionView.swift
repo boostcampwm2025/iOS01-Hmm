@@ -21,7 +21,7 @@ struct TokenMotionView: View {
             }
 
             Section {
-                AnimationPreviewRow(name: "fadeInPage", token: .fadeInPage)
+                AnimationPreviewRow(name: "fadeInSlow", token: .fadeInSlow)
                 AnimationPreviewRow(name: "crossFade", token: .crossFade)
                 FloatingFadeOutPreviewRow()
                 AnimationPreviewRow(name: "offsetMove", token: .offsetMove)
@@ -70,11 +70,11 @@ private struct TransitionPreviewRow: View {
             Button {
                 guard !isPlaying else { return } // 중복 탭 방지
                 isPlaying = true
-                withAnimation(TokenAnimation.fadeInPage.animation) { // 소멸
+                withAnimation(TokenAnimation.fadeInSlow.animation) { // 소멸
                     isVisible = false
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { // 생성
-                    withAnimation(TokenAnimation.fadeInPage.animation) {
+                    withAnimation(TokenAnimation.fadeInSlow.animation) {
                         isVisible = true
                     }
                 }

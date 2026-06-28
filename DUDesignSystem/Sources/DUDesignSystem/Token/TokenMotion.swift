@@ -29,7 +29,7 @@ public struct TokenAnimation {
 }
 
 extension TokenAnimation {
-    public static let fadeInPage     = TokenAnimation(animation: .easeOut(duration: 0.5))
+    public static let fadeInSlow     = TokenAnimation(animation: .easeOut(duration: 0.5))
     public static let crossFade      = TokenAnimation(animation: .easeInOut(duration: 0.25))
     public static let floatingFadeOut = TokenAnimation(animation: .easeOut(duration: 1.0))
     public static let offsetMove     = TokenAnimation(animation: .easeOut(duration: 0.25))
@@ -37,15 +37,15 @@ extension TokenAnimation {
     public static let springMove     = TokenAnimation(animation: .spring(duration: 0.3))
 }
 
-// MARK: - FadeInPageModifier
+// MARK: - FadeInSlowModifier
 
-struct FadeInPageModifier: ViewModifier {
+struct FadeInSlowModifier: ViewModifier {
     let isVisible: Bool
 
     func body(content: Content) -> some View {
         content
             .opacity(isVisible ? 1 : 0)
-            .animation(TokenAnimation.fadeInPage.animation, value: isVisible)
+            .animation(TokenAnimation.fadeInSlow.animation, value: isVisible)
     }
 }
 
@@ -107,8 +107,8 @@ struct BlinkLoopModifier: ViewModifier {
 }
 
 public extension View {
-    func fadeInPage(isVisible: Bool) -> some View {
-        modifier(FadeInPageModifier(isVisible: isVisible))
+    func fadeInSlow(isVisible: Bool) -> some View {
+        modifier(FadeInSlowModifier(isVisible: isVisible))
     }
 
     func crossFade(isVisible: Bool) -> some View {

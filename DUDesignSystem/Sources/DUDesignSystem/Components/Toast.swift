@@ -59,12 +59,12 @@ public struct Toast: ViewModifier {
         .onChange(of: isShowing) { _, newValue in
             if newValue {
 
-                withAnimation(TokenAnimation.fadeInPage.animation) {
+                withAnimation(TokenAnimation.fadeInSlow.animation) {
                     opacity = 1
                 }
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    withAnimation(TokenAnimation.fadeInPage.animation) {
+                    withAnimation(TokenAnimation.fadeInSlow.animation) {
                         opacity = 0
                     }
 

@@ -79,7 +79,7 @@ private extension SoloDeveloperTrainingApp {
                     hasSeenIntro: $hasSeenIntro,
                     scenarioRepository: scenarioRepository
                 )
-                .fadeInPage(isVisible: hasSeenIntro)
+                .fadeInSlow(isVisible: hasSeenIntro)
             } else if hasSeenIntro, user == nil, showNicknameSetup {
                 NicknameSetupView { nickname in
                     let newUser = User(nickname: nickname)
