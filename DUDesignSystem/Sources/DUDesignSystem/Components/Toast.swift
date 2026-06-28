@@ -14,7 +14,6 @@ public struct Toast: ViewModifier {
     public let anchorY: CGFloat
     public let alignment: Alignment
 
-    @State private var showContent: Bool = false
     @State private var opacity: Double = 0
 
     public init(
@@ -33,47 +32,43 @@ public struct Toast: ViewModifier {
         ZStack {
             content
 
-            if showContent {
-                GeometryReader { geo in
-                    ItemLabel(text: message, font: .body2, color: .white300)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, TokenSpacing.mm)
-                        .background(
-                            LinearGradient(
-                                stops: [
-                                    .init(color: Color.black300.opacity(0.2), location: 0),
-                                    .init(color: Color.black300.opacity(0.7), location: 0.5),
-                                    .init(color: Color.black300.opacity(0.2), location: 1)
-                                ],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
+            GeometryReader { geo in
+                ItemLabel(text: message, font: .body2, color: .white300)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, TokenSpacing.mm)
+                    .background(
+                        LinearGradient(
+                            stops: [
+                                .init(color: Color.black300.opacity(0.2), location: 0),
+                                .init(color: Color.black300.opacity(0.7), location: 0.5),
+                                .init(color: Color.black300.opacity(0.2), location: 1)
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
                         )
-                        .opacity(opacity)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
-                        .padding(
-                            .bottom,
-                            anchorY > 0 ? geo.size.height - anchorY + geo
-                                .frame(in: .global).minY : 0
-                        )
-                }
+                    )
+                    .opacity(opacity)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
+                    .padding(
+                        .bottom,
+                        anchorY > 0 ? geo.size.height - anchorY + geo
+                            .frame(in: .global).minY : 0
+                    )
             }
         }
         .onChange(of: isShowing) { _, newValue in
             if newValue {
-                showContent = true
 
-                withAnimation(.easeOut(duration: 0.3)) {
+                withAnimation(TokenAnimation.fadeInPage.animation) {
                     opacity = 1
                 }
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    withAnimation(.easeIn(duration: 0.3)) {
+                    withAnimation(TokenAnimation.fadeInPage.animation) {
                         opacity = 0
                     }
 
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        showContent = false
                         isShowing = false
                     }
                 }
