@@ -57,6 +57,7 @@ struct LevelUpEffectView: View {
             }
             .onAppear { startAnimation() }
             .onDisappear { phase = .start }
+            .transition(TokenTransition.overlay.effect)
         }
     }
 }
@@ -124,7 +125,7 @@ private extension LevelUpEffectView {
         gradientOpacity = 0
         titleText = previousCareerTitle
 
-        withAnimation(.easeIn(duration: 0.3)) {
+        withAnimation {
             showTitleBox = true
             showGIF = true
         }
@@ -133,7 +134,7 @@ private extension LevelUpEffectView {
     func switchToLoopAnimation() {
         guard phase == .loop else { return }
 
-        withAnimation(.easeOut(duration: 0.3)) {
+        withAnimation(TokenAnimation.crossFade.animation) {
             gradientOpacity = 1
             titleText = currentCareerTitle
         }

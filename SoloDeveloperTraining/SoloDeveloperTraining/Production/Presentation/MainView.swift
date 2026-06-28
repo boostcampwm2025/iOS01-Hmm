@@ -133,7 +133,7 @@ struct MainView: View {
                     previousCareerTitle: previousCareer?.rawValue ?? "",
                     currentCareerTitle: leveledUpCareer?.rawValue ?? ""
                 )
-                .transition(.opacity.animation(.easeIn))
+                .transition(TokenTransition.overlay.effect)
             }
         }
         .onChange(of: showLevelUpEffect) { oldValue, newValue in
