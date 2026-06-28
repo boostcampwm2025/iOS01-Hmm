@@ -46,7 +46,7 @@ struct FeedbackSettingView: View {
             }
 
             TextButton(text: "닫기", type: .primary, size: .medium) {
-                SoundService.shared.trigger(.click)
+                sound.trigger(.click)
                 onClose?()
             }
         }
