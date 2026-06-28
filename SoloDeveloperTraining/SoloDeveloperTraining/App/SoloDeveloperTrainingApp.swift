@@ -15,12 +15,6 @@ import KakaoSDKCommon
 
 import DUDesignSystem
 
-private enum Constant {
-    enum Animation {
-        static let transitionDuration: Double = 0.5
-    }
-}
-
 @main
 struct SoloDeveloperTrainingApp: App {
 
@@ -85,7 +79,7 @@ private extension SoloDeveloperTrainingApp {
                     hasSeenIntro: $hasSeenIntro,
                     scenarioRepository: scenarioRepository
                 )
-                .transition(.opacity)
+                .fadeInPage(isVisible: hasSeenIntro)
             } else if hasSeenIntro, user == nil, showNicknameSetup {
                 NicknameSetupView { nickname in
                     let newUser = User(nickname: nickname)
@@ -107,7 +101,6 @@ private extension SoloDeveloperTrainingApp {
                 )
             }
         }
-        .animation(.easeOut(duration: Constant.Animation.transitionDuration), value: hasSeenIntro)
         .onOpenURL { url in
             guard let deeplinkInfo = parseOpenURL(url) else { return }
 
