@@ -10,20 +10,24 @@ import SwiftUI
 public struct ProgressBar: View {
 
     public var progress: Double
+    public var fillColor: Color
+    public var trackColor: Color
 
-    public init(progress: Double) {
+    public init(progress: Double, fillColor: Color = .orange300, trackColor: Color = .black300GrayBar) {
         self.progress = max(0, min(1, progress))
+        self.fillColor = fillColor
+        self.trackColor = trackColor
     }
 
     public var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: TokenRadius.ss)
-                    .fill(Color.black300GrayBar)
+                    .fill(trackColor)
                     .frame(height: 16)
 
                 RoundedRectangle(cornerRadius: TokenRadius.ss)
-                    .fill(Color.orange300)
+                    .fill(fillColor)
                     .frame(width: geo.size.width * progress, height: 16)
             }
         }
