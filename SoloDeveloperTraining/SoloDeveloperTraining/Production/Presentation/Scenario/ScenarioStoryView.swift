@@ -16,7 +16,6 @@ struct ScenarioStoryView: View {
     let user: User?
     let manager: ScenarioManager
     let repository: ScenarioRepository
-    let backgroundColor: Color?
     let onComplete: () -> Void
 
     @State private var currentPageIndex: Int
@@ -38,13 +37,11 @@ struct ScenarioStoryView: View {
         user: User?,
         manager: ScenarioManager,
         repository: ScenarioRepository,
-        backgroundColor: Color = .black300EventDim,
         onComplete: @escaping () -> Void
     ) {
         self.user = user
         self.manager = manager
         self.repository = repository
-        self.backgroundColor = backgroundColor
         self.onComplete = onComplete
         // 저장된 인덱스로 초기화하여 앱 재시작 시 해당 페이지부터 시작하게 함
         self._currentPageIndex = State(initialValue: manager.currentPageIndex)
@@ -54,8 +51,6 @@ struct ScenarioStoryView: View {
 
     var body: some View {
         ZStack {
-            backgroundColor
-
             VStack(spacing: isEnding ? TokenSpacing.xl : TokenSpacing.lg) {
                 if isEnding { endingResultView }
 
@@ -130,7 +125,6 @@ struct ScenarioStoryView: View {
                 rebirthConfirmPopupView
             }
         }
-        .ignoresSafeArea()
         .onAppear {
             restoreEndingIfNeeded()
         }

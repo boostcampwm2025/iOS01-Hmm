@@ -146,6 +146,27 @@ struct MainView: View {
         .fullScreenCover(isPresented: $showQuizView) {
             QuizGameView(user: user)
         }
+        .fullScreenCover(isPresented: $showScenarioView) {
+            ZStack {
+                Color.black300EventDim.ignoresSafeArea()
+                if let manager = scenarioManager {
+                    ScenarioStoryView(
+                        user: user,
+                        manager: manager,
+                        repository: scenarioRepository
+                    ) {
+                        let isRebirth = manager.currentScenario?.scenarioType == .rebirth
+                        manager.completeScenario()
+                        showScenarioView = false
+                        if isRebirth {
+                            hasSeenIntro = false
+                        } else {
+                            SoundService.shared.playBGM(.main)
+                        }
+                    }
+                }
+            }
+        }
         .duToast(
             isShowing: $showOfflineRewardToast,
             message: offlineRewardToastMessage,
@@ -297,33 +318,8 @@ private extension MainView {
             drinkAdPopupOverlayView
             exitBonusPopupOverlayView
             offlineRewardPopupOverlayView
-            scenarioOverlayView
             shopPopupOverlayView
             updateRewardOverlayView
-        }
-    }
-
-    @ViewBuilder
-    var scenarioOverlayView: some View {
-        if showScenarioView, let manager = scenarioManager {
-            ScenarioStoryView(
-                user: user,
-                manager: manager,
-                repository: scenarioRepository
-            ) {
-                let isRebirth = manager.currentScenario?.scenarioType == .rebirth
-                manager.completeScenario()
-
-                showScenarioView = false
-
-                if isRebirth {
-                    hasSeenIntro = false
-                } else {
-                    SoundService.shared.playBGM(.main)
-                }
-            }
-            .ignoresSafeArea()
-            .transition(.opacity.animation(.easeIn))
         }
     }
 

@@ -54,18 +54,20 @@ struct IntroView: View {
             }
         }
         .fullScreenCover(item: $scenarioManager) { manager in
-            ScenarioStoryView(
-                user: nil,
-                manager: manager,
-                repository: scenarioRepository,
-                backgroundColor: .black300,
-                onComplete: {
-                    scenarioManager = nil
-                    hasSeenIntro = true
-                    showNicknameSetup = true
-                    SoundService.shared.playBGM(.splash)
-                }
-            )
+            ZStack {
+                Color.black300.ignoresSafeArea()
+                ScenarioStoryView(
+                    user: nil,
+                    manager: manager,
+                    repository: scenarioRepository,
+                    onComplete: {
+                        scenarioManager = nil
+                        hasSeenIntro = true
+                        showNicknameSetup = true
+                        SoundService.shared.playBGM(.splash)
+                    }
+                )
+            }
         }
         .ignoresSafeArea()
     }
