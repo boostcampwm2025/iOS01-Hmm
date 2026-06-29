@@ -30,6 +30,9 @@ public struct PopupModifier<Popup: View>: ViewModifier {
     public func body(content: Content) -> some View {
         ZStack {
             content
+                .transaction { parent in
+                    parent.animation = nil
+                }
 
             if isPresented {
                 backgroundColor
