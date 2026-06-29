@@ -78,17 +78,6 @@ extension TokenAnimation {
     )
 }
 
-// MARK: - FadeInSlowModifier
-struct FadeInSlowModifier: ViewModifier {
-    let isVisible: Bool
-
-    func body(content: Content) -> some View {
-        content
-            .opacity(isVisible ? 1 : 0)
-            .animation(TokenAnimation.fadeInSlow.animation, value: isVisible)
-    }
-}
-
 // MARK: - FloatingFadeOutModifier
 struct FloatingFadeOutModifier: ViewModifier {
     let isActive: Bool
@@ -120,10 +109,6 @@ struct BlinkLoopModifier: ViewModifier {
 }
 
 public extension View {
-    func fadeInSlow(isVisible: Bool) -> some View {
-        modifier(FadeInSlowModifier(isVisible: isVisible))
-    }
-
     func floatingFadeOut(isActive: Bool) -> some View {
         modifier(FloatingFadeOutModifier(isActive: isActive))
     }

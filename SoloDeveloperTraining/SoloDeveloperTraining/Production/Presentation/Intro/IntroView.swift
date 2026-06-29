@@ -48,9 +48,7 @@ struct IntroView: View {
                 self.scenarioManager = manager
                 SoundService.shared.playBGM(.scenario)
             } else {
-                withAnimation(TokenAnimation.fadeInSlow.animation) {
-                    hasSeenIntro = true
-                }
+                hasSeenIntro = true
             }
         }
         .fullScreenCover(item: $scenarioManager) { manager in

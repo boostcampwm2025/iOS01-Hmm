@@ -79,7 +79,6 @@ private extension SoloDeveloperTrainingApp {
                     hasSeenIntro: $hasSeenIntro,
                     scenarioRepository: scenarioRepository
                 )
-                .fadeInSlow(isVisible: hasSeenIntro)
             } else if hasSeenIntro, user == nil, showNicknameSetup {
                 NicknameSetupView { nickname in
                     let newUser = User(nickname: nickname)
@@ -101,6 +100,7 @@ private extension SoloDeveloperTrainingApp {
                 )
             }
         }
+        .animation(TokenAnimation.fadeInSlow.animation, value: hasSeenIntro)
         .onOpenURL { url in
             guard let deeplinkInfo = parseOpenURL(url) else { return }
 
