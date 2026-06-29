@@ -200,7 +200,11 @@ struct MainView: View {
             onBackgroundTap: { noticePopup = nil },
             content: { noticePopup }
         )
-        .duPopup(isPresented: showUpdateRewardPopup) { updateRewardOverlayView }
+        .duPopup(
+            isPresented: showUpdateRewardPopup,
+            onBackgroundTap: handleClaimUpdateReward,
+            content: { updateRewardOverlayView }
+        )
     }
 }
 
@@ -339,10 +343,7 @@ private extension MainView {
         UpdateRewardPopupView(
             userType: userType,
             rewards: updateRewardItems,
-            onClose: {
-                let rewards = rewardRepository.fetchAllRewards(for: userType)
-                rewards?.forEach { handleClaimUpdateReward($0) }
-            }
+            onClose: handleClaimUpdateReward
         )
     }
 
@@ -675,12 +676,15 @@ private extension MainView {
         exitWorkGame()
     }
 
-    func handleClaimUpdateReward(_ reward: Reward) {
-        switch reward {
-        case .diamond(let count):
-            user.wallet.addDiamond(count)
-        case .consumable(let type, count: let count):
-            user.inventory.gain(consumable: type, count: count)
+    func handleClaimUpdateReward() {
+        let rewards = rewardRepository.fetchAllRewards(for: userType)
+        rewards?.forEach { reward in
+            switch reward {
+            case .diamond(let count):
+                user.wallet.addDiamond(count)
+            case .consumable(let type, count: let count):
+                user.inventory.gain(consumable: type, count: count)
+            }
         }
         showUpdateRewardPopup = false
         AppPreferences.shared.hasClaimedGameResetReward = true
