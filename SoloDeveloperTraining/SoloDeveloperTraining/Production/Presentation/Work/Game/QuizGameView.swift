@@ -45,8 +45,8 @@ struct QuizGameView: View {
             }
         }
         .onDisappear { SoundService.shared.stopAllSFX() }
-        .duPopup(isPresented: $showQuizAdPopup) { adPopupOverlay }
-        .duPopup(isPresented: $showQuizRewardPopup) { rewardPopupOverlay }
+        .duPopup(isPresented: showQuizAdPopup) { adPopupOverlay }
+        .duPopup(isPresented: showQuizRewardPopup) { rewardPopupOverlay }
     }
 
     // MARK: - Sections

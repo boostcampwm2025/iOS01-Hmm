@@ -10,19 +10,21 @@ import SwiftUI
 
 public struct PopupModifier<Popup: View>: ViewModifier {
 
-    @Binding private var isPresented: Bool
-    private let popup: () -> Popup
+    private let isPresented: Bool
     private let backgroundColor: Color
-
+    private let onBackgroundTap: (() -> Void)?
+    private let popup: () -> Popup
 
     public init(
-        isPresented: Binding<Bool>,
-        @ViewBuilder popup: @escaping () -> Popup,
-        backgroundColor: Color
+        isPresented: Bool,
+        backgroundColor: Color,
+        onBackgroundTap: (() -> Void)? = nil,
+        @ViewBuilder popup: @escaping () -> Popup
     ) {
-        self._isPresented = isPresented
-        self.popup = popup
+        self.isPresented = isPresented
         self.backgroundColor = backgroundColor
+        self.onBackgroundTap = onBackgroundTap
+        self.popup = popup
     }
 
     public func body(content: Content) -> some View {
@@ -32,29 +34,31 @@ public struct PopupModifier<Popup: View>: ViewModifier {
             if isPresented {
                 backgroundColor
                     .ignoresSafeArea()
+                    .onTapGesture {
+                        onBackgroundTap?()
+                    }
 
                 popup()
                     .transition(TokenTransition.scale.effect)
             }
         }
-        .animation(
-            TokenTransition.scale.animation,
-            value: isPresented
-        )
+        .animation(TokenTransition.scale.animation, value: isPresented)
     }
 }
 
 public extension View {
     func duPopup<Popup: View>(
-        isPresented: Binding<Bool>,
-        @ViewBuilder content: @escaping () -> Popup,
-        backgroundColor: Color = .black300PopUpDimStatusBar
+        isPresented: Bool,
+        backgroundColor: Color = .black300PopUpDimStatusBar,
+        onBackgroundTap: (() -> Void)? = nil,
+        @ViewBuilder content: @escaping () -> Popup
     ) -> some View {
         modifier(
             PopupModifier(
                 isPresented: isPresented,
-                popup: content,
-                backgroundColor: backgroundColor
+                backgroundColor: backgroundColor,
+                onBackgroundTap: onBackgroundTap,
+                popup: content
             )
         )
     }
