@@ -107,21 +107,14 @@ struct FloatingFadeOutModifier: ViewModifier {
 // MARK: - BlinkLoopModifier
 struct BlinkLoopModifier: ViewModifier {
     let isPlaying: Bool
-    @State private var isBlinking = false
+    @State private var opacity: Double = 1.0
 
     func body(content: Content) -> some View {
         content
-            .opacity(isBlinking ? 1.0 : 0.3)
+            .opacity(opacity)
+            .animation(TokenAnimation.blinkLoop.animation, value: opacity)
             .onChange(of: isPlaying) { _, newValue in
-                if newValue {
-                    withAnimation(TokenAnimation.blinkLoop.animation) {
-                        isBlinking = true
-                    }
-                } else {
-                    withAnimation(.default) {
-                        isBlinking = false
-                    }
-                }
+                opacity = newValue ? 0.3 : 1.0
             }
     }
 }
