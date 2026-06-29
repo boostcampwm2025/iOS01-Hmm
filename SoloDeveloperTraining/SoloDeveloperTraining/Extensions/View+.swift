@@ -12,15 +12,4 @@ extension View {
         buttonStyle(.soundTap)
     }
 
-    func longPressRepeat(
-        isLongPressing: Binding<Bool>,
-        isDisabled: Bool,
-        onLongPressRepeat: (() -> Bool)?
-    ) -> some View {
-        modifier(LongPressRepeatModifier(
-            isLongPressing: isLongPressing,
-            isDisabled: isDisabled,
-            onLongPressRepeat: onLongPressRepeat
-        ))
-    }
 }
