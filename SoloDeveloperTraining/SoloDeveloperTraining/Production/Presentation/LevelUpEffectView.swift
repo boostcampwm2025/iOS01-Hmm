@@ -27,7 +27,6 @@ struct LevelUpEffectView: View {
 
     @State private var phase: Phase = .start
     @State private var showTitleBox: Bool = false
-    @State private var showGIF: Bool = false
     @State private var gradientOpacity: CGFloat = 0
     @State private var titleText: String = ""
 
@@ -51,7 +50,10 @@ struct LevelUpEffectView: View {
                 )
                 .frame(maxWidth: .infinity)
 
-                careerTitleBox
+                if showTitleBox {
+                    careerTitleBox
+                        .transition(TokenTransition.overlay.effect)
+                }
             }
             .onAppear { startAnimation() }
             .onDisappear { phase = .start }
@@ -91,7 +93,6 @@ private extension LevelUpEffectView {
 
             sidebarOverlay
         }
-        .opacity(showTitleBox ? 1 : 0)
         .padding(.horizontal, TokenGrid.marginPopUp)
     }
 
@@ -118,19 +119,21 @@ private extension LevelUpEffectView {
         guard phase == .start else { return }
 
         showTitleBox = false
-        showGIF = false
         gradientOpacity = 0
         titleText = previousCareerTitle
 
-        showTitleBox = true
-        showGIF = true
+        withAnimation(TokenTransition.overlay.animation) {
+            showTitleBox = true
+        }
     }
 
     func switchToLoopAnimation() {
         guard phase == .loop else { return }
 
-        gradientOpacity = 1
-        titleText = currentCareerTitle
+        withAnimation(TokenAnimation.crossFade.animation) {
+            gradientOpacity = 1
+            titleText = currentCareerTitle
+        }
     }
 }
 
