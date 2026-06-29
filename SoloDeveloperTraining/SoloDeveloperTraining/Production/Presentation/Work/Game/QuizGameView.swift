@@ -91,7 +91,7 @@ struct QuizGameView: View {
     private var questionSection: some View {
         VStack(spacing: TokenSpacing.xl) {
             HStack(spacing: 0) {
-                ItemLabel(text: quizGame.currentQuestion?.question ?? "", font: .body, color: .black300)
+                ItemLabel(text: quizGame.currentQuestion?.question ?? "", font: .body, color: .black300, textAlignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
                 Spacer()
             }
@@ -112,7 +112,8 @@ struct QuizGameView: View {
                             "정답\n\(quizGame.currentQuestion?.explanation ?? "")" :
                             "오답\n\(quizGame.currentQuestion?.explanation ?? "")",
                         font: .label,
-                        color: quizGame.currentAnswerResult?.isCorrect == true ? .accentGreen : .accentRed
+                        color: quizGame.currentAnswerResult?.isCorrect == true ? .accentGreen : .accentRed,
+                        textAlignment: .leading
                     )
                     .fixedSize(horizontal: false, vertical: true)
                     Spacer()
