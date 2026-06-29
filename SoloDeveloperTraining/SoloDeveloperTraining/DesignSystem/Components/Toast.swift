@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import DUDesignSystem
+
 private enum Constant {
     static let cornerRadius: CGFloat = 6
 
@@ -21,7 +23,7 @@ private enum Constant {
     }
 
     enum Shadow {
-        static let color: Color = AppColors.gray400
+        static let color: Color = .gray400
         static let radius: CGFloat = 4
         static let yOffset: CGFloat = 3
     }
@@ -65,7 +67,7 @@ struct Toast: ViewModifier {
                         .lineLimit(nil)
                         .padding(.horizontal, Constant.Padding.horizontal)
                         .padding(.vertical, Constant.Padding.vertical)
-                        .background(AppColors.orange300)
+                        .background(Color.orange300)
                         .foregroundColor(.white)
                         .cornerRadius(Constant.cornerRadius)
                         .shadow(color: Constant.Shadow.color,
