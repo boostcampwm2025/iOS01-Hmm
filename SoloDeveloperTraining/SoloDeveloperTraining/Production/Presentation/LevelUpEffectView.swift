@@ -36,9 +36,7 @@ struct LevelUpEffectView: View {
             Color.black300EventDim
                 .ignoresSafeArea()
                 .onTapGesture {
-                    withAnimation {
-                        isPresented = false
-                    }
+                    isPresented = false
                 }
 
             VStack(spacing: TokenSpacing.xs) {
@@ -57,7 +55,6 @@ struct LevelUpEffectView: View {
             }
             .onAppear { startAnimation() }
             .onDisappear { phase = .start }
-            .transition(TokenTransition.overlay.effect)
         }
     }
 }
@@ -125,19 +122,15 @@ private extension LevelUpEffectView {
         gradientOpacity = 0
         titleText = previousCareerTitle
 
-        withAnimation {
-            showTitleBox = true
-            showGIF = true
-        }
+        showTitleBox = true
+        showGIF = true
     }
 
     func switchToLoopAnimation() {
         guard phase == .loop else { return }
 
-        withAnimation(TokenAnimation.crossFade.animation) {
-            gradientOpacity = 1
-            titleText = currentCareerTitle
-        }
+        gradientOpacity = 1
+        titleText = currentCareerTitle
     }
 }
 

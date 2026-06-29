@@ -136,6 +136,7 @@ struct MainView: View {
                 .transition(TokenTransition.overlay.effect)
             }
         }
+        .animation(TokenTransition.overlay.animation, value: showLevelUpEffect)
         .onChange(of: showLevelUpEffect) { oldValue, newValue in
             if oldValue == true && newValue == false {
                 Task {
