@@ -79,7 +79,6 @@ extension TokenAnimation {
 }
 
 // MARK: - FadeInSlowModifier
-
 struct FadeInSlowModifier: ViewModifier {
     let isVisible: Bool
 
@@ -87,18 +86,6 @@ struct FadeInSlowModifier: ViewModifier {
         content
             .opacity(isVisible ? 1 : 0)
             .animation(TokenAnimation.fadeInSlow.animation, value: isVisible)
-    }
-}
-
-// MARK: - CrossFadeModifier
-
-struct CrossFadeModifier: ViewModifier {
-    let isVisible: Bool
-
-    func body(content: Content) -> some View {
-        content
-            .opacity(isVisible ? 1 : 0)
-            .animation(TokenAnimation.crossFade.animation, value: isVisible)
     }
 }
 
@@ -114,17 +101,6 @@ struct FloatingFadeOutModifier: ViewModifier {
                 TokenAnimation.floatingFadeOut.animation,
                 value: isActive
             )
-    }
-}
-
-// MARK: - OffsetMoveModifier
-struct OffsetMoveModifier: ViewModifier {
-    let isVisible: Bool
-
-    func body(content: Content) -> some View {
-        content
-            .opacity(isVisible ? 1 : 0)
-            .animation(TokenAnimation.offsetMove.animation, value: isVisible)
     }
 }
 
@@ -155,16 +131,8 @@ public extension View {
         modifier(FadeInSlowModifier(isVisible: isVisible))
     }
 
-    func crossFade(isVisible: Bool) -> some View {
-        modifier(CrossFadeModifier(isVisible: isVisible))
-    }
-
     func floatingFadeOut(isActive: Bool) -> some View {
         modifier(FloatingFadeOutModifier(isActive: isActive))
-    }
-
-    func offsetMove(isVisible: Bool) -> some View {
-        modifier(OffsetMoveModifier(isVisible: isVisible))
     }
 
     func blinkLoop(isPlaying: Bool) -> some View {
