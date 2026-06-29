@@ -6,84 +6,78 @@
 //
 
 import SwiftUI
+import UIKit
 
-public struct Toast: ViewModifier {
+// MARK: - Content View
 
-    @Binding var isShowing: Bool
-    public let message: String
-    public let anchorY: CGFloat
-    public let alignment: Alignment
+private struct ToastContentView: View {
+    let message: String
 
-    @State private var showContent: Bool = false
-    @State private var opacity: Double = 0
-
-    public init(
-        isShowing: Binding<Bool>,
-        message: String,
-        anchorY: CGFloat = 0,
-        alignment: Alignment = .bottom
-    ) {
-        self._isShowing = isShowing
-        self.message = message
-        self.anchorY = anchorY
-        self.alignment = alignment
-    }
-
-    public func body(content: Content) -> some View {
-        ZStack {
-            content
-
-            if showContent {
-                GeometryReader { geo in
-                    ItemLabel(text: message, font: .body2, color: .white300)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, TokenSpacing.mm)
-                        .background(
-                            LinearGradient(
-                                stops: [
-                                    .init(color: Color.black300.opacity(0.2), location: 0),
-                                    .init(color: Color.black300.opacity(0.7), location: 0.5),
-                                    .init(color: Color.black300.opacity(0.2), location: 1)
-                                ],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .opacity(opacity)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
-                        .padding(
-                            .bottom,
-                            anchorY > 0 ? geo.size.height - anchorY + geo
-                                .frame(in: .global).minY : 0
-                        )
-                }
-            }
-        }
-        .onChange(of: isShowing) { _, newValue in
-            if newValue {
-                showContent = true
-
-                withAnimation(.easeOut(duration: 0.3)) {
-                    opacity = 1
-                }
-
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    withAnimation(.easeIn(duration: 0.3)) {
-                        opacity = 0
-                    }
-
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        showContent = false
-                        isShowing = false
-                    }
-                }
-            }
-        }
+    var body: some View {
+        ItemLabel(text: message, font: .body2, color: .white300)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, TokenSpacing.mm)
+            .background(
+                LinearGradient(
+                    stops: [
+                        .init(color: Color.black300.opacity(0.2), location: 0),
+                        .init(color: Color.black300.opacity(0.7), location: 0.5),
+                        .init(color: Color.black300.opacity(0.2), location: 1)
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
     }
 }
 
-public extension View {
-    func duToast(isShowing: Binding<Bool>, message: String, anchorY: CGFloat = 0, alignment: Alignment = .bottom) -> some View {
-        modifier(Toast(isShowing: isShowing, message: message, anchorY: anchorY, alignment: alignment))
+// MARK: - Toast Manager
+@MainActor
+public final class ToastManager {
+    public static let shared = ToastManager()
+    private init() {}
+
+    /// 탭바 상단 기준 앵커. 앱 시작 후 탭바가 레이아웃되면 한 번 세팅.
+    public static var anchorY: CGFloat = 0
+
+    private var activeControllers: [UIHostingController<ToastContentView>] = []
+
+    @MainActor
+    public func show(_ message: String) {
+        guard let window = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first(where: { $0.activationState == .foregroundActive })?
+            .keyWindow
+        else { return }
+
+        let hostingController = UIHostingController(rootView: ToastContentView(message: message))
+        activeControllers.append(hostingController)
+
+        let contentView = hostingController.view!
+        contentView.backgroundColor = .clear
+        contentView.isUserInteractionEnabled = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.alpha = 0
+
+        window.addSubview(contentView)
+        NSLayoutConstraint.activate([
+            contentView.leadingAnchor.constraint(equalTo: window.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: window.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: window.topAnchor, constant: ToastManager.anchorY)
+        ])
+        window.layoutIfNeeded()
+
+        UIView.animate(withDuration: 0.3) {
+            contentView.alpha = 1
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+            UIView.animate(withDuration: 0.3) {
+                contentView.alpha = 0
+            } completion: { _ in
+                contentView.removeFromSuperview()
+                self?.activeControllers.removeAll { $0 === hostingController }
+            }
+        }
     }
 }

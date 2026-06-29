@@ -25,8 +25,6 @@ struct WorkSelectedView: View {
     @State var selectedIndex: Int = 0
     @State var workItems: [WorkSegmentControl.Item] = []
     @State private var requiredCareers: [Career?] = []
-    @State private var showToast: Bool = false
-    @State private var toastMessage: String = ""
     @Binding var isGameStarted: Bool
     @Binding var gameActionGoldDelta: Int
     @Binding var tabSwitchPause: Bool
@@ -103,8 +101,7 @@ private extension WorkSelectedView {
                 onLockedTap: { index in
                     guard index < requiredCareers.count, let career = requiredCareers[index] else { return }
                     SoundService.shared.trigger(.click)
-                    toastMessage = "\(career.rawValue)부터 플레이할 수 있습니다."
-                    showToast = true
+                    ToastManager.shared.show("\(career.rawValue)부터 플레이할 수 있습니다.")
                 }
             )
             ItemLabel(text: actionDescription(for: selectedIndex), font: .body2, color: .black300)
@@ -115,7 +112,6 @@ private extension WorkSelectedView {
             .padding(.bottom, TokenGrid.paddingBottom)
         }
         .padding(.horizontal, TokenGrid.paddingSide)
-        .toast(isShowing: $showToast, message: toastMessage)
     }
 }
 

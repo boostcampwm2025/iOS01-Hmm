@@ -9,12 +9,9 @@ import DUDesignSystem
 struct ComponentToastView: View {
 
     @State private var message: String = "토스트 안내 메시지입니다."
-    @State private var showToast = false
-    @State private var anchorY: CGFloat = 0
 
     var body: some View {
         VStack(spacing: 0) {
-            // MARK: - Controls
             List {
                 Section("메시지") {
                     HStack {
@@ -31,11 +28,11 @@ struct ComponentToastView: View {
 
                 Section {
                     Button("토스트 표시") {
-                        showToast = true
+                        ToastManager.shared.show(message)
                     }
                     .background(GeometryReader { geo in
                         Color.clear.onAppear {
-                            anchorY = geo.frame(in: .global).minY
+                            ToastManager.anchorY = geo.frame(in: .global).minY
                         }
                     })
                 }
@@ -44,7 +41,6 @@ struct ComponentToastView: View {
         }
         .background(Color.beige200)
         .navigationTitle("Toast")
-        .duToast(isShowing: $showToast, message: message, anchorY: anchorY)
     }
 }
 
