@@ -188,6 +188,7 @@ struct MainView: View {
             onBackgroundTap: { showSettingsView = false },
             content: { settingsOverlayView }
         )
+        .duPopup(isPresented: showDrinkAdPopup) { drinkAdPopupOverlayView }
     }
 }
 
@@ -323,7 +324,6 @@ private extension MainView {
     @ViewBuilder
     var overlayView: some View {
         Group {
-            drinkAdPopupOverlayView
             exitBonusPopupOverlayView
             offlineRewardPopupOverlayView
             shopPopupOverlayView
@@ -494,25 +494,23 @@ private extension MainView {
 
     @ViewBuilder
     var drinkAdPopupOverlayView: some View {
-        if showDrinkAdPopup, let drinkType = selectedDrinkType {
-            modalOverlay {
-                NoticePopup(
-                    type: .ad(
-                        cancelText: "그냥 하기",
-                        adText: "음료 받기",
-                        cancelAction: {
-                            SoundService.shared.trigger(.click)
-                            handleSkipAdInMainView()
-                        },
-                        adAction: {
-                            SoundService.shared.trigger(.click)
-                            Task { await handleWatchAdInMainView() }
-                        }
-                    ),
-                    title: drinkType == .coffee ? "커피 없음" : "박하스 없음",
-                    text: "대신에 광고를 보고\n카페인을 보충할까요?"
-                )
-            }
+        if let drinkType = selectedDrinkType {
+            NoticePopup(
+                type: .ad(
+                    cancelText: "그냥 하기",
+                    adText: "음료 받기",
+                    cancelAction: {
+                        SoundService.shared.trigger(.click)
+                        handleSkipAdInMainView()
+                    },
+                    adAction: {
+                        SoundService.shared.trigger(.click)
+                        Task { await handleWatchAdInMainView() }
+                    }
+                ),
+                title: drinkType == .coffee ? "커피 없음" : "박하스 없음",
+                text: "대신에 광고를 보고\n카페인을 보충할까요?"
+            )
             .onAppear { trackDrinkAdOfferIfNeeded(drinkType: drinkType) }
         }
     }
