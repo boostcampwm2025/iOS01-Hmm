@@ -314,7 +314,6 @@ private extension MainView {
     var overlayView: some View {
         Group {
             careerPopupOverlayView
-                .ignoresSafeArea()
             settingsOverlayView
             drinkAdPopupOverlayView
             exitBonusPopupOverlayView
