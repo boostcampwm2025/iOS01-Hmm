@@ -192,9 +192,13 @@ private extension MainView {
         .padding(.vertical, TokenSpacing.md)
         .padding(.horizontal, TokenGrid.paddingSide)
         .background(GeometryReader { geo in
-            Color.clear.onAppear {
-                ToastManager.anchorY = geo.frame(in: .global).minY
-            }
+            Color.clear
+                .onAppear {
+                    ToastManager.anchorY = geo.frame(in: .global).minY
+                }
+                .onChange(of: geo.frame(in: .global).minY) { _, newY in
+                    ToastManager.anchorY = newY
+                }
         })
     }
 

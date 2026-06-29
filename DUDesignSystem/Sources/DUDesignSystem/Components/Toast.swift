@@ -40,7 +40,8 @@ public final class ToastManager {
     /// 탭바 상단 기준 앵커. 앱 시작 후 탭바가 레이아웃되면 한 번 세팅.
     public static var anchorY: CGFloat = 0
 
-    private var activeControllers: [UIHostingController<ToastContentView>] = []
+    private var activeController: UIHostingController<ToastContentView>?
+    private var dismissWorkItem: DispatchWorkItem?
 
     @MainActor
     public func show(_ message: String) {
@@ -50,8 +51,16 @@ public final class ToastManager {
             .keyWindow
         else { return }
 
+        // 기존 토스트 즉시 제거
+        dismissWorkItem?.cancel()
+        dismissWorkItem = nil
+        if let previous = activeController {
+            previous.view.removeFromSuperview()
+            activeController = nil
+        }
+
         let hostingController = UIHostingController(rootView: ToastContentView(message: message))
-        activeControllers.append(hostingController)
+        activeController = hostingController
 
         let contentView = hostingController.view!
         contentView.backgroundColor = .clear
@@ -71,13 +80,18 @@ public final class ToastManager {
             contentView.alpha = 1
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+        let workItem = DispatchWorkItem { [weak self, weak hostingController] in
+            guard let self, let hostingController else { return }
             UIView.animate(withDuration: 0.3) {
-                contentView.alpha = 0
+                hostingController.view.alpha = 0
             } completion: { _ in
-                contentView.removeFromSuperview()
-                self?.activeControllers.removeAll { $0 === hostingController }
+                hostingController.view.removeFromSuperview()
+                if self.activeController === hostingController {
+                    self.activeController = nil
+                }
             }
         }
+        dismissWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: workItem)
     }
 }
