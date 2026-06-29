@@ -103,9 +103,9 @@ enum ConsumableType {
     var imageName: String {
         switch self {
         case .coffee:
-            return "icon_coffee"
+            return "iconCoffee"
         case .energyDrink:
-            return "icon_energy_drink"
+            return "iconEnergyDrink"
         }
     }
 }

@@ -138,7 +138,7 @@ private extension LanguageGameView {
     }
 
     var languageBackgroundSection: some View {
-        Image.duImage("language_background")
+        Image.duImage("languageBackground")
             .resizable()
             .frame(height: Constant.Size.backgroundHeight)
             .frame(maxWidth: .infinity)

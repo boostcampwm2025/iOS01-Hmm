@@ -101,6 +101,6 @@ private extension StoryCard {
     StoryCard(
         type: .levelUp,
         text: "테스트",
-        imageName: "scenario_levelup_normal_developer"
+        imageName: "scenarioLevelupNormalDeveloper"
     )
 }

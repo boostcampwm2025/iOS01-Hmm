@@ -113,7 +113,7 @@ public struct HousingCard: View {
             title: "고시원",
             price: "₩10,000,000",
             rewardPerSecond: "초당 1 골드 획득",
-            imageName: "housing_street",
+            imageName: "housingStreet",
             state: .default,
             onTap: {},
             onButtonTap: {}
@@ -122,7 +122,7 @@ public struct HousingCard: View {
             title: "고시원",
             price: "₩10,000,000",
             rewardPerSecond: "초당 1 골드 획득",
-            imageName: "housing_street",
+            imageName: "housingStreet",
             state: .selected,
             onTap: {},
             onButtonTap: {}
@@ -131,7 +131,7 @@ public struct HousingCard: View {
             title: "고시원",
             price: "₩10,000,000",
             rewardPerSecond: "초당 1 골드 획득",
-            imageName: "housing_street",
+            imageName: "housingStreet",
             state: .equipped,
             onTap: {},
             onButtonTap: {}
@@ -140,7 +140,7 @@ public struct HousingCard: View {
             title: "고시원",
             price: "₩10,000,000",
             rewardPerSecond: "초당 1 골드 획득",
-            imageName: "housing_street",
+            imageName: "housingStreet",
             state: .locked,
             onTap: {},
             onButtonTap: {}

@@ -55,7 +55,7 @@ struct UpdateRewardPopupView: View {
             ItemLabel(text: "보상 정보", font: .subheadline, color: .white300)
                 .frame(height: 36)
                 .frame(maxWidth: .infinity)
-                .background(.orange300)
+                .background(Color.orange300)
             ForEach(rewards.indices, id: \.self) { index in
                 rewardInfoRow(rewards[index])
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -63,7 +63,7 @@ struct UpdateRewardPopupView: View {
         }
         .padding(.horizontal, TokenSpacing.xs)
         .padding(.vertical, TokenSpacing.sm)
-        .background(.beige100)
+        .background(Color.beige100)
     }
 
     private func rewardInfoRow(_ updateReward: UpdateReward) -> some View {

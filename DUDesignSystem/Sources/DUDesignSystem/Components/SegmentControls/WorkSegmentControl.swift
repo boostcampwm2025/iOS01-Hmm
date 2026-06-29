@@ -57,10 +57,10 @@ public struct WorkSegmentControl: View {
 
     WorkSegmentControl(
         items: [
-            .init(title: "언어 맞추기", imageName: "work_language"),
-            .init(title: "스택 맞추기", imageName: "work_stack"),
-            .init(title: "탭 하기", imageName: "work_tap"),
-            .init(title: "피하기", imageName: "work_dodge", isLocked: true)
+            .init(title: "언어 맞추기", imageName: "workLanguage"),
+            .init(title: "스택 맞추기", imageName: "workStack"),
+            .init(title: "탭 하기", imageName: "workTap"),
+            .init(title: "피하기", imageName: "workDodge", isLocked: true)
         ],
         selectedIndex: $selectedIndex
     )

@@ -94,7 +94,7 @@ public struct StatusBar: View {
     @Previewable @State var time: Bool = true
     VStack(spacing: TokenSpacing.lg) {
         StatusBar(
-            imageName: "icon_coffee",
+            imageName: "iconCoffee",
             careerName: "개발자 지망생",
             nickname: "소피아",
             careerProgress: 0.3,
@@ -102,7 +102,7 @@ public struct StatusBar: View {
             diamond: "20"
         )
         StatusBar(
-            imageName: "icon_coffee",
+            imageName: "iconCoffee",
             careerName: "개발자 지망생",
             nickname: "소피아",
             careerProgress: 0.7,

@@ -65,7 +65,7 @@ struct NicknameSetupView: View {
                 }
                 .frame(height: 560)
                 .background(
-                    Image.duImage("housing_street")
+                    Image.duImage("housingStreet")
                         .resizable()
                         .opacity(TokenOpacity.opacity40)
                 )

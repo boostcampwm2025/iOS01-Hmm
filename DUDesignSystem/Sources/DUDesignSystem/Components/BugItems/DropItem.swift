@@ -10,9 +10,9 @@ import SwiftUI
 public struct DropItem: View {
 
     public enum DropItemType: String {
-        case smallGold = "dodge_drop_small_gold"
-        case largeGold = "dodge_drop_large_gold"
-        case bug       = "dodge_drop_bug"
+        case smallGold = "dodgeDropSmallGold"
+        case largeGold = "dodgeDropLargeGold"
+        case bug       = "dodgeDropBug"
     }
 
     public var type: DropItemType
