@@ -97,29 +97,6 @@ struct ScenarioStoryView: View {
                 }
             }
             .frame(maxHeight: .infinity, alignment: isEnding ? .top : .center)
-
-            if isRebirthConfirmPopupPresented || isShareSheetPresented {
-                Color.black300PopUpDimStatusBar.ignoresSafeArea()
-            }
-
-            if isShareSheetPresented, let ending = finalEnding {
-                ShareSheetView(
-                    isPresented: $isShareSheetPresented,
-                    kakaoMessageTemplateID: ending.type.kakaoMessageTemplateID,
-                    shareID: currentShareID,
-                    resultID: ending.id,
-                    urlString: "\(ShareService.baseURL)/\(ending.type.webURLSlug)?share_id=\(currentShareID)&device_id=\(AnalyticsProperty.deviceIDValue)&result_id=\(ending.id)",
-                    onLinkCopied: {
-                        showCompletedToast = true
-                        showCompletedToastMessage = "링크가 복사되었습니다."
-                    }
-                )
-                .padding(.horizontal, TokenSpacing.lg)
-            }
-
-            if isRebirthConfirmPopupPresented {
-                rebirthConfirmPopupView
-            }
         }
         .id(manager.currentScenario?.id)
         .onAppear {
@@ -130,11 +107,31 @@ struct ScenarioStoryView: View {
             message: showCompletedToastMessage,
             alignment: .center
         )
+        .duPopup(isPresented: isShareSheetPresented) { shareSheetPopup }
+        .duPopup(isPresented: isRebirthConfirmPopupPresented) { rebirthConfirmPopupView }
     }
 }
 
 // MARK: - 서브 뷰
 private extension ScenarioStoryView {
+    @ViewBuilder
+    var shareSheetPopup: some View {
+        if let ending = finalEnding {
+            ShareSheetView(
+                isPresented: $isShareSheetPresented,
+                kakaoMessageTemplateID: ending.type.kakaoMessageTemplateID,
+                shareID: currentShareID,
+                resultID: ending.id,
+                urlString: "\(ShareService.baseURL)/\(ending.type.webURLSlug)?share_id=\(currentShareID)&device_id=\(AnalyticsProperty.deviceIDValue)&result_id=\(ending.id)",
+                onLinkCopied: {
+                    showCompletedToast = true
+                    showCompletedToastMessage = "링크가 복사되었습니다."
+                }
+            )
+            .padding(.horizontal, TokenSpacing.lg)
+        }
+    }
+
     var endingResultView: some View {
         HStack(spacing: TokenSpacing.sm) {
             DUIcon(.movieSlate, size: .size28)
