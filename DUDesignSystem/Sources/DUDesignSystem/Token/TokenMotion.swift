@@ -13,12 +13,20 @@ import SwiftUI
 @MainActor
 public struct TokenTransition {
     public let effect: AnyTransition
+    public let animation: Animation
+    public let duration: Duration
 }
 
 extension TokenTransition {
-    public static let overlay = TokenTransition(effect: .opacity)
+    public static let overlay = TokenTransition(
+        effect: .opacity,
+        animation: .easeInOut(duration: 0.25),
+        duration: .milliseconds(250)
+    )
     public static let scale = TokenTransition(
-        effect: .opacity.combined(with: .scale(scale: 0.95))
+        effect: .opacity.combined(with: .scale(scale: 0.95)),
+        animation: .easeInOut(duration: 0.25),
+        duration: .milliseconds(250)
     )
 }
 

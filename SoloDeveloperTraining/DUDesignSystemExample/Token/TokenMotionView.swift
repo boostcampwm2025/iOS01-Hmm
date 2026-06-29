@@ -70,13 +70,12 @@ private struct TransitionPreviewRow: View {
             Button {
                 guard !isPlaying else { return } // 중복 탭 방지
                 isPlaying = true
-                withAnimation(TokenAnimation.fadeInSlow.animation) { // 생성
+                withAnimation(token.animation) { // 생성
                     isVisible = true
                 }
 
-                DispatchQueue.main.asyncAfter(deadline:.now() + Double(TokenAnimation.fadeInSlow.duration.components.seconds)
-                ) { // 소멸
-                    withAnimation(TokenAnimation.fadeInSlow.animation) {
+                DispatchQueue.main.asyncAfter(deadline:.now() + Double(token.duration.components.seconds)) { // 소멸
+                    withAnimation(token.animation) {
                         isVisible = false
                     }
                 }
