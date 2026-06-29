@@ -35,14 +35,6 @@ extension TokenTransition {
 public struct TokenAnimation {
     public let animation: Animation
     public let duration: Duration
-
-    public init(
-        animation: Animation,
-        duration: Duration
-    ) {
-        self.animation = animation
-        self.duration = duration
-    }
 }
 
 extension TokenAnimation {
