@@ -121,6 +121,7 @@ struct ScenarioStoryView: View {
                 rebirthConfirmPopupView
             }
         }
+        .id(manager.currentScenario?.id)
         .onAppear {
             restoreEndingIfNeeded()
         }
@@ -322,13 +323,15 @@ private extension ScenarioStoryView {
                 pages: pages
             )
 
-            manager.startScenario(rebirthScenario)
+            withAnimation(TokenAnimation.fadeInSlow.animation) {
+                manager.startScenario(rebirthScenario)
+                currentPageIndex = manager.currentPageIndex
+                selected = ""
+                finalEnding = nil
 
-            currentPageIndex = manager.currentPageIndex
-            selected = ""
-            finalEnding = nil
+                isRebirthConfirmPopupPresented = false
+            }
 
-            isRebirthConfirmPopupPresented = false
             SoundService.shared.playBGM(.rebirth)
         }
     }
