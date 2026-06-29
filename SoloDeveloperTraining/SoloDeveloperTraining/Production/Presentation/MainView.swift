@@ -189,6 +189,9 @@ struct MainView: View {
             content: { settingsOverlayView }
         )
         .duPopup(isPresented: showDrinkAdPopup) { drinkAdPopupOverlayView }
+        .duPopup(isPresented: workGameSession.showsExitBonusPopup) {
+            exitBonusPopupOverlayView
+        }
     }
 }
 
@@ -324,7 +327,6 @@ private extension MainView {
     @ViewBuilder
     var overlayView: some View {
         Group {
-            exitBonusPopupOverlayView
             offlineRewardPopupOverlayView
             shopPopupOverlayView
             updateRewardOverlayView
@@ -517,27 +519,23 @@ private extension MainView {
 
     @ViewBuilder
     var exitBonusPopupOverlayView: some View {
-        if workGameSession.showsExitBonusPopup {
-            modalOverlay {
-                NoticePopup(
-                    type: .ad(
-                        cancelText: "그냥 나가기",
-                        adText: "보너스 받기",
-                        cancelAction: {
-                            SoundService.shared.trigger(.click)
-                            handleExitWithoutBonus()
-                        },
-                        adAction: {
-                            SoundService.shared.trigger(.click)
-                            Task { await handleExitBonusAd() }
-                        }
-                    ),
-                    title: "보너스",
-                    text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다"
-                )
-            }
-            .onAppear { trackExitBonusAdOfferIfNeeded() }
-        }
+        NoticePopup(
+            type: .ad(
+                cancelText: "그냥 나가기",
+                adText: "보너스 받기",
+                cancelAction: {
+                    SoundService.shared.trigger(.click)
+                    handleExitWithoutBonus()
+                },
+                adAction: {
+                    SoundService.shared.trigger(.click)
+                    Task { await handleExitBonusAd() }
+                }
+            ),
+            title: "보너스",
+            text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다"
+        )
+        .onAppear { trackExitBonusAdOfferIfNeeded() }
     }
 
     @ViewBuilder
