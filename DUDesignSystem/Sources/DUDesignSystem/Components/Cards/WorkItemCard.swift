@@ -87,7 +87,7 @@ public struct WorkItemCard: View {
 #Preview {
     WorkItemCard(
         title: "언어 맞추기",
-        imageName: "work_language",
+        imageName: "workLanguage",
         state: .selected,
         onTap: {}
     )

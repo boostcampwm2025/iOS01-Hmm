@@ -32,14 +32,14 @@ enum BlockType: CaseIterable {
 
     var imageName: String {
         switch self {
-        case .blue: return "stack_block_blue"
-        case .green: return "stack_block_green"
-        case .orange: return "stack_block_orange"
-        case .purple: return "stack_block_purple"
-        case .red: return "stack_block_red"
-        case .yellow: return "stack_block_yellow"
-        case .bomb: return "stack_block_bomb"
-        case .bomb2: return "stack_block_bomb2"
+        case .blue: return "stackBlockBlue"
+        case .green: return "stackBlockGreen"
+        case .orange: return "stackBlockOrange"
+        case .purple: return "stackBlockPurple"
+        case .red: return "stackBlockRed"
+        case .yellow: return "stackBlockYellow"
+        case .bomb: return "stackBlockBomb"
+        case .bomb2: return "stackBlockBomb2"
         }
     }
 

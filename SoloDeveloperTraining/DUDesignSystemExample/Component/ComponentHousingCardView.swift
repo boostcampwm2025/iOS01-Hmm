@@ -21,7 +21,7 @@ struct ComponentHousingCardView: View {
                     title: title,
                     price: price,
                     rewardPerSecond: rewardPerSecond,
-                    imageName: "housing_street",
+                    imageName: "housingStreet",
                     state: selectedState,
                     onTap: { selectedState = .selected },
                     onButtonTap: { selectedState = .equipped }

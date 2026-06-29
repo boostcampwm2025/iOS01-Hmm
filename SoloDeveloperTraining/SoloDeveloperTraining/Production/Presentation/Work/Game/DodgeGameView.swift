@@ -165,7 +165,7 @@ private extension DodgeGameView {
         Color.clear
             .frame(height: Constant.Size.ground)
             .overlay(
-                Image.duImage("dodge_ground")
+                Image.duImage("dodgeGround")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
             )
