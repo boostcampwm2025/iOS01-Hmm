@@ -178,6 +178,16 @@ struct MainView: View {
             message: rewardToastMessage,
             anchorY: bottomAnchorY
         )
+        .duPopup(
+            isPresented: showCareerPopup,
+            onBackgroundTap: { showCareerPopup = false },
+            content: { careerPopupOverlayView }
+        )
+        .duPopup(
+            isPresented: showSettingsView,
+            onBackgroundTap: { showSettingsView = false },
+            content: { settingsOverlayView }
+        )
     }
 }
 
@@ -313,8 +323,6 @@ private extension MainView {
     @ViewBuilder
     var overlayView: some View {
         Group {
-            careerPopupOverlayView
-            settingsOverlayView
             drinkAdPopupOverlayView
             exitBonusPopupOverlayView
             offlineRewardPopupOverlayView
@@ -340,20 +348,13 @@ private extension MainView {
 
     @ViewBuilder
     var careerPopupOverlayView: some View {
-        if let careerSystem, showCareerPopup {
-            modalOverlay(onBackgroundTap: { showCareerPopup = false }, content: {
-                CareerPopupView(careerSystem: careerSystem, user: user) { showCareerPopup = false }
-            })
+        if let careerSystem {
+            CareerPopupView(careerSystem: careerSystem, user: user) { showCareerPopup = false }
         }
     }
 
-    @ViewBuilder
     var settingsOverlayView: some View {
-        if showSettingsView {
-            modalOverlay(onBackgroundTap: { showSettingsView = false }, content: {
-                FeedbackSettingView(onClose: { showSettingsView = false })
-            })
-        }
+        FeedbackSettingView(onClose: { showSettingsView = false })
     }
 
     func setupOnAppear() {
