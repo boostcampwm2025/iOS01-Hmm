@@ -20,24 +20,6 @@ extension View {
         self.modifier(DarkToast(isShowing: isShowing, message: message, duration: duration))
     }
 
-    func pauseGameStyle(
-        pauseBinding: Binding<Bool>,
-        height: CGFloat,
-        onLeave: @escaping () -> Void,
-        onPause: @escaping () -> Void,
-        onResume: @escaping () -> Void
-    ) -> some View {
-        self.modifier(
-            GamePauseWrapper(
-                pauseBinding: pauseBinding,
-                height: height,
-                onLeave: onLeave,
-                onPause: onPause,
-                onResume: onResume
-            )
-        )
-    }
-
     func longPressRepeat(
         isLongPressing: Binding<Bool>,
         isDisabled: Bool,
