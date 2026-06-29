@@ -44,14 +44,14 @@ struct TokenMotionView: View {
 private struct TransitionPreviewRow: View {
     let name: String
     let token: TokenTransition
-    @State private var isVisible = true
+    @State private var isVisible = false
     @State private var isPlaying = false
 
     var body: some View {
         HStack(spacing: TokenSpacing.sm) {
             ZStack {
                 RoundedRectangle(cornerRadius: TokenRadius.xs)
-                    .fill(Color.beige300)
+                    .stroke(Color.orange300, lineWidth: 1)
 
                 if isVisible {
                     RoundedRectangle(cornerRadius: TokenRadius.xs)
@@ -70,14 +70,17 @@ private struct TransitionPreviewRow: View {
             Button {
                 guard !isPlaying else { return } // 중복 탭 방지
                 isPlaying = true
-                withAnimation(TokenAnimation.fadeInSlow.animation) { // 소멸
-                    isVisible = false
+                withAnimation(TokenAnimation.fadeInSlow.animation) { // 생성
+                    isVisible = true
                 }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { // 생성
+
+                DispatchQueue.main.asyncAfter(deadline:.now() + Double(TokenAnimation.fadeInSlow.duration.components.seconds)
+                ) { // 소멸
                     withAnimation(TokenAnimation.fadeInSlow.animation) {
-                        isVisible = true
+                        isVisible = false
                     }
                 }
+
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { // 버튼 활성화
                     isPlaying = false
                 }
