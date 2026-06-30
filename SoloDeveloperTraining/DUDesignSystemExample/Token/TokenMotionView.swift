@@ -24,7 +24,7 @@ struct TokenMotionView: View {
                 AnimationPreviewRow(name: "fadeInSlow", token: .fadeInSlow)
                 AnimationPreviewRow(name: "crossFade", token: .crossFade)
                 FloatingFadeOutPreviewRow()
-                AnimationPreviewRow(name: "offsetMove", token: .offsetMove)
+                AnimationPreviewRow(name: "moveSmooth", token: .moveSmooth)
                 BlinkLoopPreviewRow()
                 SpringMovePreviewRow()
             } header: {

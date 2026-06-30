@@ -53,7 +53,7 @@ extension TokenAnimation {
         duration: .seconds(1)
     )
 
-    public static let offsetMove = TokenAnimation(
+    public static let moveSmooth = TokenAnimation(
         animation: .easeOut(duration: 0.25),
         duration: .milliseconds(250)
     )
