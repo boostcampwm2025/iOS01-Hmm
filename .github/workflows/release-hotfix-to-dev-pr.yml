@@ -1,4 +1,4 @@
-name: Auto PR release → dev
+name: Auto PR release/hotfix → dev
 
 on:
   pull_request:
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   create-dev-pr:
-    if: startsWith(github.event.pull_request.head.ref, 'release/')
+    if: startsWith(github.event.pull_request.head.ref, 'release/') || startsWith(github.event.pull_request.head.ref, 'hotfix/')
     runs-on: ubuntu-latest
     steps:
       - name: Create PR to dev
