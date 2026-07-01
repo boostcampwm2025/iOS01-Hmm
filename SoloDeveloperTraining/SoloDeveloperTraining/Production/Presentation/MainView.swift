@@ -35,8 +35,6 @@ struct MainView: View {
 
     // 음료 광고 팝업 관련
     @State private var showDrinkAdPopup: Bool = false
-    @State private var showRewardToast: Bool = false
-    @State private var rewardToastMessage: String = ""
     @State private var selectedDrinkType: ConsumableType?
     @State private var drinkAdRewardFlowID: String?
 
@@ -50,14 +48,9 @@ struct MainView: View {
     @State private var showOfflineRewardPopup: Bool = false
     @State private var offlineRewardGold: Int = 0
     @State private var offlineRewardHours: Double = 0.0
-    @State private var showOfflineRewardToast: Bool = false
-    @State private var offlineRewardToastMessage: String = ""
     @State private var hasCheckedOfflineReward: Bool = false
     @State private var offlineRewardAdFlowID: String?
 
-    // 팝업 Anchor 관련
-    @State private var tabbarAnchorY: CGFloat = 0
-    @State private var bottomAnchorY: CGFloat = 0
 
     // 레벨업 이펙트 관련
     @State private var isCareerSystemInitialized: Bool = false
@@ -146,16 +139,6 @@ struct MainView: View {
         .fullScreenCover(isPresented: $showQuizView) {
             QuizGameView(user: user)
         }
-        .duToast(
-            isShowing: $showOfflineRewardToast,
-            message: offlineRewardToastMessage,
-            anchorY: tabbarAnchorY
-        )
-        .duToast(
-            isShowing: $showRewardToast,
-            message: rewardToastMessage,
-            anchorY: bottomAnchorY
-        )
     }
 }
 
@@ -209,9 +192,13 @@ private extension MainView {
         .padding(.vertical, TokenSpacing.md)
         .padding(.horizontal, TokenGrid.paddingSide)
         .background(GeometryReader { geo in
-            Color.clear.onAppear {
-                tabbarAnchorY = geo.frame(in: .global).minY
-            }
+            Color.clear
+                .onAppear {
+                    ToastManager.defaultAnchorY = geo.frame(in: .global).minY
+                }
+                .onChange(of: geo.frame(in: .global).minY) { _, newY in
+                    ToastManager.defaultAnchorY = newY
+                }
         })
     }
 
@@ -230,11 +217,6 @@ private extension MainView {
                 tabContentSwitchView
             }
         }
-        .background(GeometryReader { geo in
-            Color.clear.onAppear {
-                bottomAnchorY = geo.frame(in: .global).maxY - TokenGrid.paddingBottom
-            }
-        })
     }
 
     var workGameOverlayView: some View {
@@ -610,8 +592,7 @@ private extension MainView {
             )
             // 보상 지급
             user.inventory.gain(consumable: drinkType)
-            rewardToastMessage = "카페인 충전 완료!"
-            showRewardToast = true
+            ToastManager.shared.show("카페인 충전 완료!")
             selectedDrinkType = nil
             workGameSession.resumeGame?()
             AnalyticsService.shared.logAdRewardClaimed(
@@ -726,10 +707,7 @@ private extension MainView {
             user.wallet.addGold(bonusGold)
             user.record.record(.earnMoney(bonusGold))
         }
-        rewardToastMessage = bonusGold > 0 ?
-        "업무에서 얻은 보상 2배 획득!" :
-        "업무 보너스를 받을 재화가 없습니다."
-        showRewardToast = true
+        ToastManager.shared.show(bonusGold > 0 ? "업무에서 얻은 보상 2배 획득!" : "업무 보너스를 받을 재화가 없습니다.")
     }
 
     func exitWorkGame() {
@@ -823,8 +801,7 @@ private extension MainView {
                 adWatchDurationSec: result.watchDurationSec
             )
             user.wallet.addGold(offlineRewardGold)
-            offlineRewardToastMessage = "잠자는 시간에 일한 보상 획득!"
-            showOfflineRewardToast = true
+            ToastManager.shared.show("잠자는 시간에 일한 보상 획득!")
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
                 adPlacement: .offlineReward,

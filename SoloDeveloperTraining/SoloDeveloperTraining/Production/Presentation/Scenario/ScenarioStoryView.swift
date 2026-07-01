@@ -25,9 +25,6 @@ struct ScenarioStoryView: View {
     @State private var isShowingAd = false
     @State private var adRewardFlowID: String?
 
-    // 토스트 상태
-    @State private var showCompletedToast = false
-    @State private var showCompletedToastMessage = ""
     // 공유하기
     @State private var isShareSheetPresented = false
     @State private var currentShareID = ""
@@ -81,8 +78,7 @@ struct ScenarioStoryView: View {
                             SoundService.shared.trigger(.click)
                             guard let image = renderEndingImage(ending) else { return }
                             PhotoLibraryService.saveImageToPhotoLibrary(image) { success in
-                                showCompletedToast = true
-                                showCompletedToastMessage = success ? "이미지가 저장되었습니다." : "사진 접근 허용이 필요해요!"
+                                ToastManager.shared.show(success ? "이미지가 저장되었습니다." : "사진 접근 허용이 필요해요!", anchor: .center)
                             }
                         },
                         onShare: {
@@ -119,8 +115,7 @@ struct ScenarioStoryView: View {
                     resultID: ending.id,
                     urlString: "\(ShareService.baseURL)/\(ending.type.webURLSlug)?share_id=\(currentShareID)&device_id=\(AnalyticsProperty.deviceIDValue)&result_id=\(ending.id)",
                     onLinkCopied: {
-                        showCompletedToast = true
-                        showCompletedToastMessage = "링크가 복사되었습니다."
+                        ToastManager.shared.show("링크가 복사되었습니다.", anchor: .center)
                     }
                 )
                 .padding(.horizontal, TokenSpacing.lg)
@@ -134,11 +129,6 @@ struct ScenarioStoryView: View {
         .onAppear {
             restoreEndingIfNeeded()
         }
-        .duToast(
-            isShowing: $showCompletedToast,
-            message: showCompletedToastMessage,
-            alignment: .center
-        )
     }
 }
 

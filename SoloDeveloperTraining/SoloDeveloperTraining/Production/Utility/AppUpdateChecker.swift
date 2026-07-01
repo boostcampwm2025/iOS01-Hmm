@@ -69,11 +69,14 @@ struct AppUpdateChecker {
         let currentPatch = currentParts.count > 2 ? currentParts[2] : 0
         let storePatch = storeParts.count > 2 ? storeParts[2] : 0
 
-        if storeMajor > currentMajor {
-            return .force
+        if storeMajor != currentMajor {
+            return storeMajor > currentMajor ? .force : .none
         }
-        if storeMinor > currentMinor || storePatch > currentPatch {
-            return .optional
+        if storeMinor != currentMinor {
+            return storeMinor > currentMinor ? .optional : .none
+        }
+        if storePatch != currentPatch {
+            return storePatch > currentPatch ? .optional : .none
         }
         return .none
     }

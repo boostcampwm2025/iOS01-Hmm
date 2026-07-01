@@ -97,12 +97,6 @@ struct ContentView: View {
                     Image(systemName: "plus")
                     Text("스킬")
                 }
-            AdminView()
-                .tag(7)
-                .tabItem {
-                    Image(systemName: "gearshape.fill")
-                    Text("어드민")
-                }
             ScenarioTestView()
                 .tag(8)
                 .tabItem {
