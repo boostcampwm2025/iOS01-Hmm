@@ -577,7 +577,7 @@ private extension MainView {
         drinkAdRewardFlowID = flowID
         AnalyticsService.shared.logAdOfferViewed(
             adRewardFlowID: flowID,
-            adPlacement: .consumable(screenID: "caffeinBoost"),
+            adPlacement: .consumable(screenID: "caffein"),
             rewardType: drinkType == .coffee ? .coffee : .energyDrink,
             rewardAmount: 1
         )
@@ -591,7 +591,7 @@ private extension MainView {
 
         AnalyticsService.shared.logAdWatchClicked(
             adRewardFlowID: flowID,
-            adPlacement: .consumable(screenID: "caffeinBoost"),
+            adPlacement: .consumable(screenID: "caffein"),
             rewardType: rewardType,
             rewardAmount: 1
         )
@@ -603,7 +603,7 @@ private extension MainView {
         if result.success {
             AnalyticsService.shared.logAdWatchCompleted(
                 adRewardFlowID: flowID,
-                adPlacement: .consumable(screenID: "caffeinBoost"),
+                adPlacement: .consumable(screenID: "caffein"),
                 rewardType: rewardType,
                 rewardAmount: 1,
                 adWatchDurationSec: result.watchDurationSec
@@ -616,7 +616,7 @@ private extension MainView {
             workGameSession.resumeGame?()
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
-                adPlacement: .consumable(screenID: "caffeinBoost"),
+                adPlacement: .consumable(screenID: "caffein"),
                 rewardType: rewardType,
                 rewardAmount: 1
             )
@@ -631,7 +631,7 @@ private extension MainView {
         if let flowID = drinkAdRewardFlowID, let drinkType = selectedDrinkType {
             AnalyticsService.shared.logAdOfferDismissed(
                 adRewardFlowID: flowID,
-                adPlacement: .consumable(screenID: "caffeinBoost"),
+                adPlacement: .consumable(screenID: "caffein"),
                 rewardType: drinkType == .coffee ? .coffee : .energyDrink,
                 rewardAmount: 1,
                 dismissReason: .close
