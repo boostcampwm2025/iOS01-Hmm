@@ -2,7 +2,9 @@ name: App TestFlight CD
 
 on:
   push:
-    branches: ['release/**', 'hotfix/**']
+    branches:
+      - 'release/[0-9]*.[0-9]*.[0-9]*'
+      - 'hotfix/[0-9]*.[0-9]*.[0-9]*'
   create:
 
 jobs:
