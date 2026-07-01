@@ -26,15 +26,18 @@ struct ComponentToastView: View {
                     }
                 }
 
-                Section {
-                    Button("토스트 표시") {
+                Section("앵커") {
+                    Button("기본 (탭바 상단)") {
                         ToastManager.shared.show(message)
                     }
                     .background(GeometryReader { geo in
                         Color.clear.onAppear {
-                            ToastManager.anchorY = geo.frame(in: .global).minY
+                            ToastManager.defaultAnchorY = geo.frame(in: .global).minY
                         }
                     })
+                    Button("중앙") {
+                        ToastManager.shared.show(message, anchor: .center)
+                    }
                 }
             }
             .scrollContentBackground(.hidden)

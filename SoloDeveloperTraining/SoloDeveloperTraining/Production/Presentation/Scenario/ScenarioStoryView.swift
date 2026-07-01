@@ -78,7 +78,7 @@ struct ScenarioStoryView: View {
                             SoundService.shared.trigger(.click)
                             guard let image = renderEndingImage(ending) else { return }
                             PhotoLibraryService.saveImageToPhotoLibrary(image) { success in
-                                ToastManager.shared.show(success ? "이미지가 저장되었습니다." : "사진 접근 허용이 필요해요!")
+                                ToastManager.shared.show(success ? "이미지가 저장되었습니다." : "사진 접근 허용이 필요해요!", anchor: .center)
                             }
                         },
                         onShare: {
@@ -115,7 +115,7 @@ struct ScenarioStoryView: View {
                     resultID: ending.id,
                     urlString: "\(ShareService.baseURL)/\(ending.type.webURLSlug)?share_id=\(currentShareID)&device_id=\(AnalyticsProperty.deviceIDValue)&result_id=\(ending.id)",
                     onLinkCopied: {
-                        ToastManager.shared.show("링크가 복사되었습니다.")
+                        ToastManager.shared.show("링크가 복사되었습니다.", anchor: .center)
                     }
                 )
                 .padding(.horizontal, TokenSpacing.lg)

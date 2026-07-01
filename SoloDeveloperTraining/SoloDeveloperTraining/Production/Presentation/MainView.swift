@@ -194,10 +194,10 @@ private extension MainView {
         .background(GeometryReader { geo in
             Color.clear
                 .onAppear {
-                    ToastManager.anchorY = geo.frame(in: .global).minY
+                    ToastManager.defaultAnchorY = geo.frame(in: .global).minY
                 }
                 .onChange(of: geo.frame(in: .global).minY) { _, newY in
-                    ToastManager.anchorY = newY
+                    ToastManager.defaultAnchorY = newY
                 }
         })
     }

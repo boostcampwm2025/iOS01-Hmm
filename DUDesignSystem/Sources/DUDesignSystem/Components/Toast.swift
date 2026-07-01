@@ -8,6 +8,15 @@
 import SwiftUI
 import UIKit
 
+// MARK: - Toast Position
+
+public enum ToastAnchor {
+    /// 탭바 상단 기준 (기본값)
+    case `default`
+    /// 화면 정중앙
+    case center
+}
+
 // MARK: - Content View
 
 private struct ToastContentView: View {
@@ -32,19 +41,20 @@ private struct ToastContentView: View {
 }
 
 // MARK: - Toast Manager
+
 @MainActor
 public final class ToastManager {
     public static let shared = ToastManager()
     private init() {}
 
-    /// 탭바 상단 기준 앵커. 앱 시작 후 탭바가 레이아웃되면 한 번 세팅.
-    public static var anchorY: CGFloat = 0
+    /// 탭바 상단 기준 기본 앵커. 탭바가 레이아웃되면 세팅.
+    public static var defaultAnchorY: CGFloat = 0
 
     private var activeController: UIHostingController<ToastContentView>?
     private var dismissWorkItem: DispatchWorkItem?
 
     @MainActor
-    public func show(_ message: String) {
+    public func show(_ message: String, anchor: ToastAnchor = .default) {
         guard let window = UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
             .first(where: { $0.activationState == .foregroundActive })?
@@ -69,10 +79,22 @@ public final class ToastManager {
         contentView.alpha = 0
 
         window.addSubview(contentView)
+
+        let positionConstraint: NSLayoutConstraint
+        switch anchor {
+        case .default:
+            positionConstraint = contentView.bottomAnchor.constraint(
+                equalTo: window.topAnchor,
+                constant: ToastManager.defaultAnchorY
+            )
+        case .center:
+            positionConstraint = contentView.centerYAnchor.constraint(equalTo: window.centerYAnchor)
+        }
+
         NSLayoutConstraint.activate([
             contentView.leadingAnchor.constraint(equalTo: window.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: window.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: window.topAnchor, constant: ToastManager.anchorY)
+            positionConstraint
         ])
         window.layoutIfNeeded()
 
