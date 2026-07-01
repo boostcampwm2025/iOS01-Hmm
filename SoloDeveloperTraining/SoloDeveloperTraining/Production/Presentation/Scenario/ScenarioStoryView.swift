@@ -211,7 +211,7 @@ private extension ScenarioStoryView {
 
                 AnalyticsService.shared.logAdWatchClicked(
                     adRewardFlowID: flowID,
-                    adPlacement: .reselectionReward,
+                    adPlacement: .reselectionReward(screenID: "수정"),
                     rewardType: .reselect,
                     rewardAmount: 0
                 )
@@ -224,7 +224,7 @@ private extension ScenarioStoryView {
                     if result.success {
                         AnalyticsService.shared.logAdWatchCompleted(
                             adRewardFlowID: flowID,
-                            adPlacement: .reselectionReward,
+                            adPlacement: .reselectionReward(screenID: "수정"),
                             rewardType: .reselect,
                             rewardAmount: 0,
                             adWatchDurationSec: result.watchDurationSec
@@ -236,7 +236,7 @@ private extension ScenarioStoryView {
                         }
                         AnalyticsService.shared.logAdRewardClaimed(
                             adRewardFlowID: flowID,
-                            adPlacement: .reselectionReward,
+                            adPlacement: .reselectionReward(screenID: "수정"),
                             rewardType: .reselect,
                             rewardAmount: 0
                         )
@@ -260,7 +260,7 @@ private extension ScenarioStoryView {
         adRewardFlowID = flowID
         AnalyticsService.shared.logAdOfferViewed(
             adRewardFlowID: flowID,
-            adPlacement: .reselectionReward,
+            adPlacement: .reselectionReward(screenID: "수정"),
             rewardType: .reselect,
             rewardAmount: 0
         )

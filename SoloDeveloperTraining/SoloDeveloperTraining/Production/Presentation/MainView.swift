@@ -577,7 +577,7 @@ private extension MainView {
         drinkAdRewardFlowID = flowID
         AnalyticsService.shared.logAdOfferViewed(
             adRewardFlowID: flowID,
-            adPlacement: .consumable,
+            adPlacement: .consumable(screenID: "caffeinBoost"),
             rewardType: drinkType == .coffee ? .coffee : .energyDrink,
             rewardAmount: 1
         )
@@ -591,7 +591,7 @@ private extension MainView {
 
         AnalyticsService.shared.logAdWatchClicked(
             adRewardFlowID: flowID,
-            adPlacement: .consumable,
+            adPlacement: .consumable(screenID: "caffeinBoost"),
             rewardType: rewardType,
             rewardAmount: 1
         )
@@ -603,7 +603,7 @@ private extension MainView {
         if result.success {
             AnalyticsService.shared.logAdWatchCompleted(
                 adRewardFlowID: flowID,
-                adPlacement: .consumable,
+                adPlacement: .consumable(screenID: "caffeinBoost"),
                 rewardType: rewardType,
                 rewardAmount: 1,
                 adWatchDurationSec: result.watchDurationSec
@@ -616,7 +616,7 @@ private extension MainView {
             workGameSession.resumeGame?()
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
-                adPlacement: .consumable,
+                adPlacement: .consumable(screenID: "caffeinBoost"),
                 rewardType: rewardType,
                 rewardAmount: 1
             )
@@ -631,7 +631,7 @@ private extension MainView {
         if let flowID = drinkAdRewardFlowID, let drinkType = selectedDrinkType {
             AnalyticsService.shared.logAdOfferDismissed(
                 adRewardFlowID: flowID,
-                adPlacement: .consumable,
+                adPlacement: .consumable(screenID: "caffeinBoost"),
                 rewardType: drinkType == .coffee ? .coffee : .energyDrink,
                 rewardAmount: 1,
                 dismissReason: .close
@@ -649,7 +649,7 @@ private extension MainView {
         exitBonusAdRewardFlowID = flowID
         AnalyticsService.shared.logAdOfferViewed(
             adRewardFlowID: flowID,
-            adPlacement: .workExit,
+            adPlacement: .workExit(screenID: "bonus"),
             rewardType: .gold,
             rewardAmount: max(0, workGameSession.actionGoldDelta)
         )
@@ -665,7 +665,7 @@ private extension MainView {
 
         AnalyticsService.shared.logAdWatchClicked(
             adRewardFlowID: flowID,
-            adPlacement: .workExit,
+            adPlacement: .workExit(screenID: "bonus"),
             rewardType: .gold,
             rewardAmount: bonusGold
         )
@@ -676,7 +676,7 @@ private extension MainView {
         if result.success {
             AnalyticsService.shared.logAdWatchCompleted(
                 adRewardFlowID: flowID,
-                adPlacement: .workExit,
+                adPlacement: .workExit(screenID: "bonus"),
                 rewardType: .gold,
                 rewardAmount: bonusGold,
                 adWatchDurationSec: result.watchDurationSec
@@ -684,7 +684,7 @@ private extension MainView {
             applyExitBonus()
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
-                adPlacement: .workExit,
+                adPlacement: .workExit(screenID: "bonus"),
                 rewardType: .gold,
                 rewardAmount: bonusGold
             )
@@ -696,7 +696,7 @@ private extension MainView {
         if let flowID = exitBonusAdRewardFlowID {
             AnalyticsService.shared.logAdOfferDismissed(
                 adRewardFlowID: flowID,
-                adPlacement: .workExit,
+                adPlacement: .workExit(screenID: "bonus"),
                 rewardType: .gold,
                 rewardAmount: max(0, workGameSession.actionGoldDelta),
                 dismissReason: .close
@@ -793,7 +793,7 @@ private extension MainView {
         offlineRewardAdFlowID = flowID
         AnalyticsService.shared.logAdOfferViewed(
             adRewardFlowID: flowID,
-            adPlacement: .offlineReward,
+            adPlacement: .offlineReward(screenID: "restart"),
             rewardType: .gold,
             rewardAmount: offlineRewardGold
         )
@@ -806,7 +806,7 @@ private extension MainView {
 
         AnalyticsService.shared.logAdWatchClicked(
             adRewardFlowID: flowID,
-            adPlacement: .offlineReward,
+            adPlacement: .offlineReward(screenID: "restart"),
             rewardType: .gold,
             rewardAmount: rewardGold
         )
@@ -817,7 +817,7 @@ private extension MainView {
         if result.success {
             AnalyticsService.shared.logAdWatchCompleted(
                 adRewardFlowID: flowID,
-                adPlacement: .offlineReward,
+                adPlacement: .offlineReward(screenID: "restart"),
                 rewardType: .gold,
                 rewardAmount: rewardGold,
                 adWatchDurationSec: result.watchDurationSec
@@ -827,7 +827,7 @@ private extension MainView {
             showOfflineRewardToast = true
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
-                adPlacement: .offlineReward,
+                adPlacement: .offlineReward(screenID: "restart"),
                 rewardType: .gold,
                 rewardAmount: rewardGold
             )
@@ -841,7 +841,7 @@ private extension MainView {
         if let flowID = offlineRewardAdFlowID {
             AnalyticsService.shared.logAdOfferDismissed(
                 adRewardFlowID: flowID,
-                adPlacement: .offlineReward,
+                adPlacement: .offlineReward(screenID: "restart"),
                 rewardType: .gold,
                 rewardAmount: offlineRewardGold,
                 dismissReason: .close
