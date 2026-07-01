@@ -65,7 +65,7 @@ public struct CareerRow: View {
                         ItemLabel(text: "완료", font: .label, color: .black300)
                     }
                 }
-                ItemLabel(text: description, font: .label, color: .black300)
+                ItemLabel(text: description, font: .label, color: .black300, textAlignment: .leading)
             }
             .opacity(textOpacity)
             .frame(maxWidth: .infinity, alignment: .leading)
