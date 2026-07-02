@@ -136,7 +136,7 @@ private extension SoloDeveloperTrainingApp {
             }
 
             if newPhase == .background {
-                let level = user?.career.level ?? 1
+                let level = user?.career.level ?? 0
                 AnalyticsService.shared.logSessionEnded(level: level)
                 SessionManager.shared.handleBackground()
             } else if newPhase == .active {
