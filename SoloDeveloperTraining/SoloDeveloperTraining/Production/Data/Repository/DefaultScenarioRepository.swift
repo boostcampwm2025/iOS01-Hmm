@@ -202,7 +202,7 @@ final class DefaultScenarioRepository: ScenarioRepository {
                 ScenarioPage(
                     imageName: "juniorDeveloper4",
                     text: "오호라...! 본격적으로 개발자가 되는거야!",
-                    pageType: .story
+                    pageType: .result(.optionA)
                 ),
             ]
         ),
@@ -244,25 +244,35 @@ final class DefaultScenarioRepository: ScenarioRepository {
             scenarioType: .event,
             pages: [
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "오전 5시 58분. 커밋 메시지: 'fix: 됩니다 제발'. 해가 뜨는 걸 이번 달만 네번째 목격했다.",
-                    pageType: .story
-                ),
-                ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "(쌓여있는 에너지 드링크)\n도저히 풀리지 않는 치명적인 버그를 만났다.",
-                    pageType: .choice(Choice(optionA: "어떻게든 내 실력으로 해결해본다.", optionB: "스택오버플로우와 오픈소스의 도움을 받는다."))
-                ),
-                ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "(3시간 뒤, 동료 출근)\n하 거지 같은 세미콜론...",
-                    pageType: .result(.optionA)
-                ),
-                ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "드디어 해결. 작성자님 감사합니다!\n(작성일 2008년)\n지금은 뭘하시는 분일려나...\n(치킨집 사장님 프로필)",
-                    pageType: .result(.optionB)
-                )
+                          imageName: "nightOwlDeveloper1",
+                          text: "오전 5시 58분. 커밋 메시지: 'fix: 됩니다 제발'.",
+                          pageType: .story
+                      ),
+                      ScenarioPage(
+                          imageName: "nightOwlDeveloper2",
+                          text: "해가 뜨는 건 이번 달만 네 번째 목격했다.",
+                          pageType: .story
+                      ),
+                      ScenarioPage(
+                          imageName: "nightOwlDeveloper3",
+                          text: "도저히 풀리지 않는 치명적인 버그를 만났다.",
+                          pageType: .story
+                      ),
+                      ScenarioPage(
+                          imageName: "nightOwlDeveloper4",
+                          text: "어떻게 해결할까...",
+                          pageType: .choice(
+                              Choice(
+                                  optionA: "어떻게든 내 실력으로 해결해본다.",
+                                  optionB: "스택오버플로우와 오픈소스의 도움을 받는다."
+                              )
+                          )
+                      ),
+                      ScenarioPage(
+                          imageName: "nightOwlDeveloper5",
+                          text: "하 거지 같은 세미콜론...",
+                          pageType: .result(.optionA)
+                      )
             ]
         ),
         Scenario(
@@ -271,13 +281,33 @@ final class DefaultScenarioRepository: ScenarioRepository {
             scenarioType: .normal,
             pages: [
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "후배가 생겼다. 내가 모르는 걸 물어봤다.\n당당하게 GPT에게 질문했다. 그게 개발이다.",
+                    imageName: "skilledDeveloper1",
+                    text: "네?!?! 네! 네네! 지, 지, 질문 이 뭐 머, 뭔가요?\n( 후배는 아직 어색하다. )",
                     pageType: .story
                 ),
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "코드 리뷰에서 처음으로 'LGTM'을 받았다. 액자에 걸고 싶었다.",
+                    imageName: "skilledDeveloper2",
+                    text: "아 이거 간단한 문제에요.\n제가 하던 일 먼저 하고 도와드릴게요.",
+                    pageType: .story
+                ),
+                ScenarioPage(
+                    imageName: "skilledDeveloper3",
+                    text: "하... 놀랬네. 질문이 뭐였지? AI한테 물어보자.\n이게 바로 바이브 코딩 아니겠어~",
+                    pageType: .story
+                ),
+                ScenarioPage(
+                    imageName: "skilledDeveloper4",
+                    text: "뭐지? 코드 리뷰 승인... LGTM ? !",
+                    pageType: .story
+                ),
+                ScenarioPage(
+                    imageName: "skilledDeveloper5",
+                    text: "내가 LGTM을 받다니. 너무너무너무 행복하잖아~~",
+                    pageType: .story
+                ),
+                ScenarioPage(
+                    imageName: "skilledDeveloper6",
+                    text: "후훗~ 이것도 기념인데 액자로 만들어서 걸어둘까?",
                     pageType: .story
                 )
             ]
