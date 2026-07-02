@@ -186,24 +186,24 @@ final class DefaultScenarioRepository: ScenarioRepository {
             pages: [
                 ScenarioPage(
                     imageName: "juniorDeveloper1",
-                    text: "나한텐 하는 말인가?...\n기분이 나쁜것 같기도, 좋은것 같기도...",
+                    text: "저 사람들... 혹시 나한테 하는 말인가?",
                     pageType: .story
                 ),
                 ScenarioPage(
                     imageName: "juniorDeveloper2",
-                    text: "메일이 왔다. \"축하드립니다\"\n그런데 두 개의 메일이 기다리고 있다. 뭘 열어보지...?",
-                    pageType: .choice(Choice(optionA: "모 기업 최종 합격 메일", optionB: "발신자 불명의 고수익 의뢰"))
+                    text: "칭찬인것 같기도... 욕인 것 같기도...오묘한 기분.",
+                    pageType: .story
                 ),
                 ScenarioPage(
                     imageName: "juniorDeveloper3",
-                    text: "드디어 나도 진짜 개발자구나",
-                    pageType: .result(.optionA)
+                    text: "스팸이 아니었잖아? 어떤걸 먼저 열어보지...",
+                    pageType: .choice(Choice(optionA: "모 기업 최종 합격 메일", optionB: "발신자 불명의 고수익 의뢰"))
                 ),
                 ScenarioPage(
                     imageName: "juniorDeveloper4",
-                    text: "오... 이거 돈이 되는데?",
-                    pageType: .result(.optionB)
-                )
+                    text: "오호라...! 본격적으로 개발자가 되는거야!",
+                    pageType: .story
+                ),
             ]
         ),
         Scenario(
