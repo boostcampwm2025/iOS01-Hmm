@@ -56,13 +56,13 @@ enum GameType: Int, CaseIterable {
     var imageName: String {
         switch self {
         case .tap:
-            return "work_tap"
+            return "workTap"
         case .language:
-            return "work_language"
+            return "workLanguage"
         case .dodge:
-            return "work_dodge"
+            return "workDodge"
         case .stack:
-            return "work_stack"
+            return "workStack"
         }
     }
 }

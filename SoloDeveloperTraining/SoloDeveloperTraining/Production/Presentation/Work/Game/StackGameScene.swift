@@ -8,6 +8,8 @@
 import SwiftUI
 import SpriteKit
 
+import DUDesignSystem
+
 private enum Constant {
     enum Physics {
         static let gravity = CGVector(dx: 0, dy: -9.8)

@@ -26,10 +26,10 @@ enum MissionLevel {
 
     var imageName: String {
         switch self {
-        case .bronze: return "mission_trophy_bronze"
-        case .silver: return "mission_trophy_silver"
-        case .gold: return "mission_trophy_gold"
-        case .special: return "mission_trophy_special"
+        case .bronze: return "missionTrophyBronze"
+        case .silver: return "missionTrophySilver"
+        case .gold: return "missionTrophyGold"
+        case .special: return "missionTrophySpecial"
         }
     }
 }

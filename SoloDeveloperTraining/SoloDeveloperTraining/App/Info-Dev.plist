@@ -228,11 +228,5 @@
 			<string>3qcr597p9d.skadnetwork</string>
 		</dict>
 	</array>
-	<key>UIAppFonts</key>
-	<array>
-		<string>PFStardust-Regular.ttf</string>
-		<string>PFStardust-Bold.ttf</string>
-		<string>PFStardust-ExtraBold.ttf</string>
-	</array>
 </dict>
 </plist>

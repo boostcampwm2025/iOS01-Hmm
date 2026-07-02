@@ -51,10 +51,8 @@
 				.firebaserc,
 				App/Info.plist,
 				Devlopment/CheatSystem/CheatManager.swift,
-				Devlopment/Data/Repository/DefaultAdminBalanceRepository.swift,
 				Devlopment/Data/Repository/MockScenarioRepository.swift,
 				Devlopment/MockPolicyStore.swift,
-				Devlopment/Presentation/AdminView.swift,
 				Devlopment/Presentation/AdView.swift,
 				Devlopment/Presentation/ContentView.swift,
 				Devlopment/Presentation/DodgeGameTestView.swift,
@@ -670,7 +668,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B4C100012FCFE2A000000001 /* SoloDeveloperTraining/App/Config/Debug.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = app_icon_release;
+				ASSETCATALOG_COMPILER_APPICON_NAME = appIconRelease;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = SoloDeveloperTraining/App/SoloDeveloperTraining.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -695,7 +693,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.3;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = kr.codesquad.boostcamp10.SoloDeveloperTraining;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -718,7 +716,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B4C100022FCFE2A000000001 /* SoloDeveloperTraining/App/Config/Release.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = app_icon_release;
+				ASSETCATALOG_COMPILER_APPICON_NAME = appIconRelease;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = SoloDeveloperTraining/App/SoloDeveloperTraining.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
@@ -743,7 +741,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.3;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = kr.codesquad.boostcamp10.SoloDeveloperTraining;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -846,7 +844,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B4C100012FCFE2A000000001 /* SoloDeveloperTraining/App/Config/Debug.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = app_icon_dev;
+				ASSETCATALOG_COMPILER_APPICON_NAME = appIconDev;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -896,7 +894,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B4C100012FCFE2A000000001 /* SoloDeveloperTraining/App/Config/Debug.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = app_icon_dev;
+				ASSETCATALOG_COMPILER_APPICON_NAME = appIconDev;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";

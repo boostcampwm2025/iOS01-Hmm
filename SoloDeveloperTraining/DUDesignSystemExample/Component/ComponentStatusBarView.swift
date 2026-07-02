@@ -20,7 +20,7 @@ struct ComponentStatusBarView: View {
             // MARK: - Preview Area
             PreviewArea {
                 StatusBar(
-                    imageName: "housing_house",
+                    imageName: "housingHouse",
                     careerName: careerName,
                     nickname: nickname,
                     careerProgress: careerProgress,

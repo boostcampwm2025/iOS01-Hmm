@@ -61,16 +61,16 @@ enum Career: String, CaseIterable, Codable {
 
     var characterImagePrefix: String {
         switch self {
-        case .unemployed: return "character_unemployed"
-        case .laptopOwner: return "character_laptop_owner"
-        case .aspiringDeveloper: return "character_aspiring_developer"
-        case .juniorDeveloper: return "character_junior_developer"
-        case .normalDeveloper: return "character_normal_developer"
-        case .nightOwlDeveloper: return "character_night_owl_developer"
-        case .skilledDeveloper: return "character_skilled_developer"
-        case .famousDeveloper: return "character_famous_developer"
-        case .allRounderDeveloper: return "character_all_rounder_developer"
-        case .worldClassDeveloper: return "character_world_class_developer"
+        case .unemployed: return "characterUnemployed"
+        case .laptopOwner: return "characterLaptopOwner"
+        case .aspiringDeveloper: return "characterAspiringDeveloper"
+        case .juniorDeveloper: return "characterJuniorDeveloper"
+        case .normalDeveloper: return "characterNormalDeveloper"
+        case .nightOwlDeveloper: return "characterNightOwlDeveloper"
+        case .skilledDeveloper: return "characterSkilledDeveloper"
+        case .famousDeveloper: return "characterFamousDeveloper"
+        case .allRounderDeveloper: return "characterAllRounderDeveloper"
+        case .worldClassDeveloper: return "characterWorldClassDeveloper"
         }
     }
 

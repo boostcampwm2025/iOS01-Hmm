@@ -114,7 +114,7 @@ private extension TapGameView {
         ZStack {
             Color.clear
                 .overlay(
-                    Image.duImage("tap_background")
+                    Image.duImage("tapBackground")
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                 )

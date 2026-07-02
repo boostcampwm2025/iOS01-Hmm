@@ -10,10 +10,10 @@ import SwiftUI
 public struct MissionCard: View {
 
     public enum MissionTrophyType: String, CaseIterable {
-        case gold    = "mission_trophy_gold"
-        case silver  = "mission_trophy_silver"
-        case bronze  = "mission_trophy_bronze"
-        case special = "mission_trophy_special"
+        case gold    = "missionTrophyGold"
+        case silver  = "missionTrophySilver"
+        case bronze  = "missionTrophyBronze"
+        case special = "missionTrophySpecial"
     }
 
     public enum MissionCardState: Equatable {
