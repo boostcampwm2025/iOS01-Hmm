@@ -35,6 +35,12 @@ extension TokenTransition {
 public struct TokenAnimation {
     public let animation: Animation
     public let duration: Duration
+
+    var timeInterval: TimeInterval {
+        let components = duration.components
+        return TimeInterval(components.seconds)
+        + TimeInterval(components.attoseconds) / 1_000_000_000_000_000_000
+    }
 }
 
 extension TokenAnimation {
