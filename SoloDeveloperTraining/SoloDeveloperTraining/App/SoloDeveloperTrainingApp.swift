@@ -131,7 +131,19 @@ private extension SoloDeveloperTrainingApp {
             loadUser()
         }
         .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .background || newPhase == .inactive {
+            if newPhase == .active {
+                SessionManager.shared.handleForeground()
+                if SessionManager.shared.didStartNewSession, let user {
+                    AnalyticsService.shared.logAppOpened(
+                        nickname: user.nickname,
+                        entrySource: "direct",
+                        referrerShareID: "",
+                        isDeferredDeeplink: false
+                    )
+                    SessionManager.shared.consumeNewSession()
+                }
+            } else if newPhase == .background || newPhase == .inactive {
+                SessionManager.shared.handleBackground()
                 saveUser()
             }
         }
