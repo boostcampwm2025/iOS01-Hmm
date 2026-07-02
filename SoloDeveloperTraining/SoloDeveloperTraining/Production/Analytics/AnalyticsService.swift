@@ -22,12 +22,19 @@ final class AnalyticsService {
     private var loggedSessionEndedSessions: Set<String> = []
 
     /// 마지막으로 노출된 화면 이름
-    private(set) var currentScreen: String = "unknown"
+    private(set) var currentScreenID: String = "unknown"
 
     private init() {}
 
-    func setScreen(_ screenName: String) {
-        currentScreen = screenName
+    func enterScreen(_ screen: ScreenID) {
+        currentScreenID = screen.rawValue
+    }
+
+    func enterScenarioScreen(level: Int, page: Int) {
+        currentScreenID = ScreenID.scenario(
+            level: level,
+            page: page
+        )
     }
 
     // MARK: - 성장
@@ -67,13 +74,12 @@ final class AnalyticsService {
     }
 
     /// 사용자가 앱 사용을 종료하거나 세션 만료
-    func logSessionEnded(level: Int, lastScreen: String) {
-
+    func logSessionEnded(level: Int) {
         Analytics.logEvent("session_ended", parameters: [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.sessionDurationSec: SessionManager.shared.sessionDurationSec,
-            AP.lastScreen: lastScreen,
+            AP.lastScreen: currentScreenID,
             AP.level: level
         ])
     }
