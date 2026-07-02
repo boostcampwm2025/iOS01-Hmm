@@ -26,15 +26,8 @@ final class AnalyticsService {
 
     private init() {}
 
-    func enterScreen(_ screen: ScreenID) {
-        currentScreenID = screen.rawValue
-    }
-
-    func enterScenarioScreen(level: Int, page: Int) {
-        currentScreenID = ScreenID.scenario(
-            level: level,
-            page: page
-        )
+    func enterScreen(_ screen: String) {
+        currentScreenID = screen
     }
 
     // MARK: - 성장

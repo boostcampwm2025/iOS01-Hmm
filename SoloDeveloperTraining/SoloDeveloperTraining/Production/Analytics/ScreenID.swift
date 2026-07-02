@@ -11,14 +11,6 @@ enum ScreenID: String {
     case splash
     case nickname
 
-    case tutorial01
-    case tutorial02
-    case tutorial03
-    case tutorial04
-    case tutorial05
-    case tutorial06
-    case tutorial07
-
     case restart
 
     case update01
@@ -66,10 +58,14 @@ enum ScreenID: String {
 
 extension ScreenID {
     static func scenario(level: Int, page: Int) -> String {
-        String(
-            format: "lv%02dScen%02d",
+        return String(
+            format: "lv%02dScene%02d",
             level,
             page
         )
+    }
+
+    static func tutorial(page: Int) -> String {
+        return String(format: "tutorial%02d", page)
     }
 }

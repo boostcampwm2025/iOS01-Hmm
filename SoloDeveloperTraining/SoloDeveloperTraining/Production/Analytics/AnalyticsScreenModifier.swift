@@ -8,20 +8,23 @@
 
 import SwiftUI
 
-struct AnalyticsScreenModifier: ViewModifier {
+private struct AnalyticsScreenModifier: ViewModifier {
 
-    let screen: ScreenID
+    let screen: String
 
     func body(content: Content) -> some View {
-        content
-            .onAppear {
-                AnalyticsService.shared.enterScreen(screen)
-            }
+        content.onAppear {
+            AnalyticsService.shared.enterScreen(screen)
+        }
     }
 }
 
 extension View {
     func analyticsScreen(_ screen: ScreenID) -> some View {
+        modifier(AnalyticsScreenModifier(screen: screen.rawValue))
+    }
+
+    func analyticsScreen(_ screen: String) -> some View {
         modifier(AnalyticsScreenModifier(screen: screen))
     }
 }
