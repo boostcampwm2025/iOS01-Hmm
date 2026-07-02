@@ -94,6 +94,7 @@ struct DodgeGameView: View {
             toolbarSection
             gameAreaSection
         }
+        .analyticsScreen(pauseBinding.wrappedValue ? .avoidingExit : .avoiding)
     }
 }
 

@@ -46,6 +46,7 @@ struct MissionView: View {
             }
             .scrollIndicators(.never)
         }
+        .analyticsScreen(.mission)
         .padding(.horizontal, TokenGrid.paddingSide)
     }
 }

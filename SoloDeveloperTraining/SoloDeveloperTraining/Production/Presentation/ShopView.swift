@@ -102,6 +102,7 @@ private extension ShopView {
             .padding(.horizontal, TokenGrid.paddingSide)
             .padding(.bottom, TokenGrid.paddingBottom)
         }
+        .analyticsScreen(.item)
         .scrollIndicators(.never)
     }
 
@@ -138,6 +139,7 @@ private extension ShopView {
             .padding(.bottom, TokenGrid.paddingBottom)
             .scrollIndicators(.never)
         }
+        .analyticsScreen(.house)
     }
 
     /// 아이템 구매 확인 팝업 표시

@@ -78,6 +78,7 @@ struct SkillView: View {
             .padding(.horizontal, TokenGrid.paddingSide)
             .padding(.bottom, TokenGrid.paddingBottom)
         }
+        .analyticsScreen(.skill)
         .scrollIndicators(.never)
     }
 }

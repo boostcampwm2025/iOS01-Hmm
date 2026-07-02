@@ -84,6 +84,7 @@ struct LanguageGameView: View {
             toolbarSection
             gameAreaSection
         }
+        .analyticsScreen(pauseBinding.wrappedValue ? .matchingExit : .matching)
     }
 }
 

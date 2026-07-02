@@ -77,6 +77,7 @@ struct TapGameView: View {
             toolbarSection
             gameAreaSection
         }
+        .analyticsScreen(pauseBinding.wrappedValue ? .codingExit : .coding)
     }
 }
 

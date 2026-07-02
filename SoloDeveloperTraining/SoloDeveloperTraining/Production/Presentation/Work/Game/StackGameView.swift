@@ -78,6 +78,7 @@ struct StackGameView: View {
             toolbarSection
             gameAreaSection
         }
+        .analyticsScreen(pauseBinding.wrappedValue ? .stackingExit : .stacking)
     }
 }
 
