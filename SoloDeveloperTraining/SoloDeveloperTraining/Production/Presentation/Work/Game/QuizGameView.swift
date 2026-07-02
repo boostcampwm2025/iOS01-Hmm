@@ -21,6 +21,15 @@ struct QuizGameView: View {
         _quizGame = State(initialValue: QuizGame(user: user))
     }
 
+    var screenID: ScreenID {
+        switch quizGame.phase {
+        case .questionInProgress: return .quiz02
+        case .showingExplanation:
+            return quizGame.state.currentAnswerResult == .correct ? .quiz03 : .quiz04
+        default: return .quiz01
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             headerSection
@@ -30,6 +39,7 @@ struct QuizGameView: View {
             Spacer()
             optionsSection
         }
+        .analyticsScreen(screenID)
         .padding(.horizontal, TokenGrid.paddingSide)
         .background(Color.beige50)
         .onAppear {
@@ -42,6 +52,12 @@ struct QuizGameView: View {
                 SoundService.shared.trigger(.count)
             } else if newValue == 0 {
                 SoundService.shared.trigger(.over)
+            }
+        }
+        .onChange(of: quizGame.phase) { _, newValue in
+            let phase = quizGame.phase
+            if phase == .showingExplanation && quizGame.state.currentAnswerResult == .correct {
+
             }
         }
         .onDisappear { SoundService.shared.stopAllSFX() }
