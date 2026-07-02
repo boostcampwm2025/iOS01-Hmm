@@ -37,6 +37,7 @@ struct TutorialView: View {
                     onComplete()
                 }
             }
+            .analyticsScreen(ScreenID.tutorial(page: currentPage + 1))
             .interactiveDismissDisabled(true)
     }
 }
