@@ -94,6 +94,13 @@ struct ScenarioStoryView: View {
             }
             .frame(maxHeight: .infinity, alignment: isEnding ? .top : .center)
         }
+        .analyticsScreen(
+            ScreenID
+                .scenario(
+                    level: manager.currentScenario?.career.level ?? 0,
+                    page: manager.currentPageIndex + 1
+                )
+        )
         .id(manager.currentScenario?.id)
         .onAppear {
             restoreEndingIfNeeded()
