@@ -171,6 +171,15 @@ private extension SoloDeveloperTrainingApp {
                     await MainActor.run {
                         self.user = user
                         checkFirstOpen(user: user)
+                        if SessionManager.shared.didStartNewSession {
+                            AnalyticsService.shared.logAppOpened(
+                                nickname: user.nickname,
+                                entrySource: "direct",
+                                referrerShareID: "",
+                                isDeferredDeeplink: false
+                            )
+                            SessionManager.shared.consumeNewSession()
+                        }
                     }
                 case .legacy(let career):
                     await MainActor.run {
