@@ -19,8 +19,16 @@ final class AnalyticsService {
     /// 공유하기 중복 로깅 방지
     private var loggedShareCompletions: Set<String> = []
     private var loggedAppOpenedFromDeeplinkSessions: Set<String> = []
+    private var loggedSessionEndedSessions: Set<String> = []
+
+    /// 마지막으로 노출된 화면 이름
+    private(set) var currentScreen: String = "unknown"
 
     private init() {}
+
+    func setScreen(_ screenName: String) {
+        currentScreen = screenName
+    }
 
     // MARK: - 성장
 
@@ -60,6 +68,7 @@ final class AnalyticsService {
 
     /// 사용자가 앱 사용을 종료하거나 세션 만료
     func logSessionEnded(level: Int, lastScreen: String) {
+
         Analytics.logEvent("session_ended", parameters: [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,

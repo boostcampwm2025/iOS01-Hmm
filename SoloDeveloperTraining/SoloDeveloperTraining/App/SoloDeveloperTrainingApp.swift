@@ -134,6 +134,15 @@ private extension SoloDeveloperTrainingApp {
             if newPhase == .background || newPhase == .inactive {
                 saveUser()
             }
+
+            if newPhase == .background {
+                let level = user?.career.level ?? 1
+                let lastScreen = AnalyticsService.shared.currentScreen
+                AnalyticsService.shared.logSessionEnded(level: level, lastScreen: lastScreen)
+                SessionManager.shared.handleBackground()
+            } else if newPhase == .active {
+                SessionManager.shared.handleForeground()
+            }
         }
     }
 
