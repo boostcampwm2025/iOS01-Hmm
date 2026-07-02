@@ -246,5 +246,7 @@
 		<string>PFStardust-Bold.ttf</string>
 		<string>PFStardust-ExtraBold.ttf</string>
 	</array>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>
