@@ -118,7 +118,6 @@ struct MainView: View {
         .onChange(of: user.record.totalEarnedMoney) {
             careerSystem?.updateCareer()
         }
-        .overlay { overlayView }
         .overlay {
             if showLevelUpEffect {
                 LevelUpEffectView(
@@ -126,9 +125,10 @@ struct MainView: View {
                     previousCareerTitle: previousCareer?.rawValue ?? "",
                     currentCareerTitle: leveledUpCareer?.rawValue ?? ""
                 )
-                .transition(.opacity.animation(.easeIn))
+                .transition(TokenTransition.overlay.effect)
             }
         }
+        .animation(TokenTransition.overlay.animation, value: showLevelUpEffect)
         .onChange(of: showLevelUpEffect) { oldValue, newValue in
             if oldValue == true && newValue == false {
                 Task {
@@ -139,6 +139,55 @@ struct MainView: View {
         .fullScreenCover(isPresented: $showQuizView) {
             QuizGameView(user: user)
         }
+        .fullScreenCover(isPresented: $showScenarioView) {
+            ZStack {
+                Color.black300EventDim.ignoresSafeArea()
+                if let manager = scenarioManager {
+                    ScenarioStoryView(
+                        user: user,
+                        manager: manager,
+                        repository: scenarioRepository
+                    ) {
+                        let isRebirth = manager.currentScenario?.scenarioType == .rebirth
+                        manager.completeScenario()
+                        showScenarioView = false
+                        if isRebirth {
+                            hasSeenIntro = false
+                        } else {
+                            SoundService.shared.playBGM(.main)
+                        }
+                    }
+                }
+            }
+        }
+        .duPopup(
+            isPresented: showCareerPopup,
+            onBackgroundTap: { showCareerPopup = false },
+            content: { careerPopupOverlayView }
+        )
+        .duPopup(
+            isPresented: showSettingsView,
+            onBackgroundTap: { showSettingsView = false },
+            content: { settingsOverlayView }
+        )
+        .duPopup(isPresented: showDrinkAdPopup) { drinkAdPopupOverlayView }
+        .duPopup(isPresented: workGameSession.showsExitBonusPopup) { exitBonusPopupOverlayView }
+        .duPopup(isPresented: showOfflineRewardPopup) { offlineRewardPopupOverlayView }
+        .duPopup(
+            isPresented: storePopup != nil,
+            onBackgroundTap: { storePopup = nil },
+            content: { storePopup }
+        )
+        .duPopup(
+            isPresented: noticePopup != nil,
+            onBackgroundTap: { noticePopup = nil },
+            content: { noticePopup }
+        )
+        .duPopup(
+            isPresented: showUpdateRewardPopup,
+            onBackgroundTap: handleClaimUpdateReward,
+            content: { updateRewardOverlayView }
+        )
     }
 }
 
@@ -271,75 +320,24 @@ private extension MainView {
     }
 
     @ViewBuilder
-    var overlayView: some View {
-        Group {
-            careerPopupOverlayView
-                .ignoresSafeArea()
-            settingsOverlayView
-            drinkAdPopupOverlayView
-            exitBonusPopupOverlayView
-            offlineRewardPopupOverlayView
-            scenarioOverlayView
-            shopPopupOverlayView
-            updateRewardOverlayView
-        }
-    }
-
-    @ViewBuilder
-    var scenarioOverlayView: some View {
-        if showScenarioView, let manager = scenarioManager {
-            ScenarioStoryView(
-                user: user,
-                manager: manager,
-                repository: scenarioRepository
-            ) {
-                let isRebirth = manager.currentScenario?.scenarioType == .rebirth
-                manager.completeScenario()
-
-                showScenarioView = false
-
-                if isRebirth {
-                    hasSeenIntro = false
-                } else {
-                    SoundService.shared.playBGM(.main)
-                }
-            }
-            .ignoresSafeArea()
-            .transition(.opacity.animation(.easeIn))
-        }
-    }
-
-    @ViewBuilder
     var updateRewardOverlayView: some View {
-        if showUpdateRewardPopup {
-            let updateRewardItems = rewardRepository.fetchAllRewards()
-            UpdateRewardPopupView(
-                userType: userType,
-                rewards: updateRewardItems,
-                onClose: {
-                    let rewards = rewardRepository.fetchAllRewards(for: userType)
-                    rewards?.forEach { handleClaimUpdateReward($0) }
-                }
-            )
-        }
+        let updateRewardItems = rewardRepository.fetchAllRewards()
+        UpdateRewardPopupView(
+            userType: userType,
+            rewards: updateRewardItems,
+            onClose: handleClaimUpdateReward
+        )
     }
 
     @ViewBuilder
     var careerPopupOverlayView: some View {
-        if let careerSystem, showCareerPopup {
-            modalOverlay(onBackgroundTap: { showCareerPopup = false }, content: {
-                CareerPopupView(careerSystem: careerSystem, user: user) { showCareerPopup = false }
-            })
+        if let careerSystem {
+            CareerPopupView(careerSystem: careerSystem, user: user) { showCareerPopup = false }
         }
     }
 
-    @ViewBuilder
     var settingsOverlayView: some View {
-        if showSettingsView {
-            modalOverlay(onBackgroundTap: { showSettingsView = false }, content: {
-                FeedbackSettingView(onClose: { showSettingsView = false })
-            })
-        }
+        FeedbackSettingView(onClose: { showSettingsView = false })
     }
 
     func setupOnAppear() {
@@ -479,77 +477,46 @@ private extension MainView {
 
     @ViewBuilder
     var drinkAdPopupOverlayView: some View {
-        if showDrinkAdPopup, let drinkType = selectedDrinkType {
-            modalOverlay {
-                NoticePopup(
-                    type: .ad(
-                        cancelText: "그냥 하기",
-                        adText: "음료 받기",
-                        cancelAction: {
-                            SoundService.shared.trigger(.click)
-                            handleSkipAdInMainView()
-                        },
-                        adAction: {
-                            SoundService.shared.trigger(.click)
-                            Task { await handleWatchAdInMainView() }
-                        }
-                    ),
-                    title: drinkType == .coffee ? "커피 없음" : "박하스 없음",
-                    text: "대신에 광고를 보고\n카페인을 보충할까요?"
-                )
-            }
+        if let drinkType = selectedDrinkType {
+            NoticePopup(
+                type: .ad(
+                    cancelText: "그냥 하기",
+                    adText: "음료 받기",
+                    cancelAction: {
+                        SoundService.shared.trigger(.click)
+                        handleSkipAdInMainView()
+                    },
+                    adAction: {
+                        SoundService.shared.trigger(.click)
+                        Task { await handleWatchAdInMainView() }
+                    }
+                ),
+                title: drinkType == .coffee ? "커피 없음" : "박하스 없음",
+                text: "대신에 광고를 보고\n카페인을 보충할까요?"
+            )
             .onAppear { trackDrinkAdOfferIfNeeded(drinkType: drinkType) }
         }
     }
 
     @ViewBuilder
     var exitBonusPopupOverlayView: some View {
-        if workGameSession.showsExitBonusPopup {
-            modalOverlay {
-                NoticePopup(
-                    type: .ad(
-                        cancelText: "그냥 나가기",
-                        adText: "보너스 받기",
-                        cancelAction: {
-                            SoundService.shared.trigger(.click)
-                            handleExitWithoutBonus()
-                        },
-                        adAction: {
-                            SoundService.shared.trigger(.click)
-                            Task { await handleExitBonusAd() }
-                        }
-                    ),
-                    title: "보너스",
-                    text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다"
-                )
-            }
-            .onAppear { trackExitBonusAdOfferIfNeeded() }
-        }
-    }
-
-    @ViewBuilder
-    var shopPopupOverlayView: some View {
-        if let popup = storePopup {
-            modalOverlay(onBackgroundTap: { storePopup = nil }, content: { popup })
-        }
-        if let popup = noticePopup {
-            modalOverlay(onBackgroundTap: { noticePopup = nil }, content: { popup })
-        }
-    }
-
-    func modalOverlay<Content: View>(
-        onBackgroundTap: (() -> Void)? = nil,
-        @ViewBuilder content: () -> Content
-    ) -> some View {
-        ZStack {
-            Color.black300PopUpDimStatusBar
-                .onTapGesture {
-                    onBackgroundTap?()
+        NoticePopup(
+            type: .ad(
+                cancelText: "그냥 나가기",
+                adText: "보너스 받기",
+                cancelAction: {
+                    SoundService.shared.trigger(.click)
+                    handleExitWithoutBonus()
+                },
+                adAction: {
+                    SoundService.shared.trigger(.click)
+                    Task { await handleExitBonusAd() }
                 }
-
-            content()
-        }
-        .ignoresSafeArea()
+            ),
+            title: "보너스",
+            text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다"
+        )
+        .onAppear { trackExitBonusAdOfferIfNeeded() }
     }
 
     func trackDrinkAdOfferIfNeeded(drinkType: ConsumableType) {
@@ -690,12 +657,15 @@ private extension MainView {
         exitWorkGame()
     }
 
-    func handleClaimUpdateReward(_ reward: Reward) {
-        switch reward {
-        case .diamond(let count):
-            user.wallet.addDiamond(count)
-        case .consumable(let type, count: let count):
-            user.inventory.gain(consumable: type, count: count)
+    func handleClaimUpdateReward() {
+        let rewards = rewardRepository.fetchAllRewards(for: userType)
+        rewards?.forEach { reward in
+            switch reward {
+            case .diamond(let count):
+                user.wallet.addDiamond(count)
+            case .consumable(let type, count: let count):
+                user.inventory.gain(consumable: type, count: count)
+            }
         }
         showUpdateRewardPopup = false
         AppPreferences.shared.hasClaimedGameResetReward = true
@@ -720,27 +690,23 @@ private extension MainView {
 
     @ViewBuilder
     var offlineRewardPopupOverlayView: some View {
-        if showOfflineRewardPopup {
-            modalOverlay {
-                NoticePopup(
-                    type: .ad(
-                        cancelText: "안받기",
-                        adText: "보상 받기",
-                        cancelAction: {
-                            SoundService.shared.trigger(.click)
-                            handleOfflineRewardSkip()
-                        },
-                        adAction: {
-                            SoundService.shared.trigger(.click)
-                            Task { await handleOfflineRewardWatchAd() }
-                        }
-                    ),
-                    title: "보상 획득",
-                    text: "잠자는 시간 동안 '\(user.nickname)'가 일을 했습니다.\n일한 보상을 받을까요?"
-                )
-            }
-            .onAppear { trackOfflineRewardAdOfferIfNeeded() }
-        }
+        NoticePopup(
+            type: .ad(
+                cancelText: "안받기",
+                adText: "보상 받기",
+                cancelAction: {
+                    SoundService.shared.trigger(.click)
+                    handleOfflineRewardSkip()
+                },
+                adAction: {
+                    SoundService.shared.trigger(.click)
+                    Task { await handleOfflineRewardWatchAd() }
+                }
+            ),
+            title: "보상 획득",
+            text: "잠자는 시간 동안 '\(user.nickname)'가 일을 했습니다.\n일한 보상을 받을까요?"
+        )
+        .onAppear { trackOfflineRewardAdOfferIfNeeded() }
     }
 
     func checkOfflineReward() async {

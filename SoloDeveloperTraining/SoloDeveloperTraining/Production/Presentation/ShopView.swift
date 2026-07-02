@@ -285,7 +285,7 @@ private extension ShopView {
             if isSuccess {
                 // 성공 시 가로 스크롤을 맨 처음으로 이동
                 if let proxy = scrollProxy, selectedCategoryIndex == 1 {
-                    withAnimation {
+                    withAnimation(TokenAnimation.springMove.animation) {
                         proxy.scrollTo(Constant.ID.housingScrollStart, anchor: .leading)
                     }
                 }

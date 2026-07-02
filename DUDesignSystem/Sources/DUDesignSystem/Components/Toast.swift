@@ -98,13 +98,14 @@ public final class ToastManager {
         ])
         window.layoutIfNeeded()
 
-        UIView.animate(withDuration: 0.3) {
+        UIView.animate(withDuration: TokenAnimation.fadeInSlow.timeInterval) {
             contentView.alpha = 1
         }
 
         let workItem = DispatchWorkItem { [weak self, weak hostingController] in
             guard let self, let hostingController else { return }
-            UIView.animate(withDuration: 0.3) {
+            UIView
+                .animate(withDuration: TokenAnimation.fadeInSlow.timeInterval) {
                 hostingController.view.alpha = 0
             } completion: { _ in
                 hostingController.view.removeFromSuperview()

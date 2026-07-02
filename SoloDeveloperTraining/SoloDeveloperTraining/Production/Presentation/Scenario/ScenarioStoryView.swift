@@ -8,15 +8,10 @@
 import SwiftUI
 import DUDesignSystem
 
-private enum Animation {
-    static let standard = SwiftUI.Animation.easeInOut(duration: 0.25)
-}
-
 struct ScenarioStoryView: View {
     let user: User?
     let manager: ScenarioManager
     let repository: ScenarioRepository
-    let backgroundColor: Color?
     let onComplete: () -> Void
 
     @State private var currentPageIndex: Int
@@ -35,13 +30,11 @@ struct ScenarioStoryView: View {
         user: User?,
         manager: ScenarioManager,
         repository: ScenarioRepository,
-        backgroundColor: Color = .black300EventDim,
         onComplete: @escaping () -> Void
     ) {
         self.user = user
         self.manager = manager
         self.repository = repository
-        self.backgroundColor = backgroundColor
         self.onComplete = onComplete
         // 저장된 인덱스로 초기화하여 앱 재시작 시 해당 페이지부터 시작하게 함
         self._currentPageIndex = State(initialValue: manager.currentPageIndex)
@@ -51,8 +44,6 @@ struct ScenarioStoryView: View {
 
     var body: some View {
         ZStack {
-            backgroundColor
-
             VStack(spacing: isEnding ? TokenSpacing.xl : TokenSpacing.lg) {
                 if isEnding { endingResultView }
 
@@ -102,38 +93,35 @@ struct ScenarioStoryView: View {
                 }
             }
             .frame(maxHeight: .infinity, alignment: isEnding ? .top : .center)
-
-            if isRebirthConfirmPopupPresented || isShareSheetPresented {
-                Color.black300PopUpDimStatusBar.ignoresSafeArea()
-            }
-
-            if isShareSheetPresented, let ending = finalEnding {
-                ShareSheetView(
-                    isPresented: $isShareSheetPresented,
-                    kakaoMessageTemplateID: ending.type.kakaoMessageTemplateID,
-                    shareID: currentShareID,
-                    resultID: ending.id,
-                    urlString: "\(ShareService.baseURL)/\(ending.type.webURLSlug)?share_id=\(currentShareID)&device_id=\(AnalyticsProperty.deviceIDValue)&result_id=\(ending.id)",
-                    onLinkCopied: {
-                        ToastManager.shared.show("링크가 복사되었습니다.", anchor: .center)
-                    }
-                )
-                .padding(.horizontal, TokenSpacing.lg)
-            }
-
-            if isRebirthConfirmPopupPresented {
-                rebirthConfirmPopupView
-            }
         }
-        .ignoresSafeArea()
+        .id(manager.currentScenario?.id)
         .onAppear {
             restoreEndingIfNeeded()
         }
+        .duPopup(isPresented: isShareSheetPresented) { shareSheetPopup }
+        .duPopup(isPresented: isRebirthConfirmPopupPresented) { rebirthConfirmPopupView }
     }
 }
 
 // MARK: - 서브 뷰
 private extension ScenarioStoryView {
+    @ViewBuilder
+    var shareSheetPopup: some View {
+        if let ending = finalEnding {
+            ShareSheetView(
+                isPresented: $isShareSheetPresented,
+                kakaoMessageTemplateID: ending.type.kakaoMessageTemplateID,
+                shareID: currentShareID,
+                resultID: ending.id,
+                urlString: "\(ShareService.baseURL)/\(ending.type.webURLSlug)?share_id=\(currentShareID)&device_id=\(AnalyticsProperty.deviceIDValue)&result_id=\(ending.id)",
+                onLinkCopied: {
+                    ToastManager.shared.show("링크가 복사되었습니다.", anchor: .center)
+                }
+            )
+            .padding(.horizontal, TokenSpacing.lg)
+        }
+    }
+
     var endingResultView: some View {
         HStack(spacing: TokenSpacing.sm) {
             DUIcon(.movieSlate, size: .size28)
@@ -220,7 +208,7 @@ private extension ScenarioStoryView {
                             adWatchDurationSec: result.watchDurationSec
                         )
                         selected = ""
-                        withAnimation(Animation.standard) {
+                        withAnimation(TokenAnimation.crossFade.animation) {
                             manager.reselectChoice()
                             currentPageIndex = manager.currentPageIndex
                         }
@@ -284,7 +272,7 @@ private extension ScenarioStoryView {
     }
 
     func updatePage() {
-        withAnimation(Animation.standard) {
+        withAnimation(TokenAnimation.crossFade.animation) {
             manager.moveToNextPage()
             currentPageIndex = manager.currentPageIndex
         }
@@ -303,7 +291,7 @@ private extension ScenarioStoryView {
             evt04: evt04
         )
 
-        withAnimation(Animation.standard) {
+        withAnimation(TokenAnimation.fadeInSlow.animation) {
             finalEnding = ending
         }
         SoundService.shared.playBGM(.ending)
@@ -322,13 +310,15 @@ private extension ScenarioStoryView {
                 pages: pages
             )
 
-            manager.startScenario(rebirthScenario)
+            withAnimation(TokenAnimation.fadeInSlow.animation) {
+                manager.startScenario(rebirthScenario)
+                currentPageIndex = manager.currentPageIndex
+                selected = ""
+                finalEnding = nil
 
-            currentPageIndex = manager.currentPageIndex
-            selected = ""
-            finalEnding = nil
+                isRebirthConfirmPopupPresented = false
+            }
 
-            isRebirthConfirmPopupPresented = false
             SoundService.shared.playBGM(.rebirth)
         }
     }

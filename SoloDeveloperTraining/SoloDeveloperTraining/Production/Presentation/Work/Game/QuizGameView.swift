@@ -45,8 +45,8 @@ struct QuizGameView: View {
             }
         }
         .onDisappear { SoundService.shared.stopAllSFX() }
-        .overlay { adPopupOverlay }
-        .overlay { rewardPopupOverlay }
+        .duPopup(isPresented: showQuizAdPopup) { adPopupOverlay }
+        .duPopup(isPresented: showQuizRewardPopup) { rewardPopupOverlay }
     }
 
     // MARK: - Sections
@@ -109,7 +109,7 @@ struct QuizGameView: View {
                 HStack(spacing: 0) {
                     ItemLabel(
                         text: quizGame.currentAnswerResult?.isCorrect == true ?
-                            "정답\n\(quizGame.currentQuestion?.explanation ?? "")" :
+                        "정답\n\(quizGame.currentQuestion?.explanation ?? "")" :
                             "오답\n\(quizGame.currentQuestion?.explanation ?? "")",
                         font: .label,
                         color: quizGame.currentAnswerResult?.isCorrect == true ? .accentGreen : .accentRed,
@@ -172,63 +172,51 @@ struct QuizGameView: View {
     // MARK: - Overlays
 
     private var adPopupOverlay: some View {
-        Group {
-            if showQuizAdPopup {
-                modalOverlay {
-                    DiamondPopup(
-                        type: .ad(
-                            cancelText: "닫기",
-                            adText: "2배 얻기",
-                            cancelAction: {
-                                SoundService.shared.trigger(.click)
-                                showQuizAdPopup = false
-                                if let flowID = adRewardFlowID {
-                                    AnalyticsService.shared.logAdOfferDismissed(
-                                        adRewardFlowID: flowID,
-                                        adPlacement: .quizReward,
-                                        rewardType: .diamond,
-                                        rewardAmount: quizGame.state.totalDiamondsEarned,
-                                        dismissReason: .close
-                                    )
-                                    adRewardFlowID = nil
-                                }
-                                quizGame.completeGame(multiplier: 1.0)
-                                dismiss()
-                            },
-                            adAction: {
-                                SoundService.shared.trigger(.click)
-                                Task { await handleWatchAd() }
-                            }
-                        ),
-                        title: "보상 지급",
-                        text: "퀴즈 풀이를 완료했습니다!\n진정한 개발자에 한 걸음 더 가까워졌습니다.",
-                        diamond: quizGame.state.totalDiamondsEarned
-                    )
+        DiamondPopup(
+            type: .ad(
+                cancelText: "닫기",
+                adText: "2배 얻기",
+                cancelAction: {
+                    SoundService.shared.trigger(.click)
+                    showQuizAdPopup = false
+                    if let flowID = adRewardFlowID {
+                        AnalyticsService.shared.logAdOfferDismissed(
+                            adRewardFlowID: flowID,
+                            adPlacement: .quizReward,
+                            rewardType: .diamond,
+                            rewardAmount: quizGame.state.totalDiamondsEarned,
+                            dismissReason: .close
+                        )
+                        adRewardFlowID = nil
+                    }
+                    quizGame.completeGame(multiplier: 1.0)
+                    dismiss()
+                },
+                adAction: {
+                    SoundService.shared.trigger(.click)
+                    Task { await handleWatchAd() }
                 }
-            }
-        }
+            ),
+            title: "보상 지급",
+            text: "퀴즈 풀이를 완료했습니다!\n진정한 개발자에 한 걸음 더 가까워졌습니다.",
+            diamond: quizGame.state.totalDiamondsEarned
+        )
     }
 
     private var rewardPopupOverlay: some View {
-        Group {
-            if showQuizRewardPopup {
-                modalOverlay {
-                    DiamondPopup(
-                        type: .default(
-                            buttonText: "닫기",
-                            action: {
-                                SoundService.shared.trigger(.click)
-                                showQuizRewardPopup = false
-                                dismiss()
-                            }
-                        ),
-                        title: "보상 지급 완료",
-                        text: "다이아를 두 배로 받았습니다!",
-                        diamond: finalDiamondsEarned
-                    )
+        DiamondPopup(
+            type: .default(
+                buttonText: "닫기",
+                action: {
+                    SoundService.shared.trigger(.click)
+                    showQuizRewardPopup = false
+                    dismiss()
                 }
-            }
-        }
+            ),
+            title: "보상 지급 완료",
+            text: "다이아를 두 배로 받았습니다!",
+            diamond: finalDiamondsEarned
+        )
     }
 }
 
@@ -272,16 +260,6 @@ private extension QuizGameView {
             quizGame.completeGame(multiplier: 1.0)
             dismiss()
         }
-    }
-
-    func modalOverlay<Content: View>(
-        @ViewBuilder content: () -> Content
-    ) -> some View {
-        ZStack {
-            Color.black300PopUpDimStatusBar
-            content()
-        }
-        .ignoresSafeArea()
     }
 }
 

@@ -12,13 +12,12 @@ public struct EffectLabel: View {
         case plus
         case minus
     }
-    
+
     public var type: EffectLabelType
     public var text: String
     public var onComplete: () -> Void
-    
-    @State private var opacity: Double = 1.0
-    @State private var offsetY: CGFloat = 0
+
+    @State private var isActive = true
     @State private var shouldShow: Bool = true
 
     public init(type: EffectLabelType, text: String, onComplete: @escaping () -> Void = {}) {
@@ -38,25 +37,16 @@ public struct EffectLabel: View {
                     .duFont(.subheadline)
                     .foregroundStyle(type == .plus ? Color.lightGreen : Color.accentRed)
             }
-            .opacity(opacity)
-            .offset(y: offsetY)
+            .floatingFadeOut(isActive: isActive)
             .onAppear {
-                runAnimation()
+                Task {
+                    isActive = false
+                    try? await Task
+                        .sleep(for: TokenAnimation.floatingFadeOut.duration)
+                    shouldShow = false
+                    onComplete()
+                }
             }
-        }
-    }
-}
-
-private extension EffectLabel {
-    func runAnimation() {
-        Task {
-            withAnimation(.easeOut(duration: 1.5)) {
-                opacity = 0
-                offsetY = -12
-            }
-            try? await Task.sleep(nanoseconds: 1_500_000_000)
-            shouldShow = false
-            onComplete()
         }
     }
 }

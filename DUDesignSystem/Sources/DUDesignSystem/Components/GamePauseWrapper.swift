@@ -10,7 +10,6 @@ import SwiftUI
 public struct GamePauseWrapper: ViewModifier {
 
     @Environment(\.scenePhase) private var scenePhase
-    @State private var isPaused: Bool = false
 
     @Binding public var pauseBinding: Bool
 
@@ -33,12 +32,13 @@ public struct GamePauseWrapper: ViewModifier {
     public func body(content: Content) -> some View {
         ZStack {
             content
-                .blur(radius: isPaused ? 2 : 0)
-            if isPaused {
+                .blur(radius: pauseBinding ? 2 : 0)
+            if pauseBinding {
                 pauseOverlay
-                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                    .transition(TokenTransition.overlay.effect)
             }
         }
+        .animation(TokenTransition.overlay.animation, value: pauseBinding)
         .onChange(of: scenePhase) { oldPhase, newPhase in
             if newPhase != .active {
                 handlePauseRequested()
@@ -75,18 +75,17 @@ public struct GamePauseWrapper: ViewModifier {
     }
 
     private func handlePauseRequested() {
-        isPaused = true
+        pauseBinding = true
         onPause()
     }
 
     private func handleLeave() {
-        guard isPaused else { return }
+        guard pauseBinding else { return }
         onLeave()
     }
 
     private func handleResume() {
-        guard isPaused else { return }
-        isPaused = false
+        guard pauseBinding else { return }
         pauseBinding = false
         onResume()
     }

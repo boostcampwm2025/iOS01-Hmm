@@ -8,15 +8,8 @@
 import SwiftUI
 import DUDesignSystem
 
-private enum Constant {
-    enum Animation {
-        static let transitionDuration: Double = 0.5
-        static let blinkingDuration: Double = 1.0
-    }
-}
-
 struct IntroView: View {
-    @State private var isBlinking = true
+    @State private var isPlaying = false
     @State private var scenarioManager: ScenarioManager?
 
     @Binding var hasSeenIntro: Bool
@@ -55,24 +48,24 @@ struct IntroView: View {
                 self.scenarioManager = manager
                 SoundService.shared.playBGM(.scenario)
             } else {
-                withAnimation(.easeOut(duration: Constant.Animation.transitionDuration)) {
-                    hasSeenIntro = true
-                }
+                hasSeenIntro = true
             }
         }
         .fullScreenCover(item: $scenarioManager) { manager in
-            ScenarioStoryView(
-                user: nil,
-                manager: manager,
-                repository: scenarioRepository,
-                backgroundColor: .black300,
-                onComplete: {
-                    scenarioManager = nil
-                    hasSeenIntro = true
-                    showNicknameSetup = true
-                    SoundService.shared.playBGM(.splash)
-                }
-            )
+            ZStack {
+                Color.black300.ignoresSafeArea()
+                ScenarioStoryView(
+                    user: nil,
+                    manager: manager,
+                    repository: scenarioRepository,
+                    onComplete: {
+                        scenarioManager = nil
+                        hasSeenIntro = true
+                        showNicknameSetup = true
+                        SoundService.shared.playBGM(.splash)
+                    }
+                )
+            }
         }
         .ignoresSafeArea()
     }
@@ -93,10 +86,9 @@ private extension IntroView {
         VStack {
             Spacer()
             ItemLabel(text: "화면을 터치해 주세요.", font: .title2, color: .white300)
-                .opacity(isBlinking ? TokenOpacity.opacity60 : TokenOpacity.opacity100)
-                .animation(.easeInOut(duration: Constant.Animation.blinkingDuration).repeatForever(autoreverses: true), value: isBlinking)
+                .blinkLoop(isPlaying: isPlaying)
                 .padding(.bottom, TokenGrid.marginBottomLarge)
-                .onAppear { isBlinking = false }
+                .onAppear { isPlaying = true }
         }
     }
 

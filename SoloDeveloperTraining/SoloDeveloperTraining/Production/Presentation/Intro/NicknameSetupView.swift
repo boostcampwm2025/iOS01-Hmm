@@ -90,7 +90,7 @@ struct NicknameSetupView: View {
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
             keyboardMinY = .infinity
         }
-        .animation(.easeOut(duration: 0.25), value: inputFieldOffset)
+        .animation(TokenAnimation.moveSmooth.animation, value: inputFieldOffset)
         .onTapGesture {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
