@@ -147,6 +147,7 @@ private extension ShopView {
         } else {
             let (title, _, buttonTitle) = ShopPurchaseHelper.purchaseInfo(for: item)
             let priceText = ShopPurchaseHelper.createPriceText(for: item, shopSystem: shopSystem)
+
             storePopup = StorePopup(
                 type: .default(
                     cancelText: "취소",
@@ -165,6 +166,10 @@ private extension ShopView {
                 itemName: item.displayTitle,
                 price: priceText
             )
+
+            if item.category == .housing {
+                AnalyticsService.shared.enterScreen(.buyingHouse)
+            }
         }
     }
 
@@ -208,6 +213,8 @@ private extension ShopView {
             price: priceText,
             rateHighlighted: hasBonus
         )
+        AnalyticsService.shared
+            .enterScreen(hasBonus ? .probability02 : .probability01)
     }
 
     func trackEnhanceAdOfferIfNeeded(hasBonus: Bool) {

@@ -30,6 +30,11 @@ final class AnalyticsService {
         currentScreenID = screen
     }
 
+    func enterScreen(_ screen: ScreenID) {
+        currentScreenID = screen.rawValue
+    }
+
+
     // MARK: - 성장
 
     /// device_id 기준 첫 앱 실행 (앱 재설치 시에도 1회만)

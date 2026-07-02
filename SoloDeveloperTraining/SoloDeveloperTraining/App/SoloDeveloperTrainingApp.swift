@@ -232,6 +232,7 @@ private extension SoloDeveloperTrainingApp {
                 title: "업데이트 안내",
                 text: "원활한 앱 사용을 위해서 업데이트가 필요합니다.\n지금 바로 업데이트를 진행해주세요."
             )
+            .analyticsScreen(.update01)
         } else if updateType == .optional {
             NoticePopup(
                 type: .confirm(
@@ -246,6 +247,7 @@ private extension SoloDeveloperTrainingApp {
                 title: "업데이트 안내",
                 text: "원활한 앱 사용을 위해서 업데이트가 필요합니다.\n지금 바로 업데이트를 진행해주세요."
             )
+            .analyticsScreen(.update02)
         }
     }
 

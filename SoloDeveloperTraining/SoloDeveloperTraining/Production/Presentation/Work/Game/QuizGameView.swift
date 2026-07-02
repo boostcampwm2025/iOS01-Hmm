@@ -201,6 +201,7 @@ struct QuizGameView: View {
             text: "퀴즈 풀이를 완료했습니다!\n진정한 개발자에 한 걸음 더 가까워졌습니다.",
             diamond: quizGame.state.totalDiamondsEarned
         )
+        .analyticsScreen(.quizReward)
     }
 
     private var rewardPopupOverlay: some View {
@@ -217,6 +218,7 @@ struct QuizGameView: View {
             text: "다이아를 두 배로 받았습니다!",
             diamond: finalDiamondsEarned
         )
+        .analyticsScreen(.quizRewardResult)
     }
 }
 

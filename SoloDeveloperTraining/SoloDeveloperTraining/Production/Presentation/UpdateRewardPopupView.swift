@@ -43,6 +43,7 @@ struct UpdateRewardPopupView: View {
                 }
             )
         }
+        .analyticsScreen(.noticeUpdate)
         .padding(TokenSpacing.lg)
         .background(Color.white300)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.lg))

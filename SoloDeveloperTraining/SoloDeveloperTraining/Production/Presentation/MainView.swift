@@ -494,6 +494,7 @@ private extension MainView {
                 title: drinkType == .coffee ? "커피 없음" : "박하스 없음",
                 text: "대신에 광고를 보고\n카페인을 보충할까요?"
             )
+            .analyticsScreen(.caffein)
             .onAppear { trackDrinkAdOfferIfNeeded(drinkType: drinkType) }
         }
     }
@@ -516,6 +517,7 @@ private extension MainView {
             title: "보너스",
             text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다"
         )
+        .analyticsScreen(.bonus)
         .onAppear { trackExitBonusAdOfferIfNeeded() }
     }
 
@@ -707,6 +709,7 @@ private extension MainView {
             text: "잠자는 시간 동안 '\(user.nickname)'가 일을 했습니다.\n일한 보상을 받을까요?"
         )
         .onAppear { trackOfflineRewardAdOfferIfNeeded() }
+        .analyticsScreen(.restart)
     }
 
     func checkOfflineReward() async {
