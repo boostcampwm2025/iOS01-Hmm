@@ -34,7 +34,6 @@ struct ShopView: View {
 
     @State private var selectedCategoryIndex: Int = 0
     @State private var selectedHousingTier: HousingTier?
-    @State private var showAdBonusToast: Bool = false
     @State private var adBonusAppliedTypes: Set<String> = {
         let saved = UserDefaults.standard.stringArray(forKey: Constant.UserDefaultsKey.equipmentAdBonus) ?? []
         return Set(saved)
@@ -72,7 +71,6 @@ struct ShopView: View {
                 housingView
             }
         }
-        .darkToast(isShowing: $showAdBonusToast, message: "강화 확률이 높아졌습니다!")
     }
 }
 
@@ -267,7 +265,6 @@ private extension ShopView {
         )
         adBonusAppliedTypes.insert(typeKey)
         UserDefaults.standard.set(Array(adBonusAppliedTypes), forKey: Constant.UserDefaultsKey.equipmentAdBonus)
-        showAdBonusToast = true
         AnalyticsService.shared.logAdRewardClaimed(
             adRewardFlowID: flowID,
             adPlacement: adPlacement,
@@ -294,7 +291,7 @@ private extension ShopView {
             if isSuccess {
                 // 성공 시 가로 스크롤을 맨 처음으로 이동
                 if let proxy = scrollProxy, selectedCategoryIndex == 1 {
-                    withAnimation {
+                    withAnimation(TokenAnimation.springMove.animation) {
                         proxy.scrollTo(Constant.ID.housingScrollStart, anchor: .leading)
                     }
                 }

@@ -15,12 +15,6 @@ import KakaoSDKCommon
 
 import DUDesignSystem
 
-private enum Constant {
-    enum Animation {
-        static let transitionDuration: Double = 0.5
-    }
-}
-
 @main
 struct SoloDeveloperTrainingApp: App {
 
@@ -85,7 +79,6 @@ private extension SoloDeveloperTrainingApp {
                     hasSeenIntro: $hasSeenIntro,
                     scenarioRepository: scenarioRepository
                 )
-                .transition(.opacity)
             } else if hasSeenIntro, user == nil, showNicknameSetup {
                 NicknameSetupView { nickname in
                     let newUser = User(nickname: nickname)
@@ -107,7 +100,7 @@ private extension SoloDeveloperTrainingApp {
                 )
             }
         }
-        .animation(.easeOut(duration: Constant.Animation.transitionDuration), value: hasSeenIntro)
+        .animation(TokenAnimation.fadeInSlow.animation, value: hasSeenIntro)
         .onOpenURL { url in
             guard let deeplinkInfo = parseOpenURL(url) else { return }
 
@@ -119,10 +112,10 @@ private extension SoloDeveloperTrainingApp {
                     resultID: deeplinkInfo.resultID
                 )
         }
-        .overlay {
+        .duPopup(isPresented: showErrorPopup) {
             errorPopupOverlay
         }
-        .overlay {
+        .duPopup(isPresented: updateType != .none) {
             updateOverlay
         }
         .task {
@@ -223,51 +216,37 @@ private extension SoloDeveloperTrainingApp {
     @ViewBuilder
     var updateOverlay: some View {
         if updateType == .force {
-            ZStack {
-                Color.black300PopUpDimStatusBar.ignoresSafeArea()
-                NoticePopup(
-                    type: .default(
-                        buttonText: "업데이트",
-                        action: { AppUpdateChecker.openAppStore() }
-                    ),
-                    title: "업데이트 안내",
-                    text: "원활한 앱 사용을 위해서 업데이트가 필요합니다.\n지금 바로 업데이트를 진행해주세요."
-                )
-            }
+            NoticePopup(
+                type: .default(
+                    buttonText: "업데이트",
+                    action: { AppUpdateChecker.openAppStore() }
+                ),
+                title: "업데이트 안내",
+                text: "원활한 앱 사용을 위해서 업데이트가 필요합니다.\n지금 바로 업데이트를 진행해주세요."
+            )
         } else if updateType == .optional {
-            ZStack {
-                Color.black300PopUpDimStatusBar.ignoresSafeArea()
-                NoticePopup(
-                    type: .confirm(
-                        cancelText: "다음에",
-                        confirmText: "업데이트",
-                        cancelAction: {
-                            AppUpdateChecker.snoozeOptionalUpdate()
-                            updateType = .none
-                        },
-                        confirmAction: { AppUpdateChecker.openAppStore() }
-                    ),
-                    title: "업데이트 안내",
-                    text: "원활한 앱 사용을 위해서 업데이트가 필요합니다.\n지금 바로 업데이트를 진행해주세요."
-                )
-            }
+            NoticePopup(
+                type: .confirm(
+                    cancelText: "다음에",
+                    confirmText: "업데이트",
+                    cancelAction: {
+                        AppUpdateChecker.snoozeOptionalUpdate()
+                        updateType = .none
+                    },
+                    confirmAction: { AppUpdateChecker.openAppStore() }
+                ),
+                title: "업데이트 안내",
+                text: "원활한 앱 사용을 위해서 업데이트가 필요합니다.\n지금 바로 업데이트를 진행해주세요."
+            )
         }
     }
 
-    @ViewBuilder
     var errorPopupOverlay: some View {
-        if showErrorPopup {
-            ZStack {
-                Color.black300PopUpDimStatusBar
-                    .ignoresSafeArea()
-
-                NoticePopup(
-                    type: .default(buttonText: "확인", action: { showErrorPopup = false }),
-                    title: "오류",
-                    text: errorMessage
-                )
-            }
-        }
+        NoticePopup(
+            type: .default(buttonText: "확인", action: { showErrorPopup = false }),
+            title: "오류",
+            text: errorMessage
+        )
     }
 }
 #endif
