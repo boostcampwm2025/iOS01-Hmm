@@ -37,9 +37,9 @@ final class Consumable: Item {
         self.count = count
     }
 
-    /// 아이템 갯수 1 증가
-    func addItem() {
-        count += 1
+    /// 아이템 갯수 count만큼 증가
+    func addItem(count: Int = 1) {
+        self.count += count
     }
 
     /// 아이템  갯수 1 감소
@@ -103,9 +103,9 @@ enum ConsumableType {
     var imageName: String {
         switch self {
         case .coffee:
-            return "icon_coffee"
+            return "iconCoffee"
         case .energyDrink:
-            return "icon_energy_drink"
+            return "iconEnergyDrink"
         }
     }
 }

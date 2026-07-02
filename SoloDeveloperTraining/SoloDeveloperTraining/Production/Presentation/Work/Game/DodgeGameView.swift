@@ -119,7 +119,7 @@ private extension DodgeGameView {
             onClose: {
                 closePause = true
                 SoundService.shared.stopAllSFX()
-                SoundService.shared.trigger(.buttonTap)
+                SoundService.shared.trigger(.click)
             },
             onCoffee: { useConsumableItem(.coffee) },
             onEnergyDrink: { useConsumableItem(.energyDrink) }
@@ -165,7 +165,7 @@ private extension DodgeGameView {
         Color.clear
             .frame(height: Constant.Size.ground)
             .overlay(
-                Image.duImage("dodge_ground")
+                Image.duImage("dodgeGround")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
             )
@@ -269,7 +269,7 @@ private extension DodgeGameView {
         let count = game.user.inventory.count(type) ?? 0
         if count > 0 {
             if game.user.inventory.drink(type) {
-                SoundService.shared.trigger(.itemConsume)
+                SoundService.shared.trigger(.drink)
                 HapticService.shared.trigger(.success)
                 game.buffSystem.useConsumableItem(type: type)
                 game.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)

@@ -25,8 +25,6 @@ struct WorkSelectedView: View {
     @State var selectedIndex: Int = 0
     @State var workItems: [WorkSegmentControl.Item] = []
     @State private var requiredCareers: [Career?] = []
-    @State private var showToast: Bool = false
-    @State private var toastMessage: String = ""
     @Binding var isGameStarted: Bool
     @Binding var gameActionGoldDelta: Int
     @Binding var tabSwitchPause: Bool
@@ -93,21 +91,27 @@ private extension WorkSelectedView {
         VStack(spacing: TokenSpacing.lg) {
             WorkSegmentControl(
                 items: workItems,
-                selectedIndex: $selectedIndex,
+                selectedIndex: Binding(
+                    get: { selectedIndex },
+                    set: { newValue in
+                        SoundService.shared.trigger(.click)
+                        selectedIndex = newValue
+                    }
+                ),
                 onLockedTap: { index in
                     guard index < requiredCareers.count, let career = requiredCareers[index] else { return }
-                    toastMessage = "\(career.rawValue)부터 플레이할 수 있습니다."
-                    showToast = true
+                    SoundService.shared.trigger(.click)
+                    ToastManager.shared.show("\(career.rawValue)부터 플레이할 수 있습니다.")
                 }
             )
             ItemLabel(text: actionDescription(for: selectedIndex), font: .body2, color: .black300)
             TextButton(text: "시작하기", type: .primary, size: .large) {
+                SoundService.shared.trigger(.click)
                 isGameStarted = true
             }
             .padding(.bottom, TokenGrid.paddingBottom)
         }
         .padding(.horizontal, TokenGrid.paddingSide)
-        .toast(isShowing: $showToast, message: toastMessage)
     }
 }
 

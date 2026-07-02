@@ -27,7 +27,6 @@ struct LevelUpEffectView: View {
 
     @State private var phase: Phase = .start
     @State private var showTitleBox: Bool = false
-    @State private var showGIF: Bool = false
     @State private var gradientOpacity: CGFloat = 0
     @State private var titleText: String = ""
 
@@ -36,9 +35,7 @@ struct LevelUpEffectView: View {
             Color.black300EventDim
                 .ignoresSafeArea()
                 .onTapGesture {
-                    withAnimation {
-                        isPresented = false
-                    }
+                    isPresented = false
                 }
 
             VStack(spacing: TokenSpacing.xs) {
@@ -53,7 +50,10 @@ struct LevelUpEffectView: View {
                 )
                 .frame(maxWidth: .infinity)
 
-                careerTitleBox
+                if showTitleBox {
+                    careerTitleBox
+                        .transition(TokenTransition.overlay.effect)
+                }
             }
             .onAppear { startAnimation() }
             .onDisappear { phase = .start }
@@ -93,7 +93,6 @@ private extension LevelUpEffectView {
 
             sidebarOverlay
         }
-        .opacity(showTitleBox ? 1 : 0)
         .padding(.horizontal, TokenGrid.marginPopUp)
     }
 
@@ -120,20 +119,18 @@ private extension LevelUpEffectView {
         guard phase == .start else { return }
 
         showTitleBox = false
-        showGIF = false
         gradientOpacity = 0
         titleText = previousCareerTitle
 
-        withAnimation(.easeIn(duration: 0.3)) {
+        withAnimation(TokenTransition.overlay.animation) {
             showTitleBox = true
-            showGIF = true
         }
     }
 
     func switchToLoopAnimation() {
         guard phase == .loop else { return }
 
-        withAnimation(.easeOut(duration: 0.3)) {
+        withAnimation(TokenAnimation.crossFade.animation) {
             gradientOpacity = 1
             titleText = currentCareerTitle
         }

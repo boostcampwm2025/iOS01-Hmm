@@ -16,10 +16,10 @@ public struct LanguageItem: View {
     }
 
     public enum LanguageType: String {
-        case swift  = "language_swift"
-        case kotlin = "language_kotlin"
-        case dart   = "language_dart"
-        case python = "language_python"
+        case swift  = "languageSwift"
+        case kotlin = "languageKotlin"
+        case dart   = "languageDart"
+        case python = "languagePython"
     }
 
     public var language: LanguageType

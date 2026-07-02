@@ -214,7 +214,7 @@ private extension QuizGame {
             correctAnswersCount += 1
         }
 
-        SoundService.shared.trigger(isCorrect ? .languageCorrect : .languageWrong)
+        SoundService.shared.trigger(isCorrect ? .correct : .wrong)
         if !isCorrect {
             HapticService.shared.trigger(.error)
         }

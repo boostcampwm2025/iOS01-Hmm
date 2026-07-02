@@ -19,10 +19,10 @@ public struct RunningCharacter: View {
     @State private var animationTimer: Timer?
 
     private let frameImages: [String] = [
-        "dodge_character1",
-        "dodge_character2",
-        "dodge_character3",
-        "dodge_character2"
+        "dodgeCharacter1",
+        "dodgeCharacter2",
+        "dodgeCharacter3",
+        "dodgeCharacter2"
     ]
 
     public var isFacingLeft: Bool

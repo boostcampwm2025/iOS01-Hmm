@@ -18,20 +18,16 @@ struct CareerPopupView: View {
     private var nextCareer: Career? { currentCareer.nextCareer }
 
     var body: some View {
-        ZStack {
-            Color.black300PopUpDimStatusBar
-            popup
-        }
-    }
-
-    private var popup: some View {
         VStack(spacing: TokenSpacing.xxl) {
             VStack(spacing: TokenSpacing.lg) {
                 ItemLabel(text: "커리어", font: .title2, color: .black300)
                 progressSection
                 careerList
             }
-            TextButton(text: "닫기", type: .primary, size: .medium, action: onClose)
+            TextButton(text: "닫기", type: .primary, size: .medium, action: {
+                SoundService.shared.trigger(.click)
+                onClose()
+            })
         }
         .padding(TokenSpacing.lg)
         .background(Color.white300)

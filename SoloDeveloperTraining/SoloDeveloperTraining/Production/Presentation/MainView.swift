@@ -35,8 +35,6 @@ struct MainView: View {
 
     // 음료 광고 팝업 관련
     @State private var showDrinkAdPopup: Bool = false
-    @State private var showRewardToast: Bool = false
-    @State private var rewardToastMessage: String = ""
     @State private var selectedDrinkType: ConsumableType?
     @State private var drinkAdRewardFlowID: String?
 
@@ -50,14 +48,9 @@ struct MainView: View {
     @State private var showOfflineRewardPopup: Bool = false
     @State private var offlineRewardGold: Int = 0
     @State private var offlineRewardHours: Double = 0.0
-    @State private var showOfflineRewardToast: Bool = false
-    @State private var offlineRewardToastMessage: String = ""
     @State private var hasCheckedOfflineReward: Bool = false
     @State private var offlineRewardAdFlowID: String?
 
-    // 팝업 Anchor 관련
-    @State private var tabbarAnchorY: CGFloat = 0
-    @State private var bottomAnchorY: CGFloat = 0
 
     // 레벨업 이펙트 관련
     @State private var isCareerSystemInitialized: Bool = false
@@ -71,16 +64,19 @@ struct MainView: View {
 
     // 업데이트 보상 관련
     @State private var showUpdateRewardPopup = true
+    private let rewardRepository = DefaultRewardRepository()
 
     let scenarioRepository: ScenarioRepository
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
+    private let userType: RewardUserType
     private let scene: CharacterScene
     private let animationSystem: CharacterAnimationSystem
 
     init(
         user: User,
+        userType: RewardUserType,
         hasSeenIntro: Binding<Bool>,
         scenarioRepository: ScenarioRepository
     ) {
@@ -89,6 +85,7 @@ struct MainView: View {
 
         self.autoGainSystem = AutoGainSystem(user: user)
         self.user = user
+        self.userType = userType
         self.scenarioRepository = scenarioRepository
 
         self.scene = CharacterScene(size: Constant.characterSceneSize, user: user)
@@ -117,12 +114,10 @@ struct MainView: View {
         .task {
             await updateSkillAdRewardTimer()
         }
-        .onDisappear { SoundService.shared.stopBGM() }
         .onChange(of: scenePhase, handleScenePhaseChange)
         .onChange(of: user.record.totalEarnedMoney) {
             careerSystem?.updateCareer()
         }
-        .overlay { overlayView }
         .overlay {
             if showLevelUpEffect {
                 LevelUpEffectView(
@@ -130,9 +125,10 @@ struct MainView: View {
                     previousCareerTitle: previousCareer?.rawValue ?? "",
                     currentCareerTitle: leveledUpCareer?.rawValue ?? ""
                 )
-                .transition(.opacity.animation(.easeIn))
+                .transition(TokenTransition.overlay.effect)
             }
         }
+        .animation(TokenTransition.overlay.animation, value: showLevelUpEffect)
         .onChange(of: showLevelUpEffect) { oldValue, newValue in
             if oldValue == true && newValue == false {
                 Task {
@@ -143,15 +139,54 @@ struct MainView: View {
         .fullScreenCover(isPresented: $showQuizView) {
             QuizGameView(user: user)
         }
-        .duToast(
-            isShowing: $showOfflineRewardToast,
-            message: offlineRewardToastMessage,
-            anchorY: tabbarAnchorY
+        .fullScreenCover(isPresented: $showScenarioView) {
+            ZStack {
+                Color.black300EventDim.ignoresSafeArea()
+                if let manager = scenarioManager {
+                    ScenarioStoryView(
+                        user: user,
+                        manager: manager,
+                        repository: scenarioRepository
+                    ) {
+                        let isRebirth = manager.currentScenario?.scenarioType == .rebirth
+                        manager.completeScenario()
+                        showScenarioView = false
+                        if isRebirth {
+                            hasSeenIntro = false
+                        } else {
+                            SoundService.shared.playBGM(.main)
+                        }
+                    }
+                }
+            }
+        }
+        .duPopup(
+            isPresented: showCareerPopup,
+            onBackgroundTap: { showCareerPopup = false },
+            content: { careerPopupOverlayView }
         )
-        .duToast(
-            isShowing: $showRewardToast,
-            message: rewardToastMessage,
-            anchorY: bottomAnchorY
+        .duPopup(
+            isPresented: showSettingsView,
+            onBackgroundTap: { showSettingsView = false },
+            content: { settingsOverlayView }
+        )
+        .duPopup(isPresented: showDrinkAdPopup) { drinkAdPopupOverlayView }
+        .duPopup(isPresented: workGameSession.showsExitBonusPopup) { exitBonusPopupOverlayView }
+        .duPopup(isPresented: showOfflineRewardPopup) { offlineRewardPopupOverlayView }
+        .duPopup(
+            isPresented: storePopup != nil,
+            onBackgroundTap: { storePopup = nil },
+            content: { storePopup }
+        )
+        .duPopup(
+            isPresented: noticePopup != nil,
+            onBackgroundTap: { noticePopup = nil },
+            content: { noticePopup }
+        )
+        .duPopup(
+            isPresented: showUpdateRewardPopup,
+            onBackgroundTap: handleClaimUpdateReward,
+            content: { updateRewardOverlayView }
         )
     }
 }
@@ -174,11 +209,13 @@ private extension MainView {
             // SettingButton, QuizButton Area
             HStack {
                 SmallButton(type: .setting) {
+                    SoundService.shared.trigger(.click)
                     showSettingsView = true
                 }
                 Spacer()
                 if !workGameSession.isInProgress {
                     SmallButton(type: .quiz) {
+                        SoundService.shared.trigger(.click)
                         showQuizView = true
                     }
                 }
@@ -204,9 +241,13 @@ private extension MainView {
         .padding(.vertical, TokenSpacing.md)
         .padding(.horizontal, TokenGrid.paddingSide)
         .background(GeometryReader { geo in
-            Color.clear.onAppear {
-                tabbarAnchorY = geo.frame(in: .global).minY
-            }
+            Color.clear
+                .onAppear {
+                    ToastManager.defaultAnchorY = geo.frame(in: .global).minY
+                }
+                .onChange(of: geo.frame(in: .global).minY) { _, newY in
+                    ToastManager.defaultAnchorY = newY
+                }
         })
     }
 
@@ -225,11 +266,6 @@ private extension MainView {
                 tabContentSwitchView
             }
         }
-        .background(GeometryReader { geo in
-            Color.clear.onAppear {
-                bottomAnchorY = geo.frame(in: .global).maxY - TokenGrid.paddingBottom
-            }
-        })
     }
 
     var workGameOverlayView: some View {
@@ -284,71 +320,28 @@ private extension MainView {
     }
 
     @ViewBuilder
-    var overlayView: some View {
-        Group {
-            careerPopupOverlayView
-                .ignoresSafeArea()
-            settingsOverlayView
-            drinkAdPopupOverlayView
-            exitBonusPopupOverlayView
-            offlineRewardPopupOverlayView
-            scenarioOverlayView
-            shopPopupOverlayView
-            updateRewardOverlayView
-        }
-    }
-
-    @ViewBuilder
-    var scenarioOverlayView: some View {
-        if showScenarioView, let manager = scenarioManager {
-            ScenarioStoryView(
-                user: user,
-                manager: manager,
-                repository: scenarioRepository
-            ) {
-                let isRebirth = manager.currentScenario?.scenarioType == .rebirth
-                manager.completeScenario()
-
-                showScenarioView = false
-
-                if isRebirth {
-                    hasSeenIntro = false
-                }
-            }
-            .ignoresSafeArea()
-            .transition(.opacity.animation(.easeIn))
-        }
-    }
-
-    @ViewBuilder
     var updateRewardOverlayView: some View {
-        if showUpdateRewardPopup {
-            modalOverlay(onBackgroundTap: handleClaimUpdateReward, content: {
-                UpdateRewardPopupView(onClose: handleClaimUpdateReward)
-            })
-        }
+        let updateRewardItems = rewardRepository.fetchAllRewards()
+        UpdateRewardPopupView(
+            userType: userType,
+            rewards: updateRewardItems,
+            onClose: handleClaimUpdateReward
+        )
     }
 
     @ViewBuilder
     var careerPopupOverlayView: some View {
-        if let careerSystem, showCareerPopup {
-            modalOverlay(onBackgroundTap: { showCareerPopup = false }, content: {
-                CareerPopupView(careerSystem: careerSystem, user: user) { showCareerPopup = false }
-            })
+        if let careerSystem {
+            CareerPopupView(careerSystem: careerSystem, user: user) { showCareerPopup = false }
         }
     }
 
-    @ViewBuilder
     var settingsOverlayView: some View {
-        if showSettingsView {
-            modalOverlay(onBackgroundTap: { showSettingsView = false }, content: {
-                FeedbackSettingView(onClose: { showSettingsView = false })
-            })
-        }
+        FeedbackSettingView(onClose: { showSettingsView = false })
     }
 
     func setupOnAppear() {
-        SoundService.shared.playBGM()
+        SoundService.shared.playBGM(.main)
         skillAdRewardNow = Date()
         autoGainSystem.startSystem()
 
@@ -365,7 +358,11 @@ private extension MainView {
                 previousCareer = oldCareer
                 leveledUpCareer = newCareer
 
-                showLevelUpEffect = newCareer != .unemployed
+                let isLevelUp = newCareer != .unemployed
+                showLevelUpEffect = isLevelUp
+                if isLevelUp {
+                    SoundService.shared.trigger(.levelUp)
+                }
             }
         }
         // 저장된 시나리오 복구 체크
@@ -397,6 +394,7 @@ private extension MainView {
             manager.restoreScenario(scenario)
             self.scenarioManager = manager
             showScenarioView = true
+            SoundService.shared.playBGM(.scenario)
         }
     }
 
@@ -423,6 +421,7 @@ private extension MainView {
             manager.startScenario(scenario)
             self.scenarioManager = manager
             showScenarioView = true
+            SoundService.shared.playBGM(.scenario)
         }
     }
 
@@ -466,6 +465,8 @@ private extension MainView {
     func handleTabTap(_ newTab: AppTab) {
         guard selectedTab != newTab else { return }
 
+        SoundService.shared.trigger(.click)
+
         if workGameSession.isInProgress && selectedTab == .work && newTab != .work {
             workGameSession.requestTabSwitch(to: newTab)
             return
@@ -476,65 +477,46 @@ private extension MainView {
 
     @ViewBuilder
     var drinkAdPopupOverlayView: some View {
-        if showDrinkAdPopup, let drinkType = selectedDrinkType {
-            modalOverlay {
-                NoticePopup(
-                    type: .ad(
-                        cancelText: "그냥 하기",
-                        adText: "음료 받기",
-                        cancelAction: handleSkipAdInMainView,
-                        adAction: { Task { await handleWatchAdInMainView() } }
-                    ),
-                    title: drinkType == .coffee ? "커피 없음" : "박하스 없음",
-                    text: "대신에 광고를 보고\n카페인을 보충할까요?"
-                )
-            }
+        if let drinkType = selectedDrinkType {
+            NoticePopup(
+                type: .ad(
+                    cancelText: "그냥 하기",
+                    adText: "음료 받기",
+                    cancelAction: {
+                        SoundService.shared.trigger(.click)
+                        handleSkipAdInMainView()
+                    },
+                    adAction: {
+                        SoundService.shared.trigger(.click)
+                        Task { await handleWatchAdInMainView() }
+                    }
+                ),
+                title: drinkType == .coffee ? "커피 없음" : "박하스 없음",
+                text: "대신에 광고를 보고\n카페인을 보충할까요?"
+            )
             .onAppear { trackDrinkAdOfferIfNeeded(drinkType: drinkType) }
         }
     }
 
     @ViewBuilder
     var exitBonusPopupOverlayView: some View {
-        if workGameSession.showsExitBonusPopup {
-            modalOverlay {
-                NoticePopup(
-                    type: .ad(
-                        cancelText: "그냥 나가기",
-                        adText: "보너스 받기",
-                        cancelAction: handleExitWithoutBonus,
-                        adAction: { Task { await handleExitBonusAd() } }
-                    ),
-                    title: "보너스",
-                    text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다"
-                )
-            }
-            .onAppear { trackExitBonusAdOfferIfNeeded() }
-        }
-    }
-
-    @ViewBuilder
-    var shopPopupOverlayView: some View {
-        if let popup = storePopup {
-            modalOverlay(onBackgroundTap: { storePopup = nil }, content: { popup })
-        }
-        if let popup = noticePopup {
-            modalOverlay(onBackgroundTap: { noticePopup = nil }, content: { popup })
-        }
-    }
-
-    func modalOverlay<Content: View>(
-        onBackgroundTap: (() -> Void)? = nil,
-        @ViewBuilder content: () -> Content
-    ) -> some View {
-        ZStack {
-            Color.black300PopUpDimStatusBar
-                .onTapGesture {
-                    onBackgroundTap?()
+        NoticePopup(
+            type: .ad(
+                cancelText: "그냥 나가기",
+                adText: "보너스 받기",
+                cancelAction: {
+                    SoundService.shared.trigger(.click)
+                    handleExitWithoutBonus()
+                },
+                adAction: {
+                    SoundService.shared.trigger(.click)
+                    Task { await handleExitBonusAd() }
                 }
-
-            content()
-        }
-        .ignoresSafeArea()
+            ),
+            title: "보너스",
+            text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다"
+        )
+        .onAppear { trackExitBonusAdOfferIfNeeded() }
     }
 
     func trackDrinkAdOfferIfNeeded(drinkType: ConsumableType) {
@@ -577,8 +559,7 @@ private extension MainView {
             )
             // 보상 지급
             user.inventory.gain(consumable: drinkType)
-            rewardToastMessage = "카페인 충전 완료!"
-            showRewardToast = true
+            ToastManager.shared.show("카페인 충전 완료!")
             selectedDrinkType = nil
             workGameSession.resumeGame?()
             AnalyticsService.shared.logAdRewardClaimed(
@@ -677,6 +658,15 @@ private extension MainView {
     }
 
     func handleClaimUpdateReward() {
+        let rewards = rewardRepository.fetchAllRewards(for: userType)
+        rewards?.forEach { reward in
+            switch reward {
+            case .diamond(let count):
+                user.wallet.addDiamond(count)
+            case .consumable(let type, count: let count):
+                user.inventory.gain(consumable: type, count: count)
+            }
+        }
         showUpdateRewardPopup = false
         AppPreferences.shared.hasClaimedGameResetReward = true
     }
@@ -687,10 +677,7 @@ private extension MainView {
             user.wallet.addGold(bonusGold)
             user.record.record(.earnMoney(bonusGold))
         }
-        rewardToastMessage = bonusGold > 0 ?
-        "업무에서 얻은 보상 2배 획득!" :
-        "업무 보너스를 받을 재화가 없습니다."
-        showRewardToast = true
+        ToastManager.shared.show(bonusGold > 0 ? "업무에서 얻은 보상 2배 획득!" : "업무 보너스를 받을 재화가 없습니다.")
     }
 
     func exitWorkGame() {
@@ -703,25 +690,23 @@ private extension MainView {
 
     @ViewBuilder
     var offlineRewardPopupOverlayView: some View {
-        if showOfflineRewardPopup {
-            modalOverlay {
-                NoticePopup(
-                    type: .ad(
-                        cancelText: "안받기",
-                        adText: "보상 받기",
-                        cancelAction: {
-                            handleOfflineRewardSkip()
-                        },
-                        adAction: {
-                            Task { await handleOfflineRewardWatchAd() }
-                        }
-                    ),
-                    title: "보상 획득",
-                    text: "잠자는 시간 동안 '\(user.nickname)'가 일을 했습니다.\n일한 보상을 받을까요?"
-                )
-            }
-            .onAppear { trackOfflineRewardAdOfferIfNeeded() }
-        }
+        NoticePopup(
+            type: .ad(
+                cancelText: "안받기",
+                adText: "보상 받기",
+                cancelAction: {
+                    SoundService.shared.trigger(.click)
+                    handleOfflineRewardSkip()
+                },
+                adAction: {
+                    SoundService.shared.trigger(.click)
+                    Task { await handleOfflineRewardWatchAd() }
+                }
+            ),
+            title: "보상 획득",
+            text: "잠자는 시간 동안 '\(user.nickname)'가 일을 했습니다.\n일한 보상을 받을까요?"
+        )
+        .onAppear { trackOfflineRewardAdOfferIfNeeded() }
     }
 
     func checkOfflineReward() async {
@@ -782,8 +767,7 @@ private extension MainView {
                 adWatchDurationSec: result.watchDurationSec
             )
             user.wallet.addGold(offlineRewardGold)
-            offlineRewardToastMessage = "잠자는 시간에 일한 보상 획득!"
-            showOfflineRewardToast = true
+            ToastManager.shared.show("잠자는 시간에 일한 보상 획득!")
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
                 adPlacement: .offlineReward,
@@ -839,6 +823,7 @@ private extension MainView {
     )
     MainView(
         user: user,
+        userType: .newUser,
         hasSeenIntro: .constant(true),
         scenarioRepository: DefaultScenarioRepository()
     )

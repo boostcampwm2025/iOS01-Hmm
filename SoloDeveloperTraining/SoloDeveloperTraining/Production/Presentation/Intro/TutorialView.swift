@@ -30,7 +30,9 @@ struct TutorialView: View {
             .contentShape(Rectangle())
             .onTapGesture {
                 if currentPage < tutorialPages.count - 1 {
-                    currentPage += 1
+                    withAnimation(TokenAnimation.crossFade.animation) {
+                        currentPage += 1
+                    }
                 } else {
                     onComplete()
                 }

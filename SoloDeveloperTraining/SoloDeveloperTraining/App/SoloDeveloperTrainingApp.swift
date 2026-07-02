@@ -15,12 +15,6 @@ import KakaoSDKCommon
 
 import DUDesignSystem
 
-private enum Constant {
-    enum Animation {
-        static let transitionDuration: Double = 0.5
-    }
-}
-
 @main
 struct SoloDeveloperTrainingApp: App {
 
@@ -42,13 +36,16 @@ struct SoloDeveloperTrainingApp: App {
 #endif
     }
 
+    @State private var user: User?
+    @State private var legacyUserType: RewardUserType? = nil
+
     @State private var hasSeenIntro = false
     @State private var showNicknameSetup = false
-    @State private var user: User?
     @State private var showErrorPopup = false
     @State private var errorMessage: String = ""
     @State private var isPolicyLoading = true
     @State private var hasPolicyError = false
+    @State private var updateType: AppUpdateType = .none
     @Environment(\.scenePhase) private var scenePhase
 
     private let userRepository: UserRepository = FileManagerUserRepository()
@@ -78,11 +75,11 @@ private extension SoloDeveloperTrainingApp {
             if hasSeenIntro, let user {
                 MainView(
                     user: user,
+                    userType: legacyUserType ?? .newUser,
                     hasSeenIntro: $hasSeenIntro,
                     scenarioRepository: scenarioRepository
                 )
-                .transition(.opacity)
-            } else if hasSeenIntro, showNicknameSetup {
+            } else if hasSeenIntro, user == nil, showNicknameSetup {
                 NicknameSetupView { nickname in
                     let newUser = User(nickname: nickname)
                     user = newUser
@@ -103,7 +100,7 @@ private extension SoloDeveloperTrainingApp {
                 )
             }
         }
-        .animation(.easeOut(duration: Constant.Animation.transitionDuration), value: hasSeenIntro)
+        .animation(TokenAnimation.fadeInSlow.animation, value: hasSeenIntro)
         .onOpenURL { url in
             guard let deeplinkInfo = parseOpenURL(url) else { return }
 
@@ -115,8 +112,19 @@ private extension SoloDeveloperTrainingApp {
                     resultID: deeplinkInfo.resultID
                 )
         }
-        .overlay {
+        .duPopup(isPresented: showErrorPopup) {
             errorPopupOverlay
+        }
+        .duPopup(isPresented: updateType != .none) {
+            updateOverlay
+        }
+        .task {
+            let type = await AppUpdateChecker.checkUpdate()
+            if type == .force {
+                updateType = .force
+            } else if type == .optional && !AppUpdateChecker.isOptionalUpdateSnoozed() {
+                updateType = .optional
+            }
         }
         .onAppear {
             guard user == nil else { return }
@@ -146,11 +154,18 @@ private extension SoloDeveloperTrainingApp {
     func loadUser() {
         Task {
             do {
-                if let loadedUser = try await userRepository.load() {
+                switch try await userRepository.load() {
+                case .current(let user):
                     await MainActor.run {
-                        self.user = loadedUser
-                        checkFirstOpen(user: loadedUser)
+                        self.user = user
+                        checkFirstOpen(user: user)
                     }
+                case .legacy(let career):
+                    await MainActor.run {
+                        legacyUserType = .originUser(career ?? .unemployed)
+                    }
+                case .empty:
+                    break
                 }
             } catch {
                 await MainActor.run {
@@ -199,19 +214,39 @@ private extension SoloDeveloperTrainingApp {
     // MARK: - Overlays
 
     @ViewBuilder
-    var errorPopupOverlay: some View {
-        if showErrorPopup {
-            ZStack {
-                Color.black300PopUpDimStatusBar
-                    .ignoresSafeArea()
-
-                NoticePopup(
-                    type: .default(buttonText: "확인", action: { showErrorPopup = false }),
-                    title: "오류",
-                    text: errorMessage
-                )
-            }
+    var updateOverlay: some View {
+        if updateType == .force {
+            NoticePopup(
+                type: .default(
+                    buttonText: "업데이트",
+                    action: { AppUpdateChecker.openAppStore() }
+                ),
+                title: "업데이트 안내",
+                text: "원활한 앱 사용을 위해서 업데이트가 필요합니다.\n지금 바로 업데이트를 진행해주세요."
+            )
+        } else if updateType == .optional {
+            NoticePopup(
+                type: .confirm(
+                    cancelText: "다음에",
+                    confirmText: "업데이트",
+                    cancelAction: {
+                        AppUpdateChecker.snoozeOptionalUpdate()
+                        updateType = .none
+                    },
+                    confirmAction: { AppUpdateChecker.openAppStore() }
+                ),
+                title: "업데이트 안내",
+                text: "원활한 앱 사용을 위해서 업데이트가 필요합니다.\n지금 바로 업데이트를 진행해주세요."
+            )
         }
+    }
+
+    var errorPopupOverlay: some View {
+        NoticePopup(
+            type: .default(buttonText: "확인", action: { showErrorPopup = false }),
+            title: "오류",
+            text: errorMessage
+        )
     }
 }
 #endif

@@ -12,9 +12,6 @@ struct MissionView: View {
     private let user: User
     private let missionSystem: MissionSystem
 
-    @State private var showToast: Bool = false
-    @State private var toastMessage: String = ""
-
     init(user: User) {
         self.user = user
         self.missionSystem = user.record.missionSystem
@@ -50,7 +47,6 @@ struct MissionView: View {
             .scrollIndicators(.never)
         }
         .padding(.horizontal, TokenGrid.paddingSide)
-        .toast(isShowing: $showToast, message: toastMessage)
     }
 }
 
@@ -58,21 +54,18 @@ private extension MissionView {
     func missionCardDidTapHandler(mission: Mission) {
         if mission.missionCardState == .claimable {
             missionSystem.claimMissionReward(mission: mission, wallet: user.wallet)
-            SoundService.shared.trigger(.missionAcquired)
-            showToast = false
+            SoundService.shared.trigger(.mission)
             let reward = mission.reward
             if reward.gold > 0 && reward.diamond > 0 {
-                toastMessage = "미션을 달성했습니다.\n보상: \(reward.gold.formatted) 골드, \(reward.diamond.formatted) 다이아"
+                ToastManager.shared.show("미션을 달성했습니다.\n보상: \(reward.gold.formatted) 골드, \(reward.diamond.formatted) 다이아")
             } else if reward.gold > 0 {
-                toastMessage = "미션을 달성했습니다.\n보상: \(reward.gold.formatted) 골드"
+                ToastManager.shared.show("미션을 달성했습니다.\n보상: \(reward.gold.formatted) 골드")
             } else {
-                toastMessage = "미션을 달성했습니다.\n보상: \(reward.diamond.formatted) 다이아"
+                ToastManager.shared.show("미션을 달성했습니다.\n보상: \(reward.diamond.formatted) 다이아")
             }
-            showToast = true
         } else {
-            showToast = false
-            toastMessage = mission.missionCardState == .claimed ? "이미 보유한 미션입니다." : "아직 달성하지 못한 미션입니다."
-            showToast = true
+            let message = mission.missionCardState == .claimed ? "이미 보유한 미션입니다." : "아직 달성하지 못한 미션입니다."
+            ToastManager.shared.show(message)
         }
     }
 }

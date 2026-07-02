@@ -35,6 +35,9 @@ final class AppPreferences {
 
         /// 업데이트 보상
         static let hasClaimedGameResetReward = "hasClaimedGameResetReward"
+
+        /// 선택 업데이트 스누즈 만료 시각
+        static let optionalUpdateSnoozedUntil = "optionalUpdateSnoozedUntil"
     }
 
     private let storage = UserDefaultsStorage()
@@ -88,6 +91,11 @@ extension AppPreferences {
     var hasClaimedGameResetReward: Bool {
         get { storage.bool(key: Key.hasClaimedGameResetReward) }
         set { storage.set(newValue, forKey: Key.hasClaimedGameResetReward) }
+    }
+
+    var optionalUpdateSnoozedUntil: Date? {
+        get { storage.any(key: Key.optionalUpdateSnoozedUntil) as? Date }
+        set { storage.set(newValue as Any, forKey: Key.optionalUpdateSnoozedUntil) }
     }
 
 }

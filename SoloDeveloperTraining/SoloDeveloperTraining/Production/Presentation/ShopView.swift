@@ -34,7 +34,6 @@ struct ShopView: View {
 
     @State private var selectedCategoryIndex: Int = 0
     @State private var selectedHousingTier: HousingTier?
-    @State private var showAdBonusToast: Bool = false
     @State private var adBonusAppliedTypes: Set<String> = {
         let saved = UserDefaults.standard.stringArray(forKey: Constant.UserDefaultsKey.equipmentAdBonus) ?? []
         return Set(saved)
@@ -53,8 +52,18 @@ struct ShopView: View {
 
     var body: some View {
         VStack(spacing: TokenSpacing.md) {
-            SegmentControl(leading: "아이템", trailing: "부동산", selectedIndex: $selectedCategoryIndex)
-                .padding(.horizontal, TokenGrid.paddingSide)
+            SegmentControl(
+                leading: "아이템",
+                trailing: "부동산",
+                selectedIndex: Binding(
+                    get: { selectedCategoryIndex },
+                    set: { newValue in
+                        SoundService.shared.trigger(.click)
+                        selectedCategoryIndex = newValue
+                    }
+                )
+            )
+            .padding(.horizontal, TokenGrid.paddingSide)
 
             if selectedCategoryIndex == 0 {
                 itemView
@@ -62,7 +71,6 @@ struct ShopView: View {
                 housingView
             }
         }
-        .darkToast(isShowing: $showAdBonusToast, message: "강화 확률이 높아졌습니다!")
     }
 }
 
@@ -86,6 +94,7 @@ private extension ShopView {
                         buttonType: item.cost.itemButtonType,
                         buttonState: ItemState(item: item).itemButtonState
                     ) {
+                        SoundService.shared.trigger(.click)
                         purchase(item: item)
                     }
                 }
@@ -109,9 +118,11 @@ private extension ShopView {
                                 imageName: housing.imageName,
                                 state: ItemState(item: item).housingCardState(isSelected: selectedHousingTier == housing.tier),
                                 onTap: {
+                                    SoundService.shared.trigger(.click)
                                     selectedHousingTier = housing.tier
                                 },
                                 onButtonTap: {
+                                    SoundService.shared.trigger(.click)
                                     selectedHousingTier = housing.tier
                                     purchase(item: item, scrollProxy: proxy)
                                 }
@@ -140,8 +151,12 @@ private extension ShopView {
                 type: .default(
                     cancelText: "취소",
                     confirmText: buttonTitle,
-                    cancelAction: { storePopup = nil },
+                    cancelAction: {
+                        SoundService.shared.trigger(.click)
+                        storePopup = nil
+                    },
                     confirmAction: {
+                        SoundService.shared.trigger(.click)
                         storePopup = nil
                         executePurchase(item: item, scrollProxy: scrollProxy)
                     }
@@ -171,16 +186,19 @@ private extension ShopView {
                 adText: "확률 UP",
                 confirmText: "강화",
                 cancelAction: {
+                    SoundService.shared.trigger(.click)
                     storePopup = nil
                     trackEnhanceAdDismissIfNeeded(hasBonus: hasBonus)
                 },
                 adAction: {
+                    SoundService.shared.trigger(.click)
                     storePopup = nil
                     Task {
                         await handleEnhanceAdWatch(item: item, equipment: equipment, scrollProxy: scrollProxy, typeKey: typeKey)
                     }
                 },
                 confirmAction: {
+                    SoundService.shared.trigger(.click)
                     storePopup = nil
                     executePurchase(item: item, bonusRate: hasBonus ? 0.1 : 0.0, scrollProxy: scrollProxy)
                 }
@@ -241,7 +259,6 @@ private extension ShopView {
         )
         adBonusAppliedTypes.insert(typeKey)
         UserDefaults.standard.set(Array(adBonusAppliedTypes), forKey: Constant.UserDefaultsKey.equipmentAdBonus)
-        showAdBonusToast = true
         AnalyticsService.shared.logAdRewardClaimed(
             adRewardFlowID: flowID,
             adPlacement: .equipmentEnhance,
@@ -268,13 +285,13 @@ private extension ShopView {
             if isSuccess {
                 // 성공 시 가로 스크롤을 맨 처음으로 이동
                 if let proxy = scrollProxy, selectedCategoryIndex == 1 {
-                    withAnimation {
+                    withAnimation(TokenAnimation.springMove.animation) {
                         proxy.scrollTo(Constant.ID.housingScrollStart, anchor: .leading)
                     }
                 }
             }
             if item.category == .equipment {
-                SoundService.shared.trigger(isSuccess ? .upgradeSuccess : .upgradeFailure)
+                SoundService.shared.trigger(isSuccess ? .success : .failure)
                 if !isSuccess {
                     HapticService.shared.trigger(.error)
                 }

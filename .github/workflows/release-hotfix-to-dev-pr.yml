@@ -1,0 +1,35 @@
+name: Auto PR release/hotfix → dev
+
+on:
+  pull_request:
+    types: [opened]
+    branches:
+      - main
+
+permissions:
+  pull-requests: write
+
+jobs:
+  create-dev-pr:
+    if: startsWith(github.event.pull_request.head.ref, 'release/') || startsWith(github.event.pull_request.head.ref, 'hotfix/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create PR to dev
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sourceBranch = context.payload.pull_request.head.ref;
+            const originalBody = context.payload.pull_request.body ?? '';
+            const originalTitle = context.payload.pull_request.title;
+            const originalNumber = context.payload.pull_request.number;
+
+            const body = `> 이 PR은 #${originalNumber} (${sourceBranch} → main)이 열릴 때 자동 생성되었습니다.\n\n${originalBody}`;
+
+            await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[auto] ${originalTitle} (→ dev)`,
+              head: sourceBranch,
+              base: 'dev',
+              body: body,
+            });

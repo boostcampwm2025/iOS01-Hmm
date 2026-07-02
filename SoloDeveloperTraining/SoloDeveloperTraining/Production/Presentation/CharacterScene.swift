@@ -32,15 +32,15 @@ final class CharacterScene: SKScene {
 
     // MARK: - Computed Properties (텍스처)
     private var idleTexture: SKTexture {
-        SKTexture(imageNamed: "\(user.career.characterImagePrefix)_default")
+        SKTexture(imageNamed: "\(user.career.characterImagePrefix)Default")
     }
 
     private var blinkTexture: SKTexture {
-        SKTexture(imageNamed: "\(user.career.characterImagePrefix)_close")
+        SKTexture(imageNamed: "\(user.career.characterImagePrefix)Close")
     }
 
     private var smileTexture: SKTexture {
-        SKTexture(imageNamed: "\(user.career.characterImagePrefix)_smile")
+        SKTexture(imageNamed: "\(user.career.characterImagePrefix)Smile")
     }
 
     private enum AnimationKey {
@@ -89,7 +89,7 @@ final class CharacterScene: SKScene {
         guard let sprite = characterSprite else { return }
 
         // 새로운 텍스처로 업데이트
-        let newIdleTexture = SKTexture(imageNamed: "\(newCareer.characterImagePrefix)_default")
+        let newIdleTexture = SKTexture(imageNamed: "\(newCareer.characterImagePrefix)Default")
         sprite.texture = newIdleTexture
 
         // 애니메이션 재시작

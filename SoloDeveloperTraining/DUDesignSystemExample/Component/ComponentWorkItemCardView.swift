@@ -16,7 +16,7 @@ struct ComponentWorkItemCardView: View {
             PreviewArea {
                 WorkItemCard(
                     title: "언어 맞추기",
-                    imageName: "work_language",
+                    imageName: "workLanguage",
                     state: selectedState,
                     onTap: {}
                 )

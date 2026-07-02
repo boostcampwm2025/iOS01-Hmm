@@ -8,6 +8,8 @@
 import SwiftUI
 import SpriteKit
 
+import DUDesignSystem
+
 private enum Constant {
     enum Physics {
         static let gravity = CGVector(dx: 0, dy: -9.8)
@@ -279,7 +281,7 @@ private extension StackGameScene {
         // 폭탄 블록 체크
         if currentBlock.type.isBomb {
             onBlockDropped(stackGame.placeBombSuccess())
-            SoundService.shared.trigger(.bombStack)
+            SoundService.shared.trigger(.pop)
             HapticService.shared.trigger(.error)
 
             runAfterDelay(on: block, delay: Constant.Time.bombRemovalDelay) { [weak self] in
@@ -290,7 +292,7 @@ private extension StackGameScene {
             blockViews.append(block)
             // 코어에 블록 배치 성공 알림 (위치는 이미 업데이트됨)
             onBlockDropped(stackGame.placeBlockSuccess())
-            SoundService.shared.trigger(.blockStack)
+            SoundService.shared.trigger(.stack)
             // 카메라 이동
             if let camera = camera {
                 let newCameraY = camera.position.y + block.size.height
@@ -319,10 +321,10 @@ private extension StackGameScene {
         // 폭탄 블록 실패 = 보상, 일반 블록 실패 = 패널티
         if currentBlock.type.isBomb {
             onBlockDropped(stackGame.placeBombFail())
-            SoundService.shared.trigger(.blockDrop)
+            SoundService.shared.trigger(.drop)
         } else {
             onBlockDropped(stackGame.placeBlockFail())
-            SoundService.shared.trigger(.blockDrop)
+            SoundService.shared.trigger(.drop)
             HapticService.shared.trigger(.error)
         }
 

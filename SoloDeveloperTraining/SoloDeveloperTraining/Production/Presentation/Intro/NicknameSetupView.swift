@@ -65,11 +65,12 @@ struct NicknameSetupView: View {
                 }
                 .frame(height: 560)
                 .background(
-                    Image.duImage("housing_street")
+                    Image.duImage("housingStreet")
                         .resizable()
                         .opacity(TokenOpacity.opacity40)
                 )
                 TextButton(text: "완료", type: .primary, state: isValid ? .default : .disabled) {
+                    SoundService.shared.trigger(.click)
                     confirmedNickname = nickname
                     showTutorial = true
                 }
@@ -89,7 +90,7 @@ struct NicknameSetupView: View {
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
             keyboardMinY = .infinity
         }
-        .animation(.easeOut(duration: 0.25), value: inputFieldOffset)
+        .animation(TokenAnimation.moveSmooth.animation, value: inputFieldOffset)
         .onTapGesture {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }

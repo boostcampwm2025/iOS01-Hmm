@@ -25,7 +25,7 @@ final class Equipment: Item {
         return tier.cost
     }
     var imageName: String {
-        return "item_\(type.imageName)_\(tier.imageName)"
+        return "item\(type.imageName)\(tier.imageName)"
     }
     var category: ItemCategory = .equipment
 
@@ -175,13 +175,13 @@ enum EquipmentType {
     var imageName: String {
         switch self {
         case .keyboard:
-            return "keyboard"
+            return "Keyboard"
         case .mouse:
-            return "mouse"
+            return "Mouse"
         case .monitor:
-            return "monitor"
+            return "Monitor"
         case .chair:
-            return "chair"
+            return "Chair"
         }
     }
 }
@@ -266,21 +266,21 @@ enum EquipmentTier: Int {
     var imageName: String {
         switch self {
         case .broken:
-            return "broken"
+            return "Broken"
         case .cheap:
-            return "cheap"
+            return "Cheap"
         case .vintage:
-            return "vintage"
+            return "Vintage"
         case .decent:
-            return "decent"
+            return "Decent"
         case .premium:
-            return "premium"
+            return "Premium"
         case .diamond:
-            return "diamond"
+            return "Diamond"
         case .limited:
-            return "limited"
+            return "Limited"
         case .nationalTreasure:
-            return "nationalTreasure"
+            return "NationalTreasure"
         }
     }
 }

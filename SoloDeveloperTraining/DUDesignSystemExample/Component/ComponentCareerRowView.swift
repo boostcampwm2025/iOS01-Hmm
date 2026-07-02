@@ -17,7 +17,7 @@ struct ComponentCareerRowView: View {
             // MARK: - Preview Area
             PreviewArea {
                 CareerRow(
-                    imageName: "housing_house",
+                    imageName: "housingHouse",
                     title: title,
                     description: description,
                     state: selectedState

@@ -1,0 +1,160 @@
+name: App TestFlight CD
+
+on:
+  push:
+    branches:
+      - 'release/[0-9]*.[0-9]*.[0-9]*'
+      - 'hotfix/[0-9]*.[0-9]*.[0-9]*'
+  create:
+
+jobs:
+  deploy:
+    name: Deploy SoloDeveloperTraining to TestFlight
+    runs-on: macos-latest
+    if: |
+      (github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/hotfix/'))) ||
+      (github.event_name == 'create' && github.ref_type == 'branch' && (startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/hotfix/')))
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Cache SPM packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+            **/Package.resolved
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Create xcconfig files
+        env:
+          RELEASE_XCCONFIG: ${{ secrets.RELEASE_XCCONFIG }}
+        run: |
+          CONFIG_DIR="SoloDeveloperTraining/SoloDeveloperTraining/App/Config"
+          mkdir -p "$CONFIG_DIR"
+
+          if [ -z "$RELEASE_XCCONFIG" ]; then
+            echo "❌ RELEASE_XCCONFIG secret is missing."
+            exit 1
+          fi
+
+          printf "%s" "$RELEASE_XCCONFIG" > "$CONFIG_DIR/Release.xcconfig"
+
+      - name: Get current version
+        id: version
+        run: |
+          VERSION=$(xcodebuild \
+            -workspace SoloDeveloperTraining.xcworkspace \
+            -scheme SoloDeveloperTraining \
+            -showBuildSettings 2>/dev/null \
+            | grep '^\s*MARKETING_VERSION' \
+            | head -1 \
+            | awk '{print $3}')
+          echo "current=$VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $VERSION"
+
+      - name: Install certificate
+        env:
+          CERTIFICATE_BASE64: ${{ secrets.DISTRIBUTION_CERTIFICATE_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.DISTRIBUTION_CERTIFICATE_PASSWORD }}
+        run: |
+          echo "$CERTIFICATE_BASE64" | base64 --decode > certificate.p12
+          security create-keychain -p "" build.keychain
+          security set-keychain-settings -lut 21600 build.keychain
+          security unlock-keychain -p "" build.keychain
+          security import certificate.p12 -k build.keychain \
+            -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security list-keychain -d user -s build.keychain login.keychain
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
+
+      - name: Install provisioning profile
+        env:
+          PROFILE_BASE64: ${{ secrets.APP_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "$PROFILE_BASE64" | base64 --decode \
+            > ~/Library/MobileDevice/Provisioning\ Profiles/SoloDeveloperTraining.mobileprovision
+
+      - name: Install App Store Connect API key
+        env:
+          API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+          API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$API_KEY_CONTENT" \
+            > ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
+
+      - name: Set provisioning profile in project
+        env:
+          PROFILE_NAME: ${{ secrets.APP_PROVISIONING_PROFILE_NAME }}
+        run: |
+          python3 - << 'PYEOF'
+          import re, os
+          pbxproj = "SoloDeveloperTraining/SoloDeveloperTraining.xcodeproj/project.pbxproj"
+          profile = os.environ["PROFILE_NAME"]
+          with open(pbxproj, "r") as f:
+              content = f.read()
+          # SoloDeveloperTraining Release config(08267F382F0D06BE005A0066)에만 적용
+          pattern = r'(08267F382F0D06BE005A0066 /\* Release \*/ = \{.*?PROVISIONING_PROFILE_SPECIFIER = )"[^"]*"(;\s*\n\s*"PROVISIONING_PROFILE_SPECIFIER\[sdk=iphoneos\*\]" = )[^;]*;'
+          content = re.sub(pattern, f'\\1"{profile}"\\2{profile};', content, flags=re.DOTALL)
+          with open(pbxproj, "w") as f:
+              f.write(content)
+          PYEOF
+
+      - name: Archive
+        run: |
+          xcodebuild archive \
+            -workspace SoloDeveloperTraining.xcworkspace \
+            -scheme SoloDeveloperTraining \
+            -configuration Release \
+            -archivePath build/SoloDeveloperTraining.xcarchive \
+            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            DEVELOPMENT_TEAM=QBLK6726G4 \
+            CODE_SIGN_STYLE=Manual \
+            "CODE_SIGN_IDENTITY=Apple Distribution"
+
+      - name: Upload to TestFlight
+        env:
+          API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          PROFILE_NAME: ${{ secrets.APP_PROVISIONING_PROFILE_NAME }}
+        run: |
+          cat > ExportOptions.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store-connect</string>
+            <key>destination</key>
+            <string>upload</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>kr.codesquad.boostcamp10.SoloDeveloperTraining</key>
+              <string>${PROFILE_NAME}</string>
+            </dict>
+          </dict>
+          </plist>
+          EOF
+
+          xcodebuild -exportArchive \
+            -archivePath build/SoloDeveloperTraining.xcarchive \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath build/export \
+            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8 \
+            -authenticationKeyID "$API_KEY_ID" \
+            -authenticationKeyIssuerID "$API_ISSUER_ID"
