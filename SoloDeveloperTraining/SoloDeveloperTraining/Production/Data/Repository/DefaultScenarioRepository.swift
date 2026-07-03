@@ -355,13 +355,33 @@ final class DefaultScenarioRepository: ScenarioRepository {
             scenarioType: .normal,
             pages: [
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "어쩌다 보니 기획도 한다. 디자인도 한다. 서버도 나고 앱도 나다. 회의에서 '이거 개발팀이랑 얘기해봐야 할 것 같은데요'라고 했더니",
+                    imageName: "allRounderDeveloper1",
+                    text: "개발자의 하루",
                     pageType: .story
                 ),
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "모두가 나를 쳐다봤다. 개발팀은 나 뿐이다.\n개발팀 = 나",
+                    imageName: "allRounderDeveloper2",
+                    text: "디자인, 기획, 개발 모두 내가 한다.",
+                    pageType: .story
+                ),
+                ScenarioPage(
+                    imageName: "allRounderDeveloper3",
+                    text: "혼자 먹는 밥이 제일 편한 이유는 뭘까?",
+                    pageType: .story
+                ),
+                ScenarioPage(
+                    imageName: "allRounderDeveloper4",
+                    text: "회의중에 누군가 개발팀을 찾았는데.",
+                    pageType: .story
+                ),
+                ScenarioPage(
+                    imageName: "allRounderDeveloper5",
+                    text: "모두가 나를 쳐다봤다.",
+                    pageType: .story
+                ),
+                ScenarioPage(
+                    imageName: "allRounderDeveloper6",
+                    text: "개발팀은 나다.",
                     pageType: .story
                 )
             ]
