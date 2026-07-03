@@ -223,7 +223,7 @@ private extension TapGameView {
 
         AnalyticsService.shared.logAdWatchClicked(
             adRewardFlowID: flowID,
-            adPlacement: .consumable,
+            adPlacement: .consumable(screenID: "caffein"),
             rewardType: rewardType,
             rewardAmount: 1
         )
@@ -233,7 +233,7 @@ private extension TapGameView {
         if result.success {
             AnalyticsService.shared.logAdWatchCompleted(
                 adRewardFlowID: flowID,
-                adPlacement: .consumable,
+                adPlacement: .consumable(screenID: "caffein"),
                 rewardType: rewardType,
                 rewardAmount: 1,
                 adWatchDurationSec: result.watchDurationSec
@@ -242,7 +242,7 @@ private extension TapGameView {
             ToastManager.shared.show("카페인 충전 완료!")
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
-                adPlacement: .consumable,
+                adPlacement: .consumable(screenID: "caffein"),
                 rewardType: rewardType,
                 rewardAmount: 1
             )
