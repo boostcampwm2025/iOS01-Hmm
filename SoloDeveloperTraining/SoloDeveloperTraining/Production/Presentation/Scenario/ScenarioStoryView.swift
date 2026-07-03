@@ -44,7 +44,7 @@ struct ScenarioStoryView: View {
 
     var body: some View {
         ZStack {
-            VStack(spacing: isEnding ? TokenSpacing.xl : TokenSpacing.lg) {
+            VStack(spacing: TokenSpacing.lg) {
                 if isEnding { endingResultView }
 
                 if let ending = finalEnding {
@@ -54,6 +54,7 @@ struct ScenarioStoryView: View {
                         imageName: ending.type.imageName
                     )
                     .id("ending")
+                    .padding(.bottom, TokenSpacing.sm)
                 } else if let page = manager.currentPage {
                     StoryCard(
                         type: .levelUp,
@@ -100,6 +101,7 @@ struct ScenarioStoryView: View {
         }
         .duPopup(isPresented: isShareSheetPresented) { shareSheetPopup }
         .duPopup(isPresented: isRebirthConfirmPopupPresented) { rebirthConfirmPopupView }
+        .ignoresSafeArea()
     }
 }
 
