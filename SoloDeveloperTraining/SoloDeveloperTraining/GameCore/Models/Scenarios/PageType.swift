@@ -12,5 +12,5 @@ enum PageType: Equatable {
     /// 선택지 페이지
     case choice(Choice)
     /// 결과 페이지
-    case result(ChoiceResult)
+    case result
 }
