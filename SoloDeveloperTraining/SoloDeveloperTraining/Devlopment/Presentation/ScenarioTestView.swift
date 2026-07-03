@@ -49,8 +49,8 @@ final class ScenarioTestViewModel {
             return "story"
         case .choice:
             return "choice"
-        case .result(let choice):
-            return "result(\(choice.rawValue))"
+        case .result:
+            return "result"
         }
     }
 

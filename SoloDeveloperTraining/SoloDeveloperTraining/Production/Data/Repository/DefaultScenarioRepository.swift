@@ -7,6 +7,8 @@
 
 import Foundation
 
+// swiftlint:disable type_body_length
+
 final class DefaultScenarioRepository: ScenarioRepository {
 
     func fetchScenario(for career: Career) -> Scenario? {
@@ -92,8 +94,6 @@ final class DefaultScenarioRepository: ScenarioRepository {
         }
     }
 
-    // MARK: - Hardcoded Data
-    // TODO: 시나리오 텍스트, 이미지 수정
     private let allScenarios: [Scenario] = [
         Scenario(
             id: "career_백수",
@@ -202,7 +202,7 @@ final class DefaultScenarioRepository: ScenarioRepository {
                 ScenarioPage(
                     imageName: "juniorDeveloper4",
                     text: "오호라...! 본격적으로 개발자가 되는거야!",
-                    pageType: .result(.optionA)
+                    pageType: .result
                 ),
             ]
         ),
@@ -271,7 +271,7 @@ final class DefaultScenarioRepository: ScenarioRepository {
                       ScenarioPage(
                           imageName: "nightOwlDeveloper5",
                           text: "하 거지 같은 세미콜론...",
-                          pageType: .result(.optionA)
+                          pageType: .result
                       )
             ]
         ),
@@ -345,7 +345,7 @@ final class DefaultScenarioRepository: ScenarioRepository {
                 ScenarioPage(
                     imageName: "famousDeveloper5",
                     text: "이제 진짜 시작이다!",
-                    pageType: .result(.optionA)
+                    pageType: .result
                 )
             ]
         ),
@@ -399,7 +399,7 @@ final class DefaultScenarioRepository: ScenarioRepository {
                 ScenarioPage(
                     imageName: "worldClassDeveloper5",
                     text: "오랜 고민하지 않았다.\n이미 마음속에서는 답이 정해져 있었으니까.",
-                    pageType: .result(.optionA)
+                    pageType: .result
                 )
             ]
         )
