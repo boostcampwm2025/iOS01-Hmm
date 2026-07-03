@@ -176,14 +176,12 @@ extension AnalyticsService {
     /// 광고 보기 버튼/팝업이 사용자에게 노출될 때
     func logAdOfferViewed(
         adRewardFlowID: String,
-        adPlacement: AdPlacementType,
         rewardType: AdRewardType,
         rewardAmount: Int
     ) {
         logAdEvent(
             .offerViewed,
             adRewardFlowID: adRewardFlowID,
-            adPlacement: adPlacement,
             rewardType: rewardType,
             rewardAmount: rewardAmount
         )
@@ -192,14 +190,12 @@ extension AnalyticsService {
     /// 광고 보기를 클릭했을 때
     func logAdWatchClicked(
         adRewardFlowID: String,
-        adPlacement: AdPlacementType,
         rewardType: AdRewardType,
         rewardAmount: Int
     ) {
         logAdEvent(
             .watchClicked,
             adRewardFlowID: adRewardFlowID,
-            adPlacement: adPlacement,
             rewardType: rewardType,
             rewardAmount: rewardAmount
         )
@@ -208,7 +204,6 @@ extension AnalyticsService {
     /// 광고 시청을 완료했을 때
     func logAdWatchCompleted(
         adRewardFlowID: String,
-        adPlacement: AdPlacementType,
         rewardType: AdRewardType,
         rewardAmount: Int,
         adWatchDurationSec: Int
@@ -216,7 +211,6 @@ extension AnalyticsService {
         logAdEvent(
             .watchCompleted,
             adRewardFlowID: adRewardFlowID,
-            adPlacement: adPlacement,
             rewardType: rewardType,
             rewardAmount: rewardAmount,
             additionalParameters: [
@@ -228,14 +222,12 @@ extension AnalyticsService {
     /// 광고 완료 후 보상이 실제 지급 완료될 때
     func logAdRewardClaimed(
         adRewardFlowID: String,
-        adPlacement: AdPlacementType,
         rewardType: AdRewardType,
         rewardAmount: Int
     ) {
         logAdEvent(
             .rewardClaimed,
             adRewardFlowID: adRewardFlowID,
-            adPlacement: adPlacement,
             rewardType: rewardType,
             rewardAmount: rewardAmount
         )
@@ -244,7 +236,6 @@ extension AnalyticsService {
     /// 사용자가 광고 제안을 닫거나 보지 않기로 선택 시
     func logAdOfferDismissed(
         adRewardFlowID: String,
-        adPlacement: AdPlacementType,
         rewardType: AdRewardType,
         rewardAmount: Int,
         dismissReason: AdOfferDismissReasonType
@@ -252,7 +243,6 @@ extension AnalyticsService {
         logAdEvent(
             .offerDismissed,
             adRewardFlowID: adRewardFlowID,
-            adPlacement: adPlacement,
             rewardType: rewardType,
             rewardAmount: rewardAmount,
             includesAdInfo: false,
@@ -265,7 +255,6 @@ extension AnalyticsService {
     private func logAdEvent(
         _ event: AdAnalyticsEvent,
         adRewardFlowID: String,
-        adPlacement: AdPlacementType,
         rewardType: AdRewardType? = nil,
         rewardAmount: Int? = nil,
         includesReward: Bool = true,
@@ -276,7 +265,6 @@ extension AnalyticsService {
 
         var parameters = baseAdEventParameters(
             adRewardFlowID: adRewardFlowID,
-            adPlacement: adPlacement.screenID,
             includesAdInfo: includesAdInfo
         )
         if includesReward, let rewardType, let rewardAmount {
@@ -290,14 +278,13 @@ extension AnalyticsService {
 
     private func baseAdEventParameters(
         adRewardFlowID: String,
-        adPlacement: String,
         includesAdInfo: Bool
     ) -> [String: Any] {
         var parameters: [String: Any] = [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.adRewardFlowID: adRewardFlowID,
-            AP.adPlacement: adPlacement
+            AP.adPlacement: currentScreenID
         ]
 
         if includesAdInfo {
