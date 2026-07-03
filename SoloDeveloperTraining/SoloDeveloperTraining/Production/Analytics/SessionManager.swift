@@ -16,6 +16,9 @@ final class SessionManager {
     private var sessionStartTime: Date = Date()
     private var backgroundedAt: Date?
 
+    /// foreground 복귀 후 아직 로깅하지 않은 새 세션이 있으면 true
+    private(set) var didStartNewSession: Bool = true
+
     private static let sessionTimeoutSeconds: TimeInterval = 60
 
     // MARK: - App Lifecycle
@@ -24,12 +27,18 @@ final class SessionManager {
         if let backgroundedAt, Date().timeIntervalSince(backgroundedAt) > SessionManager.sessionTimeoutSeconds {
             sessionID = SessionManager.generateSessionID()
             sessionStartTime = Date()
+            didStartNewSession = true
         }
         self.backgroundedAt = nil
     }
 
     func handleBackground() {
         backgroundedAt = Date()
+    }
+
+    /// 새 세션 로깅 완료 후 플래그 소비
+    func consumeNewSession() {
+        didStartNewSession = false
     }
 
     // MARK: - Session Duration

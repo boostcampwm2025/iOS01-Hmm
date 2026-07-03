@@ -19,6 +19,8 @@ final class AnalyticsService {
     /// 공유하기 중복 로깅 방지
     private var loggedShareCompletions: Set<String> = []
     private var loggedAppOpenedFromDeeplinkSessions: Set<String> = []
+    /// app_opened session_id 기준 중복 방지
+    private var loggedAppOpenedSessions: Set<String> = []
 
     private init() {}
 
@@ -36,25 +38,26 @@ final class AnalyticsService {
         ])
     }
 
-    /// 매 실행마다 카운트
+    /// 포그라운드 진입마다 1회 (session_id 기준 중복 방지)
     func logAppOpened(
         nickname: String,
-        level: Int,
         entrySource: String,
         referrerShareID: String,
         isDeferredDeeplink: Bool
     ) {
+        let sessionID = SessionManager.shared.sessionID
+        guard loggedAppOpenedSessions.insert(sessionID).inserted else { return }
+
         Analytics.logEvent("app_opened", parameters: [
             AP.deviceID: AP.deviceIDValue,
-            AP.sessionID: SessionManager.shared.sessionID,
+            AP.sessionID: sessionID,
             AP.nickname: nickname,
             AP.appVersion: AP.appVersionValue,
             AP.osVersion: AP.osVersionValue,
             AP.deviceModel: AP.deviceModelValue,
             AP.entrySource: entrySource,
             AP.referrerShareID: referrerShareID,
-            AP.isDeferredDeeplink: isDeferredDeeplink,
-            AP.level: level
+            AP.isDeferredDeeplink: isDeferredDeeplink
         ])
     }
 
