@@ -24,6 +24,7 @@ struct TapGameView: View {
     @State private var effectLabels: [EffectLabelData] = []
     /// 탭 사운드 쓰로틀용 마지막 재생 시각
     @State private var lastTapSoundTime: Date = .distantPast
+    @State private var drinkAdRewardFlowID: String?
 
     /// 게임 시작 여부 (false로 바꾸면 선택 화면으로 복귀)
     @Binding var isGameStarted: Bool
@@ -193,6 +194,15 @@ private extension TapGameView {
             }
         } else {
             tapGame.pauseGame()
+            let flowID = AnalyticsService.shared.makeAdRewardFlowID()
+            drinkAdRewardFlowID = flowID
+            let rewardType: AdRewardType = type == .coffee ? .coffee : .energyDrink
+            AnalyticsService.shared.logAdOfferViewed(
+                adRewardFlowID: flowID,
+                adPlacement: .consumable(screenID: "caffein"),
+                rewardType: rewardType,
+                rewardAmount: 1
+            )
             PopupManager.shared.show {
                 NoticePopup(
                     type: .ad(
@@ -201,6 +211,16 @@ private extension TapGameView {
                         cancelAction: {
                             SoundService.shared.trigger(.click)
                             PopupManager.shared.dismiss()
+                            if let flowID = drinkAdRewardFlowID {
+                                AnalyticsService.shared.logAdOfferDismissed(
+                                    adRewardFlowID: flowID,
+                                    adPlacement: .consumable(screenID: "caffein"),
+                                    rewardType: rewardType,
+                                    rewardAmount: 1,
+                                    dismissReason: .close
+                                )
+                                drinkAdRewardFlowID = nil
+                            }
                             tapGame.resumeGame()
                         },
                         adAction: {
@@ -218,7 +238,8 @@ private extension TapGameView {
     func handleDrinkAd(type: ConsumableType) async {
         PopupManager.shared.dismiss()
 
-        let flowID = AnalyticsService.shared.makeAdRewardFlowID()
+        guard let flowID = drinkAdRewardFlowID else { return }
+        drinkAdRewardFlowID = nil
         let rewardType: AdRewardType = type == .coffee ? .coffee : .energyDrink
 
         AnalyticsService.shared.logAdWatchClicked(
@@ -238,7 +259,7 @@ private extension TapGameView {
                 rewardAmount: 1,
                 adWatchDurationSec: result.watchDurationSec
             )
-            tapGame.user.inventory.gain(consumable: type)
+            tapGame.inventory.gain(consumable: type)
             ToastManager.shared.show("카페인 충전 완료!")
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
