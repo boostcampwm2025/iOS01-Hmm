@@ -12,8 +12,6 @@ import DUDesignSystem
 struct QuizGameView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var quizGame: QuizGame
-    @State private var showQuizAdPopup: Bool = false
-    @State private var showQuizRewardPopup: Bool = false
     @State private var finalDiamondsEarned: Int = 0
     @State private var adRewardFlowID: String?
 
@@ -45,8 +43,6 @@ struct QuizGameView: View {
             }
         }
         .onDisappear { SoundService.shared.stopAllSFX() }
-        .duPopup(isPresented: showQuizAdPopup) { adPopupOverlay }
-        .duPopup(isPresented: showQuizRewardPopup) { rewardPopupOverlay }
     }
 
     // MARK: - Sections
@@ -149,7 +145,6 @@ struct QuizGameView: View {
                 SoundService.shared.trigger(.click)
                 if quizGame.phase == .showingExplanation {
                     if quizGame.state.nextButtonTitle == "보상받기" {
-                        showQuizAdPopup = true
                         let flowID = AnalyticsService.shared.makeAdRewardFlowID()
                         adRewardFlowID = flowID
                         AnalyticsService.shared.logAdOfferViewed(
@@ -158,6 +153,7 @@ struct QuizGameView: View {
                             rewardType: .diamond,
                             rewardAmount: quizGame.state.totalDiamondsEarned
                         )
+                        PopupManager.shared.show { adPopupOverlay }
                     } else {
                         quizGame.proceedToNextQuestion()
                     }
@@ -178,7 +174,7 @@ struct QuizGameView: View {
                 adText: "2배 얻기",
                 cancelAction: {
                     SoundService.shared.trigger(.click)
-                    showQuizAdPopup = false
+                    PopupManager.shared.dismiss()
                     if let flowID = adRewardFlowID {
                         AnalyticsService.shared.logAdOfferDismissed(
                             adRewardFlowID: flowID,
@@ -209,7 +205,7 @@ struct QuizGameView: View {
                 buttonText: "닫기",
                 action: {
                     SoundService.shared.trigger(.click)
-                    showQuizRewardPopup = false
+                    PopupManager.shared.dismiss()
                     dismiss()
                 }
             ),
@@ -223,7 +219,7 @@ struct QuizGameView: View {
 // MARK: - Helper
 private extension QuizGameView {
     func handleWatchAd() async {
-        showQuizAdPopup = false
+        PopupManager.shared.dismiss()
         guard let flowID = adRewardFlowID else { return }
         let baseDiamonds = quizGame.state.totalDiamondsEarned
 
@@ -249,7 +245,7 @@ private extension QuizGameView {
                 adWatchDurationSec: result.watchDurationSec
             )
             quizGame.completeGame(multiplier: 2.0)
-            showQuizRewardPopup = true
+            PopupManager.shared.show { rewardPopupOverlay }
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
                 adPlacement: .quizReward(screenID: "quizRewardResult"),

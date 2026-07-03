@@ -40,14 +40,9 @@ struct ShopView: View {
     }()
     @State private var enhanceAdRewardFlowID: String?
 
-    @Binding var storePopup: StorePopup?
-    @Binding var noticePopup: NoticePopup?
-
-    init(user: User, storePopup: Binding<StorePopup?>, noticePopup: Binding<NoticePopup?>) {
+    init(user: User) {
         self.user = user
         self.shopSystem = ShopSystem(user: user)
-        self._storePopup = storePopup
-        self._noticePopup = noticePopup
     }
 
     var body: some View {
@@ -147,24 +142,26 @@ private extension ShopView {
         } else {
             let (title, _, buttonTitle) = ShopPurchaseHelper.purchaseInfo(for: item)
             let priceText = ShopPurchaseHelper.createPriceText(for: item, shopSystem: shopSystem)
-            storePopup = StorePopup(
-                type: .default(
-                    cancelText: "취소",
-                    confirmText: buttonTitle,
-                    cancelAction: {
-                        SoundService.shared.trigger(.click)
-                        storePopup = nil
-                    },
-                    confirmAction: {
-                        SoundService.shared.trigger(.click)
-                        storePopup = nil
-                        executePurchase(item: item, scrollProxy: scrollProxy)
-                    }
-                ),
-                title: title,
-                itemName: item.displayTitle,
-                price: priceText
-            )
+            PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
+                StorePopup(
+                    type: .default(
+                        cancelText: "취소",
+                        confirmText: buttonTitle,
+                        cancelAction: {
+                            SoundService.shared.trigger(.click)
+                            PopupManager.shared.dismiss()
+                        },
+                        confirmAction: {
+                            SoundService.shared.trigger(.click)
+                            PopupManager.shared.dismiss()
+                            executePurchase(item: item, scrollProxy: scrollProxy)
+                        }
+                    ),
+                    title: title,
+                    itemName: item.displayTitle,
+                    price: priceText
+                )
+            }
         }
     }
 
@@ -178,42 +175,44 @@ private extension ShopView {
 
         trackEnhanceAdOfferIfNeeded(hasBonus: hasBonus)
 
-        storePopup = StorePopup(
-            type: .ad(
-                successRate: displayRate,
-                adState: hasBonus ? .disabled : .default,
-                cancelText: "취소",
-                adText: "확률 UP",
-                confirmText: "강화",
-                cancelAction: {
-                    SoundService.shared.trigger(.click)
-                    storePopup = nil
-                    trackEnhanceAdDismissIfNeeded(hasBonus: hasBonus)
-                },
-                adAction: {
-                    SoundService.shared.trigger(.click)
-                    storePopup = nil
-                    Task {
-                        await handleEnhanceAdWatch(
-                            item: item,
-                            equipment: equipment,
-                            scrollProxy: scrollProxy,
-                            typeKey: typeKey,
-                            adPlacement: .equipmentEnhance(screenID: hasBonus ? "probability02" : "probability01")
-                        )
+        PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
+            StorePopup(
+                type: .ad(
+                    successRate: displayRate,
+                    adState: hasBonus ? .disabled : .default,
+                    cancelText: "취소",
+                    adText: "확률 UP",
+                    confirmText: "강화",
+                    cancelAction: {
+                        SoundService.shared.trigger(.click)
+                        PopupManager.shared.dismiss()
+                        trackEnhanceAdDismissIfNeeded(hasBonus: hasBonus)
+                    },
+                    adAction: {
+                        SoundService.shared.trigger(.click)
+                        PopupManager.shared.dismiss()
+                        Task {
+                            await handleEnhanceAdWatch(
+                                item: item,
+                                equipment: equipment,
+                                scrollProxy: scrollProxy,
+                                typeKey: typeKey,
+                                adPlacement: .equipmentEnhance(screenID: hasBonus ? "probability02" : "probability01")
+                            )
+                        }
+                    },
+                    confirmAction: {
+                        SoundService.shared.trigger(.click)
+                        PopupManager.shared.dismiss()
+                        executePurchase(item: item, bonusRate: hasBonus ? 0.1 : 0.0, scrollProxy: scrollProxy)
                     }
-                },
-                confirmAction: {
-                    SoundService.shared.trigger(.click)
-                    storePopup = nil
-                    executePurchase(item: item, bonusRate: hasBonus ? 0.1 : 0.0, scrollProxy: scrollProxy)
-                }
-            ),
-            title: "장비 강화",
-            itemName: item.displayTitle,
-            price: priceText,
-            rateHighlighted: hasBonus
-        )
+                ),
+                title: "장비 강화",
+                itemName: item.displayTitle,
+                price: priceText,
+                rateHighlighted: hasBonus
+            )
+        }
     }
 
     func trackEnhanceAdOfferIfNeeded(hasBonus: Bool) {
@@ -303,26 +302,32 @@ private extension ShopView {
                 }
                 let title = isSuccess ? Constant.Text.enhanceSuccessTitle : Constant.Text.enhanceFailureTitle
                 let message = isSuccess ? Constant.Text.enhanceSuccessMessage : Constant.Text.enhanceFailureMessage
-                noticePopup = NoticePopup(
-                    type: .default(buttonText: "확인", action: { noticePopup = nil }),
-                    title: title,
-                    text: message
-                )
+                PopupManager.shared.show {
+                    NoticePopup(
+                        type: .default(buttonText: "확인", action: { PopupManager.shared.dismiss() }),
+                        title: title,
+                        text: message
+                    )
+                }
             }
         } catch let error as PurchasingError {
             HapticService.shared.trigger(.error)
-            noticePopup = NoticePopup(
-                type: .default(buttonText: "확인", action: { noticePopup = nil }),
-                title: Constant.Text.purchaseFailureTitle,
-                text: error.message
-            )
+            PopupManager.shared.show {
+                NoticePopup(
+                    type: .default(buttonText: "확인", action: { PopupManager.shared.dismiss() }),
+                    title: Constant.Text.purchaseFailureTitle,
+                    text: error.message
+                )
+            }
         } catch {
             HapticService.shared.trigger(.error)
-            noticePopup = NoticePopup(
-                type: .default(buttonText: "확인", action: { noticePopup = nil }),
-                title: Constant.Text.purchaseFailureTitle,
-                text: Constant.Text.purchaseFailureMessage
-            )
+            PopupManager.shared.show {
+                NoticePopup(
+                    type: .default(buttonText: "확인", action: { PopupManager.shared.dismiss() }),
+                    title: Constant.Text.purchaseFailureTitle,
+                    text: Constant.Text.purchaseFailureMessage
+                )
+            }
         }
     }
 }
@@ -337,5 +342,5 @@ private extension ShopView {
             .init(key: SkillKey(game: .tap, tier: .beginner), level: 1)
         ]
     )
-    ShopView(user: user, storePopup: .constant(nil), noticePopup: .constant(nil))
+    ShopView(user: user)
 }

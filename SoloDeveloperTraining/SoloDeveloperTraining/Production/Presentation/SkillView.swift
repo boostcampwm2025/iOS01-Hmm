@@ -13,7 +13,6 @@ struct SkillView: View {
     private let careerSystem: CareerSystem?
     private let skillSystem: SkillSystem
 
-    @Binding var noticePopup: NoticePopup?
     let adRewardNow: Date
 
     @State private var adRewardFlowID: String?
@@ -21,13 +20,11 @@ struct SkillView: View {
     init(
         user: User,
         careerSystem: CareerSystem?,
-        noticePopup: Binding<NoticePopup?>,
         adRewardNow: Date
     ) {
         self.user = user
         self.careerSystem = careerSystem
         self.skillSystem = SkillSystem(user: user, careerSystem: careerSystem)
-        self._noticePopup = noticePopup
         self.adRewardNow = adRewardNow
     }
 
@@ -92,17 +89,21 @@ private extension SkillView {
         do {
             try skillSystem.upgrade(skill: skill)
         } catch let error as UserReadableError {
-            noticePopup = NoticePopup(
-                type: .default(buttonText: "확인", action: { noticePopup = nil }),
-                title: "스킬",
-                text: error.message
-            )
+            PopupManager.shared.show {
+                NoticePopup(
+                    type: .default(buttonText: "확인", action: { PopupManager.shared.dismiss() }),
+                    title: "스킬",
+                    text: error.message
+                )
+            }
         } catch {
-            noticePopup = NoticePopup(
-                type: .default(buttonText: "확인", action: { noticePopup = nil }),
-                title: "스킬",
-                text: error.localizedDescription
-            )
+            PopupManager.shared.show {
+                NoticePopup(
+                    type: .default(buttonText: "확인", action: { PopupManager.shared.dismiss() }),
+                    title: "스킬",
+                    text: error.localizedDescription
+                )
+            }
         }
     }
 
@@ -140,20 +141,22 @@ private extension SkillView {
                 rewardAmount: 0,
                 adWatchDurationSec: result.watchDurationSec
             )
-            noticePopup = NoticePopup(
-                type: .default(buttonText: "확인", action: {
-                    noticePopup = nil
-                    SkillAdRewardManager.grantReward(user: user)
-                    AnalyticsService.shared.logAdRewardClaimed(
-                        adRewardFlowID: flowID,
-                        adPlacement: .skillReward(screenID: "skill"),
-                        rewardType: .skillBoost,
-                        rewardAmount: 0
-                    )
-                }),
-                title: "보상 완료",
-                text: "\(Int(Policy.Ad.SkillReward.rewardDuration / 60))분간 게임 재화를 \(Int(Policy.Ad.SkillReward.rewardMultiplier))배로 획득합니다."
-            )
+            PopupManager.shared.show {
+                NoticePopup(
+                    type: .default(buttonText: "확인", action: {
+                        PopupManager.shared.dismiss()
+                        SkillAdRewardManager.grantReward(user: user)
+                        AnalyticsService.shared.logAdRewardClaimed(
+                            adRewardFlowID: flowID,
+                            adPlacement: .skillReward(screenID: "skill"),
+                            rewardType: .skillBoost,
+                            rewardAmount: 0
+                        )
+                    }),
+                    title: "보상 완료",
+                    text: "\(Int(Policy.Ad.SkillReward.rewardDuration / 60))분간 게임 재화를 \(Int(Policy.Ad.SkillReward.rewardMultiplier))배로 획득합니다."
+                )
+            }
         }
     }
 
@@ -193,5 +196,5 @@ private extension SkillView {
         ]
     )
 
-    SkillView(user: user, careerSystem: nil, noticePopup: .constant(nil), adRewardNow: Date())
+    SkillView(user: user, careerSystem: nil, adRewardNow: Date())
 }

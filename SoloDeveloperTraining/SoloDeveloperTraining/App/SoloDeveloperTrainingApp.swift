@@ -41,11 +41,8 @@ struct SoloDeveloperTrainingApp: App {
 
     @State private var hasSeenIntro = false
     @State private var showNicknameSetup = false
-    @State private var showErrorPopup = false
-    @State private var errorMessage: String = ""
     @State private var isPolicyLoading = true
     @State private var hasPolicyError = false
-    @State private var updateType: AppUpdateType = .none
     @Environment(\.scenePhase) private var scenePhase
 
     private let userRepository: UserRepository = FileManagerUserRepository()
@@ -112,18 +109,35 @@ private extension SoloDeveloperTrainingApp {
                     resultID: deeplinkInfo.resultID
                 )
         }
-        .duPopup(isPresented: showErrorPopup) {
-            errorPopupOverlay
-        }
-        .duPopup(isPresented: updateType != .none) {
-            updateOverlay
-        }
         .task {
             let type = await AppUpdateChecker.checkUpdate()
             if type == .force {
-                updateType = .force
+                PopupManager.shared.show {
+                    NoticePopup(
+                        type: .default(
+                            buttonText: "업데이트",
+                            action: { AppUpdateChecker.openAppStore() }
+                        ),
+                        title: "업데이트 안내",
+                        text: "원활한 앱 사용을 위해서 업데이트가 필요합니다.\n지금 바로 업데이트를 진행해주세요."
+                    )
+                }
             } else if type == .optional && !AppUpdateChecker.isOptionalUpdateSnoozed() {
-                updateType = .optional
+                PopupManager.shared.show {
+                    NoticePopup(
+                        type: .confirm(
+                            cancelText: "다음에",
+                            confirmText: "업데이트",
+                            cancelAction: {
+                                AppUpdateChecker.snoozeOptionalUpdate()
+                                PopupManager.shared.dismiss()
+                            },
+                            confirmAction: { AppUpdateChecker.openAppStore() }
+                        ),
+                        title: "업데이트 안내",
+                        text: "원활한 앱 사용을 위해서 업데이트가 필요합니다.\n지금 바로 업데이트를 진행해주세요."
+                    )
+                }
             }
         }
         .onAppear {
@@ -190,8 +204,13 @@ private extension SoloDeveloperTrainingApp {
                 }
             } catch {
                 await MainActor.run {
-                    self.errorMessage = "사용자 데이터를 불러오는데 실패했습니다.\n\(error.localizedDescription)"
-                    self.showErrorPopup = true
+                    PopupManager.shared.show {
+                        NoticePopup(
+                            type: .default(buttonText: "확인", action: { PopupManager.shared.dismiss() }),
+                            title: "오류",
+                            text: "사용자 데이터를 불러오는데 실패했습니다.\n\(error.localizedDescription)"
+                        )
+                    }
                 }
             }
         }
@@ -207,8 +226,13 @@ private extension SoloDeveloperTrainingApp {
                 try await userRepository.save(user)
             } catch {
                 await MainActor.run {
-                    self.errorMessage = "사용자 데이터를 저장하는데 실패했습니다.\n\(error.localizedDescription)"
-                    self.showErrorPopup = true
+                    PopupManager.shared.show {
+                        NoticePopup(
+                            type: .default(buttonText: "확인", action: { PopupManager.shared.dismiss() }),
+                            title: "오류",
+                            text: "사용자 데이터를 저장하는데 실패했습니다.\n\(error.localizedDescription)"
+                        )
+                    }
                 }
             }
         }
@@ -232,43 +256,6 @@ private extension SoloDeveloperTrainingApp {
         }
     }
 
-    // MARK: - Overlays
-
-    @ViewBuilder
-    var updateOverlay: some View {
-        if updateType == .force {
-            NoticePopup(
-                type: .default(
-                    buttonText: "업데이트",
-                    action: { AppUpdateChecker.openAppStore() }
-                ),
-                title: "업데이트 안내",
-                text: "원활한 앱 사용을 위해서 업데이트가 필요합니다.\n지금 바로 업데이트를 진행해주세요."
-            )
-        } else if updateType == .optional {
-            NoticePopup(
-                type: .confirm(
-                    cancelText: "다음에",
-                    confirmText: "업데이트",
-                    cancelAction: {
-                        AppUpdateChecker.snoozeOptionalUpdate()
-                        updateType = .none
-                    },
-                    confirmAction: { AppUpdateChecker.openAppStore() }
-                ),
-                title: "업데이트 안내",
-                text: "원활한 앱 사용을 위해서 업데이트가 필요합니다.\n지금 바로 업데이트를 진행해주세요."
-            )
-        }
-    }
-
-    var errorPopupOverlay: some View {
-        NoticePopup(
-            type: .default(buttonText: "확인", action: { showErrorPopup = false }),
-            title: "오류",
-            text: errorMessage
-        )
-    }
 }
 #endif
 
