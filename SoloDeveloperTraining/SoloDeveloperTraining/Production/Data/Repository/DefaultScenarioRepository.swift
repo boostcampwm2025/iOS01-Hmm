@@ -334,7 +334,7 @@ final class DefaultScenarioRepository: ScenarioRepository {
                 ),
                 ScenarioPage(
                     imageName: "famousDeveloper4",
-                    text: "그날 밤 동시에 러브콜이 왔다.\n하나만 골라야 한다. 뭘 고르지?",
+                    text: "그날 밤 동시에 러브콜이 왔다.\n하나만 골라야 한다... 뭘 고르지?",
                     pageType: .choice(
                         Choice(
                             optionA: "유니콘 스타트업 오퍼 수락 (연봉 20% 상승)",
@@ -371,12 +371,12 @@ final class DefaultScenarioRepository: ScenarioRepository {
                 ),
                 ScenarioPage(
                     imageName: "allRounderDeveloper4",
-                    text: "회의중에 누군가 개발팀을 찾았는데.",
+                    text: "회의중에 누군가 개발팀을 찾았는데,",
                     pageType: .story
                 ),
                 ScenarioPage(
                     imageName: "allRounderDeveloper5",
-                    text: "모두가 나를 쳐다봤다.",
+                    text: "모두가 나를 쳐다 봤다.",
                     pageType: .story
                 ),
                 ScenarioPage(
