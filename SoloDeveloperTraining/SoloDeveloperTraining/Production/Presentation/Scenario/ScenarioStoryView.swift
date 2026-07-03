@@ -21,10 +21,7 @@ struct ScenarioStoryView: View {
     @State private var adRewardFlowID: String?
 
     // 공유하기
-    @State private var isShareSheetPresented = false
     @State private var currentShareID = ""
-    // 환생하기
-    @State private var isRebirthConfirmPopupPresented = false
 
     init(
         user: User?,
@@ -90,11 +87,11 @@ struct ScenarioStoryView: View {
                                     resultID: ending.id,
                                     shareChannel: ShareChannel.unknown.rawValue
                                 )
-                            isShareSheetPresented = true
+                            PopupManager.shared.show { shareSheetPopup }
                         },
                         onRebirth: {
                             SoundService.shared.trigger(.click)
-                            isRebirthConfirmPopupPresented = true
+                            PopupManager.shared.show { rebirthConfirmPopupView }
                         }
                     ))
                 } else if let page = manager.currentPage {
@@ -107,8 +104,6 @@ struct ScenarioStoryView: View {
         .onAppear {
             restoreEndingIfNeeded()
         }
-        .duPopup(isPresented: isShareSheetPresented) { shareSheetPopup }
-        .duPopup(isPresented: isRebirthConfirmPopupPresented) { rebirthConfirmPopupView }
     }
 }
 
@@ -118,7 +113,10 @@ private extension ScenarioStoryView {
     var shareSheetPopup: some View {
         if let ending = finalEnding {
             ShareSheetView(
-                isPresented: $isShareSheetPresented,
+                isPresented: Binding(
+                    get: { true },
+                    set: { if !$0 { PopupManager.shared.dismiss() } }
+                ),
                 kakaoMessageTemplateID: ending.type.kakaoMessageTemplateID,
                 shareID: currentShareID,
                 resultID: ending.id,
@@ -155,10 +153,12 @@ private extension ScenarioStoryView {
                 confirmText: "환생하기",
                 cancelAction: {
                     SoundService.shared.trigger(.click)
+                    PopupManager.shared.dismiss()
                     onComplete()
                 },
                 confirmAction: {
                     SoundService.shared.trigger(.click)
+                    PopupManager.shared.dismiss()
                     handleRebirthScenario()
                 }
             ),
@@ -324,8 +324,6 @@ private extension ScenarioStoryView {
                 currentPageIndex = manager.currentPageIndex
                 selected = ""
                 finalEnding = nil
-
-                isRebirthConfirmPopupPresented = false
             }
 
             SoundService.shared.playBGM(.rebirth)
