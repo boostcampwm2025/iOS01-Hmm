@@ -34,16 +34,12 @@ struct StackGameView: View {
     @Binding var gameActionGoldDelta: Int
     /// 탭 전환으로 인한 일시정지
     @Binding var tabSwitchPause: Bool
-    /// 광고 시청 후 음료 지급 팝업 표시 여부
-    @Binding var showDrinkAdPopup: Bool
-    /// 나가기 보너스 팝업 표시 여부
-    @Binding var showExitBonusPopup: Bool
-    /// 광고 팝업에서 선택된 음료 타입
-    @Binding var selectedDrinkType: ConsumableType?
     /// 팝업에서 게임 재개 시 호출되는 콜백
     @Binding var resumeGameCallback: (() -> Void)?
     /// 팝업에서 게임 종료 시 호출되는 콜백
     @Binding var exitGameCallback: (() -> Void)?
+    /// 퇴장 보너스 팝업 표시 요청 콜백
+    @Binding var showExitBonusPopup: Bool
 
     init(
         user: User,
@@ -51,9 +47,7 @@ struct StackGameView: View {
         gameActionGoldDelta: Binding<Int>,
         tabSwitchPause: Binding<Bool>,
         animationSystem: CharacterAnimationSystem?,
-        showDrinkAdPopup: Binding<Bool>,
         showExitBonusPopup: Binding<Bool>,
-        selectedDrinkType: Binding<ConsumableType?>,
         resumeGameCallback: Binding<(() -> Void)?>,
         exitGameCallback: Binding<(() -> Void)?>
     ) {
@@ -66,9 +60,7 @@ struct StackGameView: View {
         _isGameStarted = isGameStarted
         _gameActionGoldDelta = gameActionGoldDelta
         _tabSwitchPause = tabSwitchPause
-        _showDrinkAdPopup = showDrinkAdPopup
         _showExitBonusPopup = showExitBonusPopup
-        _selectedDrinkType = selectedDrinkType
         _resumeGameCallback = resumeGameCallback
         _exitGameCallback = exitGameCallback
     }
@@ -198,9 +190,61 @@ private extension StackGameView {
                 stackGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
             }
         } else {
-            selectedDrinkType = type
-            showDrinkAdPopup = true
             scene.pauseGame()
+            PopupManager.shared.show {
+                NoticePopup(
+                    type: .ad(
+                        cancelText: "그냥 하기",
+                        adText: "음료 받기",
+                        cancelAction: {
+                            SoundService.shared.trigger(.click)
+                            PopupManager.shared.dismiss()
+                            scene.resumeGame()
+                        },
+                        adAction: {
+                            SoundService.shared.trigger(.click)
+                            Task { await handleDrinkAd(type: type) }
+                        }
+                    ),
+                    title: type == .coffee ? "커피 없음" : "박하스 없음",
+                    text: "대신에 광고를 보고\n카페인을 보충할까요?"
+                )
+            }
         }
+    }
+
+    func handleDrinkAd(type: ConsumableType) async {
+        PopupManager.shared.dismiss()
+
+        let flowID = AnalyticsService.shared.makeAdRewardFlowID()
+        let rewardType: AdRewardType = type == .coffee ? .coffee : .energyDrink
+
+        AnalyticsService.shared.logAdWatchClicked(
+            adRewardFlowID: flowID,
+            adPlacement: .consumable,
+            rewardType: rewardType,
+            rewardAmount: 1
+        )
+
+        let result = await AdService.shared.showAdWithResult(.interstitial)
+
+        if result.success {
+            AnalyticsService.shared.logAdWatchCompleted(
+                adRewardFlowID: flowID,
+                adPlacement: .consumable,
+                rewardType: rewardType,
+                rewardAmount: 1,
+                adWatchDurationSec: result.watchDurationSec
+            )
+            stackGame.user.inventory.gain(consumable: type)
+            ToastManager.shared.show("카페인 충전 완료!")
+            AnalyticsService.shared.logAdRewardClaimed(
+                adRewardFlowID: flowID,
+                adPlacement: .consumable,
+                rewardType: rewardType,
+                rewardAmount: 1
+            )
+        }
+        scene.resumeGame()
     }
 }

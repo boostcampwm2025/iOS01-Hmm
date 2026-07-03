@@ -30,12 +30,9 @@ struct WorkSelectedView: View {
     @Binding var tabSwitchPause: Bool
     @Binding var careerSystem: CareerSystem?
 
-    // 광고 팝업 관련
-    @Binding var showDrinkAdPopup: Bool
-    @Binding var showExitBonusPopup: Bool
-    @Binding var selectedDrinkType: ConsumableType?
     @Binding var resumeGameCallback: (() -> Void)?
     @Binding var exitGameCallback: (() -> Void)?
+    @Binding var showExitBonusPopup: Bool
 
     init(
         user: User,
@@ -44,9 +41,7 @@ struct WorkSelectedView: View {
         gameActionGoldDelta: Binding<Int>,
         tabSwitchPause: Binding<Bool>,
         careerSystem: Binding<CareerSystem?>,
-        showDrinkAdPopup: Binding<Bool>,
         showExitBonusPopup: Binding<Bool>,
-        selectedDrinkType: Binding<ConsumableType?>,
         resumeGameCallback: Binding<(() -> Void)?>,
         exitGameCallback: Binding<(() -> Void)?>
     ) {
@@ -56,9 +51,7 @@ struct WorkSelectedView: View {
         self._gameActionGoldDelta = gameActionGoldDelta
         self._tabSwitchPause = tabSwitchPause
         self._careerSystem = careerSystem
-        self._showDrinkAdPopup = showDrinkAdPopup
         self._showExitBonusPopup = showExitBonusPopup
-        self._selectedDrinkType = selectedDrinkType
         self._resumeGameCallback = resumeGameCallback
         self._exitGameCallback = exitGameCallback
     }
@@ -151,9 +144,7 @@ private extension WorkSelectedView {
                 gameActionGoldDelta: $gameActionGoldDelta,
                 tabSwitchPause: $tabSwitchPause,
                 animationSystem: animationSystem,
-                showDrinkAdPopup: $showDrinkAdPopup,
                 showExitBonusPopup: $showExitBonusPopup,
-                selectedDrinkType: $selectedDrinkType,
                 resumeGameCallback: $resumeGameCallback,
                 exitGameCallback: $exitGameCallback
             )
@@ -164,9 +155,7 @@ private extension WorkSelectedView {
                 gameActionGoldDelta: $gameActionGoldDelta,
                 tabSwitchPause: $tabSwitchPause,
                 animationSystem: animationSystem,
-                showDrinkAdPopup: $showDrinkAdPopup,
                 showExitBonusPopup: $showExitBonusPopup,
-                selectedDrinkType: $selectedDrinkType,
                 resumeGameCallback: $resumeGameCallback,
                 exitGameCallback: $exitGameCallback
             )
@@ -177,9 +166,7 @@ private extension WorkSelectedView {
                 gameActionGoldDelta: $gameActionGoldDelta,
                 tabSwitchPause: $tabSwitchPause,
                 animationSystem: animationSystem,
-                showDrinkAdPopup: $showDrinkAdPopup,
                 showExitBonusPopup: $showExitBonusPopup,
-                selectedDrinkType: $selectedDrinkType,
                 resumeGameCallback: $resumeGameCallback,
                 exitGameCallback: $exitGameCallback
             )
@@ -190,9 +177,7 @@ private extension WorkSelectedView {
                 gameActionGoldDelta: $gameActionGoldDelta,
                 tabSwitchPause: $tabSwitchPause,
                 animationSystem: animationSystem,
-                showDrinkAdPopup: $showDrinkAdPopup,
                 showExitBonusPopup: $showExitBonusPopup,
-                selectedDrinkType: $selectedDrinkType,
                 resumeGameCallback: $resumeGameCallback,
                 exitGameCallback: $exitGameCallback
             )
@@ -235,9 +220,7 @@ private extension WorkSelectedView {
     @Previewable @State var gameActionGoldDelta = 0
     @Previewable @State var tabSwitchPause = false
     @Previewable @State var careerSystem: CareerSystem?
-    @Previewable @State var showDrinkAdPopup = false
     @Previewable @State var showExitBonusPopup = false
-    @Previewable @State var selectedDrinkType: ConsumableType?
     @Previewable @State var resumeGameCallback: (() -> Void)?
     @Previewable @State var exitGameCallback: (() -> Void)?
 
@@ -255,9 +238,7 @@ private extension WorkSelectedView {
         gameActionGoldDelta: $gameActionGoldDelta,
         tabSwitchPause: $tabSwitchPause,
         careerSystem: $careerSystem,
-        showDrinkAdPopup: $showDrinkAdPopup,
         showExitBonusPopup: $showExitBonusPopup,
-        selectedDrinkType: $selectedDrinkType,
         resumeGameCallback: $resumeGameCallback,
         exitGameCallback: $exitGameCallback
     )
