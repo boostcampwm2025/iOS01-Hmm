@@ -318,24 +318,34 @@ final class DefaultScenarioRepository: ScenarioRepository {
             scenarioType: .event,
             pages: [
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "알림이 계속 울린다\nGitHub 스타가 1만 개를 넘었다.\n\nDM 폭발! \"강의 해주세요\", \"같이 창업해요\", \"형님\"",
+                    imageName: "famousDeveloper1",
+                    text: "알림이 계속 울린다.\n스팸인가?",
                     pageType: .story
                 ),
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "그날 밤 동시에 러브콜이 왔다.\n하나만 골라야 한다.",
-                    pageType: .choice(Choice(optionA: "유니콘 스타트업 오퍼 수락", optionB: "개발 유튜브 채널 시작"))
+                    imageName: "famousDeveloper2",
+                    text: "대충 올린 프로젝트가\n개발자 커뮤니티에 퍼졌다.",
+                    pageType: .story
                 ),
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "연봉은 올랐다. 퇴근은 사라졌다.",
+                    imageName: "famousDeveloper3",
+                    text: "DM이 폭발한다.\n“강의 해주세요.” “같이 창업해요.”",
+                    pageType: .story
+                ),
+                ScenarioPage(
+                    imageName: "famousDeveloper4",
+                    text: "그날 밤 동시에 러브콜이 왔다.\n하나만 골라야 한다. 뭘 고르지?",
+                    pageType: .choice(
+                        Choice(
+                            optionA: "유니콘 스타트업 오퍼 수락 (연봉 20% 상승)",
+                            optionB: "개발 유튜브 채널 시작"
+                        )
+                    )
+                ),
+                ScenarioPage(
+                    imageName: "famousDeveloper5",
+                    text: "이제 진짜 시작이다!",
                     pageType: .result(.optionA)
-                ),
-                ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "구독자 12명. 하지만 '형님 덕분에 해결했습니다'라는 첫 댓글이 달렸다.",
-                    pageType: .result(.optionB)
                 )
             ]
         ),
@@ -362,14 +372,34 @@ final class DefaultScenarioRepository: ScenarioRepository {
             scenarioType: .final,
             pages: [
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "0과 1로 대화가 가능해진 지금,\n누군가는 당신을 개발자라 부르고\n누군가는 당신을 미친 사람이라 부른다.\n\n그리고 당신은 안다...\n둘 다 맞다는 걸.",
+                    imageName: "worldClassDeveloper1",
+                    text: "여기 코드가 가능해진 지금,\n누군가는 당신을 개발자라 부르고...",
                     pageType: .story
                 ),
                 ScenarioPage(
-                    imageName: "scenario_levelup_normal_developer",
-                    text: "정점에 선 지금,\n마지막 선택이 남아있다.",
-                    pageType: .choice(Choice(optionA: "안정적인 성공", optionB: "인생은 모험과 도전!"))
+                    imageName: "worldClassDeveloper2",
+                    text: "누군가는 당신을 미친 사람이라 부른다.",
+                    pageType: .story
+                ),
+                ScenarioPage(
+                    imageName: "worldClassDeveloper3",
+                    text: "그리고 당신은 안다... 둘 다 맞다는 걸.",
+                    pageType: .story
+                ),
+                ScenarioPage(
+                    imageName: "worldClassDeveloper4",
+                    text: "정점에 선 지금, 마지막 선택이 남아있다.",
+                    pageType: .choice(
+                        Choice(
+                            optionA: "안정적인 성공",
+                            optionB: "인생은 모험과 도전!"
+                        )
+                    )
+                ),
+                ScenarioPage(
+                    imageName: "worldClassDeveloper5",
+                    text: "오랜 고민하지 않았다.\n이미 마음속에서는 답이 정해져 있었으니까.",
+                    pageType: .result(.optionA)
                 )
             ]
         )
