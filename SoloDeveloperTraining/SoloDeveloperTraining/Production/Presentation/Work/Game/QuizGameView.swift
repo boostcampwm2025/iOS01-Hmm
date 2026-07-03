@@ -170,7 +170,7 @@ struct QuizGameView: View {
                         adRewardFlowID = flowID
                         AnalyticsService.shared.logAdOfferViewed(
                             adRewardFlowID: flowID,
-                            adPlacement: .quizReward,
+                            adPlacement: .quizReward(screenID: "quizReward"),
                             rewardType: .diamond,
                             rewardAmount: quizGame.state.totalDiamondsEarned
                         )
@@ -198,7 +198,7 @@ struct QuizGameView: View {
                     if let flowID = adRewardFlowID {
                         AnalyticsService.shared.logAdOfferDismissed(
                             adRewardFlowID: flowID,
-                            adPlacement: .quizReward,
+                            adPlacement: .quizReward(screenID: "quizReward"),
                             rewardType: .diamond,
                             rewardAmount: quizGame.state.totalDiamondsEarned,
                             dismissReason: .close
@@ -247,7 +247,7 @@ private extension QuizGameView {
 
         AnalyticsService.shared.logAdWatchClicked(
             adRewardFlowID: flowID,
-            adPlacement: .quizReward,
+            adPlacement: .quizReward(screenID: "quizReward"),
             rewardType: .diamond,
             rewardAmount: baseDiamonds
         )
@@ -261,7 +261,7 @@ private extension QuizGameView {
 
             AnalyticsService.shared.logAdWatchCompleted(
                 adRewardFlowID: flowID,
-                adPlacement: .quizReward,
+                adPlacement: .quizReward(screenID: "quizRewardResult"),
                 rewardType: .diamond,
                 rewardAmount: earnedByAd,
                 adWatchDurationSec: result.watchDurationSec
@@ -270,7 +270,7 @@ private extension QuizGameView {
             showQuizRewardPopup = true
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
-                adPlacement: .quizReward,
+                adPlacement: .quizReward(screenID: "quizRewardResult"),
                 rewardType: .diamond,
                 rewardAmount: earnedByAd
             )

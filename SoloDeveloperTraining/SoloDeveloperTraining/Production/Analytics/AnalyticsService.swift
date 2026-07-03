@@ -21,6 +21,9 @@ final class AnalyticsService {
     private var loggedAppOpenedFromDeeplinkSessions: Set<String> = []
     private var loggedSessionEndedSessions: Set<String> = []
 
+    /// app_opened session_id 기준 중복 방지
+    private var loggedAppOpenedSessions: Set<String> = []
+
     /// 마지막으로 노출된 화면 이름
     private(set) var currentScreenID: String = "unknown"
 
@@ -49,25 +52,26 @@ final class AnalyticsService {
         ])
     }
 
-    /// 매 실행마다 카운트
+    /// 포그라운드 진입마다 1회 (session_id 기준 중복 방지)
     func logAppOpened(
         nickname: String,
-        level: Int,
         entrySource: String,
         referrerShareID: String,
         isDeferredDeeplink: Bool
     ) {
+        let sessionID = SessionManager.shared.sessionID
+        guard loggedAppOpenedSessions.insert(sessionID).inserted else { return }
+
         Analytics.logEvent("app_opened", parameters: [
             AP.deviceID: AP.deviceIDValue,
-            AP.sessionID: SessionManager.shared.sessionID,
+            AP.sessionID: sessionID,
             AP.nickname: nickname,
             AP.appVersion: AP.appVersionValue,
             AP.osVersion: AP.osVersionValue,
             AP.deviceModel: AP.deviceModelValue,
             AP.entrySource: entrySource,
             AP.referrerShareID: referrerShareID,
-            AP.isDeferredDeeplink: isDeferredDeeplink,
-            AP.level: level
+            AP.isDeferredDeeplink: isDeferredDeeplink
         ])
     }
 
@@ -272,7 +276,7 @@ extension AnalyticsService {
 
         var parameters = baseAdEventParameters(
             adRewardFlowID: adRewardFlowID,
-            adPlacement: adPlacement,
+            adPlacement: adPlacement.screenID,
             includesAdInfo: includesAdInfo
         )
         if includesReward, let rewardType, let rewardAmount {
@@ -286,14 +290,14 @@ extension AnalyticsService {
 
     private func baseAdEventParameters(
         adRewardFlowID: String,
-        adPlacement: AdPlacementType,
+        adPlacement: String,
         includesAdInfo: Bool
     ) -> [String: Any] {
         var parameters: [String: Any] = [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.adRewardFlowID: adRewardFlowID,
-            AP.adPlacement: adPlacement.rawValue
+            AP.adPlacement: adPlacement
         ]
 
         if includesAdInfo {

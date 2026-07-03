@@ -131,7 +131,19 @@ private extension SoloDeveloperTrainingApp {
             loadUser()
         }
         .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .background || newPhase == .inactive {
+            if newPhase == .active {
+                SessionManager.shared.handleForeground()
+                if SessionManager.shared.didStartNewSession, let user {
+                    AnalyticsService.shared.logAppOpened(
+                        nickname: user.nickname,
+                        entrySource: "direct",
+                        referrerShareID: "",
+                        isDeferredDeeplink: false
+                    )
+                    SessionManager.shared.consumeNewSession()
+                }
+            } else if newPhase == .background || newPhase == .inactive {
+                SessionManager.shared.handleBackground()
                 saveUser()
             }
 
@@ -167,6 +179,15 @@ private extension SoloDeveloperTrainingApp {
                     await MainActor.run {
                         self.user = user
                         checkFirstOpen(user: user)
+                        if SessionManager.shared.didStartNewSession {
+                            AnalyticsService.shared.logAppOpened(
+                                nickname: user.nickname,
+                                entrySource: "direct",
+                                referrerShareID: "",
+                                isDeferredDeeplink: false
+                            )
+                            SessionManager.shared.consumeNewSession()
+                        }
                     }
                 case .legacy(let career):
                     await MainActor.run {

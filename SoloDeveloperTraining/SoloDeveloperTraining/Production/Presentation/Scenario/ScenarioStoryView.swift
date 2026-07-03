@@ -42,6 +42,15 @@ struct ScenarioStoryView: View {
 
     var isEnding: Bool { finalEnding != nil }
 
+    var screenID: String {
+        let level = manager.currentScenario?.career.level ?? 0
+        return String(
+            format: "lv%02dScene%02d",
+            level,
+            manager.currentPageIndex
+        )
+    }
+
     var body: some View {
         ZStack {
             VStack(spacing: isEnding ? TokenSpacing.xl : TokenSpacing.lg) {
@@ -196,7 +205,7 @@ private extension ScenarioStoryView {
 
                 AnalyticsService.shared.logAdWatchClicked(
                     adRewardFlowID: flowID,
-                    adPlacement: .reselectionReward,
+                    adPlacement: .reselectionReward(screenID: screenID),
                     rewardType: .reselect,
                     rewardAmount: 0
                 )
@@ -209,7 +218,7 @@ private extension ScenarioStoryView {
                     if result.success {
                         AnalyticsService.shared.logAdWatchCompleted(
                             adRewardFlowID: flowID,
-                            adPlacement: .reselectionReward,
+                            adPlacement: .reselectionReward(screenID: screenID),
                             rewardType: .reselect,
                             rewardAmount: 0,
                             adWatchDurationSec: result.watchDurationSec
@@ -221,7 +230,7 @@ private extension ScenarioStoryView {
                         }
                         AnalyticsService.shared.logAdRewardClaimed(
                             adRewardFlowID: flowID,
-                            adPlacement: .reselectionReward,
+                            adPlacement: .reselectionReward(screenID: screenID),
                             rewardType: .reselect,
                             rewardAmount: 0
                         )
@@ -245,7 +254,7 @@ private extension ScenarioStoryView {
         adRewardFlowID = flowID
         AnalyticsService.shared.logAdOfferViewed(
             adRewardFlowID: flowID,
-            adPlacement: .reselectionReward,
+            adPlacement: .reselectionReward(screenID: screenID),
             rewardType: .reselect,
             rewardAmount: 0
         )

@@ -125,7 +125,7 @@ private extension SkillView {
 
         AnalyticsService.shared.logAdWatchClicked(
             adRewardFlowID: flowID,
-            adPlacement: .skillReward,
+            adPlacement: .skillReward(screenID: "skill"),
             rewardType: .skillBoost,
             rewardAmount: 0
         )
@@ -136,7 +136,7 @@ private extension SkillView {
         if result.success {
             AnalyticsService.shared.logAdWatchCompleted(
                 adRewardFlowID: flowID,
-                adPlacement: .skillReward,
+                adPlacement: .skillReward(screenID: "skill"),
                 rewardType: .skillBoost,
                 rewardAmount: 0,
                 adWatchDurationSec: result.watchDurationSec
@@ -147,7 +147,7 @@ private extension SkillView {
                     SkillAdRewardManager.grantReward(user: user)
                     AnalyticsService.shared.logAdRewardClaimed(
                         adRewardFlowID: flowID,
-                        adPlacement: .skillReward,
+                        adPlacement: .skillReward(screenID: "skill"),
                         rewardType: .skillBoost,
                         rewardAmount: 0
                     )
@@ -165,7 +165,7 @@ private extension SkillView {
         adRewardFlowID = flowID
         AnalyticsService.shared.logAdOfferViewed(
             adRewardFlowID: flowID,
-            adPlacement: .skillReward,
+            adPlacement: .skillReward(screenID: "skill"),
             rewardType: .skillBoost,
             rewardAmount: 0
         )
