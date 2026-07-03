@@ -90,7 +90,7 @@ final class ScenarioManager: Identifiable {
             return
         }
 
-        if let index = scenario.findResultPageIndex(for: choice) {
+        if let index = scenario.findResultPageIndex() {
             record.scenarioProgress.currentPageIndex = index
         }
     }

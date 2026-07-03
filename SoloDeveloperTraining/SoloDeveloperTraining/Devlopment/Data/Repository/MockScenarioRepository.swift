@@ -156,14 +156,7 @@ final class MockScenarioRepository: ScenarioRepository {
                 ),
                 ScenarioPage(
                     text: "드디어 나도 진짜 개발자구나",
-                    pageType: .result(.optionA)
-                ),
-                ScenarioPage(
-                    text: """
-                    (메일에 개발 의뢰 비용 100억)
-                    오... 이거 돈이 되는데?
-                    """,
-                    pageType: .result(.optionB)
+                    pageType: .result
                 )
             ]
         ),
@@ -226,16 +219,7 @@ final class MockScenarioRepository: ScenarioRepository {
                     (3시간 뒤, 동료 출근)
                     하 거지 같은 세미콜론...
                     """,
-                    pageType: .result(.optionA)
-                ),
-                ScenarioPage(
-                    text: """
-                    드디어 해결. 작성자님 감사합니다!
-                    (작성일 2008년)
-                    지금은 뭘하시는 분일려나...
-                    (치킨집 사장님 프로필)
-                    """,
-                    pageType: .result(.optionB)
+                    pageType: .result
                 )
             ]
         ),
@@ -289,11 +273,7 @@ final class MockScenarioRepository: ScenarioRepository {
                 ),
                 ScenarioPage(
                     text: "연봉은 올랐다. 퇴근은 사라졌다.",
-                    pageType: .result(.optionA)
-                ),
-                ScenarioPage(
-                    text: "구독자 12명. 하지만 '형님 덕분에 해결했습니다'라는 첫 댓글이 달렸다.",
-                    pageType: .result(.optionB)
+                    pageType: .result
                 )
             ]
         ),
