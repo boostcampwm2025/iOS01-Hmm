@@ -262,7 +262,7 @@ extension AnalyticsService {
 
         var parameters = baseAdEventParameters(
             adRewardFlowID: adRewardFlowID,
-            adPlacement: adPlacement,
+            adPlacement: adPlacement.screenID,
             includesAdInfo: includesAdInfo
         )
         if includesReward, let rewardType, let rewardAmount {
@@ -276,14 +276,14 @@ extension AnalyticsService {
 
     private func baseAdEventParameters(
         adRewardFlowID: String,
-        adPlacement: AdPlacementType,
+        adPlacement: String,
         includesAdInfo: Bool
     ) -> [String: Any] {
         var parameters: [String: Any] = [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.adRewardFlowID: adRewardFlowID,
-            AP.adPlacement: adPlacement.rawValue
+            AP.adPlacement: adPlacement
         ]
 
         if includesAdInfo {

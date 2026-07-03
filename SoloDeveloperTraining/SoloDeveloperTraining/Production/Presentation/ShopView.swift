@@ -194,7 +194,13 @@ private extension ShopView {
                     SoundService.shared.trigger(.click)
                     storePopup = nil
                     Task {
-                        await handleEnhanceAdWatch(item: item, equipment: equipment, scrollProxy: scrollProxy, typeKey: typeKey)
+                        await handleEnhanceAdWatch(
+                            item: item,
+                            equipment: equipment,
+                            scrollProxy: scrollProxy,
+                            typeKey: typeKey,
+                            adPlacement: .equipmentEnhance(screenID: hasBonus ? "probability02" : "probability01")
+                        )
                     }
                 },
                 confirmAction: {
@@ -217,7 +223,7 @@ private extension ShopView {
         enhanceAdRewardFlowID = flowID
         AnalyticsService.shared.logAdOfferViewed(
             adRewardFlowID: flowID,
-            adPlacement: .equipmentEnhance,
+            adPlacement: .equipmentEnhance(screenID: "probability01"),
             rewardType: .enhanceRateBoost,
             rewardAmount: 0
         )
@@ -228,7 +234,7 @@ private extension ShopView {
 
         AnalyticsService.shared.logAdOfferDismissed(
             adRewardFlowID: flowID,
-            adPlacement: .equipmentEnhance,
+            adPlacement: .equipmentEnhance(screenID: "probability01"),
             rewardType: .enhanceRateBoost,
             rewardAmount: 0,
             dismissReason: .close
@@ -236,12 +242,12 @@ private extension ShopView {
         enhanceAdRewardFlowID = nil
     }
 
-    func handleEnhanceAdWatch(item: DisplayItem, equipment: Equipment, scrollProxy: ScrollViewProxy?, typeKey: String) async {
+    func handleEnhanceAdWatch(item: DisplayItem, equipment: Equipment, scrollProxy: ScrollViewProxy?, typeKey: String, adPlacement: AdPlacementType) async {
         guard let flowID = enhanceAdRewardFlowID else { return }
 
         AnalyticsService.shared.logAdWatchClicked(
             adRewardFlowID: flowID,
-            adPlacement: .equipmentEnhance,
+            adPlacement: adPlacement,
             rewardType: .enhanceRateBoost,
             rewardAmount: 0
         )
@@ -252,7 +258,7 @@ private extension ShopView {
 
         AnalyticsService.shared.logAdWatchCompleted(
             adRewardFlowID: flowID,
-            adPlacement: .equipmentEnhance,
+            adPlacement: adPlacement,
             rewardType: .enhanceRateBoost,
             rewardAmount: 0,
             adWatchDurationSec: result.watchDurationSec
@@ -261,7 +267,7 @@ private extension ShopView {
         UserDefaults.standard.set(Array(adBonusAppliedTypes), forKey: Constant.UserDefaultsKey.equipmentAdBonus)
         AnalyticsService.shared.logAdRewardClaimed(
             adRewardFlowID: flowID,
-            adPlacement: .equipmentEnhance,
+            adPlacement: adPlacement,
             rewardType: .enhanceRateBoost,
             rewardAmount: 0
         )
