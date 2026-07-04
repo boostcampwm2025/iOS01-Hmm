@@ -200,7 +200,6 @@ private extension TapGameView {
             let rewardType: AdRewardType = type == .coffee ? .coffee : .energyDrink
             AnalyticsService.shared.logAdOfferViewed(
                 adRewardFlowID: flowID,
-                adPlacement: .consumable(screenID: "caffein"),
                 rewardType: rewardType,
                 rewardAmount: 1
             )
@@ -215,7 +214,6 @@ private extension TapGameView {
                             if let flowID = drinkAdRewardFlowID {
                                 AnalyticsService.shared.logAdOfferDismissed(
                                     adRewardFlowID: flowID,
-                                    adPlacement: .consumable(screenID: "caffein"),
                                     rewardType: rewardType,
                                     rewardAmount: 1,
                                     dismissReason: .close
@@ -232,6 +230,7 @@ private extension TapGameView {
                     title: type == .coffee ? "커피 없음" : "박하스 없음",
                     text: "대신에 광고를 보고\n카페인을 보충할까요?"
                 )
+                .analyticsScreen(.caffein)
             }
         }
     }
@@ -245,7 +244,6 @@ private extension TapGameView {
 
         AnalyticsService.shared.logAdWatchClicked(
             adRewardFlowID: flowID,
-            adPlacement: .consumable(screenID: "caffein"),
             rewardType: rewardType,
             rewardAmount: 1
         )
@@ -255,7 +253,6 @@ private extension TapGameView {
         if result.success {
             AnalyticsService.shared.logAdWatchCompleted(
                 adRewardFlowID: flowID,
-                adPlacement: .consumable(screenID: "caffein"),
                 rewardType: rewardType,
                 rewardAmount: 1,
                 adWatchDurationSec: result.watchDurationSec
@@ -264,7 +261,6 @@ private extension TapGameView {
             ToastManager.shared.show("카페인 충전 완료!")
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
-                adPlacement: .consumable(screenID: "caffein"),
                 rewardType: rewardType,
                 rewardAmount: 1
             )

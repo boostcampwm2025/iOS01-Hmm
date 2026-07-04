@@ -203,7 +203,7 @@ final class DefaultScenarioRepository: ScenarioRepository {
                     imageName: "juniorDeveloper4",
                     text: "오호라...! 본격적으로 개발자가 되는거야!",
                     pageType: .result
-                ),
+                )
             ]
         ),
         Scenario(
