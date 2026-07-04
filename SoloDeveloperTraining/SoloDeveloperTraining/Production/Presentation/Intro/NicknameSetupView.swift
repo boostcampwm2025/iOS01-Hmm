@@ -81,6 +81,7 @@ struct NicknameSetupView: View {
             .background(Color.black300)
             .frame(width: geo.size.width, height: geo.size.height)
         }
+        .analyticsScreen(.nickname)
         .ignoresSafeArea(.keyboard)
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillChangeFrameNotification)) { notification in
             if let frame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {

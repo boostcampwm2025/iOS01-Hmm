@@ -30,6 +30,7 @@ struct IntroView: View {
                 touchPromptView
             }
         }
+        .analyticsScreen(.splash)
         .onAppear {
             SoundService.shared.playBGM(.splash)
         }

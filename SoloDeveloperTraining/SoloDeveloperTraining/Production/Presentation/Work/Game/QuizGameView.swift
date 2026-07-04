@@ -19,6 +19,15 @@ struct QuizGameView: View {
         _quizGame = State(initialValue: QuizGame(user: user))
     }
 
+    var screenID: ScreenID {
+        switch quizGame.phase {
+        case .questionInProgress: return .quiz02
+        case .showingExplanation:
+            return quizGame.state.currentAnswerResult == .correct ? .quiz03 : .quiz04
+        default: return .quiz01
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             headerSection
@@ -28,6 +37,7 @@ struct QuizGameView: View {
             Spacer()
             optionsSection
         }
+        .analyticsScreen(screenID)
         .padding(.horizontal, TokenGrid.paddingSide)
         .background(Color.beige50)
         .onAppear {
@@ -40,6 +50,12 @@ struct QuizGameView: View {
                 SoundService.shared.trigger(.count)
             } else if newValue == 0 {
                 SoundService.shared.trigger(.over)
+            }
+        }
+        .onChange(of: quizGame.phase) { _, newValue in
+            let phase = quizGame.phase
+            if phase == .showingExplanation && quizGame.state.currentAnswerResult == .correct {
+
             }
         }
         .onDisappear { SoundService.shared.stopAllSFX() }
@@ -149,7 +165,6 @@ struct QuizGameView: View {
                         adRewardFlowID = flowID
                         AnalyticsService.shared.logAdOfferViewed(
                             adRewardFlowID: flowID,
-                            adPlacement: .quizReward(screenID: "quizReward"),
                             rewardType: .diamond,
                             rewardAmount: quizGame.state.totalDiamondsEarned
                         )
@@ -178,7 +193,6 @@ struct QuizGameView: View {
                     if let flowID = adRewardFlowID {
                         AnalyticsService.shared.logAdOfferDismissed(
                             adRewardFlowID: flowID,
-                            adPlacement: .quizReward(screenID: "quizReward"),
                             rewardType: .diamond,
                             rewardAmount: quizGame.state.totalDiamondsEarned,
                             dismissReason: .close
@@ -197,6 +211,7 @@ struct QuizGameView: View {
             text: "퀴즈 풀이를 완료했습니다!\n진정한 개발자에 한 걸음 더 가까워졌습니다.",
             diamond: quizGame.state.totalDiamondsEarned
         )
+        .analyticsScreen(.quizReward)
     }
 
     private var rewardPopupOverlay: some View {
@@ -213,6 +228,7 @@ struct QuizGameView: View {
             text: "다이아를 두 배로 받았습니다!",
             diamond: finalDiamondsEarned
         )
+        .analyticsScreen(.quizRewardResult)
     }
 }
 
@@ -225,7 +241,6 @@ private extension QuizGameView {
 
         AnalyticsService.shared.logAdWatchClicked(
             adRewardFlowID: flowID,
-            adPlacement: .quizReward(screenID: "quizReward"),
             rewardType: .diamond,
             rewardAmount: baseDiamonds
         )
@@ -239,7 +254,6 @@ private extension QuizGameView {
 
             AnalyticsService.shared.logAdWatchCompleted(
                 adRewardFlowID: flowID,
-                adPlacement: .quizReward(screenID: "quizRewardResult"),
                 rewardType: .diamond,
                 rewardAmount: earnedByAd,
                 adWatchDurationSec: result.watchDurationSec
@@ -248,7 +262,6 @@ private extension QuizGameView {
             PopupManager.shared.show { rewardPopupOverlay }
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
-                adPlacement: .quizReward(screenID: "quizRewardResult"),
                 rewardType: .diamond,
                 rewardAmount: earnedByAd
             )

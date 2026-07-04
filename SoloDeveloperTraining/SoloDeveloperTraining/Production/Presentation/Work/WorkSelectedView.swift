@@ -64,6 +64,7 @@ struct WorkSelectedView: View {
                 selectionView
             }
         }
+        .analyticsScreen(.working)
         .onAppear {
             (workItems, requiredCareers) = makeWorkItems(career: careerSystem?.currentCareer)
             loadLastSelectedIndex()

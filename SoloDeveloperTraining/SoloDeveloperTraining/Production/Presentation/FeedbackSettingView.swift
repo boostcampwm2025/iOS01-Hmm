@@ -50,6 +50,7 @@ struct FeedbackSettingView: View {
                 onClose?()
             }
         }
+        .analyticsScreen(.settings)
         .padding(TokenSpacing.lg)
         .background(Color.white300)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.lg))

@@ -449,6 +449,7 @@ private extension MainView {
                 title: "보너스",
                 text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다"
             )
+            .analyticsScreen(.bonus)
         }
     }
 
@@ -459,7 +460,6 @@ private extension MainView {
         exitBonusAdRewardFlowID = flowID
         AnalyticsService.shared.logAdOfferViewed(
             adRewardFlowID: flowID,
-            adPlacement: .workExit(screenID: "bonus"),
             rewardType: .gold,
             rewardAmount: max(0, workGameSession.actionGoldDelta)
         )
@@ -476,7 +476,6 @@ private extension MainView {
 
         AnalyticsService.shared.logAdWatchClicked(
             adRewardFlowID: flowID,
-            adPlacement: .workExit(screenID: "bonus"),
             rewardType: .gold,
             rewardAmount: bonusGold
         )
@@ -487,7 +486,6 @@ private extension MainView {
         if result.success {
             AnalyticsService.shared.logAdWatchCompleted(
                 adRewardFlowID: flowID,
-                adPlacement: .workExit(screenID: "bonus"),
                 rewardType: .gold,
                 rewardAmount: bonusGold,
                 adWatchDurationSec: result.watchDurationSec
@@ -495,7 +493,6 @@ private extension MainView {
             applyExitBonus()
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
-                adPlacement: .workExit(screenID: "bonus"),
                 rewardType: .gold,
                 rewardAmount: bonusGold
             )
@@ -509,7 +506,6 @@ private extension MainView {
         if let flowID = exitBonusAdRewardFlowID {
             AnalyticsService.shared.logAdOfferDismissed(
                 adRewardFlowID: flowID,
-                adPlacement: .workExit(screenID: "bonus"),
                 rewardType: .gold,
                 rewardAmount: max(0, workGameSession.actionGoldDelta),
                 dismissReason: .close
@@ -572,6 +568,7 @@ private extension MainView {
                 title: "보상 획득",
                 text: "잠자는 시간 동안 '\(user.nickname)'가 일을 했습니다.\n일한 보상을 받을까요?"
             )
+            .analyticsScreen(.restart)
         }
     }
 
@@ -600,7 +597,6 @@ private extension MainView {
         offlineRewardAdFlowID = flowID
         AnalyticsService.shared.logAdOfferViewed(
             adRewardFlowID: flowID,
-            adPlacement: .offlineReward(screenID: "restart"),
             rewardType: .gold,
             rewardAmount: offlineRewardGold
         )
@@ -613,7 +609,6 @@ private extension MainView {
 
         AnalyticsService.shared.logAdWatchClicked(
             adRewardFlowID: flowID,
-            adPlacement: .offlineReward(screenID: "restart"),
             rewardType: .gold,
             rewardAmount: rewardGold
         )
@@ -624,7 +619,6 @@ private extension MainView {
         if result.success {
             AnalyticsService.shared.logAdWatchCompleted(
                 adRewardFlowID: flowID,
-                adPlacement: .offlineReward(screenID: "restart"),
                 rewardType: .gold,
                 rewardAmount: rewardGold,
                 adWatchDurationSec: result.watchDurationSec
@@ -633,7 +627,6 @@ private extension MainView {
             ToastManager.shared.show("잠자는 시간에 일한 보상 획득!")
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
-                adPlacement: .offlineReward(screenID: "restart"),
                 rewardType: .gold,
                 rewardAmount: rewardGold
             )
@@ -647,7 +640,6 @@ private extension MainView {
         if let flowID = offlineRewardAdFlowID {
             AnalyticsService.shared.logAdOfferDismissed(
                 adRewardFlowID: flowID,
-                adPlacement: .offlineReward(screenID: "restart"),
                 rewardType: .gold,
                 rewardAmount: offlineRewardGold,
                 dismissReason: .close

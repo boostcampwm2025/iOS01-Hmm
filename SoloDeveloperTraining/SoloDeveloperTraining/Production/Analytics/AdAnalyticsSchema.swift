@@ -13,29 +13,6 @@ enum AdAnalyticsEvent: String {
     case offerDismissed = "ad_offer_dismissed"
 }
 
-enum AdPlacementType {
-    case consumable(screenID: String)
-    case workExit(screenID: String)
-    case equipmentEnhance(screenID: String)
-    case reselectionReward(screenID: String)
-    case skillReward(screenID: String)
-    case quizReward(screenID: String)
-    case offlineReward(screenID: String)
-
-    var screenID: String {
-        switch self {
-        case .consumable(let id),
-             .workExit(let id),
-             .equipmentEnhance(let id),
-             .reselectionReward(let id),
-             .skillReward(let id),
-             .quizReward(let id),
-             .offlineReward(let id):
-            return id
-        }
-    }
-}
-
 enum AdRewardType: String {
     case gold
     case diamond
