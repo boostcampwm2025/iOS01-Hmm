@@ -161,14 +161,11 @@ private extension SoloDeveloperTrainingApp {
             } else if newPhase == .background || newPhase == .inactive {
                 SessionManager.shared.handleBackground()
                 saveUser()
-            }
 
-            if newPhase == .background {
-                let level = user?.career.level ?? 0
-                AnalyticsService.shared.logAppDeparture(level: level)
-                SessionManager.shared.handleBackground()
-            } else if newPhase == .active {
-                SessionManager.shared.handleForeground()
+                if newPhase == .background {
+                    let level = user?.career.level ?? 0
+                    AnalyticsService.shared.logAppDeparture(level: level)
+                }
             }
         }
     }
