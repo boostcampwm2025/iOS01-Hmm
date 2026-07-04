@@ -19,7 +19,6 @@ final class AnalyticsService {
     /// 공유하기 중복 로깅 방지
     private var loggedShareCompletions: Set<String> = []
     private var loggedAppOpenedFromDeeplinkSessions: Set<String> = []
-    private var loggedSessionEndedSessions: Set<String> = []
 
     /// app_opened session_id 기준 중복 방지
     private var loggedAppOpenedSessions: Set<String> = []
@@ -75,9 +74,9 @@ final class AnalyticsService {
         ])
     }
 
-    /// 사용자가 앱 사용을 종료하거나 세션 만료
-    func logSessionEnded(level: Int) {
-        Analytics.logEvent("session_ended", parameters: [
+    /// 사용자가 앱을 백그라운드로 전환(이탈)
+    func logAppDeparture(level: Int) {
+        Analytics.logEvent("app_departure", parameters: [
             AP.deviceID: AP.deviceIDValue,
             AP.sessionID: SessionManager.shared.sessionID,
             AP.sessionDurationSec: SessionManager.shared.sessionDurationSec,
