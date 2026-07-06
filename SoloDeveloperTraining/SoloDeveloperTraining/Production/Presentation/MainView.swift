@@ -320,10 +320,6 @@ private extension MainView {
                 }
             }
         }
-        // 저장된 시나리오 복구 체크
-        restoreScenarioIfNeeded()
-        // 대기 중인 레벨업 이펙트 복구 체크
-        checkPendingLevelUp()
     }
 
     @MainActor
@@ -587,6 +583,10 @@ private extension MainView {
             showOfflineRewardPopup()
         case .notEligible(_):
             hasCheckedOfflineReward = false
+            checkPendingLevelUp()
+            if !showLevelUpEffect {
+                restoreScenarioIfNeeded()
+            }
         }
     }
 
@@ -633,6 +633,10 @@ private extension MainView {
         }
         offlineRewardGold = 0
         offlineRewardHours = 0.0
+        checkPendingLevelUp()
+        if !showLevelUpEffect {
+            restoreScenarioIfNeeded()
+        }
     }
 
     func handleOfflineRewardSkip() {
@@ -651,6 +655,10 @@ private extension MainView {
         offlineRewardHours = 0.0
         // 다음 체크를 위해 플래그 리셋
         hasCheckedOfflineReward = false
+        checkPendingLevelUp()
+        if !showLevelUpEffect {
+            restoreScenarioIfNeeded()
+        }
     }
 }
 
