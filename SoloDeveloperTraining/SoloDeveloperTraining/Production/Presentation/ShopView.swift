@@ -307,7 +307,11 @@ private extension ShopView {
                 let message = isSuccess ? Constant.Text.enhanceSuccessMessage : Constant.Text.enhanceFailureMessage
                 PopupManager.shared.show {
                     NoticePopup(
-                        type: .default(buttonText: "확인", action: { PopupManager.shared.dismiss() }),
+                        type: .default(buttonText: "확인",
+                                       action: {
+                                           SoundService.shared.trigger(.click)
+                                           PopupManager.shared.dismiss()
+                                       }),
                         title: title,
                         text: message
                     )
@@ -317,7 +321,11 @@ private extension ShopView {
             HapticService.shared.trigger(.error)
             PopupManager.shared.show {
                 NoticePopup(
-                    type: .default(buttonText: "확인", action: { PopupManager.shared.dismiss() }),
+                    type: .default(buttonText: "확인",
+                                   action: {
+                                       SoundService.shared.trigger(.click)
+                                       PopupManager.shared.dismiss()
+                                   }),
                     title: Constant.Text.purchaseFailureTitle,
                     text: error.message
                 )
@@ -326,7 +334,11 @@ private extension ShopView {
             HapticService.shared.trigger(.error)
             PopupManager.shared.show {
                 NoticePopup(
-                    type: .default(buttonText: "확인", action: { PopupManager.shared.dismiss() }),
+                    type: .default(buttonText: "확인",
+                                   action: {
+                                       SoundService.shared.trigger(.click)
+                                       PopupManager.shared.dismiss()
+                                   }),
                     title: Constant.Text.purchaseFailureTitle,
                     text: Constant.Text.purchaseFailureMessage
                 )
