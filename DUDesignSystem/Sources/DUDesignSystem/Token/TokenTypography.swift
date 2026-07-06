@@ -33,7 +33,7 @@ private enum FontRegistrar {
 
 private func makeToken(_ name: String, size: CGFloat, lineHeight: CGFloat, underlined: Bool = false) -> DUTypographyToken {
     _ = FontRegistrar.register
-    return DUTypographyToken(.custom(name, size: size), underlined: underlined, lineHeight: lineHeight)
+    return DUTypographyToken(.custom(name, size: size), underlined: underlined, fontSize: size, lineHeight: lineHeight)
 }
 
 // MARK: - 타이포그래피 토큰
@@ -43,11 +43,13 @@ private func makeToken(_ name: String, size: CGFloat, lineHeight: CGFloat, under
 public struct DUTypographyToken: Sendable, Hashable {
     public let font: Font
     public let isUnderlined: Bool
+    public let fontSize: CGFloat
     public let lineHeight: CGFloat
 
-    init(_ font: Font, underlined: Bool = false, lineHeight: CGFloat) {
+    init(_ font: Font, underlined: Bool = false, fontSize: CGFloat, lineHeight: CGFloat) {
         self.font = font
         self.isUnderlined = underlined
+        self.fontSize = fontSize
         self.lineHeight = lineHeight
     }
 
@@ -68,15 +70,18 @@ private struct DUFontModifier: ViewModifier {
     let token: DUTypographyToken
 
     func body(content: Content) -> some View {
+        let spacing = (token.lineHeight - token.fontSize) / 2
         if token.isUnderlined {
             content
                 .font(token.font)
+                .lineSpacing(spacing * 2)
                 .underline()
-                .frame(minHeight: token.lineHeight)
+                .padding(.vertical, spacing)
         } else {
             content
                 .font(token.font)
-                .frame(minHeight: token.lineHeight)
+                .lineSpacing(spacing * 2)
+                .padding(.vertical, spacing)
         }
     }
 }
