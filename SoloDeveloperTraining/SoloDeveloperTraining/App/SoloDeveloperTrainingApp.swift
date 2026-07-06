@@ -114,10 +114,11 @@ private extension SoloDeveloperTrainingApp {
             if type == .force {
                 PopupManager.shared.show {
                     NoticePopup(
-                        type: .default(
-                            buttonText: "업데이트",
-                            action: { AppUpdateChecker.openAppStore() }
-                        ),
+                        type: .default(buttonText: "업데이트",
+                                       action: {
+                                           SoundService.shared.trigger(.click)
+                                           AppUpdateChecker.openAppStore()
+                                       }),
                         title: "업데이트 안내",
                         text: "원활한 앱 사용을 위해서 업데이트가 필요합니다.\n지금 바로 업데이트를 진행해주세요."
                     )
@@ -130,10 +131,14 @@ private extension SoloDeveloperTrainingApp {
                             cancelText: "다음에",
                             confirmText: "업데이트",
                             cancelAction: {
+                                SoundService.shared.trigger(.click)
                                 AppUpdateChecker.snoozeOptionalUpdate()
                                 PopupManager.shared.dismiss()
                             },
-                            confirmAction: { AppUpdateChecker.openAppStore() }
+                            confirmAction: {
+                                SoundService.shared.trigger(.click)
+                                AppUpdateChecker.openAppStore()
+                            }
                         ),
                         title: "업데이트 안내",
                         text: "원활한 앱 사용을 위해서 업데이트가 필요합니다.\n지금 바로 업데이트를 진행해주세요."
@@ -213,7 +218,11 @@ private extension SoloDeveloperTrainingApp {
                 await MainActor.run {
                     PopupManager.shared.show {
                         NoticePopup(
-                            type: .default(buttonText: "확인", action: { PopupManager.shared.dismiss() }),
+                            type: .default(buttonText: "확인",
+                                           action: {
+                                               SoundService.shared.trigger(.click)
+                                               PopupManager.shared.dismiss()
+                                           }),
                             title: "오류",
                             text: "사용자 데이터를 불러오는데 실패했습니다.\n\(error.localizedDescription)"
                         )
@@ -235,7 +244,11 @@ private extension SoloDeveloperTrainingApp {
                 await MainActor.run {
                     PopupManager.shared.show {
                         NoticePopup(
-                            type: .default(buttonText: "확인", action: { PopupManager.shared.dismiss() }),
+                            type: .default(buttonText: "확인",
+                                           action: {
+                                               SoundService.shared.trigger(.click)
+                                               PopupManager.shared.dismiss()
+                                           }),
                             title: "오류",
                             text: "사용자 데이터를 저장하는데 실패했습니다.\n\(error.localizedDescription)"
                         )
