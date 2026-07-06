@@ -92,7 +92,11 @@ private extension SkillView {
         } catch let error as UserReadableError {
             PopupManager.shared.show {
                 NoticePopup(
-                    type: .default(buttonText: "확인", action: { PopupManager.shared.dismiss() }),
+                    type: .default(buttonText: "확인",
+                                   action: {
+                                       SoundService.shared.trigger(.click)
+                                       PopupManager.shared.dismiss()
+                                   }),
                     title: "스킬",
                     text: error.message
                 )
@@ -100,7 +104,11 @@ private extension SkillView {
         } catch {
             PopupManager.shared.show {
                 NoticePopup(
-                    type: .default(buttonText: "확인", action: { PopupManager.shared.dismiss() }),
+                    type: .default(buttonText: "확인",
+                                   action: {
+                                       SoundService.shared.trigger(.click)
+                                       PopupManager.shared.dismiss()
+                                   }),
                     title: "스킬",
                     text: error.localizedDescription
                 )
@@ -143,6 +151,7 @@ private extension SkillView {
             PopupManager.shared.show {
                 NoticePopup(
                     type: .default(buttonText: "확인", action: {
+                        SoundService.shared.trigger(.click)
                         PopupManager.shared.dismiss()
                         SkillAdRewardManager.grantReward(user: user)
                         AnalyticsService.shared.logAdRewardClaimed(
