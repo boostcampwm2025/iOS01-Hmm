@@ -401,7 +401,7 @@ struct MissionTestView: View {
                 Spacer()
 
                 VStack {
-                    Text("박하스")
+                    Text("바카스")
                         .font(.caption)
                     Text("\(record.energyDrinkUseCount)")
                         .font(.title3)
@@ -439,7 +439,7 @@ struct MissionTestView: View {
                 Button {
                     performEnergyDrinkUse()
                 } label: {
-                    Label("박하스 +1", systemImage: "bolt.circle.fill")
+                    Label("바카스 +1", systemImage: "bolt.circle.fill")
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color.mint)
@@ -450,7 +450,7 @@ struct MissionTestView: View {
                 Button {
                     performEnergyDrinkUse(count: 10)
                 } label: {
-                    Label("박하스 +10", systemImage: "bolt.fill")
+                    Label("바카스 +10", systemImage: "bolt.fill")
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color.mint.opacity(0.7))

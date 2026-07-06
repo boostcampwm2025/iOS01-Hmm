@@ -213,7 +213,7 @@ enum Policy {
             static var priceDiamond: Int { policyStore.current.consumable.coffee.priceDiamond }
         }
 
-        /// 박하스 (1초당 6씩 증가)
+        /// 바카스 (1초당 6씩 증가)
         enum EnergyDrink {
             static var duration: Int { policyStore.current.consumable.energyDrink.duration }
             static var buffMultiplier: Double { policyStore.current.consumable.energyDrink.buffMultiplier }

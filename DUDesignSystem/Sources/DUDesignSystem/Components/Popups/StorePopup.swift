@@ -104,7 +104,7 @@ public struct StorePopup: View {
                 confirmAction: {}
             ),
             title: "아이템구매",
-            itemName: "박하스",
+            itemName: "바카스",
             price: "[₩2,000,000]"
         )
         StorePopup(

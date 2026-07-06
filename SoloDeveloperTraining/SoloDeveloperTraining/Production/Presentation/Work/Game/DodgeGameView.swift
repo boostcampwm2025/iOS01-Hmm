@@ -304,7 +304,7 @@ private extension DodgeGameView {
                             Task { await handleDrinkAd(type: type) }
                         }
                     ),
-                    title: type == .coffee ? "커피 없음" : "박하스 없음",
+                    title: type == .coffee ? "커피 없음" : "바카스 없음",
                     text: "대신에 광고를 보고\n카페인을 보충할까요?"
                 )
                 .analyticsScreen(.caffein)

@@ -66,7 +66,7 @@ enum ConsumableType {
         case .coffee:
             return "커피"
         case .energyDrink:
-            return "박하스"
+            return "바카스"
         }
     }
 
