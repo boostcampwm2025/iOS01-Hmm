@@ -87,14 +87,14 @@ enum MissionConstants {
         static let reward3 = Cost(gold: 50_000, diamond: 18)
     }
 
-    // MARK: - 박하스
+    // MARK: - 바카스
     enum EnergyDrink {
         static let id1 = 19, id2 = 20, id3 = 21
         static let target1 = 10, target2 = 100, target3 = 1_000
-        static let title1 = "박하스 중독자", title2 = "박하스 전문가", title3 = "박하스 학살자"
-        static let description1 = "박하스 10회 사용"
-        static let description2 = "박하스 100회 사용"
-        static let description3 = "박하스 1,000회 사용"
+        static let title1 = "바카스 중독자", title2 = "바카스 전문가", title3 = "바카스 학살자"
+        static let description1 = "바카스 10회 사용"
+        static let description2 = "바카스 100회 사용"
+        static let description3 = "바카스 1,000회 사용"
         static let reward1 = Cost(diamond: 7)
         static let reward2 = Cost(gold: 225_000)
         static let reward3 = Cost(gold: 2_250_000, diamond: 35)

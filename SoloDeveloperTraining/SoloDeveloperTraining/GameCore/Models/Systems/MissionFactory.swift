@@ -264,7 +264,7 @@ struct MissionFactory {
                 type: .coffee(.gold)
             ),
 
-            // MARK: - 박하스
+            // MARK: - 바카스
             MissionConfig(
                 id: MissionConstants.EnergyDrink.id1,
                 title: MissionConstants.EnergyDrink.title1,
