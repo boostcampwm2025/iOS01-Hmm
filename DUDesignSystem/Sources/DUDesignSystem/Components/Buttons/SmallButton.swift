@@ -33,15 +33,15 @@ public struct SmallButton: View {
                     .background(Color.lightOrange)
                     .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
                     .tokenShadow(isPressed ? .none : .default)
-                    .offset(
-                        x: isPressed ? TokenShadow.default.x : 0,
-                        y: isPressed ? TokenShadow.default.y : 0
-                    )
                     .overlay(alignment: .topTrailing) {
                         DUIcon(.diamondPlus, size: .size24)
                             .offset(x: 8, y: -12)
                             .allowsHitTesting(false)
                     }
+                    .offset(
+                        x: isPressed ? TokenShadow.default.x : 0,
+                        y: isPressed ? TokenShadow.default.y : 0
+                    )
             )
         case .setting:
             AnyView(
