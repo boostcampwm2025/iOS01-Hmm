@@ -32,6 +32,11 @@ public struct SmallButton: View {
                     .frame(width: 44, height: 44)
                     .background(Color.lightOrange)
                     .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
+                    .tokenShadow(isPressed ? .none : .default)
+                    .offset(
+                        x: isPressed ? TokenShadow.default.x : 0,
+                        y: isPressed ? TokenShadow.default.y : 0
+                    )
                     .overlay(alignment: .topTrailing) {
                         DUIcon(.diamondPlus, size: .size24)
                             .offset(x: 8, y: -12)
@@ -48,11 +53,6 @@ public struct SmallButton: View {
         }
 
         return button
-            .tokenShadow(isPressed ? .none : .default)
-            .offset(
-                x: isPressed ? TokenShadow.default.x : 0,
-                y: isPressed ? TokenShadow.default.y : 0
-            )
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .updating($isPressed) { _, state, _ in state = true }
