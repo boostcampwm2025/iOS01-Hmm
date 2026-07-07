@@ -12,6 +12,7 @@ public struct HousingCard: View {
     public enum HousingCardState {
         case `default`
         case selected
+        case disabled
         case equipped
         case locked
     }
@@ -44,7 +45,7 @@ public struct HousingCard: View {
 
     private var buttonType: TextButton.TextButtonType {
         switch state {
-        case .default, .selected: return .primary
+        case .default, .selected, .disabled: return .primary
         case .equipped, .locked: return .secondary
         }
     }
@@ -52,7 +53,7 @@ public struct HousingCard: View {
     private var buttonState: TextButton.TextButtonState {
         switch state {
         case .default, .selected: return .default
-        case .equipped: return .locked
+        case .disabled, .equipped: return .disabled
         case .locked: return .locked
         }
     }
@@ -75,7 +76,7 @@ public struct HousingCard: View {
             Image(imageName, bundle: .module)
                 .resizable()
                 .scaledToFill()
-                .frame(width: 230)
+                .frame(maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                 .clipped()
                 .opacity(state == .locked ? TokenOpacity.opacity60 : TokenOpacity.opacity100)
 
@@ -84,6 +85,7 @@ public struct HousingCard: View {
         }
         .padding(.vertical, TokenSpacing.md)
         .frame(width: 230)
+        .frame(maxHeight: .infinity)
         .background(state == .selected ? Color.beige50 : Color.beige100)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
         .overlay(
@@ -99,10 +101,8 @@ public struct HousingCard: View {
 
     private var buttonText: String {
         switch state {
-        case .default: return "이사하기"
-        case .selected: return "이사하기"
+        case .default, .selected, .disabled, .locked: return "이사하기"
         case .equipped: return "장착중"
-        case .locked: return "이사하기"
         }
     }
 }
