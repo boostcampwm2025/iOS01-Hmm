@@ -75,7 +75,7 @@ public struct HousingCard: View {
             Image(imageName, bundle: .module)
                 .resizable()
                 .scaledToFill()
-                .frame(width: 230)
+                .frame(maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                 .clipped()
                 .opacity(state == .locked ? TokenOpacity.opacity60 : TokenOpacity.opacity100)
 
@@ -84,6 +84,7 @@ public struct HousingCard: View {
         }
         .padding(.vertical, TokenSpacing.md)
         .frame(width: 230)
+        .frame(maxHeight: .infinity)
         .background(state == .selected ? Color.beige50 : Color.beige100)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
         .overlay(
