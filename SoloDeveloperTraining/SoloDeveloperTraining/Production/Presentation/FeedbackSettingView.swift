@@ -119,11 +119,12 @@ private extension FeedbackSettingView {
                 ItemLabel(text: "라이선스", font: .caption, color: .black300)
                 VStack(alignment: .leading, spacing: TokenSpacing.none) {
                     ItemLabel(
-                        text: "개발자키우기 앱에는 오픈소스가 사용되었습니다.",
+                        text: "개발자 키우기 앱에는 오픈소스가 사용되었습니다.",
                         font: .label,
                         color: .black300,
                         textAlignment: .leading
                     )
+                    .opacity(TokenOpacity.opacity60)
                 }
             }
         }
