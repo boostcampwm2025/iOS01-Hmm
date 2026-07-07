@@ -236,7 +236,6 @@ struct QuizGameView: View {
 // MARK: - Helper
 private extension QuizGameView {
     func handleWatchAd() async {
-        PopupManager.shared.dismiss()
         guard let flowID = adRewardFlowID else { return }
         let baseDiamonds = quizGame.state.totalDiamondsEarned
 
@@ -247,6 +246,10 @@ private extension QuizGameView {
         )
 
         let result = await AdService.shared.showAdWithResult(.interstitial)
+        if result.isOffline {
+            PopupManager.shared.showNoNetworkAlert()
+            return
+        }
         adRewardFlowID = nil
 
         if result.success {
@@ -260,7 +263,7 @@ private extension QuizGameView {
                 adWatchDurationSec: result.watchDurationSec
             )
             quizGame.completeGame(multiplier: 2.0)
-            PopupManager.shared.show { rewardPopupOverlay }
+            PopupManager.shared.replace { rewardPopupOverlay }
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
                 rewardType: .diamond,
@@ -268,6 +271,7 @@ private extension QuizGameView {
             )
         } else {
             quizGame.completeGame(multiplier: 1.0)
+            PopupManager.shared.dismiss()
             dismiss()
         }
     }
