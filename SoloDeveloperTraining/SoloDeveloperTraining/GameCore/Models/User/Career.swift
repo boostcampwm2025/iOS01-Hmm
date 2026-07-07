@@ -22,7 +22,7 @@ enum Career: String, CaseIterable, Codable {
     var description: String {
         switch self {
         case .unemployed:
-            return "아직 아무것도 시작하지 않았지만, 시간은 가장 많다"
+            return "빈털털이지만 시간 빌게이츠"
         case .laptopOwner:
             return "별다방 입장권 획득"
         case .aspiringDeveloper:
