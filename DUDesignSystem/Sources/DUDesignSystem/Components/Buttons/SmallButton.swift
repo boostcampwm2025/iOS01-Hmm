@@ -28,15 +28,17 @@ public struct SmallButton: View {
         let button: AnyView = switch type {
         case .quiz:
             AnyView(
-                ItemLabel(text: "퀴즈", font: .subheadline, color: .white300)
-                    .frame(width: 44, height: 44)
-                    .background(Color.lightOrange)
-                    .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
-                    .overlay(alignment: .topTrailing) {
-                        DUIcon(.diamondPlus, size: .size24)
-                            .offset(x: 8, y: -12)
-                            .allowsHitTesting(false)
-                    }
+                ZStack(alignment: .topTrailing) {
+                    ItemLabel(text: "퀴즈", font: .subheadline, color: .white300)
+                        .frame(width: 44, height: 44)
+                        .background(Color.lightOrange)
+                        .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
+                        .tokenShadow(isPressed ? .none : .default)
+
+                    DUIcon(.diamondPlus, size: .size24)
+                        .offset(x: 8, y: -12)
+                        .allowsHitTesting(false)
+                }
             )
         case .setting:
             AnyView(
@@ -44,11 +46,11 @@ public struct SmallButton: View {
                     .resizable()
                     .frame(width: 44, height: 44)
                     .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
+                    .tokenShadow(isPressed ? .none : .default)
             )
         }
 
         return button
-            .tokenShadow(isPressed ? .none : .default)
             .offset(
                 x: isPressed ? TokenShadow.default.x : 0,
                 y: isPressed ? TokenShadow.default.y : 0
