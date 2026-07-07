@@ -117,8 +117,8 @@ public final class PopupManager {
         alertWindow = window
 
         let alert = UIAlertController(
-            title: "네트워크 연결 없음",
-            message: "광고를 시청하려면 인터넷 연결이 필요합니다.",
+            title: "네트워크 오류",
+            message: "광고 시청 시 네트워크 연결이 필요합니다.",
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "확인", style: .cancel) { [weak self] _ in
