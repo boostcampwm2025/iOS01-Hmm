@@ -111,7 +111,7 @@ private extension StackGameView {
                 SpriteView(scene: scene)
 
                 ForEach(effectLabels) { effect in
-                    EffectLabel(type: effect.value >= 0 ? .plus : .minus, text: "\(abs(effect.value))") {
+                    EffectLabel(type: effect.value >= 0 ? .plus : .minus, text: abs(effect.value).formatted) {
                         removeEffectLabel(id: effect.id)
                     }
                     .position(effect.position)
