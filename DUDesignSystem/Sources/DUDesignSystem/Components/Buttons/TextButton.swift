@@ -82,7 +82,7 @@ public struct TextButton: View {
                 .overlay(
                     Group {
                         if state == .locked {
-                            DUIcon(.lock, size: .size16)
+                            DUIcon(.lock, size: .size20)
                         }
                     }
                 )

@@ -28,17 +28,20 @@ public struct SmallButton: View {
         let button: AnyView = switch type {
         case .quiz:
             AnyView(
-                ZStack(alignment: .topTrailing) {
-                    ItemLabel(text: "퀴즈", font: .subheadline, color: .white300)
-                        .frame(width: 44, height: 44)
-                        .background(Color.lightOrange)
-                        .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
-                        .tokenShadow(isPressed ? .none : .default)
-
-                    DUIcon(.diamondPlus, size: .size24)
-                        .offset(x: 8, y: -12)
-                        .allowsHitTesting(false)
-                }
+                ItemLabel(text: "퀴즈", font: .subheadline, color: .white300)
+                    .frame(width: 44, height: 44)
+                    .background(Color.lightOrange)
+                    .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
+                    .tokenShadow(isPressed ? .none : .default)
+                    .overlay(alignment: .topTrailing) {
+                        DUIcon(.diamondPlus, size: .size24)
+                            .offset(x: 8, y: -12)
+                            .allowsHitTesting(false)
+                    }
+                    .offset(
+                        x: isPressed ? TokenShadow.default.x : 0,
+                        y: isPressed ? TokenShadow.default.y : 0
+                    )
             )
         case .setting:
             AnyView(
@@ -47,14 +50,14 @@ public struct SmallButton: View {
                     .frame(width: 44, height: 44)
                     .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
                     .tokenShadow(isPressed ? .none : .default)
+                    .offset(
+                        x: isPressed ? TokenShadow.default.x : 0,
+                        y: isPressed ? TokenShadow.default.y : 0
+                    )
             )
         }
 
         return button
-            .offset(
-                x: isPressed ? TokenShadow.default.x : 0,
-                y: isPressed ? TokenShadow.default.y : 0
-            )
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .updating($isPressed) { _, state, _ in state = true }
