@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct RunningCharacter: View {
 
-    public static let size: CGFloat = 64
+    public static let size: CGFloat = 48
 
     private enum Constant {
         static let animationSpeed: TimeInterval = 0.15
