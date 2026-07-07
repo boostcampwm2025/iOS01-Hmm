@@ -53,14 +53,14 @@ public struct TabbarItem: View {
         .padding(.vertical, TokenSpacing.xs)
         .background(backgroundColor)
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.xs))
+        .tokenShadow(.default)
         .overlay(alignment: .topTrailing) {
             if isNew {
-                DUIcon(.new, size: .size24)
-                    .offset(x: 8, y: -12)
+                DUIcon(.new, size: .size20)
+                    .offset(x: 0, y: -10)
                     .allowsHitTesting(false)
             }
         }
-        .tokenShadow(.default)
         .onTapGesture { action() }
     }
 }

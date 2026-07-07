@@ -32,11 +32,16 @@ public struct SmallButton: View {
                     .frame(width: 44, height: 44)
                     .background(Color.lightOrange)
                     .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
+                    .tokenShadow(isPressed ? .none : .default)
                     .overlay(alignment: .topTrailing) {
                         DUIcon(.diamondPlus, size: .size24)
                             .offset(x: 8, y: -12)
                             .allowsHitTesting(false)
                     }
+                    .offset(
+                        x: isPressed ? TokenShadow.default.x : 0,
+                        y: isPressed ? TokenShadow.default.y : 0
+                    )
             )
         case .setting:
             AnyView(
@@ -44,15 +49,15 @@ public struct SmallButton: View {
                     .resizable()
                     .frame(width: 44, height: 44)
                     .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
+                    .tokenShadow(isPressed ? .none : .default)
+                    .offset(
+                        x: isPressed ? TokenShadow.default.x : 0,
+                        y: isPressed ? TokenShadow.default.y : 0
+                    )
             )
         }
 
         return button
-            .tokenShadow(isPressed ? .none : .default)
-            .offset(
-                x: isPressed ? TokenShadow.default.x : 0,
-                y: isPressed ? TokenShadow.default.y : 0
-            )
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .updating($isPressed) { _, state, _ in state = true }
