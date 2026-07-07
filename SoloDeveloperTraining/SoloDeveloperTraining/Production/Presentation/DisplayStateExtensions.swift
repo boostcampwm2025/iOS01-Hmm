@@ -17,9 +17,10 @@ extension ItemState {
 
     func housingCardState(isSelected: Bool) -> HousingCard.HousingCardState {
         switch self {
-        case .available, .insufficient: return isSelected ? .selected : .default
-        case .locked:                   return .locked
-        case .reachedMax:               return .equipped
+        case .available:    return isSelected ? .selected : .default
+        case .insufficient: return .disabled
+        case .locked:       return .locked
+        case .reachedMax:   return .equipped
         }
     }
 }
