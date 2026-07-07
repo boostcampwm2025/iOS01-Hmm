@@ -6,6 +6,7 @@
 //
 
 import AppTrackingTransparency
+import Network
 
 enum AdType: String {
     case interstitial
@@ -14,6 +15,7 @@ enum AdType: String {
 struct AdShowResult {
     let success: Bool
     let watchDurationSec: Int
+    let isOffline: Bool
 }
 
 @MainActor
@@ -38,15 +40,29 @@ final class AdService {
 
     // 광고 표시 후 결과 반환 (success: 정상 시청 완료 여부, watchDurationSec: 순수 시청 시간)
     func showAdWithResult(_ type: AdType) async -> AdShowResult {
-        guard !isShowing else { return AdShowResult(success: false, watchDurationSec: 0) }
+        guard !isShowing else { return AdShowResult(success: false, watchDurationSec: 0, isOffline: false) }
         isShowing = true
+
+        let monitor = NWPathMonitor()
+        let isConnected = await withCheckedContinuation { continuation in
+            monitor.pathUpdateHandler = { path in
+                monitor.cancel()
+                continuation.resume(returning: path.status == .satisfied)
+            }
+            monitor.start(queue: DispatchQueue.global())
+        }
+        guard isConnected else {
+            isShowing = false
+            return AdShowResult(success: false, watchDurationSec: 0, isOffline: true)
+        }
+
         defer { isShowing = false }
 
         await requestTrackingAuthorizationIfNeeded()
 
         guard let ads = await loadAdIfNeeded(type) else {
             print("⚠️ Ad not ready")
-            return AdShowResult(success: false, watchDurationSec: 0)
+            return AdShowResult(success: false, watchDurationSec: 0, isOffline: false)
         }
 
         loadedAds.removeValue(forKey: type)
@@ -59,7 +75,7 @@ final class AdService {
             await loadAd(type)
         }
 
-        return AdShowResult(success: result, watchDurationSec: watchDurationSec)
+        return AdShowResult(success: result, watchDurationSec: watchDurationSec, isOffline: false)
     }
 }
 
