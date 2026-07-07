@@ -137,7 +137,10 @@ private extension LevelUpEffectView {
         withAnimation(TokenAnimation.crossFade.animation) {
             gradientOpacity = 1
             titleText = currentCareerTitle
-        } completion: {
+        }
+
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(1))
             isInProgress = false
         }
     }
