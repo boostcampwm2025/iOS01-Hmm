@@ -32,7 +32,6 @@ public struct GamePauseWrapper: ViewModifier {
     public func body(content: Content) -> some View {
         ZStack {
             content
-                .blur(radius: pauseBinding ? 2 : 0)
             if pauseBinding {
                 pauseOverlay
                     .transition(TokenTransition.overlay.effect)

@@ -37,6 +37,7 @@ struct QuizGameView: View {
             Spacer()
             optionsSection
         }
+        .ignoresSafeArea(edges: [.top, .bottom])
         .analyticsScreen(screenID)
         .padding(.horizontal, TokenGrid.paddingSide)
         .background(Color.beige50)
@@ -122,7 +123,7 @@ struct QuizGameView: View {
                     ItemLabel(
                         text: quizGame.currentAnswerResult?.isCorrect == true ?
                         "정답\n\(quizGame.currentQuestion?.explanation ?? "")" :
-                            "오답\n\(quizGame.currentQuestion?.explanation ?? "")",
+                        "오답 / 정답은 \((quizGame.currentQuestion?.correctAnswerIndex ?? 0) + 1)번이다.\n\(quizGame.currentQuestion?.explanation ?? "")",
                         font: .label,
                         color: quizGame.currentAnswerResult?.isCorrect == true ? .accentGreen : .accentRed,
                         textAlignment: .leading

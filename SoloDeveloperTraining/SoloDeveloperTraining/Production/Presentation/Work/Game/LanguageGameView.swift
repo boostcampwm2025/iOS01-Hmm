@@ -159,7 +159,7 @@ private extension LanguageGameView {
         .overlay(alignment: .top) {
             ZStack {
                 ForEach(effectLabels) { data in
-                    EffectLabel(type: data.value >= 0 ? .plus : .minus, text: "\(abs(data.value))") {
+                    EffectLabel(type: data.value >= 0 ? .plus : .minus, text: abs(data.value).formatted) {
                         removeEffectLabel(id: data.id)
                     }
                 }

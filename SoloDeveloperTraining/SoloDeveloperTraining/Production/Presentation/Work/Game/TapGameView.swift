@@ -115,7 +115,7 @@ private extension TapGameView {
                 .clipped()
 
             ForEach(effectLabels) { data in
-                EffectLabel(type: .plus, text: "\(data.value)") {
+                EffectLabel(type: .plus, text: data.value.formatted) {
                     removeEffectLabel(id: data.id)
                 }
                 .position(data.position)

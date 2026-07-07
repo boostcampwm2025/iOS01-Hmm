@@ -34,14 +34,14 @@ public struct LanguageItem: View {
         switch state {
         case .completed: return 38
         case .upcoming:  return 38
-        case .active:    return 52
+        case .active:    return 60
         }
     }
 
     private var opacity: Double {
         switch state {
         case .completed: return TokenOpacity.opacity20
-        case .upcoming:  return TokenOpacity.opacity100
+        case .upcoming:  return TokenOpacity.opacity80
         case .active:    return TokenOpacity.opacity100
         }
     }

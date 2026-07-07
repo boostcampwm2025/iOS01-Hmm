@@ -22,7 +22,7 @@ public struct LanguageItemButton: View {
     public var body: some View {
         VStack(spacing: TokenSpacing.sm) {
             LanguageItem(language: language, state: .upcoming)
-            ItemLabel(text: language.rawValue.replacingOccurrences(of: "language_", with: "").capitalized, font: .caption, color: .black300)
+            ItemLabel(text: language.rawValue.replacingOccurrences(of: "language", with: "").capitalized, font: .caption, color: .black300)
         }
         .padding(.vertical, TokenSpacing.sm)
         .frame(width: 64)
