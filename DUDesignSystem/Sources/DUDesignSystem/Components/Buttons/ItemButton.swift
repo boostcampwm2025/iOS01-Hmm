@@ -69,7 +69,7 @@ public struct ItemButton: View {
             label
                 .opacity(state == .locked ? TokenOpacity.opacity40 : TokenOpacity.opacity100)
             if state == .locked {
-                DUIcon(.lock, size: .size16)
+                DUIcon(.lock, size: .size20)
             }
         }
         .frame(width: 84, height: 42)
