@@ -581,7 +581,7 @@ private extension MainView {
             offlineRewardGold = gold
             offlineRewardHours = hoursElapsed
             showOfflineRewardPopup()
-        case .notEligible(_):
+        case .notEligible:
             hasCheckedOfflineReward = false
             checkPendingLevelUp()
             if !showLevelUpEffect {

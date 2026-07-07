@@ -58,7 +58,7 @@ enum TimeValidator {
         savedTime: TimeInterval,
         currentTime: TimeInterval
     ) -> Bool {
-        let elapsed = currentTime - savedTime
-        return elapsed >= Policy.OfflineReward.minimumHours
+        let elapsedTimeSecond = currentTime - savedTime
+        return elapsedTimeSecond >= Policy.OfflineReward.minimumHours * 3600
     }
 }

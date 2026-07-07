@@ -151,7 +151,7 @@ private extension SoloDeveloperTrainingApp {
             guard user == nil else { return }
             loadUser()
         }
-        .onChange(of: scenePhase) { _, newPhase in
+        .onChange(of: scenePhase) { oldPhase, newPhase in
             if newPhase == .active {
                 SessionManager.shared.handleForeground()
                 if SessionManager.shared.didStartNewSession, let user {
@@ -163,14 +163,14 @@ private extension SoloDeveloperTrainingApp {
                     )
                     SessionManager.shared.consumeNewSession()
                 }
-            } else if newPhase == .background || newPhase == .inactive {
-                SessionManager.shared.handleBackground()
-                saveUser()
-
-                if newPhase == .background {
-                    let level = user?.career.level ?? 0
-                    AnalyticsService.shared.logAppDeparture(level: level)
+            } else if newPhase == .inactive {
+                if oldPhase == .active {
+                    SessionManager.shared.handleBackground()
+                    saveUser()
                 }
+            } else if newPhase == .background {
+                let level = user?.career.level ?? 0
+                AnalyticsService.shared.logAppDeparture(level: level)
             }
         }
     }
