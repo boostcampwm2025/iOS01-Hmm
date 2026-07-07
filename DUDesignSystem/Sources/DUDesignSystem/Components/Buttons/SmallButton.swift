@@ -49,6 +49,11 @@ public struct SmallButton: View {
                     .resizable()
                     .frame(width: 44, height: 44)
                     .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
+                    .tokenShadow(isPressed ? .none : .default)
+                    .offset(
+                        x: isPressed ? TokenShadow.default.x : 0,
+                        y: isPressed ? TokenShadow.default.y : 0
+                    )
             )
         }
 
