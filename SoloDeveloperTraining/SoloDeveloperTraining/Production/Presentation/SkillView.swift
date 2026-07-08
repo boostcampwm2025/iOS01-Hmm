@@ -40,8 +40,16 @@ struct SkillView: View {
             buttonType: .singleLine(text: isActive ? "사용중" : "광고보기", icon: .ad),
             buttonState: buttonState,
             action: {
-                SoundService.shared.trigger(.click)
-                Task { await handleWatchAd() }
+                switch buttonState {
+                case .disabled: return
+                case .default:
+                    Task {
+                        SoundService.shared.trigger(.click)
+                        await handleWatchAd()
+                    }
+                case .locked:
+                    ToastManager.shared.show("하루 사용 횟수(3회)를 초과했습니다.")
+                }
             }
         )
         .onAppear {
@@ -54,6 +62,7 @@ struct SkillView: View {
             LazyVStack(spacing: TokenSpacing.md) {
                 skillAdItemRow
                 ForEach(skillSystem.skillList(), id: \.skill) { skillState in
+                    let state = skillState.itemState.itemButtonState
                     ItemRow(
                         imageName: skillState.skill.imageName,
                         title: skillState.skill.title,
@@ -63,10 +72,22 @@ struct SkillView: View {
                             return "레벨업시 골드 획득 \(Int(current).formatted) -> \(Int(after).formatted)"
                         }(),
                         buttonType: skillState.skill.upgradeCost.itemButtonType,
-                        buttonState: skillState.itemState.itemButtonState,
+                        buttonState: state,
                         action: {
-                            SoundService.shared.trigger(.click)
-                            upgrade(skill: skillState.skill)
+                            if state == .default {
+                                SoundService.shared.trigger(.click)
+                                upgrade(skill: skillState.skill)
+                            } else if state == .locked {
+                                switch skillSystem
+                                    .unlockRequirement(for: skillState.skill) {
+                                case .career(let game):
+                                    ToastManager.shared.show("'\(game.displayTitle)'가 해금된 후부터 구매할 수 있습니다.")
+                                case .beginner(let game, let level):
+                                    ToastManager.shared.show("\(game.displayTitle) 초급 Lv.\(level)부터 구매할 수 있습니다.")
+                                case .intermediate(let game, let level):
+                                    ToastManager.shared.show("\(game.displayTitle) 중급 Lv.\(level)부터 구매할 수 있습니다.")
+                                }
+                            }
                         },
                         onLongPress: { upgradeRepeating(skill: skillState.skill) }
                     )
@@ -89,30 +110,8 @@ private extension SkillView {
     func upgrade(skill: Skill) {
         do {
             try skillSystem.upgrade(skill: skill)
-        } catch let error as UserReadableError {
-            PopupManager.shared.show {
-                NoticePopup(
-                    type: .default(buttonText: "확인",
-                                   action: {
-                                       SoundService.shared.trigger(.click)
-                                       PopupManager.shared.dismiss()
-                                   }),
-                    title: "스킬",
-                    text: error.message
-                )
-            }
         } catch {
-            PopupManager.shared.show {
-                NoticePopup(
-                    type: .default(buttonText: "확인",
-                                   action: {
-                                       SoundService.shared.trigger(.click)
-                                       PopupManager.shared.dismiss()
-                                   }),
-                    title: "스킬",
-                    text: error.localizedDescription
-                )
-            }
+            assertionFailure("강화에 실패했습니다.")
         }
     }
 
@@ -127,9 +126,6 @@ private extension SkillView {
     }
 
     func handleWatchAd() async {
-        let isActive = SkillAdRewardManager.isRewardActive(user: user, now: adRewardNow)
-        let canUseToday = SkillAdRewardManager.canUseRewardToday(user: user, now: adRewardNow)
-        guard adRewardButtonState(isActive: isActive, canUseToday: canUseToday) == .default else { return }
         guard let flowID = adRewardFlowID else { return }
 
         AnalyticsService.shared.logAdWatchClicked(
