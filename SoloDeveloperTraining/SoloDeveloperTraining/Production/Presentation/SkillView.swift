@@ -148,22 +148,13 @@ private extension SkillView {
                 rewardAmount: 0,
                 adWatchDurationSec: result.watchDurationSec
             )
-            PopupManager.shared.show {
-                NoticePopup(
-                    type: .default(buttonText: "확인", action: {
-                        SoundService.shared.trigger(.click)
-                        PopupManager.shared.dismiss()
-                        SkillAdRewardManager.grantReward(user: user)
-                        AnalyticsService.shared.logAdRewardClaimed(
-                            adRewardFlowID: flowID,
-                            rewardType: .skillBoost,
-                            rewardAmount: 0
-                        )
-                    }),
-                    title: "보상 완료",
-                    text: "\(Int(Policy.Ad.SkillReward.rewardDuration / 60))분간 게임 재화를 \(Int(Policy.Ad.SkillReward.rewardMultiplier))배로 획득합니다."
-                )
-            }
+            SkillAdRewardManager.grantReward(user: user)
+            ToastManager.shared.show("5분간 업무 보상을 2배로 획득합니다.")
+            AnalyticsService.shared.logAdRewardClaimed(
+                adRewardFlowID: flowID,
+                rewardType: .skillBoost,
+                rewardAmount: 0
+            )
         }
     }
 
