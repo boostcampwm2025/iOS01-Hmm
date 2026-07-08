@@ -182,6 +182,9 @@ private extension MainView {
             HStack {
                 SmallButton(type: .setting) {
                     SoundService.shared.trigger(.click)
+                    if workGameSession.isInProgress {
+                        workGameSession.isPauseRequested = true
+                    }
                     PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
                         FeedbackSettingView(onClose: { PopupManager.shared.dismiss() })
                     }
