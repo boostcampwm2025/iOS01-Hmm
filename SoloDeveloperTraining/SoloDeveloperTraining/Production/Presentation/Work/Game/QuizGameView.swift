@@ -247,6 +247,7 @@ private extension QuizGameView {
 
         let result = await AdService.shared.showAdWithResult(.interstitial)
         if result.isOffline {
+            PopupManager.shared.dismiss()
             PopupManager.shared.showNoNetworkAlert()
             return
         }
