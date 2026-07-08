@@ -60,7 +60,7 @@ struct SkillView: View {
                         description: {
                             let increase = skillState.skill.gainGoldIncrease
                             let total = skillState.totalGainGold
-                            return "액션 당 +\(Int(increase).formatted) 획득 / 현재 \(Int(total).formatted)"
+                            return "액션당 +\(Int(increase).formatted) / 현재 \(Int(total).formatted)"
                         }(),
                         buttonType: skillState.skill.upgradeCost.itemButtonType,
                         buttonState: skillState.itemState.itemButtonState,
