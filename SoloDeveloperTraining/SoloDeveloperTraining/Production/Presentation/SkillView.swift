@@ -36,7 +36,7 @@ struct SkillView: View {
         return ItemRow(
             imageName: "adBoost",
             title: "업무 효율 대박",
-            description: "5분간 피버타임 두배 (X1, X2, X4)",
+            description: "5분간 피버 타임 (업무 보상 X2)",
             buttonType: .singleLine(text: isActive ? "사용중" : "광고보기", icon: .ad),
             buttonState: buttonState,
             action: {
