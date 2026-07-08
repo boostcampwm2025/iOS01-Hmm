@@ -36,7 +36,7 @@ struct SkillView: View {
         return ItemRow(
             imageName: "adBoost",
             title: "업무 효율 대박",
-            description: "5분간 피버타임 두배 (X1, X2, X4)",
+            description: "5분간 피버 타임 (업무 보상 X2)",
             buttonType: .singleLine(text: isActive ? "사용중" : "광고보기", icon: .ad),
             buttonState: buttonState,
             action: {
@@ -58,9 +58,9 @@ struct SkillView: View {
                         imageName: skillState.skill.imageName,
                         title: skillState.skill.title,
                         description: {
-                            let current = skillState.skill.gainGold
-                            let after = skillState.skill.gainGoldAfterUpgrade
-                            return "레벨업시 골드 획득 \(Int(current).formatted) -> \(Int(after).formatted)"
+                            let increase = skillState.skill.gainGoldIncrease
+                            let total = skillState.totalGainGold
+                            return "액션당 +\(Int(increase).formatted) / 현재 \(Int(total).formatted)"
                         }(),
                         buttonType: skillState.skill.upgradeCost.itemButtonType,
                         buttonState: skillState.itemState.itemButtonState,
