@@ -619,7 +619,7 @@ struct MissionTestView: View {
             return
         }
 
-        missionSystem.claimMissionReward(mission: mission, wallet: wallet)
+        missionSystem.claimMissionReward(mission: mission, wallet: wallet, record: record)
 
         var message = "미션 '\(mission.title)' 보상을 수령했습니다!\n"
         if mission.reward.gold > 0 {
