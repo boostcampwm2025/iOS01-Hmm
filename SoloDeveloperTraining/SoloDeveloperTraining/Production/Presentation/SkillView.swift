@@ -58,9 +58,9 @@ struct SkillView: View {
                         imageName: skillState.skill.imageName,
                         title: skillState.skill.title,
                         description: {
-                            let current = skillState.skill.gainGold
-                            let after = skillState.skill.gainGoldAfterUpgrade
-                            return "레벨업시 골드 획득 \(Int(current).formatted) -> \(Int(after).formatted)"
+                            let increase = skillState.skill.gainGoldIncrease
+                            let total = skillState.totalGainGold
+                            return "액션 당 +\(Int(increase).formatted) 획득 / 현재 \(Int(total).formatted)"
                         }(),
                         buttonType: skillState.skill.upgradeCost.itemButtonType,
                         buttonState: skillState.itemState.itemButtonState,
