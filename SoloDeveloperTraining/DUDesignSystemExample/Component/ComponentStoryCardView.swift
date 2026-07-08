@@ -26,7 +26,7 @@ struct ComponentStoryCardView: View {
                     StoryCard(
                         type: storyCardType,
                         text: description,
-                        imageName: viewMode == .levelUp ? "scenarioLevelupNormalDeveloper" : "geniusHacker"
+                        imageName: viewMode == .levelUp ? "normalDeveloper1" : "geniusHacker"
                     )
                 }
 
