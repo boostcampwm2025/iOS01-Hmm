@@ -141,6 +141,10 @@ final class StackGameScene: SKScene {
         currentBlockView?.removeAllActions()
         currentBlockView?.removeFromParent()
         currentBlockView = nil
+        self.removeAllActions()
+        self.enumerateChildNodes(withName: "//*") { node, _ in
+            node.removeAllActions()
+        }
     }
 
     /// 게임 Scene 재개
