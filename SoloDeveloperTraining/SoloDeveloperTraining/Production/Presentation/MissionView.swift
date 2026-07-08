@@ -54,7 +54,7 @@ struct MissionView: View {
 private extension MissionView {
     func missionCardDidTapHandler(mission: Mission) {
         if mission.missionCardState == .claimable {
-            missionSystem.claimMissionReward(mission: mission, wallet: user.wallet)
+            missionSystem.claimMissionReward(mission: mission, wallet: user.wallet, record: user.record)
             SoundService.shared.trigger(.mission)
             let reward = mission.reward
             if reward.gold > 0 && reward.diamond > 0 {
