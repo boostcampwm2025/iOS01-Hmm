@@ -10,6 +10,7 @@ import Foundation
 struct SkillState {
     let skill: Skill
     let itemState: ItemState
+    let totalGainGold: Double
 }
 
 final class SkillSystem {
@@ -39,12 +40,26 @@ final class SkillSystem {
             let bucketIndex = gameIndex * skillTierCount + tierIndex
             buckets[bucketIndex] = skill
         }
-        return buckets
-            .compactMap { $0 }
-            .map { skill in SkillState(
+
+        let skillList = buckets.compactMap { $0 }
+
+        var totalByGame: [GameType: Double] = [:]
+        for game in GameType.allCases {
+            let total = skillList
+                .filter { $0.key.game == game }
+                .reduce(0.0) { $0 + $1.gainGold }
+            totalByGame[game] = game == .dodge
+                ? total * Policy.Game.Dodge.bugDodgeGoldMultiplier
+                : total
+        }
+
+        return skillList.map { skill in
+            SkillState(
                 skill: skill,
-                itemState: getItemState(for: skill))
-            }
+                itemState: getItemState(for: skill),
+                totalGainGold: totalByGame[skill.key.game] ?? 0
+            )
+        }
     }
 
     /// 스킬 항목을 구매하여 레벨 업그레이드
