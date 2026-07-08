@@ -192,7 +192,7 @@ private extension StackGameView {
                 stackGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
             }
         } else {
-            scene.pauseGame()
+            closePause = true
             let flowID = AnalyticsService.shared.makeAdRewardFlowID()
             drinkAdRewardFlowID = flowID
             let rewardType: AdRewardType = type == .coffee ? .coffee : .energyDrink
@@ -218,7 +218,7 @@ private extension StackGameView {
                                 )
                                 drinkAdRewardFlowID = nil
                             }
-                            scene.resumeGame()
+                            closePause = false
                         },
                         adAction: {
                             SoundService.shared.trigger(.click)
@@ -263,6 +263,6 @@ private extension StackGameView {
                 rewardAmount: 1
             )
         }
-        scene.resumeGame()
+        closePause = false
     }
 }
