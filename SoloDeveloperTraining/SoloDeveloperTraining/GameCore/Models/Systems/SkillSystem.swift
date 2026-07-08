@@ -45,9 +45,12 @@ final class SkillSystem {
 
         var totalByGame: [GameType: Double] = [:]
         for game in GameType.allCases {
-            totalByGame[game] = skillList
+            let total = skillList
                 .filter { $0.key.game == game }
                 .reduce(0.0) { $0 + $1.gainGold }
+            totalByGame[game] = game == .dodge
+                ? total * Policy.Game.Dodge.bugDodgeGoldMultiplier
+                : total
         }
 
         return skillList.map { skill in
