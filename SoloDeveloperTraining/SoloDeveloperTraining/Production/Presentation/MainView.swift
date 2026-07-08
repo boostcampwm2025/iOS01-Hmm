@@ -114,6 +114,11 @@ struct MainView: View {
             }
         }
         .animation(TokenTransition.overlay.animation, value: showLevelUpEffect)
+        .onChange(of: showLevelUpEffect) { _, isPresented in
+            if isPresented && workGameSession.isInProgress {
+                workGameSession.isPauseRequested = true
+            }
+        }
         .onChange(of: workGameSession.showsExitBonusPopup) { _, shows in
             if shows { showExitBonusPopup() }
         }
