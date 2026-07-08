@@ -335,7 +335,7 @@ private extension ScenarioStoryView {
 
         let renderer = ImageRenderer(content: targetView)
         renderer.scale = UIScreen.main.scale
-        renderer.isOpaque = false
+        renderer.isOpaque = true
         return renderer.uiImage
     }
 
