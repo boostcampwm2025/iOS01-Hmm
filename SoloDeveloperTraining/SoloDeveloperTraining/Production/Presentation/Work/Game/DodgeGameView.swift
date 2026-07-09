@@ -269,8 +269,7 @@ private extension DodgeGameView {
                 game.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
             }
         } else {
-            game.pauseGame()
-            isGamePaused = true
+            closePause = true
             let flowID = AnalyticsService.shared.makeAdRewardFlowID()
             drinkAdRewardFlowID = flowID
             let rewardType: AdRewardType = type == .coffee ? .coffee : .energyDrink
@@ -296,8 +295,7 @@ private extension DodgeGameView {
                                 )
                                 drinkAdRewardFlowID = nil
                             }
-                            game.resumeGame()
-                            isGamePaused = false
+                            closePause = false
                         },
                         adAction: {
                             SoundService.shared.trigger(.click)
@@ -342,7 +340,6 @@ private extension DodgeGameView {
                 rewardAmount: 1
             )
         }
-        game.resumeGame()
-        isGamePaused = false
+        closePause = false
     }
 }

@@ -194,7 +194,7 @@ private extension TapGameView {
                 tapGame.user.record.record(type == .coffee ? .coffeeUse : .energyDrinkUse)
             }
         } else {
-            tapGame.pauseGame()
+            closePause = true
             let flowID = AnalyticsService.shared.makeAdRewardFlowID()
             drinkAdRewardFlowID = flowID
             let rewardType: AdRewardType = type == .coffee ? .coffee : .energyDrink
@@ -220,7 +220,7 @@ private extension TapGameView {
                                 )
                                 drinkAdRewardFlowID = nil
                             }
-                            tapGame.resumeGame()
+                            closePause = false
                         },
                         adAction: {
                             SoundService.shared.trigger(.click)
@@ -265,6 +265,6 @@ private extension TapGameView {
                 rewardAmount: 1
             )
         }
-        tapGame.resumeGame()
+        closePause = false
     }
 }
