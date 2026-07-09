@@ -62,9 +62,9 @@ struct WorkSelectedView: View {
                 gameView(for: selectedIndex)
             } else {
                 selectionView
+                    .analyticsScreen(.working)
             }
         }
-        .analyticsScreen(.working)
         .onAppear {
             (workItems, requiredCareers) = makeWorkItems(career: careerSystem?.currentCareer)
             loadLastSelectedIndex()
