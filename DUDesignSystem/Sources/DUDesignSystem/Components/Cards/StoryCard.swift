@@ -64,13 +64,13 @@ private extension StoryCard {
             Image(imageName, bundle: .module)
                 .resizable()
                 .scaledToFill()
-                .frame(width: geo.size.width)
+                .frame(width: geo.size.width, height: type.imageHeight)
                 .clipped()
-                .overlay(alignment: .bottom) {
-                    TextBox(text: text)
-                }
         }
         .frame(height: type.imageHeight)
+        .overlay(alignment: .bottom) {
+            TextBox(text: text)
+        }
     }
 
     func headerView(title: String) -> some View {
