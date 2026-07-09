@@ -54,6 +54,7 @@ struct QuizGameView: View {
             }
         }
         .onChange(of: quizGame.phase) { _, newValue in
+            AnalyticsService.shared.enterScreen(screenID)
             let phase = quizGame.phase
             if phase == .showingExplanation && quizGame.state.currentAnswerResult == .correct {
 
@@ -164,6 +165,7 @@ struct QuizGameView: View {
                     if quizGame.state.nextButtonTitle == "보상받기" {
                         let flowID = AnalyticsService.shared.makeAdRewardFlowID()
                         adRewardFlowID = flowID
+                        AnalyticsService.shared.enterScreen(.quizReward)
                         AnalyticsService.shared.logAdOfferViewed(
                             adRewardFlowID: flowID,
                             rewardType: .diamond,
@@ -240,6 +242,7 @@ private extension QuizGameView {
         guard let flowID = adRewardFlowID else { return }
         let baseDiamonds = quizGame.state.totalDiamondsEarned
 
+        AnalyticsService.shared.enterScreen(.quizReward)
         AnalyticsService.shared.logAdWatchClicked(
             adRewardFlowID: flowID,
             rewardType: .diamond,

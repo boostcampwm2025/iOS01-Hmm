@@ -432,6 +432,7 @@ private extension MainView {
     }
 
     func showExitBonusPopup() {
+        AnalyticsService.shared.enterScreen(.bonus)
         trackExitBonusAdOfferIfNeeded()
         PopupManager.shared.show {
             NoticePopup(
@@ -475,6 +476,7 @@ private extension MainView {
         }
         let bonusGold = max(0, workGameSession.actionGoldDelta)
 
+        AnalyticsService.shared.enterScreen(.bonus)
         AnalyticsService.shared.logAdWatchClicked(
             adRewardFlowID: flowID,
             rewardType: .gold,

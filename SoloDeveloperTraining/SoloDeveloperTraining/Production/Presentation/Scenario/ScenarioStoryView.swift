@@ -99,6 +99,14 @@ struct ScenarioStoryView: View {
                     page: manager.currentPageIndex + 1
                 )
         )
+        .onChange(of: currentPageIndex) { _, newValue in
+            AnalyticsService.shared.enterScreen(
+                ScreenID.scenario(
+                    level: manager.currentScenario?.career.level ?? 0,
+                    page: newValue + 1
+                )
+            )
+        }
         .id(manager.currentScenario?.id)
         .onAppear {
             restoreEndingIfNeeded()
@@ -196,6 +204,11 @@ private extension ScenarioStoryView {
                 guard !isShowingAd, let flowID = adRewardFlowID else { return }
                 isShowingAd = true
 
+                let screenID = ScreenID.scenario(
+                    level: manager.currentScenario?.career.level ?? 0,
+                    page: manager.currentPageIndex + 1
+                )
+                AnalyticsService.shared.enterScreen(screenID)
                 AnalyticsService.shared.logAdWatchClicked(
                     adRewardFlowID: flowID,
                     rewardType: .reselect,
@@ -239,6 +252,12 @@ private extension ScenarioStoryView {
 private extension ScenarioStoryView {
     func trackReselectOfferIfNeeded(for page: ScenarioPage) {
         guard case .result = page.pageType, adRewardFlowID == nil else { return }
+
+        let screenID = ScreenID.scenario(
+            level: manager.currentScenario?.career.level ?? 0,
+            page: manager.currentPageIndex + 1
+        )
+        AnalyticsService.shared.enterScreen(screenID)
 
         let flowID = AnalyticsService.shared.makeAdRewardFlowID()
         adRewardFlowID = flowID

@@ -36,6 +36,9 @@ struct TutorialView: View {
                 }
             }
             .analyticsScreen(ScreenID.tutorial(page: currentPage + 1))
+            .onChange(of: currentPage) { _, newValue in
+                AnalyticsService.shared.enterScreen(ScreenID.tutorial(page: newValue + 1))
+            }
             .interactiveDismissDisabled(true)
     }
 }
