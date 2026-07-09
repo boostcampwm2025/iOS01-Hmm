@@ -120,6 +120,7 @@ private extension LevelUpEffectView {
 private extension LevelUpEffectView {
     func startAnimation() {
         isInProgress = true
+        HapticService.shared.trigger(.levelUp)
         guard phase == .start else { return }
 
         showTitleBox = false

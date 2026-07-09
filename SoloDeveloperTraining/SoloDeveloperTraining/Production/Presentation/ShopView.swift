@@ -266,6 +266,7 @@ private extension ShopView {
             rewardAmount: 0,
             adWatchDurationSec: result.watchDurationSec
         )
+        HapticService.shared.trigger(.success)
         adBonusAppliedTypes.insert(typeKey)
         UserDefaults.standard.set(Array(adBonusAppliedTypes), forKey: Constant.UserDefaultsKey.equipmentAdBonus)
         AnalyticsService.shared.logAdRewardClaimed(
