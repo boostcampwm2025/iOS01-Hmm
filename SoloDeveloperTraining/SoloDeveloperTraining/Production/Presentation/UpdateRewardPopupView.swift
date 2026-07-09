@@ -17,21 +17,31 @@ struct UpdateRewardPopupView: View {
         VStack(spacing: TokenSpacing.xxl) {
             VStack(spacing: TokenSpacing.lg) {
                 ItemLabel(text: "업데이트 보상", font: .title2, color: .black300)
-                ScrollView {
-                    VStack(spacing: TokenSpacing.xxl) {
-                        ItemLabel(text: """
-                                  더 나은 서비스 제공을 위해\n개발자 키우기가 업데이트되었습니다.\n\n
-                                  이번 업데이트로 게임이 처음부터 새롭게 시작됩니다.
-                                  더 풍성한 콘텐츠와 함께 최고의 개발자를
-                                  키워나갈 수 있도록 준비했습니다.\n\n
-                                  함께해 주신 여정에 감사드리며,
-                                  이전 레벨에 따라 특별 보상을 드립니다.
-                                  """, font: .body, color: .black300)
-                        rewardInfoList
+                ZStack(alignment: .bottom) {
+                    ScrollView {
+                        VStack(spacing: TokenSpacing.xxl) {
+                            ItemLabel(text: """
+                                      더 나은 서비스 제공을 위해\n개발자 키우기가 업데이트되었습니다.\n\n
+                                      이번 업데이트로 게임이 처음부터 새롭게 시작됩니다.
+                                      더 풍성한 콘텐츠와 함께 최고의 개발자를
+                                      키워나갈 수 있도록 준비했습니다.\n\n
+                                      함께해 주신 여정에 감사드리며,
+                                      이전 레벨에 따라 특별 보상을 드립니다.
+                                      """, font: .body, color: .black300)
+                            rewardInfoList
+                        }
                     }
+                    .frame(height: 384)
+                    .scrollIndicators(.never)
+
+                    LinearGradient(
+                        colors: [Color.white300.opacity(0), Color.white300],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(height: 40)
+                    .allowsHitTesting(false)
                 }
-                .frame(height: 384)
-                .scrollIndicators(.never)
             }
             TextButton(
                 text: "보상 받기",
