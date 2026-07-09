@@ -114,6 +114,11 @@ struct MainView: View {
             }
         }
         .animation(TokenTransition.overlay.animation, value: showLevelUpEffect)
+        .onChange(of: showLevelUpEffect) { _, isPresented in
+            if isPresented && workGameSession.isInProgress {
+                workGameSession.isPauseRequested = true
+            }
+        }
         .onChange(of: workGameSession.showsExitBonusPopup) { _, shows in
             if shows { showExitBonusPopup() }
         }
@@ -167,6 +172,9 @@ private extension MainView {
             .background(Color.white300StatusBar)
             .onTapGesture {
                 guard let careerSystem else { return }
+                if workGameSession.isInProgress {
+                    workGameSession.isPauseRequested = true
+                }
                 PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
                     CareerPopupView(careerSystem: careerSystem, user: user) {
                         PopupManager.shared.dismiss()
@@ -177,6 +185,9 @@ private extension MainView {
             HStack {
                 SmallButton(type: .setting) {
                     SoundService.shared.trigger(.click)
+                    if workGameSession.isInProgress {
+                        workGameSession.isPauseRequested = true
+                    }
                     PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
                         FeedbackSettingView(onClose: { PopupManager.shared.dismiss() })
                     }
@@ -624,6 +635,7 @@ private extension MainView {
                 adWatchDurationSec: result.watchDurationSec
             )
             user.wallet.addGold(offlineRewardGold)
+            user.record.record(.earnMoney(offlineRewardGold))
             ToastManager.shared.show("잠자는 시간에 일한 보상 획득!")
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,

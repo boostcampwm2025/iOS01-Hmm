@@ -393,7 +393,7 @@ final class DefaultScenarioRepository: ScenarioRepository {
             pages: [
                 ScenarioPage(
                     imageName: "worldClassDeveloper1",
-                    text: "여기 코드가 가능해진 지금,\n누군가는 당신을 개발자라 부르고...",
+                    text: "0과 1로 대화가 가능해진 지금,\n누군가는 당신을 개발자라 부르고...",
                     pageType: .story
                 ),
                 ScenarioPage(

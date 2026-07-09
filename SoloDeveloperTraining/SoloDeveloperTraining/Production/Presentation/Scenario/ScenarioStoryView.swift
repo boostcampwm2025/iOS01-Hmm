@@ -37,60 +37,14 @@ struct ScenarioStoryView: View {
         self._currentPageIndex = State(initialValue: manager.currentPageIndex)
     }
 
-    var isEnding: Bool { finalEnding != nil }
-
     var body: some View {
-        ZStack {
-            VStack(spacing: TokenSpacing.lg) {
-                if isEnding { endingResultView }
-
-                if let ending = finalEnding {
-                    StoryCard(
-                        type: .ending(title: ending.type.title),
-                        text: ending.type.description,
-                        imageName: ending.type.imageName
-                    )
-                    .id("ending")
-                    .padding(.bottom, TokenSpacing.sm)
-                } else if let page = manager.currentPage {
-                    StoryCard(
-                        type: .levelUp,
-                        text: page.text,
-                        imageName: page.imageName ?? ""
-                    )
-                    .id(currentPageIndex)
-                }
-
-                if let ending = finalEnding {
-                    EventButton(type: .ending(
-                        onSave: {
-                            SoundService.shared.trigger(.click)
-                            guard let image = renderEndingImage(ending) else { return }
-                            PhotoLibraryService.saveImageToPhotoLibrary(image) { success in
-                                ToastManager.shared.show(success ? "이미지가 저장되었습니다." : "사진 접근 허용이 필요해요!", anchor: .center)
-                            }
-                        },
-                        onShare: {
-                            SoundService.shared.trigger(.click)
-                            currentShareID = UUID().uuidString
-                            AnalyticsService.shared
-                                .logShareButtonClicked(
-                                    shareID: currentShareID,
-                                    resultID: ending.id,
-                                    shareChannel: ShareChannel.unknown.rawValue
-                                )
-                            PopupManager.shared.show { shareSheetPopup }
-                        },
-                        onRebirth: {
-                            SoundService.shared.trigger(.click)
-                            PopupManager.shared.show { rebirthConfirmPopupView }
-                        }
-                    ))
-                } else if let page = manager.currentPage {
-                    eventButtonView(for: page)
-                }
+        Group {
+            if let ending = finalEnding {
+                endingResultView(ending: ending)
+                    .frame(maxHeight: .infinity, alignment: .top)
+            } else if let page = manager.currentPage {
+                scenarioView(page: page)
             }
-            .frame(maxHeight: .infinity, alignment: isEnding ? .top : .center)
         }
         .analyticsScreen(
             ScreenID
@@ -129,21 +83,67 @@ private extension ScenarioStoryView {
         }
     }
 
-    var endingResultView: some View {
-        HStack(spacing: TokenSpacing.sm) {
-            DUIcon(.movieSlate, size: .size28)
-            Text("엔딩 결과").duFont(.title1).foregroundStyle(Color.white300)
-            Spacer()
-            Button(action: {
-                SoundService.shared.trigger(.click)
-                onComplete()
-            }) {
-                DUIcon(.close, size: .size28)
-            }
+    func scenarioView(page: ScenarioPage) -> some View {
+        VStack(spacing: TokenSpacing.lg) {
+            StoryCard(
+                type: .levelUp,
+                text: page.text,
+                imageName: page.imageName ?? ""
+            )
+            .id(currentPageIndex)
+            eventButtonView(for: page)
         }
-        .frame(height: 30)
+    }
+
+    func endingResultView(ending: Ending) -> some View {
+        VStack(spacing: TokenSpacing.none) {
+            HStack(spacing: TokenSpacing.sm) {
+                DUIcon(.movieSlate, size: .size28)
+                Text("엔딩 결과").duFont(.title1).foregroundStyle(Color.white300)
+                Spacer()
+                Button(action: {
+                    SoundService.shared.trigger(.click)
+                    onComplete()
+                }, label: { DUIcon(.close, size: .size28) })
+            }
+            .frame(height: 30)
+            .padding([.bottom, .horizontal], TokenSpacing.lg)
+
+            StoryCard(
+                type: .ending(title: ending.type.title),
+                text: ending.type.description,
+                imageName: ending.type.imageName
+            )
+            .id("ending")
+            .padding(.top, TokenSpacing.lg)
+            .padding(.bottom, TokenSpacing.xl)
+
+            EventButton(type: .ending(
+                onSave: {
+                    SoundService.shared.trigger(.click)
+                    guard let image = renderEndingImage(ending) else { return }
+                    PhotoLibraryService.saveImageToPhotoLibrary(image) { success in
+                        ToastManager.shared.show(success ? "이미지가 저장되었습니다." : "사진 접근 허용이 필요해요!", anchor: .center)
+                    }
+                },
+                onShare: {
+                    SoundService.shared.trigger(.click)
+                    currentShareID = UUID().uuidString
+                    AnalyticsService.shared
+                        .logShareButtonClicked(
+                            shareID: currentShareID,
+                            resultID: ending.id,
+                            shareChannel: ShareChannel.unknown.rawValue
+                        )
+                    PopupManager.shared.show { shareSheetPopup }
+                },
+                onRebirth: {
+                    SoundService.shared.trigger(.click)
+                    PopupManager.shared.show { rebirthConfirmPopupView }
+                }
+            ))
+        }
         .padding(.top, TokenGrid.paddingTop)
-        .padding([.bottom, .horizontal], TokenSpacing.lg)
     }
 
     var rebirthConfirmPopupView: some View {
@@ -335,7 +335,7 @@ private extension ScenarioStoryView {
 
         let renderer = ImageRenderer(content: targetView)
         renderer.scale = UIScreen.main.scale
-        renderer.isOpaque = false
+        renderer.isOpaque = true
         return renderer.uiImage
     }
 

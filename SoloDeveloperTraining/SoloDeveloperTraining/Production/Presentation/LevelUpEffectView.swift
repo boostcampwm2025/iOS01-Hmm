@@ -26,6 +26,7 @@ struct LevelUpEffectView: View {
     let currentCareerTitle: String
 
     @State private var phase: Phase = .start
+    @State private var isInProgress: Bool = false
     @State private var showTitleBox: Bool = false
     @State private var gradientOpacity: CGFloat = 0
     @State private var titleText: String = ""
@@ -35,7 +36,9 @@ struct LevelUpEffectView: View {
             Color.black300EventDim
                 .ignoresSafeArea()
                 .onTapGesture {
-                    isPresented = false
+                    if !isInProgress {
+                        isPresented = false
+                    }
                 }
 
             VStack(spacing: TokenSpacing.xs) {
@@ -116,6 +119,7 @@ private extension LevelUpEffectView {
 // MARK: - helpers
 private extension LevelUpEffectView {
     func startAnimation() {
+        isInProgress = true
         guard phase == .start else { return }
 
         showTitleBox = false
@@ -133,6 +137,11 @@ private extension LevelUpEffectView {
         withAnimation(TokenAnimation.crossFade.animation) {
             gradientOpacity = 1
             titleText = currentCareerTitle
+        }
+
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(1))
+            isInProgress = false
         }
     }
 }
