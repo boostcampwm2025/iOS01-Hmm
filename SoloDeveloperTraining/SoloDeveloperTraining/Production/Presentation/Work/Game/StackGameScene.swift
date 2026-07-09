@@ -154,8 +154,20 @@ final class StackGameScene: SKScene {
         stackGame.resumeGame()
         isGamePaused = false
         physicsWorld.speed = 1
+        removeOrphanedBombBlocks()
         if currentBlockView == nil {
             spawnBlock()
+        }
+    }
+
+    /// blockViews에도 없고 currentBlockView도 아닌 고아 BlockItem 노드를 제거합니다.
+    private func removeOrphanedBombBlocks() {
+        children.compactMap { $0 as? BlockItem }.forEach { node in
+            let isStacked = blockViews.contains(node)
+            let isCurrent = node === currentBlockView
+            if !isStacked && !isCurrent {
+                node.removeFromParent()
+            }
         }
     }
 }
