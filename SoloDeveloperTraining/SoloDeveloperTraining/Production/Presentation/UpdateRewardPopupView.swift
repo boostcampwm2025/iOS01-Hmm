@@ -8,10 +8,19 @@
 import SwiftUI
 import DUDesignSystem
 
+private struct ScrollBottomKey: PreferenceKey {
+    static let defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
 struct UpdateRewardPopupView: View {
     let userType: RewardUserType
     let rewards: [UpdateReward]
     let onClose: () -> Void
+
+    @State private var isScrolledToBottom = false
 
     var body: some View {
         VStack(spacing: TokenSpacing.xxl) {
@@ -30,17 +39,33 @@ struct UpdateRewardPopupView: View {
                                       """, font: .body, color: .black300)
                             rewardInfoList
                         }
+                        .overlay(alignment: .bottom) {
+                            GeometryReader { geo in
+                                Color.clear
+                                    .preference(
+                                        key: ScrollBottomKey.self,
+                                        value: geo.frame(in: .named("scrollArea")).maxY
+                                    )
+                            }
+                            .frame(height: 1)
+                        }
                     }
+                    .coordinateSpace(name: "scrollArea")
                     .frame(height: 384)
                     .scrollIndicators(.never)
+                    .onPreferenceChange(ScrollBottomKey.self) { maxY in
+                        isScrolledToBottom = maxY <= 384
+                    }
 
-                    LinearGradient(
-                        colors: [Color.white300.opacity(0), Color.white300],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    .frame(height: 40)
-                    .allowsHitTesting(false)
+                    if !isScrolledToBottom {
+                        LinearGradient(
+                            colors: [Color.white300.opacity(0), Color.white300],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                        .frame(height: 40)
+                        .allowsHitTesting(false)
+                    }
                 }
             }
             TextButton(
