@@ -57,7 +57,7 @@ public struct MissionCard: View {
                 ItemLabel(text: title, font: .subheadline, color: .black300)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                HStack(spacing: TokenSpacing.sm) {
+                VStack(alignment: .leading, spacing: TokenSpacing.none) {
                     if let gold = goldRewardText {
                         ItemLabel(text: gold, icon: .coinBag, iconSize: .size16, font: .caption, color: .black300)
                     }
@@ -65,7 +65,12 @@ public struct MissionCard: View {
                         ItemLabel(text: diamond, icon: .diamond, iconSize: .size16, font: .caption, color: .black300)
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(
+                    maxWidth: .infinity,
+                    minHeight: 32,
+                    maxHeight: 32,
+                    alignment: .topLeading
+                )
             }
 
             Image(trophy.rawValue, bundle: .module)
