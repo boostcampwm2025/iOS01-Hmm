@@ -142,8 +142,10 @@ final class StackGameScene: SKScene {
         currentBlockView?.removeFromParent()
         currentBlockView = nil
         self.removeAllActions()
-        self.enumerateChildNodes(withName: "//*") { node, _ in
-            node.removeAllActions()
+        self.enumerateChildNodes(withName: "//*") { [weak self] node, _ in
+            if node !== self?.camera {
+                node.removeAllActions()
+            }
         }
     }
 
