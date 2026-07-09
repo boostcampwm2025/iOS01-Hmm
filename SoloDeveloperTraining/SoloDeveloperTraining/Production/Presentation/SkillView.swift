@@ -62,7 +62,9 @@ struct SkillView: View {
                             let total = skillState.totalGainGold
                             return "액션당 +\(Int(increase).formatted) / 현재 \(Int(total).formatted)"
                         }(),
-                        buttonType: skillState.skill.upgradeCost.itemButtonType,
+                        buttonType: skillState.itemState == .reachedMax
+                            ? .singleLine(text: "MAX", icon: nil)
+                            : skillState.skill.upgradeCost.itemButtonType,
                         buttonState: skillState.itemState.itemButtonState,
                         action: {
                             SoundService.shared.trigger(.click)
