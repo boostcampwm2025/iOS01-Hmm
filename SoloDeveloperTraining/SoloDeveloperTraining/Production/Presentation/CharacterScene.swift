@@ -20,6 +20,7 @@ final class CharacterScene: SKScene {
     // MARK: - Properties
     private var characterSprite: SKSpriteNode?
     private var user: User
+    private var isSmiling = false
 
     init(size: CGSize, user: User) {
         self.user = user
@@ -60,7 +61,8 @@ final class CharacterScene: SKScene {
 
     /// 캐릭터를 웃게 만들기
     func playSmile() {
-        guard let sprite = characterSprite else { return }
+        guard let sprite = characterSprite, !isSmiling else { return }
+        isSmiling = true
         // 깜빡임 애니메이션 일시 중지
         sprite.removeAction(forKey: AnimationKey.blink)
         // 웃는 애니메이션
@@ -70,6 +72,7 @@ final class CharacterScene: SKScene {
             SKAction.setTexture(idleTexture),
             SKAction.run { [weak self] in
                 // 웃음 애니메이션 끝나면 다시 깜빡임 시작
+                self?.isSmiling = false
                 self?.startBlinking()
             }
         ])

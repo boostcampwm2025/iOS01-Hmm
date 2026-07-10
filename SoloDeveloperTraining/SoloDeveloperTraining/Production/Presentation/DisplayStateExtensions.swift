@@ -11,7 +11,7 @@ extension ItemState {
         case .available:    return .default
         case .insufficient: return .disabled
         case .locked:       return .locked
-        case .reachedMax:   return .locked
+        case .reachedMax:   return .disabled
         }
     }
 

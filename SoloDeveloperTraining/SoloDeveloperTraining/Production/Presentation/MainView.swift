@@ -13,6 +13,8 @@ import DUDesignSystem
 private enum Constant {
     static let characterSceneSize = CGSize(width: 100, height: 100)
     static let spriteViewSize = CGSize(width: 200, height: 200)
+    // TabbarItem(48) + tabBar padding vertical md(16) × 2
+    static let tabBarHeight: CGFloat = 80
 }
 
 struct MainView: View {
@@ -88,10 +90,15 @@ struct MainView: View {
     }
 
     var body: some View {
-        VStack(spacing: TokenSpacing.none) {
-            gameViewport
-            tabBar
-            contentsPanel
+        GeometryReader { geo in
+            VStack(spacing: TokenSpacing.none) {
+                let contentHeight = (geo.size.height - Constant.tabBarHeight) / 2
+                gameViewport
+                    .frame(height: contentHeight)
+                tabBar
+                contentsPanel
+                    .frame(height: contentHeight)
+            }
         }
         .ignoresSafeArea(edges: [.top, .bottom])
         .background(Color.beige200)
@@ -114,6 +121,11 @@ struct MainView: View {
             }
         }
         .animation(TokenTransition.overlay.animation, value: showLevelUpEffect)
+        .onChange(of: showLevelUpEffect) { _, isPresented in
+            if isPresented && workGameSession.isInProgress {
+                workGameSession.isPauseRequested = true
+            }
+        }
         .onChange(of: workGameSession.showsExitBonusPopup) { _, shows in
             if shows { showExitBonusPopup() }
         }
@@ -167,6 +179,9 @@ private extension MainView {
             .background(Color.white300StatusBar)
             .onTapGesture {
                 guard let careerSystem else { return }
+                if workGameSession.isInProgress {
+                    workGameSession.isPauseRequested = true
+                }
                 PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
                     CareerPopupView(careerSystem: careerSystem, user: user) {
                         PopupManager.shared.dismiss()
@@ -177,6 +192,9 @@ private extension MainView {
             HStack {
                 SmallButton(type: .setting) {
                     SoundService.shared.trigger(.click)
+                    if workGameSession.isInProgress {
+                        workGameSession.isPauseRequested = true
+                    }
                     PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
                         FeedbackSettingView(onClose: { PopupManager.shared.dismiss() })
                     }
@@ -190,13 +208,15 @@ private extension MainView {
                 }
             }
             Spacer()
+        }
+        .frame(maxHeight: .infinity)
+        .background(housingBackgroundView)
+        .overlay(alignment: .bottom) {
             // character Area
             SpriteView(scene: scene, options: [.allowsTransparency])
                 .frame(width: Constant.spriteViewSize.width, height: Constant.spriteViewSize.height)
                 .background(Color.clear)
         }
-        .background(housingBackgroundView)
-        .clipped()
     }
 
     var tabBar: some View {
@@ -209,6 +229,7 @@ private extension MainView {
         )
         .padding(.vertical, TokenSpacing.md)
         .padding(.horizontal, TokenGrid.paddingSide)
+        .background(Color.beige200)
         .background(GeometryReader { geo in
             Color.clear
                 .onAppear {
@@ -427,6 +448,7 @@ private extension MainView {
     }
 
     func showExitBonusPopup() {
+        AnalyticsService.shared.enterScreen(.bonus)
         trackExitBonusAdOfferIfNeeded()
         PopupManager.shared.show {
             NoticePopup(
@@ -443,7 +465,7 @@ private extension MainView {
                     }
                 ),
                 title: "보너스",
-                text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다"
+                text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다."
             )
             .analyticsScreen(.bonus)
         }
@@ -470,6 +492,7 @@ private extension MainView {
         }
         let bonusGold = max(0, workGameSession.actionGoldDelta)
 
+        AnalyticsService.shared.enterScreen(.bonus)
         AnalyticsService.shared.logAdWatchClicked(
             adRewardFlowID: flowID,
             rewardType: .gold,
@@ -624,6 +647,7 @@ private extension MainView {
                 adWatchDurationSec: result.watchDurationSec
             )
             user.wallet.addGold(offlineRewardGold)
+            user.record.record(.earnMoney(offlineRewardGold))
             ToastManager.shared.show("잠자는 시간에 일한 보상 획득!")
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,

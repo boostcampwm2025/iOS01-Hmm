@@ -51,7 +51,7 @@ struct NicknameSetupView: View {
                     Spacer()
                     InputField(
                         text: $nickname,
-                        placeholder: "닉네임을 입력해주세요",
+                        placeholder: "닉네임을 입력해주세요.",
                         state: nicknameState
                     )
                     .overlay(
