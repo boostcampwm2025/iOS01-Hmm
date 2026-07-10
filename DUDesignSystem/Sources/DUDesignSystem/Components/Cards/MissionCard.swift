@@ -82,7 +82,7 @@ public struct MissionCard: View {
             ItemLabel(text: condition, font: .label, color: .black300)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
-                .frame(height: 32)
+                .frame(height: 36)
 
             stateBar
         }
