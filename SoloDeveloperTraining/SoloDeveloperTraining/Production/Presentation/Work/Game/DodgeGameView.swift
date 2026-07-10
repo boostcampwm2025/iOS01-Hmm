@@ -88,6 +88,9 @@ struct DodgeGameView: View {
             gameAreaSection
         }
         .analyticsScreen(pauseBinding.wrappedValue ? .avoidingExit : .avoiding)
+        .onChange(of: pauseBinding.wrappedValue) { _, newValue in
+            AnalyticsService.shared.enterScreen(newValue ? .avoidingExit : .avoiding)
+        }
     }
 }
 
@@ -273,6 +276,8 @@ private extension DodgeGameView {
             let flowID = AnalyticsService.shared.makeAdRewardFlowID()
             drinkAdRewardFlowID = flowID
             let rewardType: AdRewardType = type == .coffee ? .coffee : .energyDrink
+            let screenID: ScreenID = type == .coffee ? .coffee : .bacchus
+            AnalyticsService.shared.enterScreen(screenID)
             AnalyticsService.shared.logAdOfferViewed(
                 adRewardFlowID: flowID,
                 rewardType: rewardType,
@@ -305,7 +310,7 @@ private extension DodgeGameView {
                     title: type == .coffee ? "커피 없음" : "바카스 없음",
                     text: "대신에 광고를 보고\n카페인을 보충할까요?"
                 )
-                .analyticsScreen(.caffein)
+                .analyticsScreen(screenID)
             }
         }
     }
@@ -316,6 +321,7 @@ private extension DodgeGameView {
         guard let flowID = drinkAdRewardFlowID else { return }
         drinkAdRewardFlowID = nil
         let rewardType: AdRewardType = type == .coffee ? .coffee : .energyDrink
+        AnalyticsService.shared.enterScreen(type == .coffee ? .coffee : .bacchus)
 
         AnalyticsService.shared.logAdWatchClicked(
             adRewardFlowID: flowID,
