@@ -48,7 +48,7 @@ public struct ItemButton: View {
     }
 
     private var isInteractive: Bool {
-        state != .disabled && state != .locked
+        state != .disabled
     }
 
     @ViewBuilder

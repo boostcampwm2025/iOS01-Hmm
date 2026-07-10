@@ -465,7 +465,7 @@ private extension MainView {
                     }
                 ),
                 title: "보너스",
-                text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다"
+                text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다."
             )
             .analyticsScreen(.bonus)
         }

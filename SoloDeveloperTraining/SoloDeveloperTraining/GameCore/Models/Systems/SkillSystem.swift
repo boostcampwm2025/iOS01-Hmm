@@ -13,6 +13,12 @@ struct SkillState {
     let totalGainGold: Double
 }
 
+enum SkillUnlockRequirement {
+    case career(game: GameType)
+    case beginner(game: GameType, level: Int)
+    case intermediate(game: GameType, level: Int)
+}
+
 final class SkillSystem {
     private let user: User
     private let careerSystem: CareerSystem?
@@ -77,6 +83,40 @@ final class SkillSystem {
         let costBeforeUpgrade = skill.upgradeCost
         try skill.upgrade()
         pay(cost: costBeforeUpgrade)
+    }
+
+    /// 해금 조건
+    func unlockRequirement(for skill: Skill) -> SkillUnlockRequirement {
+        switch skill.key.tier {
+        case .beginner: return .career(game: skill.key.game)
+        case .intermediate:
+            let level: Int
+            switch skill.key.game {
+            case .tap:
+                level = Policy.Skill.Tap.intermediateUnlockLevel
+            case .language:
+                level = Policy.Skill.Language.intermediateUnlockLevel
+            case .dodge:
+                level = Policy.Skill.Dodge.intermediateUnlockLevel
+            case .stack:
+                level = Policy.Skill.Stack.intermediateUnlockLevel
+            }
+            return .beginner(game: skill.key.game, level: level)
+
+        case .advanced:
+            let level: Int
+            switch skill.key.game {
+            case .tap:
+                level = Policy.Skill.Tap.advancedUnlockLevel
+            case .language:
+                level = Policy.Skill.Language.advancedUnlockLevel
+            case .dodge:
+                level = Policy.Skill.Dodge.advancedUnlockLevel
+            case .stack:
+                level = Policy.Skill.Stack.advancedUnlockLevel
+            }
+            return .intermediate(game: skill.key.game, level: level)
+        }
     }
 }
 
