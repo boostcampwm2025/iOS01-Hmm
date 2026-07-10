@@ -218,6 +218,11 @@ private extension ScenarioStoryView {
                 Task {
                     let result = await AdService.shared.showAdWithResult(.interstitial)
                     isShowingAd = false
+
+                    if result.isOffline {
+                        PopupManager.shared.showNoNetworkAlert()
+                        return
+                    }
                     adRewardFlowID = nil
 
                     if result.success {
