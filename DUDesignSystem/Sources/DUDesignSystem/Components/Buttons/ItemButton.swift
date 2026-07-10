@@ -15,7 +15,7 @@ public struct ItemButton: View {
     }
 
     public enum ItemButtonType {
-        case singleLine(text: String, icon: DUIconName)
+        case singleLine(text: String, icon: DUIconName?)
         case twoLine(firstText: String, firstIcon: DUIconName, secondText: String, secondIcon: DUIconName)
     }
 
@@ -48,14 +48,18 @@ public struct ItemButton: View {
     }
 
     private var isInteractive: Bool {
-        state != .disabled && state != .locked
+        state != .disabled
     }
 
     @ViewBuilder
     private var label: some View {
         switch type {
         case .singleLine(let text, let icon):
-            ItemLabel(text: text, icon: icon, iconSize: .size16, font: .caption, color: .white300)
+            if let icon {
+                ItemLabel(text: text, icon: icon, iconSize: .size16, font: .caption, color: .white300)
+            } else {
+                ItemLabel(text: text, font: .caption, color: .white300)
+            }
         case .twoLine(let firstText, let firstIcon, let secondText, let secondIcon):
             VStack(spacing: TokenSpacing.xs) {
                 ItemLabel(text: firstText, icon: firstIcon, iconSize: .size16, font: .caption, color: .white300)

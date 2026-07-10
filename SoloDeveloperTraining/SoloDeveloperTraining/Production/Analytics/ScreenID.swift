@@ -32,7 +32,8 @@ enum ScreenID: String {
     case avoidingExit
     case stackingExit
 
-    case caffein
+    case coffee
+    case bacchus
     case bonus
 
     case skill

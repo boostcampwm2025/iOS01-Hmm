@@ -14,12 +14,9 @@ private enum Constant {
     }
 
     enum Text {
-        static let enhanceSuccessTitle = "강화 성공"
-        static let enhanceFailureTitle = "강화 실패"
         static let enhanceSuccessMessage = "강화에 성공했습니다!"
         static let enhanceFailureMessage = "강화에 실패했습니다.\n비용은 소모되었습니다."
 
-        static let purchaseFailureTitle = "구매 실패"
         static let purchaseFailureMessage = "구매에 실패했습니다."
     }
 
@@ -307,46 +304,16 @@ private extension ShopView {
                 if !isSuccess {
                     HapticService.shared.trigger(.error)
                 }
-                let title = isSuccess ? Constant.Text.enhanceSuccessTitle : Constant.Text.enhanceFailureTitle
+
                 let message = isSuccess ? Constant.Text.enhanceSuccessMessage : Constant.Text.enhanceFailureMessage
-                PopupManager.shared.show {
-                    NoticePopup(
-                        type: .default(buttonText: "확인",
-                                       action: {
-                                           SoundService.shared.trigger(.click)
-                                           PopupManager.shared.dismiss()
-                                       }),
-                        title: title,
-                        text: message
-                    )
-                }
+                ToastManager.shared.show(message)
             }
         } catch let error as PurchasingError {
             HapticService.shared.trigger(.error)
-            PopupManager.shared.show {
-                NoticePopup(
-                    type: .default(buttonText: "확인",
-                                   action: {
-                                       SoundService.shared.trigger(.click)
-                                       PopupManager.shared.dismiss()
-                                   }),
-                    title: Constant.Text.purchaseFailureTitle,
-                    text: error.message
-                )
-            }
+            ToastManager.shared.show(error.message)
         } catch {
             HapticService.shared.trigger(.error)
-            PopupManager.shared.show {
-                NoticePopup(
-                    type: .default(buttonText: "확인",
-                                   action: {
-                                       SoundService.shared.trigger(.click)
-                                       PopupManager.shared.dismiss()
-                                   }),
-                    title: Constant.Text.purchaseFailureTitle,
-                    text: Constant.Text.purchaseFailureMessage
-                )
-            }
+            ToastManager.shared.show(Constant.Text.purchaseFailureMessage)
         }
     }
 }

@@ -13,6 +13,7 @@ struct ComponentItemButtonView: View {
     @State private var selectedState: ItemButton.ItemButtonState = .default
     @State private var isTwoLine: Bool = false
     @State private var isPressed: Bool = false
+    @State private var isNoIcon: Bool = false
 
     private var stateLabel: String {
         "isPressed: \(isPressed)"
@@ -21,7 +22,7 @@ struct ComponentItemButtonView: View {
     private var buttonType: ItemButton.ItemButtonType {
         isTwoLine
             ? .twoLine(firstText: text, firstIcon: .coinBag, secondText: secondText, secondIcon: .coinBag)
-            : .singleLine(text: text, icon: .coinBag)
+            : .singleLine(text: text, icon: isNoIcon ? nil : .coinBag)
     }
 
     var body: some View {
@@ -48,6 +49,9 @@ struct ComponentItemButtonView: View {
             List {
                 Section("타입") {
                     Toggle("두 줄", isOn: $isTwoLine)
+                    if !isTwoLine {
+                        Toggle("아이콘 없음", isOn: $isNoIcon)
+                    }
                 }
 
                 Section("텍스트") {
