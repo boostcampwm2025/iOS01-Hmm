@@ -183,9 +183,57 @@ private extension MainView {
                     workGameSession.isPauseRequested = true
                 }
                 PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
-                    CareerPopupView(careerSystem: careerSystem, user: user) {
-                        PopupManager.shared.dismiss()
-                    }
+                    CareerPopupView(
+                        careerSystem: careerSystem,
+                        user: user,
+                        onClose: {
+                            PopupManager.shared.dismiss()
+                        },
+                        onRebirth: {
+                            PopupManager.shared.dismiss()
+                            PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
+                                NoticePopup(
+                                    type: .confirm(
+                                        cancelText: "그냥 살기",
+                                        confirmText: "환생하기",
+                                        cancelAction: {
+                                            SoundService.shared.trigger(.click)
+                                            PopupManager.shared.dismiss()
+                                        },
+                                        confirmAction: {
+                                            SoundService.shared.trigger(.click)
+                                            PopupManager.shared.dismiss()
+                                            let evt01 = user.record.choiceHistory[.juniorDeveloper] ?? .optionA
+                                            let evt02 = user.record.choiceHistory[.nightOwlDeveloper] ?? .optionA
+                                            let evt03 = user.record.choiceHistory[.famousDeveloper] ?? .optionA
+                                            let evt04 = user.record.choiceHistory[.worldClassDeveloper] ?? .optionA
+                                            let ending = scenarioRepository.calculateEnding(
+                                                evt01: evt01,
+                                                evt02: evt02,
+                                                evt03: evt03,
+                                                evt04: evt04
+                                            )
+                                            user.resetForRebirth(ending: ending)
+                                            let pages = scenarioRepository.fetchRebirthScenarioPages()
+                                            let rebirthScenario = Scenario(
+                                                id: "rebirth",
+                                                career: .unemployed,
+                                                scenarioType: .rebirth,
+                                                pages: pages
+                                            )
+                                            let manager = ScenarioManager(record: user.record)
+                                            manager.startScenario(rebirthScenario)
+                                            scenarioManager = manager
+                                            showScenarioView = true
+                                            SoundService.shared.playBGM(.rebirth)
+                                        }
+                                    ),
+                                    title: "환생하기",
+                                    text: "전생의 기억은 모두 잃고 새로 태어나게됩니다.\n환생하시겠습니까?"
+                                )
+                            }
+                        }
+                    )
                 }
             }
             // SettingButton, QuizButton Area

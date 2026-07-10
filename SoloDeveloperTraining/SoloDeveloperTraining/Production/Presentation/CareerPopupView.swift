@@ -20,6 +20,7 @@ struct CareerPopupView: View {
     let careerSystem: CareerSystem
     let user: User
     let onClose: () -> Void
+    let onRebirth: () -> Void
 
     @State private var isScrollable = false
 
@@ -76,6 +77,24 @@ struct CareerPopupView: View {
                             )
                             .id(career)
                         }
+                        if canShowRebirthRow {
+                            HStack(alignment: .center, spacing: TokenSpacing.sm) {
+                                CareerRow(
+                                    imageName: "profileNewUser",
+                                    title: "환생",
+                                    description: "다시 시작해볼까?",
+                                    state: .current
+                                )
+                                TextButton(
+                                    text: "환생하기",
+                                    type: .priority,
+                                    size: .small,
+                                    action: {
+                                    SoundService.shared.trigger(.click)
+                                    onRebirth()
+                                })
+                            }
+                        }
                     }
                     .overlay(alignment: .bottom) {
                         GeometryReader { geo in
@@ -122,8 +141,13 @@ struct CareerPopupView: View {
         let index = Career.allCases.firstIndex(of: career) ?? 0
         let current = Career.allCases.firstIndex(of: currentCareer) ?? 0
         if index < current { return .achieved }
-        if index == current { return .current }
+        if index == current && !canShowRebirthRow { return .current }
+        if index == current && canShowRebirthRow { return .achieved }
         return .upcoming
+    }
+
+    private var canShowRebirthRow: Bool {
+        user.record.scenarioProgress.isComplete(.worldClassDeveloper)
     }
 
     private func rowImageName(for career: Career) -> String {
