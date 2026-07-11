@@ -500,6 +500,10 @@ private extension MainView {
         )
 
         let result = await AdService.shared.showAdWithResult(.interstitial)
+        if result.isOffline {
+            PopupManager.shared.showNoNetworkAlert()
+            return
+        }
         exitBonusAdRewardFlowID = nil
 
         if result.success {
@@ -638,6 +642,10 @@ private extension MainView {
         )
 
         let result = await AdService.shared.showAdWithResult(.interstitial)
+        if result.isOffline {
+            PopupManager.shared.showNoNetworkAlert()
+            return
+        }
         offlineRewardAdFlowID = nil
 
         if result.success {

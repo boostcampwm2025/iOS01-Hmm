@@ -254,6 +254,10 @@ private extension ShopView {
         )
 
         let result = await AdService.shared.showAdWithResult(.interstitial)
+        if result.isOffline {
+            PopupManager.shared.showNoNetworkAlert()
+            return
+        }
         enhanceAdRewardFlowID = nil
         guard result.success else { return }
 

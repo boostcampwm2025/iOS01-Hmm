@@ -17,6 +17,7 @@ public final class PopupManager {
     private var activeController: UIHostingController<AnyView>?
     private var activeBgView: UIView?
     private var activeTapHandler: PopupTapHandler?
+    private var alertWindow: UIWindow?
 
     @MainActor
     public func show<Popup: View>(
@@ -92,6 +93,39 @@ public final class PopupManager {
         activeController = nil
         activeBgView = nil
         activeTapHandler = nil
+    }
+
+    @MainActor
+    public func replace<Popup: View>(@ViewBuilder content: @escaping () -> Popup) {
+        guard let controller = activeController else {
+            show(content: content)
+            return
+        }
+        controller.rootView = AnyView(content())
+    }
+
+    @MainActor
+    public func showNoNetworkAlert() {
+        guard let windowScene = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first(where: { $0.activationState == .foregroundActive }) else { return }
+
+        let window = UIWindow(windowScene: windowScene)
+        window.rootViewController = UIViewController()
+        window.windowLevel = .alert + 1
+        window.makeKeyAndVisible()
+        alertWindow = window
+
+        let alert = UIAlertController(
+            title: "네트워크 오류",
+            message: "광고 시청 시 네트워크 연결이 필요합니다.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "확인", style: .cancel) { [weak self] _ in
+            self?.alertWindow?.isHidden = true
+            self?.alertWindow = nil
+        })
+        window.rootViewController?.present(alert, animated: true)
     }
 }
 
