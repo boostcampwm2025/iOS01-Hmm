@@ -81,6 +81,7 @@ public struct GameToolBar: View {
             feverBar
 
             HStack(spacing: TokenSpacing.sm) {
+                Spacer()
                 itemButton(icon: .coffee,
                            count: coffeeCount,
                            cooldown: coffeeCooldown,
@@ -90,6 +91,7 @@ public struct GameToolBar: View {
                            cooldown: energyDrinkCooldown,
                            action: onEnergyDrink)
             }
+            .frame(width: 114)
         }
         .padding(.horizontal, TokenSpacing.md)
     }
