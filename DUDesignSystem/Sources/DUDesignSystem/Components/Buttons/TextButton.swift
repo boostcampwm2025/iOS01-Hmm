@@ -18,6 +18,7 @@ public struct TextButton: View {
     public enum TextButtonSize {
         case large
         case medium
+        case small
     }
 
     public enum TextButtonState {
@@ -77,16 +78,18 @@ public struct TextButton: View {
 
     public var body: some View {
         ZStack(alignment: .topTrailing) {
-            ItemLabel(text: text, font: size == .large ? .headline : .subheadline, color: labelColor)
-                .opacity(state == .locked ? TokenOpacity.opacity40 : TokenOpacity.opacity100)
-                .overlay(
-                    Group {
-                        if state == .locked {
-                            DUIcon(.lock, size: .size20)
-                        }
+            ItemLabel(text: text,
+                      font: size == .large ? .headline : size == .medium ? .subheadline : .caption,
+                      color: labelColor)
+            .opacity(state == .locked ? TokenOpacity.opacity40 : TokenOpacity.opacity100)
+            .overlay(
+                Group {
+                    if state == .locked {
+                        DUIcon(.lock, size: .size20)
                     }
-                )
-            .frame(maxWidth: size == .large ? .infinity : 200)
+                }
+            )
+            .frame(maxWidth: size == .large ? .infinity : size == .medium ? 200 : 84)
             .padding(.vertical, TokenSpacing.mm)
             .background(backgroundColor)
             .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
