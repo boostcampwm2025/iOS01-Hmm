@@ -57,7 +57,10 @@ struct FeedbackSettingView: View {
                     settingRow(
                         type: .haptic,
                         isOn: haptic.isEnabled,
-                        setOn: { haptic.isEnabled = $0 }
+                        setOn: {
+                            haptic.isEnabled = $0
+                            haptic.trigger(.medium)
+                        }
                     )
                 }
 
