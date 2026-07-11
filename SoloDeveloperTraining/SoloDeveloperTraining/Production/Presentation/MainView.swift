@@ -507,6 +507,7 @@ private extension MainView {
         exitBonusAdRewardFlowID = nil
 
         if result.success {
+            HapticService.shared.trigger(.success)
             AnalyticsService.shared.logAdWatchCompleted(
                 adRewardFlowID: flowID,
                 rewardType: .gold,
@@ -648,6 +649,7 @@ private extension MainView {
         offlineRewardAdFlowID = nil
 
         if result.success {
+            HapticService.shared.trigger(.success)
             AnalyticsService.shared.logAdWatchCompleted(
                 adRewardFlowID: flowID,
                 rewardType: .gold,

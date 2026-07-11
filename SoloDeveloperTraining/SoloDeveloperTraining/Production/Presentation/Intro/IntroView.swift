@@ -74,13 +74,13 @@ struct IntroView: View {
 
 private extension IntroView {
     var backgroundImage: some View {
-        GeometryReader { geometry in
-            Image(.appLaunchScreen)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: geometry.size.width, height: geometry.size.height)
-                .clipped()
-        }
+        Color.clear
+            .overlay(
+                Image(.appLaunchScreen)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            )
+            .clipped()
     }
 
     var touchPromptView: some View {

@@ -8,36 +8,26 @@
 import UIKit
 
 enum HapticType {
-    // Impact
-    /// 가볍고 작게 1번
-    case light
-    /// 중간 1번
+    /// 중간 세기 1번 - 설정 켤 때
     case medium
-    /// 둔탁하게 1번
-    case heavy
-    // Notification
-    /// 빠르게 2번, 점점 세기 강해짐
+    /// 빠르게 2번, 점점 강해짐 - 성공/보상
     case success
-    /// 빠르게 4번
-    case warning
-    /// 빠르게 2번, 점점 세기 약해짐
+    /// 빠르게 4번 - 레벨업
+    case levelUp
+    /// 빠르게 2번, 점점 약해짐 - 실패/오답/충돌
     case error
 
-    // 모든 타입을 실제 피드백 발생으로 매핑
     func trigger() {
         switch self {
-        // MARK: - Impact
-        case .light, .medium, .heavy:
-            let generator = UIImpactFeedbackGenerator(style: style)
+        case .medium:
+            let generator = UIImpactFeedbackGenerator(style: .medium)
             generator.prepare()
             generator.impactOccurred()
-
-        // MARK: - Notification
         case .success:
             let generator = UINotificationFeedbackGenerator()
             generator.prepare()
             generator.notificationOccurred(.success)
-        case .warning:
+        case .levelUp:
             let generator = UINotificationFeedbackGenerator()
             generator.prepare()
             generator.notificationOccurred(.warning)
@@ -45,16 +35,6 @@ enum HapticType {
             let generator = UINotificationFeedbackGenerator()
             generator.prepare()
             generator.notificationOccurred(.error)
-        }
-    }
-
-    /// Impact 스타일 매핑
-    private var style: UIImpactFeedbackGenerator.FeedbackStyle {
-        switch self {
-        case .light: return .light
-        case .medium: return .medium
-        case .heavy: return .heavy
-        default: return .medium
         }
     }
 }

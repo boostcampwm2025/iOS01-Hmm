@@ -267,6 +267,7 @@ private extension QuizGameView {
                 adWatchDurationSec: result.watchDurationSec
             )
             quizGame.completeGame(multiplier: 2.0)
+            HapticService.shared.trigger(.success)
             PopupManager.shared.replace { rewardPopupOverlay }
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
