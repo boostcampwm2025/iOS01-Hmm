@@ -54,7 +54,7 @@ public final class ToastManager {
     private var dismissWorkItem: DispatchWorkItem?
 
     @MainActor
-    public func show(_ message: String, anchor: ToastAnchor = .default) {
+    public func show(_ message: String, anchor: ToastAnchor = .default, onShown: (() -> Void)? = nil) {
         guard let window = UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
             .first(where: { $0.activationState == .foregroundActive })?
@@ -100,6 +100,8 @@ public final class ToastManager {
 
         UIView.animate(withDuration: TokenAnimation.fadeInSlow.timeInterval) {
             contentView.alpha = 1
+        } completion: { finished in
+            if finished { onShown?() }
         }
 
         let workItem = DispatchWorkItem { [weak self, weak hostingController] in

@@ -21,7 +21,7 @@ struct LevelUpEffectView: View {
         case start, loop
     }
 
-    @Binding var isPresented: Bool
+    var onDismiss: () -> Void
     let previousCareerTitle: String
     let currentCareerTitle: String
 
@@ -37,7 +37,7 @@ struct LevelUpEffectView: View {
                 .ignoresSafeArea()
                 .onTapGesture {
                     if !isInProgress {
-                        isPresented = false
+                        onDismiss()
                     }
                 }
 
@@ -148,9 +148,8 @@ private extension LevelUpEffectView {
 }
 
 #Preview {
-    @Previewable @State var isPresented: Bool = true
     LevelUpEffectView(
-        isPresented: $isPresented,
+        onDismiss: {},
         previousCareerTitle: "이전 개발자",
         currentCareerTitle: "이후 개발자"
     )
