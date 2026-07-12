@@ -186,52 +186,33 @@ struct QuizGameView: View {
     // MARK: - Overlays
 
     private var adPopupOverlay: some View {
-        DiamondPopup(
-            type: .ad(
-                cancelText: "닫기",
-                adText: "2배 얻기",
-                cancelAction: {
-                    SoundService.shared.trigger(.click)
-                    PopupManager.shared.dismiss()
-                    if let flowID = adRewardFlowID {
-                        AnalyticsService.shared.logAdOfferDismissed(
-                            adRewardFlowID: flowID,
-                            rewardType: .diamond,
-                            rewardAmount: quizGame.state.totalDiamondsEarned,
-                            dismissReason: .close
-                        )
-                        adRewardFlowID = nil
-                    }
-                    quizGame.completeGame(multiplier: 1.0)
-                    dismiss()
-                },
-                adAction: {
-                    SoundService.shared.trigger(.click)
-                    Task { await handleWatchAd() }
-                }
-            ),
+        RewardPopup(
             title: "보상 지급",
             text: "퀴즈 풀이를 완료했습니다!\n진정한 개발자에 한 걸음 더 가까워졌습니다.",
-            diamond: quizGame.state.totalDiamondsEarned
+            cancelText: "닫기",
+            adText: "2배 얻기",
+            cancelAction: {
+                SoundService.shared.trigger(.click)
+                PopupManager.shared.dismiss()
+                if let flowID = adRewardFlowID {
+                    AnalyticsService.shared.logAdOfferDismissed(
+                        adRewardFlowID: flowID,
+                        rewardType: .diamond,
+                        rewardAmount: quizGame.state.totalDiamondsEarned,
+                        dismissReason: .close
+                    )
+                    adRewardFlowID = nil
+                }
+                quizGame.completeGame(multiplier: 1.0)
+                dismiss()
+            },
+            adAction: {
+                SoundService.shared.trigger(.click)
+                Task { await handleWatchAd() }
+            },
+            item: .diamond(quizGame.state.totalDiamondsEarned)
         )
         .analyticsScreen(.quizReward)
-    }
-
-    private var rewardPopupOverlay: some View {
-        DiamondPopup(
-            type: .default(
-                buttonText: "닫기",
-                action: {
-                    SoundService.shared.trigger(.click)
-                    PopupManager.shared.dismiss()
-                    dismiss()
-                }
-            ),
-            title: "보상 지급 완료",
-            text: "다이아를 두 배로 받았습니다!",
-            diamond: finalDiamondsEarned
-        )
-        .analyticsScreen(.quizRewardResult)
     }
 }
 
@@ -259,6 +240,7 @@ private extension QuizGameView {
         if result.success {
             finalDiamondsEarned = baseDiamonds * 2
             let earnedByAd = finalDiamondsEarned - baseDiamonds
+            quizGame.completeGame(multiplier: 2.0)
 
             AnalyticsService.shared.logAdWatchCompleted(
                 adRewardFlowID: flowID,
@@ -266,14 +248,18 @@ private extension QuizGameView {
                 rewardAmount: earnedByAd,
                 adWatchDurationSec: result.watchDurationSec
             )
-            quizGame.completeGame(multiplier: 2.0)
-            HapticService.shared.trigger(.success)
-            PopupManager.shared.replace { rewardPopupOverlay }
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
                 rewardType: .diamond,
                 rewardAmount: earnedByAd
             )
+
+            dismiss()
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                ToastManager.shared.show("퀴즈에서 얻은 다이아 2배 획득!")
+                HapticService.shared.trigger(.success)
+            }
         } else {
             quizGame.completeGame(multiplier: 1.0)
             PopupManager.shared.dismiss()
