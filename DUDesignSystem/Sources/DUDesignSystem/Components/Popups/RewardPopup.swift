@@ -57,7 +57,7 @@ public struct RewardPopup: View {
                 ItemLabel(text: "\(amount)", icon: .diamond, iconSize: .size24, font: .headline, color: .black300)
             case .gold(let amount):
                 ItemLabel(
-                    text: "\(amount)",
+                    text: "\(amount.formatted())",
                     icon: .coinBag,
                     iconSize: .size24,
                     font: .headline,
