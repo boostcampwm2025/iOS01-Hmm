@@ -103,6 +103,7 @@
 				Production/Presentation/Intro/NicknameSetupView.swift,
 				Production/Presentation/Intro/TutorialPageView.swift,
 				Production/Presentation/Intro/TutorialView.swift,
+				Production/Presentation/LevelUpEffectManager.swift,
 				Production/Presentation/LevelUpEffectView.swift,
 				Production/Presentation/MainView.swift,
 				Production/Presentation/MissionView.swift,
