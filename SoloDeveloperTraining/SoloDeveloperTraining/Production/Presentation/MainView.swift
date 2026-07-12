@@ -511,7 +511,7 @@ private extension MainView {
                     SoundService.shared.trigger(.click)
                     Task { await handleExitBonusAd() }
                 },
-                item: .gold(max(0, workGameSession.actionGoldDelta))
+                item: .gold(max(0, workGameSession.actionGoldDelta).formatted)
             )
             .analyticsScreen(.bonus)
         }
