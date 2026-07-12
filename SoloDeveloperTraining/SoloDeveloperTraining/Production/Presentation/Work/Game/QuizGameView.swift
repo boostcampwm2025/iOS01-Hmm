@@ -55,10 +55,6 @@ struct QuizGameView: View {
         }
         .onChange(of: quizGame.phase) { _, newValue in
             AnalyticsService.shared.enterScreen(screenID)
-            let phase = quizGame.phase
-            if phase == .showingExplanation && quizGame.state.currentAnswerResult == .correct {
-
-            }
         }
         .onDisappear { SoundService.shared.stopAllSFX() }
     }
@@ -208,6 +204,7 @@ struct QuizGameView: View {
             },
             adAction: {
                 SoundService.shared.trigger(.click)
+                PopupManager.shared.dismiss()
                 Task { await handleWatchAd() }
             },
             item: .diamond(quizGame.state.totalDiamondsEarned)
@@ -253,16 +250,13 @@ private extension QuizGameView {
                 rewardType: .diamond,
                 rewardAmount: earnedByAd
             )
-
             dismiss()
-
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 ToastManager.shared.show("퀴즈에서 얻은 다이아 2배 획득!")
                 HapticService.shared.trigger(.success)
             }
         } else {
             quizGame.completeGame(multiplier: 1.0)
-            PopupManager.shared.dismiss()
             dismiss()
         }
     }
