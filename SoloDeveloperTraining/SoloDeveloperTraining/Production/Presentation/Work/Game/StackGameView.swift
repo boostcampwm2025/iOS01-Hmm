@@ -253,6 +253,10 @@ private extension StackGameView {
         )
 
         let result = await AdService.shared.showAdWithResult(.interstitial)
+        if result.isOffline {
+            PopupManager.shared.showNoNetworkAlert()
+            return
+        }
 
         if result.success {
             AnalyticsService.shared.logAdWatchCompleted(

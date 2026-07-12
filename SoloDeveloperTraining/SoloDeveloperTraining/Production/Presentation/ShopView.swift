@@ -254,6 +254,10 @@ private extension ShopView {
         )
 
         let result = await AdService.shared.showAdWithResult(.interstitial)
+        if result.isOffline {
+            PopupManager.shared.showNoNetworkAlert()
+            return
+        }
         enhanceAdRewardFlowID = nil
         guard result.success else { return }
 
@@ -263,6 +267,7 @@ private extension ShopView {
             rewardAmount: 0,
             adWatchDurationSec: result.watchDurationSec
         )
+        HapticService.shared.trigger(.success)
         adBonusAppliedTypes.insert(typeKey)
         UserDefaults.standard.set(Array(adBonusAppliedTypes), forKey: Constant.UserDefaultsKey.equipmentAdBonus)
         AnalyticsService.shared.logAdRewardClaimed(

@@ -219,7 +219,6 @@ struct QuizGameView: View {
 // MARK: - Helper
 private extension QuizGameView {
     func handleWatchAd() async {
-        PopupManager.shared.dismiss()
         guard let flowID = adRewardFlowID else { return }
         let baseDiamonds = quizGame.state.totalDiamondsEarned
 
@@ -231,11 +230,17 @@ private extension QuizGameView {
         )
 
         let result = await AdService.shared.showAdWithResult(.interstitial)
+        if result.isOffline {
+            PopupManager.shared.dismiss()
+            PopupManager.shared.showNoNetworkAlert()
+            return
+        }
         adRewardFlowID = nil
 
         if result.success {
             finalDiamondsEarned = baseDiamonds * 2
             let earnedByAd = finalDiamondsEarned - baseDiamonds
+            quizGame.completeGame(multiplier: 2.0)
 
             AnalyticsService.shared.logAdWatchCompleted(
                 adRewardFlowID: flowID,
@@ -243,19 +248,21 @@ private extension QuizGameView {
                 rewardAmount: earnedByAd,
                 adWatchDurationSec: result.watchDurationSec
             )
-            quizGame.completeGame(multiplier: 2.0)
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
                 rewardType: .diamond,
                 rewardAmount: earnedByAd
             )
+
             dismiss()
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 ToastManager.shared.show("퀴즈에서 얻은 다이아 2배 획득!")
+                HapticService.shared.trigger(.success)
             }
         } else {
             quizGame.completeGame(multiplier: 1.0)
+            PopupManager.shared.dismiss()
             dismiss()
         }
     }
