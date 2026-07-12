@@ -79,12 +79,15 @@ private extension ShopView {
         ScrollView {
             LazyVStack(spacing: TokenSpacing.md) {
                 ForEach(displayItems) { item in
+                    let itemState = ItemState(item: item)
                     ItemRow(
                         imageName: item.imageName,
                         title: item.displayTitle,
                         description: item.description,
-                        buttonType: item.cost.itemButtonType,
-                        buttonState: ItemState(item: item).itemButtonState
+                        buttonType: itemState == .reachedMax
+                            ? .singleLine(text: "MAX", icon: nil)
+                        : item.cost.itemButtonType,
+                        buttonState: itemState.itemButtonState
                     ) {
                         SoundService.shared.trigger(.click)
                         purchase(item: item)
