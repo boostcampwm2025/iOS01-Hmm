@@ -15,7 +15,7 @@ final class Consumable: Item {
         return type.displayTitle + " (보유:\(count)개)"
     }
     var description: String {
-        return "사용시 골드 획득량 \(type.buffMultiplier)배 증가"
+        return "사용시 업무 골드 획득 x\(type.buffMultiplier)"
     }
     var cost: Cost {
         return type.cost
