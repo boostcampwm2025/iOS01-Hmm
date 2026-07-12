@@ -11,7 +11,7 @@ public struct RewardPopup: View {
 
     public enum RewardPopupItem {
         case diamond(Int)
-        case gold(Int)
+        case gold(String)
 
         var name: String {
             switch self {
@@ -57,7 +57,7 @@ public struct RewardPopup: View {
                 ItemLabel(text: "\(amount)", icon: .diamond, iconSize: .size24, font: .headline, color: .black300)
             case .gold(let amount):
                 ItemLabel(
-                    text: "\(amount.formatted())",
+                    text: amount,
                     icon: .coinBag,
                     iconSize: .size24,
                     font: .headline,
@@ -114,7 +114,7 @@ public struct RewardPopup: View {
             adText: "2배 얻기",
             cancelAction: {},
             adAction: {},
-            item: .gold(1000)
+            item: .gold("1K")
         )
     }
     .padding(.vertical, TokenSpacing.lg)
