@@ -112,17 +112,6 @@ struct MainView: View {
             guard !isOfflineRewardPopupShowing else { return }
             careerSystem?.updateCareer()
         }
-        .overlay {
-            if showLevelUpEffect {
-                LevelUpEffectView(
-                    isPresented: $showLevelUpEffect,
-                    previousCareerTitle: previousCareer?.rawValue ?? "",
-                    currentCareerTitle: leveledUpCareer?.rawValue ?? ""
-                )
-                .transition(TokenTransition.overlay.effect)
-            }
-        }
-        .animation(TokenTransition.overlay.animation, value: showLevelUpEffect)
         .onChange(of: showLevelUpEffect) { _, isPresented in
             if isPresented && workGameSession.isInProgress {
                 workGameSession.isPauseRequested = true
@@ -348,6 +337,11 @@ private extension MainView {
                 showLevelUpEffect = isLevelUp
                 if isLevelUp {
                     SoundService.shared.trigger(.levelUp)
+                    LevelUpEffectManager.shared.show(
+                        previousCareerTitle: oldCareer.rawValue,
+                        currentCareerTitle: newCareer.rawValue,
+                        onDismiss: { showLevelUpEffect = false }
+                    )
                 }
             }
         }
@@ -401,7 +395,15 @@ private extension MainView {
         if let pendingCareer = user.record.scenarioProgress.levelupQueue.first {
             previousCareer = user.career
             leveledUpCareer = pendingCareer
-            showLevelUpEffect = pendingCareer != .unemployed
+            let shouldShow = pendingCareer != .unemployed
+            showLevelUpEffect = shouldShow
+            if shouldShow {
+                LevelUpEffectManager.shared.show(
+                    previousCareerTitle: user.career.rawValue,
+                    currentCareerTitle: pendingCareer.rawValue,
+                    onDismiss: { showLevelUpEffect = false }
+                )
+            }
         }
     }
 
@@ -563,7 +565,9 @@ private extension MainView {
                 rewardAmount: bonusGold,
                 adWatchDurationSec: result.watchDurationSec
             )
-            applyExitBonus()
+            applyExitBonus(onToastShown: bonusGold > 0 ? { [self] in
+                user.record.record(.earnMoney(bonusGold))
+            } : nil)
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
                 rewardType: .gold,
@@ -605,13 +609,15 @@ private extension MainView {
         AppPreferences.shared.hasClaimedGameResetReward = true
     }
 
-    func applyExitBonus() {
+    func applyExitBonus(onToastShown: (() -> Void)? = nil) {
         let bonusGold = max(0, workGameSession.actionGoldDelta)
         if bonusGold > 0 {
             user.wallet.addGold(bonusGold)
-            user.record.record(.earnMoney(bonusGold))
         }
-        ToastManager.shared.show(bonusGold > 0 ? "업무에서 얻은 보상 2배 획득!" : "업무 보너스를 받을 재화가 없습니다.")
+        ToastManager.shared.show(
+            bonusGold > 0 ? "업무에서 얻은 보상 2배 획득!" : "업무 보너스를 받을 재화가 없습니다.",
+            onShown: onToastShown
+        )
     }
 
     func exitWorkGame() {
