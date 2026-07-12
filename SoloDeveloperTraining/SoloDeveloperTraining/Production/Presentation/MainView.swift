@@ -496,22 +496,22 @@ private extension MainView {
     func showExitBonusPopup() {
         AnalyticsService.shared.enterScreen(.bonus)
         trackExitBonusAdOfferIfNeeded()
+
         PopupManager.shared.show {
-            NoticePopup(
-                type: .ad(
-                    cancelText: "그냥 나가기",
-                    adText: "보너스 받기",
-                    cancelAction: {
-                        SoundService.shared.trigger(.click)
-                        handleExitWithoutBonus()
-                    },
-                    adAction: {
-                        SoundService.shared.trigger(.click)
-                        Task { await handleExitBonusAd() }
-                    }
-                ),
+            RewardPopup(
                 title: "보너스",
-                text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다."
+                text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다.",
+                cancelText: "그냥 나가기",
+                adText: "2배 얻기",
+                cancelAction: {
+                    SoundService.shared.trigger(.click)
+                    handleExitWithoutBonus()
+                },
+                adAction: {
+                    SoundService.shared.trigger(.click)
+                    Task { await handleExitBonusAd() }
+                },
+                item: .gold(max(0, workGameSession.actionGoldDelta))
             )
             .analyticsScreen(.bonus)
         }
