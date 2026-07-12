@@ -40,6 +40,7 @@ struct MainView: View {
     @State private var offlineRewardGold: Int = 0
     @State private var offlineRewardHours: Double = 0.0
     @State private var hasCheckedOfflineReward: Bool = false
+    @State private var isOfflineRewardPopupShowing: Bool = false
     @State private var offlineRewardAdFlowID: String?
 
     // 레벨업 이펙트 관련
@@ -108,6 +109,7 @@ struct MainView: View {
         }
         .onChange(of: scenePhase, handleScenePhaseChange)
         .onChange(of: user.record.totalEarnedMoney) {
+            guard !isOfflineRewardPopupShowing else { return }
             careerSystem?.updateCareer()
         }
         .overlay {
@@ -392,7 +394,8 @@ private extension MainView {
     @MainActor
     func checkPendingLevelUp() {
         // 이미 시나리오가 떠 있거나 레벨업 이펙트가 진행 중이면 리턴
-        guard !showScenarioView && !showLevelUpEffect else { return }
+        // 오프라인 보상 팝업이 표시 중이면 팝업 처리 후 레벨업 진행
+        guard !showScenarioView && !showLevelUpEffect && !isOfflineRewardPopupShowing else { return }
 
         // 큐에 대기 중인 레벨업 커리어가 있다면 이펙트 다시 표시
         if let pendingCareer = user.record.scenarioProgress.levelupQueue.first {
@@ -620,6 +623,7 @@ private extension MainView {
     // MARK: - Offline Reward
 
     func showOfflineRewardPopup() {
+        isOfflineRewardPopupShowing = true
         trackOfflineRewardAdOfferIfNeeded()
         PopupManager.shared.show {
             NoticePopup(
@@ -690,6 +694,7 @@ private extension MainView {
         let result = await AdService.shared.showAdWithResult(.interstitial)
         if result.isOffline {
             PopupManager.shared.showNoNetworkAlert()
+            isOfflineRewardPopupShowing = false
             return
         }
         offlineRewardAdFlowID = nil
@@ -713,6 +718,8 @@ private extension MainView {
         }
         offlineRewardGold = 0
         offlineRewardHours = 0.0
+        isOfflineRewardPopupShowing = false
+        careerSystem?.updateCareer()
         checkPendingLevelUp()
         if !showLevelUpEffect {
             restoreScenarioIfNeeded()
@@ -735,6 +742,8 @@ private extension MainView {
         offlineRewardHours = 0.0
         // 다음 체크를 위해 플래그 리셋
         hasCheckedOfflineReward = false
+        isOfflineRewardPopupShowing = false
+        careerSystem?.updateCareer()
         checkPendingLevelUp()
         if !showLevelUpEffect {
             restoreScenarioIfNeeded()
