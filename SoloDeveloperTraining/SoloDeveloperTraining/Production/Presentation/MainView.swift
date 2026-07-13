@@ -40,6 +40,7 @@ struct MainView: View {
     @State private var offlineRewardGold: Int = 0
     @State private var offlineRewardHours: Double = 0.0
     @State private var hasCheckedOfflineReward: Bool = false
+    @State private var isOfflineRewardPopupShowing: Bool = false
     @State private var offlineRewardAdFlowID: String?
 
     // 레벨업 이펙트 관련
@@ -108,19 +109,9 @@ struct MainView: View {
         }
         .onChange(of: scenePhase, handleScenePhaseChange)
         .onChange(of: user.record.totalEarnedMoney) {
+            guard !isOfflineRewardPopupShowing else { return }
             careerSystem?.updateCareer()
         }
-        .overlay {
-            if showLevelUpEffect {
-                LevelUpEffectView(
-                    isPresented: $showLevelUpEffect,
-                    previousCareerTitle: previousCareer?.rawValue ?? "",
-                    currentCareerTitle: leveledUpCareer?.rawValue ?? ""
-                )
-                .transition(TokenTransition.overlay.effect)
-            }
-        }
-        .animation(TokenTransition.overlay.animation, value: showLevelUpEffect)
         .onChange(of: showLevelUpEffect) { _, isPresented in
             if isPresented && workGameSession.isInProgress {
                 workGameSession.isPauseRequested = true
@@ -346,6 +337,11 @@ private extension MainView {
                 showLevelUpEffect = isLevelUp
                 if isLevelUp {
                     SoundService.shared.trigger(.levelUp)
+                    LevelUpEffectManager.shared.show(
+                        previousCareerTitle: oldCareer.rawValue,
+                        currentCareerTitle: newCareer.rawValue,
+                        onDismiss: { showLevelUpEffect = false }
+                    )
                 }
             }
         }
@@ -392,13 +388,22 @@ private extension MainView {
     @MainActor
     func checkPendingLevelUp() {
         // 이미 시나리오가 떠 있거나 레벨업 이펙트가 진행 중이면 리턴
-        guard !showScenarioView && !showLevelUpEffect else { return }
+        // 오프라인 보상 팝업이 표시 중이면 팝업 처리 후 레벨업 진행
+        guard !showScenarioView && !showLevelUpEffect && !isOfflineRewardPopupShowing else { return }
 
         // 큐에 대기 중인 레벨업 커리어가 있다면 이펙트 다시 표시
         if let pendingCareer = user.record.scenarioProgress.levelupQueue.first {
             previousCareer = user.career
             leveledUpCareer = pendingCareer
-            showLevelUpEffect = pendingCareer != .unemployed
+            let shouldShow = pendingCareer != .unemployed
+            showLevelUpEffect = shouldShow
+            if shouldShow {
+                LevelUpEffectManager.shared.show(
+                    previousCareerTitle: user.career.rawValue,
+                    currentCareerTitle: pendingCareer.rawValue,
+                    onDismiss: { showLevelUpEffect = false }
+                )
+            }
         }
     }
 
@@ -496,22 +501,22 @@ private extension MainView {
     func showExitBonusPopup() {
         AnalyticsService.shared.enterScreen(.bonus)
         trackExitBonusAdOfferIfNeeded()
+
         PopupManager.shared.show {
-            NoticePopup(
-                type: .ad(
-                    cancelText: "그냥 나가기",
-                    adText: "보너스 받기",
-                    cancelAction: {
-                        SoundService.shared.trigger(.click)
-                        handleExitWithoutBonus()
-                    },
-                    adAction: {
-                        SoundService.shared.trigger(.click)
-                        Task { await handleExitBonusAd() }
-                    }
-                ),
+            RewardPopup(
                 title: "보너스",
-                text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다."
+                text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다.",
+                cancelText: "그냥 나가기",
+                adText: "2배 얻기",
+                cancelAction: {
+                    SoundService.shared.trigger(.click)
+                    handleExitWithoutBonus()
+                },
+                adAction: {
+                    SoundService.shared.trigger(.click)
+                    Task { await handleExitBonusAd() }
+                },
+                item: .gold(max(0, workGameSession.actionGoldDelta).formatted)
             )
             .analyticsScreen(.bonus)
         }
@@ -560,7 +565,9 @@ private extension MainView {
                 rewardAmount: bonusGold,
                 adWatchDurationSec: result.watchDurationSec
             )
-            applyExitBonus()
+            applyExitBonus(onToastShown: bonusGold > 0 ? { [self] in
+                user.record.record(.earnMoney(bonusGold))
+            } : nil)
             AnalyticsService.shared.logAdRewardClaimed(
                 adRewardFlowID: flowID,
                 rewardType: .gold,
@@ -602,13 +609,15 @@ private extension MainView {
         AppPreferences.shared.hasClaimedGameResetReward = true
     }
 
-    func applyExitBonus() {
+    func applyExitBonus(onToastShown: (() -> Void)? = nil) {
         let bonusGold = max(0, workGameSession.actionGoldDelta)
         if bonusGold > 0 {
             user.wallet.addGold(bonusGold)
-            user.record.record(.earnMoney(bonusGold))
         }
-        ToastManager.shared.show(bonusGold > 0 ? "업무에서 얻은 보상 2배 획득!" : "업무 보너스를 받을 재화가 없습니다.")
+        ToastManager.shared.show(
+            bonusGold > 0 ? "업무에서 얻은 보상 2배 획득!" : "업무 보너스를 받을 재화가 없습니다.",
+            onShown: onToastShown
+        )
     }
 
     func exitWorkGame() {
@@ -620,6 +629,7 @@ private extension MainView {
     // MARK: - Offline Reward
 
     func showOfflineRewardPopup() {
+        isOfflineRewardPopupShowing = true
         trackOfflineRewardAdOfferIfNeeded()
         PopupManager.shared.show {
             NoticePopup(
@@ -690,6 +700,7 @@ private extension MainView {
         let result = await AdService.shared.showAdWithResult(.interstitial)
         if result.isOffline {
             PopupManager.shared.showNoNetworkAlert()
+            isOfflineRewardPopupShowing = false
             return
         }
         offlineRewardAdFlowID = nil
@@ -713,6 +724,8 @@ private extension MainView {
         }
         offlineRewardGold = 0
         offlineRewardHours = 0.0
+        isOfflineRewardPopupShowing = false
+        careerSystem?.updateCareer()
         checkPendingLevelUp()
         if !showLevelUpEffect {
             restoreScenarioIfNeeded()
@@ -735,6 +748,8 @@ private extension MainView {
         offlineRewardHours = 0.0
         // 다음 체크를 위해 플래그 리셋
         hasCheckedOfflineReward = false
+        isOfflineRewardPopupShowing = false
+        careerSystem?.updateCareer()
         checkPendingLevelUp()
         if !showLevelUpEffect {
             restoreScenarioIfNeeded()
