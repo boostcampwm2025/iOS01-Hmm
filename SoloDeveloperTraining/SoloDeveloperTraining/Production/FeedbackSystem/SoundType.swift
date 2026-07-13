@@ -51,7 +51,7 @@ enum SoundType: String {
     case pop
 
     // MARK: - 04. 업무 - 공통
-    /// 아이템(커피/박하스) 소비 시
+    /// 아이템(커피/바카스) 소비 시
     case drink
 
     // MARK: - 05. 상점 - 아이템

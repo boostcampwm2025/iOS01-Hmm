@@ -71,6 +71,11 @@ final class Skill: Hashable {
         return Double(baseGold + multiplier * level)
     }
 
+    /// 레벨업 시 획득 재화 증가량
+    var gainGoldIncrease: Double {
+        return gainGoldAfterUpgrade - gainGold
+    }
+
     /// 레벨업 시 획득 재화량 (스킬에 국한된 스탯)
     var gainGoldAfterUpgrade: Double {
         let baseGold: Int

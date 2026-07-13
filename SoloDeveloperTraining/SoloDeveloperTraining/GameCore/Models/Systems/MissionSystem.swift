@@ -38,10 +38,11 @@ final class MissionSystem {
         checkHasCompletedMission()
     }
 
-    func claimMissionReward(mission: Mission, wallet: Wallet) {
+    func claimMissionReward(mission: Mission, wallet: Wallet, record: Record) {
         let reward = mission.claim()
         wallet.addGold(reward.gold)
         wallet.addDiamond(reward.diamond)
+        record.record(.earnMoney(reward.gold))
 
         sortMissions()
         checkHasCompletedMission()

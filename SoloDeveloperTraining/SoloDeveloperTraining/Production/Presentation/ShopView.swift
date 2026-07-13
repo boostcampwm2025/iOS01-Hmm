@@ -14,12 +14,9 @@ private enum Constant {
     }
 
     enum Text {
-        static let enhanceSuccessTitle = "강화 성공"
-        static let enhanceFailureTitle = "강화 실패"
         static let enhanceSuccessMessage = "강화에 성공했습니다!"
         static let enhanceFailureMessage = "강화에 실패했습니다.\n비용은 소모되었습니다."
 
-        static let purchaseFailureTitle = "구매 실패"
         static let purchaseFailureMessage = "구매에 실패했습니다."
     }
 
@@ -82,12 +79,15 @@ private extension ShopView {
         ScrollView {
             LazyVStack(spacing: TokenSpacing.md) {
                 ForEach(displayItems) { item in
+                    let itemState = ItemState(item: item)
                     ItemRow(
                         imageName: item.imageName,
                         title: item.displayTitle,
                         description: item.description,
-                        buttonType: item.cost.itemButtonType,
-                        buttonState: ItemState(item: item).itemButtonState
+                        buttonType: itemState == .reachedMax
+                            ? .singleLine(text: "MAX", icon: nil)
+                        : item.cost.itemButtonType,
+                        buttonState: itemState.itemButtonState
                     ) {
                         SoundService.shared.trigger(.click)
                         purchase(item: item)
@@ -257,6 +257,10 @@ private extension ShopView {
         )
 
         let result = await AdService.shared.showAdWithResult(.interstitial)
+        if result.isOffline {
+            PopupManager.shared.showNoNetworkAlert()
+            return
+        }
         enhanceAdRewardFlowID = nil
         guard result.success else { return }
 
@@ -266,6 +270,7 @@ private extension ShopView {
             rewardAmount: 0,
             adWatchDurationSec: result.watchDurationSec
         )
+        HapticService.shared.trigger(.success)
         adBonusAppliedTypes.insert(typeKey)
         UserDefaults.standard.set(Array(adBonusAppliedTypes), forKey: Constant.UserDefaultsKey.equipmentAdBonus)
         AnalyticsService.shared.logAdRewardClaimed(
@@ -303,34 +308,16 @@ private extension ShopView {
                 if !isSuccess {
                     HapticService.shared.trigger(.error)
                 }
-                let title = isSuccess ? Constant.Text.enhanceSuccessTitle : Constant.Text.enhanceFailureTitle
+
                 let message = isSuccess ? Constant.Text.enhanceSuccessMessage : Constant.Text.enhanceFailureMessage
-                PopupManager.shared.show {
-                    NoticePopup(
-                        type: .default(buttonText: "확인", action: { PopupManager.shared.dismiss() }),
-                        title: title,
-                        text: message
-                    )
-                }
+                ToastManager.shared.show(message)
             }
         } catch let error as PurchasingError {
             HapticService.shared.trigger(.error)
-            PopupManager.shared.show {
-                NoticePopup(
-                    type: .default(buttonText: "확인", action: { PopupManager.shared.dismiss() }),
-                    title: Constant.Text.purchaseFailureTitle,
-                    text: error.message
-                )
-            }
+            ToastManager.shared.show(error.message)
         } catch {
             HapticService.shared.trigger(.error)
-            PopupManager.shared.show {
-                NoticePopup(
-                    type: .default(buttonText: "확인", action: { PopupManager.shared.dismiss() }),
-                    title: Constant.Text.purchaseFailureTitle,
-                    text: Constant.Text.purchaseFailureMessage
-                )
-            }
+            ToastManager.shared.show(Constant.Text.purchaseFailureMessage)
         }
     }
 }

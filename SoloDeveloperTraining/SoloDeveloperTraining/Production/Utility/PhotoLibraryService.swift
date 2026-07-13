@@ -13,7 +13,7 @@ enum PhotoLibraryService {
         completion: @escaping (Bool) -> Void
     ) {
         PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
-            DispatchQueue.main.async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 completion(status == .authorized || status == .limited)
             }
         }

@@ -6,6 +6,29 @@
 import SwiftUI
 import DUDesignSystem
 
+private enum SettingType {
+    case bgSound
+    case effectSound
+    case haptic
+
+    var title: String {
+        switch self {
+        case .bgSound: return "배경음"
+        case .effectSound: return "효과음"
+        case .haptic: return "햅틱"
+        }
+    }
+
+    func imageName(isOn: Bool) -> String {
+        switch self {
+        case .bgSound, .effectSound:
+            return isOn ? "soundOn" : "soundOff"
+        case .haptic:
+            return isOn ? "hapticOn" : "hapticOff"
+        }
+    }
+}
+
 struct FeedbackSettingView: View {
     let onClose: (() -> Void)?
 
@@ -20,21 +43,24 @@ struct FeedbackSettingView: View {
 
                 VStack(spacing: TokenSpacing.xl) {
                     soundSettingRow(
-                        title: "배경음",
+                        type: .bgSound,
                         isOn: sound.isBGMEnabled,
                         setOn: { sound.isBGMEnabled = $0 },
                         volume: bgmVolumeBinding
                     )
                     soundSettingRow(
-                        title: "효과음",
+                        type: .effectSound,
                         isOn: sound.isSFXEnabled,
                         setOn: { sound.isSFXEnabled = $0 },
                         volume: sfxVolumeBinding
                     )
                     settingRow(
-                        title: "햅틱",
+                        type: .haptic,
                         isOn: haptic.isEnabled,
-                        setOn: { haptic.isEnabled = $0 }
+                        setOn: {
+                            haptic.isEnabled = $0
+                            haptic.trigger(.medium)
+                        }
                     )
                 }
 
@@ -74,11 +100,11 @@ private extension FeedbackSettingView {
         )
     }
 
-    func settingRow(title: String, isOn: Bool, setOn: @escaping (Bool) -> Void) -> some View {
+    func settingRow(type: SettingType, isOn: Bool, setOn: @escaping (Bool) -> Void) -> some View {
         HStack {
-            ItemLabel(text: title, font: .subheadline, color: .black300)
+            ItemLabel(text: type.title, font: .subheadline, color: .black300)
             Spacer()
-            Image.duImage(isOn ? "settingOn" : "settingOff")
+            Image.duImage(type.imageName(isOn: isOn))
                 .resizable()
                 .frame(width: 28, height: 28)
                 .onTapGesture {
@@ -90,13 +116,13 @@ private extension FeedbackSettingView {
     }
 
     func soundSettingRow(
-        title: String,
+        type: SettingType,
         isOn: Bool,
         setOn: @escaping (Bool) -> Void,
         volume: Binding<Double>
     ) -> some View {
         VStack(spacing: TokenSpacing.sm) {
-            settingRow(title: title, isOn: isOn, setOn: setOn)
+            settingRow(type: type, isOn: isOn, setOn: setOn)
             SettingSliderView(value: volume, isEnabled: isOn)
         }
     }
@@ -119,11 +145,12 @@ private extension FeedbackSettingView {
                 ItemLabel(text: "라이선스", font: .caption, color: .black300)
                 VStack(alignment: .leading, spacing: TokenSpacing.none) {
                     ItemLabel(
-                        text: "개발자키우기 앱에는 오픈소스가 사용되었습니다.",
+                        text: "개발자 키우기 앱에는 오픈소스가 사용되었습니다.",
                         font: .label,
                         color: .black300,
                         textAlignment: .leading
                     )
+                    .opacity(TokenOpacity.opacity60)
                 }
             }
         }

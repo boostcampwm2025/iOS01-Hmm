@@ -21,11 +21,12 @@ struct LevelUpEffectView: View {
         case start, loop
     }
 
-    @Binding var isPresented: Bool
+    var onDismiss: () -> Void
     let previousCareerTitle: String
     let currentCareerTitle: String
 
     @State private var phase: Phase = .start
+    @State private var isInProgress: Bool = false
     @State private var showTitleBox: Bool = false
     @State private var gradientOpacity: CGFloat = 0
     @State private var titleText: String = ""
@@ -35,7 +36,9 @@ struct LevelUpEffectView: View {
             Color.black300EventDim
                 .ignoresSafeArea()
                 .onTapGesture {
-                    isPresented = false
+                    if !isInProgress {
+                        onDismiss()
+                    }
                 }
 
             VStack(spacing: TokenSpacing.xs) {
@@ -116,6 +119,8 @@ private extension LevelUpEffectView {
 // MARK: - helpers
 private extension LevelUpEffectView {
     func startAnimation() {
+        isInProgress = true
+        HapticService.shared.trigger(.levelUp)
         guard phase == .start else { return }
 
         showTitleBox = false
@@ -134,13 +139,17 @@ private extension LevelUpEffectView {
             gradientOpacity = 1
             titleText = currentCareerTitle
         }
+
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(1))
+            isInProgress = false
+        }
     }
 }
 
 #Preview {
-    @Previewable @State var isPresented: Bool = true
     LevelUpEffectView(
-        isPresented: $isPresented,
+        onDismiss: {},
         previousCareerTitle: "이전 개발자",
         currentCareerTitle: "이후 개발자"
     )

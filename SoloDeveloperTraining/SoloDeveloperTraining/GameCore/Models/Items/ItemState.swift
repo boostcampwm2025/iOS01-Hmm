@@ -20,9 +20,9 @@ enum ItemState {
             return
         }
 
-        // 주거 아이템이 이미 장착되어 있으면 잠김
+        // 주거 아이템이 이미 장착되어 있으면 최고 레벨(장착중)
         if item.isEquipped && item.category == .housing {
-            self = .locked
+            self = .reachedMax
             return
         }
 

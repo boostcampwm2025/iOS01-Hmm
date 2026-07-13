@@ -22,15 +22,15 @@ enum Career: String, CaseIterable, Codable {
     var description: String {
         switch self {
         case .unemployed:
-            return "아직 아무것도 시작하지 않았지만, 시간은 가장 많다"
+            return "빈털털이지만 시간 빌게이츠"
         case .laptopOwner:
             return "별다방 입장권 획득"
         case .aspiringDeveloper:
             return "헬로 월드(Hello World) 장인"
         case .juniorDeveloper:
-            return "에러는 많고 자신감은 적다"
+            return "에러 풀스택, 자신감 무스택"
         case .normalDeveloper:
-            return "이유는 몰라도 코드는 돌아간다"
+            return "작동 원리 미상"
         case .nightOwlDeveloper:
             return "해 뜨는게 퇴근 신호"
         case .skilledDeveloper:
@@ -38,7 +38,7 @@ enum Career: String, CaseIterable, Codable {
         case .famousDeveloper:
             return "개발자들의 연예인"
         case .allRounderDeveloper:
-            return "맡다 보니 전부 다 하게 됐다"
+            return "어쩌다 만능 노예"
         case .worldClassDeveloper:
             return "0과 1로 대화 가능"
         }
