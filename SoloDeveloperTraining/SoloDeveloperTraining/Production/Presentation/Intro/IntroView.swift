@@ -6,75 +6,98 @@
 //
 
 import SwiftUI
-
-private enum Constant {
-    enum Animation {
-        static let transitionDuration: Double = 0.5  // 화면 전환
-        static let blinkingDuration: Double = 1.0    // 깜빡임
-    }
-
-    enum Layout {
-        static let bottomPadding: CGFloat = 100
-    }
-
-    enum Opacity {
-        static let blinking: Double = 0.3
-        static let normal: Double = 1.0
-    }
-
-    enum Text {
-        static let touchPrompt = "화면을 터치해 주세요"
-    }
-}
+import DUDesignSystem
 
 struct IntroView: View {
-    @State private var isBlinking = true
+    @State private var isPlaying = false
+    @State private var scenarioManager: ScenarioManager?
+
     @Binding var hasSeenIntro: Bool
     @Binding var showNicknameSetup: Bool
+
     let user: User?
+    let scenarioRepository: ScenarioRepository
+    var isPolicyReady: Bool
+    var hasPolicyError: Bool
+    var onRetry: () -> Void
 
     var body: some View {
         ZStack {
             backgroundImage
-            touchPromptView
+            if hasPolicyError {
+                errorView
+            } else if isPolicyReady {
+                touchPromptView
+            }
+        }
+        .analyticsScreen(.splash)
+        .onAppear {
+            SoundService.shared.playBGM(.splash)
         }
         .onTapGesture {
+            if hasPolicyError {
+                onRetry()
+                return
+            }
+            guard isPolicyReady else { return }
+
             if user == nil {
-                showNicknameSetup = true
+                guard let scenario = scenarioRepository.fetchScenario(for: .unemployed) else { return }
+
+                let manager = ScenarioManager(record: Record())
+                manager.startScenario(scenario)
+                self.scenarioManager = manager
+                SoundService.shared.playBGM(.scenario)
             } else {
-                withAnimation(.easeOut(duration: Constant.Animation.transitionDuration)) {
-                    hasSeenIntro = true
-                }
+                hasSeenIntro = true
+            }
+        }
+        .fullScreenCover(item: $scenarioManager) { manager in
+            ZStack {
+                Color.black300.ignoresSafeArea()
+                ScenarioStoryView(
+                    user: nil,
+                    manager: manager,
+                    repository: scenarioRepository,
+                    onComplete: {
+                        scenarioManager = nil
+                        hasSeenIntro = true
+                        showNicknameSetup = true
+                        SoundService.shared.playBGM(.splash)
+                    }
+                )
             }
         }
         .ignoresSafeArea()
-        .onAppear {
-            isBlinking = false
-        }
     }
 }
 
 private extension IntroView {
     var backgroundImage: some View {
-        GeometryReader { geometry in
-            Image(.appLaunchScreen)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: geometry.size.width, height: geometry.size.height)
-                .clipped()
-        }
+        Color.clear
+            .overlay(
+                Image(.appLaunchScreen)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            )
+            .clipped()
     }
 
     var touchPromptView: some View {
         VStack {
             Spacer()
+            ItemLabel(text: "화면을 터치해 주세요.", font: .title2, color: .white300)
+                .blinkLoop(isPlaying: isPlaying)
+                .padding(.bottom, TokenGrid.marginBottomLarge)
+                .onAppear { isPlaying = true }
+        }
+    }
 
-            Text(Constant.Text.touchPrompt)
-                .textStyle(.title2)
-                .foregroundColor(.white)
-                .opacity(isBlinking ? Constant.Opacity.blinking : Constant.Opacity.normal)
-                .animation(.easeInOut(duration: Constant.Animation.blinkingDuration).repeatForever(autoreverses: true), value: isBlinking)
-                .padding(.bottom, Constant.Layout.bottomPadding)
+    var errorView: some View {
+        VStack {
+            Spacer()
+            ItemLabel(text: "네트워크 오류가 발생했습니다.\n화면을 터치하여 재시도해 주세요.", font: .title2, color: .white300)
+                .padding(.bottom, TokenGrid.marginBottomLarge)
         }
     }
 }
@@ -83,6 +106,10 @@ private extension IntroView {
     IntroView(
         hasSeenIntro: .constant(false),
         showNicknameSetup: .constant(false),
-        user: nil
+        user: nil,
+        scenarioRepository: DefaultScenarioRepository(),
+        isPolicyReady: true,
+        hasPolicyError: false,
+        onRetry: {}
     )
 }

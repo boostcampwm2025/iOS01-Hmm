@@ -38,13 +38,20 @@ final class MissionSystem {
         checkHasCompletedMission()
     }
 
-    func claimMissionReward(mission: Mission, wallet: Wallet) {
+    func claimMissionReward(mission: Mission, wallet: Wallet, record: Record) {
         let reward = mission.claim()
         wallet.addGold(reward.gold)
         wallet.addDiamond(reward.diamond)
+        record.record(.earnMoney(reward.gold))
 
         sortMissions()
         checkHasCompletedMission()
+    }
+
+    /// 환생 시 미션 시스템 초기화
+    func reset() {
+        missions = MissionFactory.createAllMissions()
+        hasCompletedMission = false
     }
 
     private func checkHasCompletedMission() {

@@ -10,6 +10,13 @@ import Foundation
 struct SkillState {
     let skill: Skill
     let itemState: ItemState
+    let totalGainGold: Double
+}
+
+enum SkillUnlockRequirement {
+    case career(game: GameType)
+    case beginner(game: GameType, level: Int)
+    case intermediate(game: GameType, level: Int)
 }
 
 final class SkillSystem {
@@ -39,12 +46,26 @@ final class SkillSystem {
             let bucketIndex = gameIndex * skillTierCount + tierIndex
             buckets[bucketIndex] = skill
         }
-        return buckets
-            .compactMap { $0 }
-            .map { skill in SkillState(
+
+        let skillList = buckets.compactMap { $0 }
+
+        var totalByGame: [GameType: Double] = [:]
+        for game in GameType.allCases {
+            let total = skillList
+                .filter { $0.key.game == game }
+                .reduce(0.0) { $0 + $1.gainGold }
+            totalByGame[game] = game == .dodge
+                ? total * Policy.Game.Dodge.bugDodgeGoldMultiplier
+                : total
+        }
+
+        return skillList.map { skill in
+            SkillState(
                 skill: skill,
-                itemState: getItemState(for: skill))
-            }
+                itemState: getItemState(for: skill),
+                totalGainGold: totalByGame[skill.key.game] ?? 0
+            )
+        }
     }
 
     /// 스킬 항목을 구매하여 레벨 업그레이드
@@ -62,6 +83,40 @@ final class SkillSystem {
         let costBeforeUpgrade = skill.upgradeCost
         try skill.upgrade()
         pay(cost: costBeforeUpgrade)
+    }
+
+    /// 해금 조건
+    func unlockRequirement(for skill: Skill) -> SkillUnlockRequirement {
+        switch skill.key.tier {
+        case .beginner: return .career(game: skill.key.game)
+        case .intermediate:
+            let level: Int
+            switch skill.key.game {
+            case .tap:
+                level = Policy.Skill.Tap.intermediateUnlockLevel
+            case .language:
+                level = Policy.Skill.Language.intermediateUnlockLevel
+            case .dodge:
+                level = Policy.Skill.Dodge.intermediateUnlockLevel
+            case .stack:
+                level = Policy.Skill.Stack.intermediateUnlockLevel
+            }
+            return .beginner(game: skill.key.game, level: level)
+
+        case .advanced:
+            let level: Int
+            switch skill.key.game {
+            case .tap:
+                level = Policy.Skill.Tap.advancedUnlockLevel
+            case .language:
+                level = Policy.Skill.Language.advancedUnlockLevel
+            case .dodge:
+                level = Policy.Skill.Dodge.advancedUnlockLevel
+            case .stack:
+                level = Policy.Skill.Stack.advancedUnlockLevel
+            }
+            return .intermediate(game: skill.key.game, level: level)
+        }
     }
 }
 
@@ -88,7 +143,7 @@ private extension SkillSystem {
             switch skill.key.tier {
             case .beginner:
                 guard let careerSystem = careerSystem else { return false }
-                return careerSystem.currentCareer.requiredWealth >= Policy.Career.GameUnlock.tap
+                return careerSystem.currentCareer.requiredWealth >= Policy.Game.GameUnlock.tap
             case .intermediate:
                 unlockLevel = Policy.Skill.Tap.intermediateUnlockLevel
             case .advanced:
@@ -98,7 +153,7 @@ private extension SkillSystem {
             switch skill.key.tier {
             case .beginner:
                 guard let careerSystem = careerSystem else { return false }
-                return careerSystem.currentCareer.requiredWealth >= Policy.Career.GameUnlock.language
+                return careerSystem.currentCareer.requiredWealth >= Policy.Game.GameUnlock.language
             case .intermediate:
                 unlockLevel = Policy.Skill.Language.intermediateUnlockLevel
             case .advanced:
@@ -108,7 +163,7 @@ private extension SkillSystem {
             switch skill.key.tier {
             case .beginner:
                 guard let careerSystem = careerSystem else { return false }
-                return careerSystem.currentCareer.requiredWealth >= Policy.Career.GameUnlock.dodge
+                return careerSystem.currentCareer.requiredWealth >= Policy.Game.GameUnlock.dodge
             case .intermediate:
                 unlockLevel = Policy.Skill.Dodge.intermediateUnlockLevel
             case .advanced:
@@ -118,7 +173,7 @@ private extension SkillSystem {
             switch skill.key.tier {
             case .beginner:
                 guard let careerSystem = careerSystem else { return false }
-                return careerSystem.currentCareer.requiredWealth >= Policy.Career.GameUnlock.stack
+                return careerSystem.currentCareer.requiredWealth >= Policy.Game.GameUnlock.stack
             case .intermediate:
                 unlockLevel = Policy.Skill.Stack.intermediateUnlockLevel
             case .advanced:

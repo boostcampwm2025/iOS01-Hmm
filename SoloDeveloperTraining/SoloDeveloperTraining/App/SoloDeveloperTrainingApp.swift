@@ -5,83 +5,57 @@
 //  Created by SeoJunYoung on 1/6/26.
 //
 
+#if canImport(AppsFlyerLib)
+import AppsFlyerLib
+#endif
 import SwiftUI
+import FirebaseCore
+import GoogleMobileAds
+import KakaoSDKCommon
 
-private enum Constant {
-    enum Animation {
-        static let transitionDuration: Double = 0.5  // 화면 전환
-        static let blinkingDuration: Double = 1.0    // 깜빡임
-    }
-
-    enum Padding {
-        static let nicknamePopupHorizontal: CGFloat = 25
-        static let errorPopupVertical: CGFloat = 20
-    }
-
-    enum Opacity {
-        static let overlay: Double = 0.5
-    }
-}
+import DUDesignSystem
 
 @main
 struct SoloDeveloperTrainingApp: App {
+
+    init() {
+        FirebaseApp.configure()
+
+        MobileAds.shared.start()
+
+        let kakaoAppKey = Bundle.main.kakaoAppKey
+        KakaoSDK.initSDK(appKey: kakaoAppKey)
+
+#if canImport(AppsFlyerLib)
+        AppsFlyerLib.shared().initialize(
+            devKey: Bundle.main.appsFlyerDevKey,
+            appId: "6758282441"
+        )
+        AppsFlyerLib.shared().delegate = AppsFlyerDelegate.shared
+        AppsFlyerLib.shared().start()
+#endif
+    }
+
+    @State private var user: User?
+    @State private var legacyUserType: RewardUserType? = nil
+
     @State private var hasSeenIntro = false
     @State private var showNicknameSetup = false
-    @State private var showTutorial = false
-    @State private var user: User?
-    @State private var showErrorPopup = false
-    @State private var errorMessage: String = ""
+    @State private var isPolicyLoading = true
+    @State private var hasPolicyError = false
     @Environment(\.scenePhase) private var scenePhase
 
     private let userRepository: UserRepository = FileManagerUserRepository()
+    private let scenarioRepository: ScenarioRepository = DefaultScenarioRepository()
 
     var body: some Scene {
         WindowGroup {
 #if DEV_BUILD
-            // Dev 타깃용 루트뷰
             ContentView()
+                .task { try? await policyStore.initialize() }
 #else
-            // 운영 타깃용 뷰
-            Group {
-                if hasSeenIntro, let user {
-                    MainView(user: user)
-                        .transition(.opacity)
-                } else {
-                    IntroView(
-                        hasSeenIntro: $hasSeenIntro,
-                        showNicknameSetup: $showNicknameSetup,
-                        user: user
-                    )
-                }
-            }
-            .animation(.easeOut(duration: Constant.Animation.transitionDuration), value: hasSeenIntro)
-            .overlay {
-                nicknameSetupOverlay
-            }
-            .overlay {
-                errorPopupOverlay
-            }
-            .fullScreenCover(isPresented: $showTutorial) {
-                TutorialView(isPresented: $showTutorial) {
-                    user?.record.tutorialCompleted = true
-                    hasSeenIntro = true
-                    showTutorial = false
-                }
-                .onAppear {
-                    Task {
-                        try? await Task.sleep(nanoseconds: UInt64(Constant.Animation.transitionDuration * 1_000_000_000))
-                        hasSeenIntro = true
-                    }
-                }
-            }
-            .onAppear {
-                loadUser()
-            }
-            .onChange(of: scenePhase) { _, newPhase in
-                if newPhase == .background || newPhase == .inactive {
-                    saveUser()
-                }
-            }
+            gameContent
+                .task { await loadPolicy() }
 #endif
         }
     }
@@ -89,93 +63,265 @@ struct SoloDeveloperTrainingApp: App {
 
 #if !DEV_BUILD
 private extension SoloDeveloperTrainingApp {
-    /// 저장된 User를 로드합니다.
+
+    // MARK: - 게임 콘텐츠
+
+    @ViewBuilder
+    var gameContent: some View {
+        Group {
+            if hasSeenIntro, let user {
+                MainView(
+                    user: user,
+                    userType: legacyUserType ?? .newUser,
+                    hasSeenIntro: $hasSeenIntro,
+                    scenarioRepository: scenarioRepository
+                )
+            } else if hasSeenIntro, user == nil, showNicknameSetup {
+                NicknameSetupView { nickname in
+                    let newUser = User(nickname: nickname)
+                    user = newUser
+                    checkFirstOpen(user: newUser)
+                    user?.record.tutorialCompleted = true
+                    hasSeenIntro = true
+                    showNicknameSetup = false
+                }
+            } else {
+                IntroView(
+                    hasSeenIntro: $hasSeenIntro,
+                    showNicknameSetup: $showNicknameSetup,
+                    user: user,
+                    scenarioRepository: scenarioRepository,
+                    isPolicyReady: !isPolicyLoading && !hasPolicyError,
+                    hasPolicyError: hasPolicyError,
+                    onRetry: { Task { await loadPolicy() } }
+                )
+            }
+        }
+        .animation(TokenAnimation.fadeInSlow.animation, value: hasSeenIntro)
+        .onOpenURL { url in
+            guard let deeplinkInfo = parseOpenURL(url) else { return }
+
+            AnalyticsService.shared
+                .logAppOpenedFromDeeplink(
+                    entrySource: deeplinkInfo.entrySource,
+                    referrerShareID: deeplinkInfo.referrerShareID,
+                    isDeferredDeeplink: false,
+                    resultID: deeplinkInfo.resultID
+                )
+        }
+        .task {
+            let type = await AppUpdateChecker.checkUpdate()
+            if type == .force {
+                PopupManager.shared.show {
+                    NoticePopup(
+                        type: .default(buttonText: "업데이트",
+                                       action: {
+                                           SoundService.shared.trigger(.click)
+                                           AppUpdateChecker.openAppStore()
+                                       }),
+                        title: "업데이트 안내",
+                        text: "원활한 앱 사용을 위해서 업데이트가 필요합니다.\n지금 바로 업데이트를 진행해주세요."
+                    )
+                    .analyticsScreen(.update01)
+                }
+            } else if type == .optional && !AppUpdateChecker.isOptionalUpdateSnoozed() {
+                PopupManager.shared.show {
+                    NoticePopup(
+                        type: .confirm(
+                            cancelText: "다음에",
+                            confirmText: "업데이트",
+                            cancelAction: {
+                                SoundService.shared.trigger(.click)
+                                AppUpdateChecker.snoozeOptionalUpdate()
+                                PopupManager.shared.dismiss()
+                            },
+                            confirmAction: {
+                                SoundService.shared.trigger(.click)
+                                AppUpdateChecker.openAppStore()
+                            }
+                        ),
+                        title: "업데이트 안내",
+                        text: "원활한 앱 사용을 위해서 업데이트가 필요합니다.\n지금 바로 업데이트를 진행해주세요."
+                    )
+                    .analyticsScreen(.update02)
+                }
+            }
+        }
+        .onAppear {
+            guard user == nil else { return }
+            loadUser()
+        }
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            if newPhase == .active {
+                SessionManager.shared.handleForeground()
+                if SessionManager.shared.didStartNewSession, let user {
+                    AnalyticsService.shared.logAppOpened(
+                        nickname: user.nickname,
+                        entrySource: "direct",
+                        referrerShareID: "",
+                        isDeferredDeeplink: false
+                    )
+                    SessionManager.shared.consumeNewSession()
+                }
+            } else if newPhase == .inactive {
+                if oldPhase == .active {
+                    SessionManager.shared.handleBackground()
+                    saveUser()
+                }
+            } else if newPhase == .background {
+                let level = user?.career.level ?? 0
+                AnalyticsService.shared.logAppDeparture(level: level)
+            }
+        }
+    }
+
+    // MARK: - Async
+
+    func loadPolicy() async {
+        isPolicyLoading = true
+        hasPolicyError = false
+        do {
+            try await policyStore.initialize()
+            isPolicyLoading = false
+        } catch {
+            isPolicyLoading = false
+            hasPolicyError = true
+        }
+    }
+
     func loadUser() {
         Task {
             do {
-                if let loadedUser = try await userRepository.load() {
+                switch try await userRepository.load() {
+                case .current(let user):
                     await MainActor.run {
-                        self.user = loadedUser
+                        self.user = user
+                        checkFirstOpen(user: user)
+                        if SessionManager.shared.didStartNewSession {
+                            AnalyticsService.shared.logAppOpened(
+                                nickname: user.nickname,
+                                entrySource: "direct",
+                                referrerShareID: "",
+                                isDeferredDeeplink: false
+                            )
+                            SessionManager.shared.consumeNewSession()
+                        }
                     }
+                case .legacy(let career):
+                    await MainActor.run {
+                        legacyUserType = .originUser(career ?? .unemployed)
+                    }
+                case .empty:
+                    break
                 }
             } catch {
                 await MainActor.run {
-                    self.errorMessage = "사용자 데이터를 불러오는데 실패했습니다.\n\(error.localizedDescription)"
-                    self.showErrorPopup = true
+                    PopupManager.shared.show {
+                        NoticePopup(
+                            type: .default(buttonText: "확인",
+                                           action: {
+                                               SoundService.shared.trigger(.click)
+                                               PopupManager.shared.dismiss()
+                                           }),
+                            title: "오류",
+                            text: "사용자 데이터를 불러오는데 실패했습니다.\n\(error.localizedDescription)"
+                        )
+                    }
                 }
             }
         }
     }
 
-    /// 현재 User를 저장합니다.
     func saveUser() {
         guard let user = user else { return }
         Task {
+            // 앱 종료 시 시간 기록
+            await recordExitTime(for: user)
+
             do {
                 try await userRepository.save(user)
             } catch {
                 await MainActor.run {
-                    self.errorMessage = "사용자 데이터를 저장하는데 실패했습니다.\n\(error.localizedDescription)"
-                    self.showErrorPopup = true
+                    PopupManager.shared.show {
+                        NoticePopup(
+                            type: .default(buttonText: "확인",
+                                           action: {
+                                               SoundService.shared.trigger(.click)
+                                               PopupManager.shared.dismiss()
+                                           }),
+                            title: "오류",
+                            text: "사용자 데이터를 저장하는데 실패했습니다.\n\(error.localizedDescription)"
+                        )
+                    }
                 }
             }
         }
     }
 
-    @ViewBuilder
-    var nicknameSetupOverlay: some View {
-        if showNicknameSetup {
-            ZStack {
-                Color.black.opacity(Constant.Opacity.overlay)
-                    .ignoresSafeArea()
-
-                NicknameSetupView(
-                    onStart: { nickname in
-                        user = User(nickname: nickname)
-                        showNicknameSetup = false
-                        withAnimation(.easeOut(duration: Constant.Animation.transitionDuration)) {
-                            hasSeenIntro = true
-                        }
-                    },
-                    onTutorial: { nickname in
-                        user = User(nickname: nickname)
-                        showNicknameSetup = false
-                        showTutorial = true
-                    }
-                )
-                .padding(.horizontal, Constant.Padding.nicknamePopupHorizontal)
-            }
-        }
-    }
-
-    @ViewBuilder
-    var errorPopupOverlay: some View {
-        if showErrorPopup {
-            ZStack {
-                Color.black.opacity(Constant.Opacity.overlay)
-                    .ignoresSafeArea()
-
-                Popup(title: "오류") {
-                    VStack(spacing: 0) {
-                        Text(errorMessage)
-                            .textStyle(.body)
-                            .foregroundColor(.black)
-                            .multilineTextAlignment(.center)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.vertical, Constant.Padding.errorPopupVertical)
-
-                        HStack(spacing: 0) {
-                            Spacer()
-                            MediumButton(title: "확인", isFilled: true) {
-                                showErrorPopup = false
-                            }
-                            Spacer()
-                        }
-                    }
-                }
-                .padding(.horizontal, Constant.Padding.nicknamePopupHorizontal)
-            }
+    /// 앱 종료 시 시간 기록
+    @MainActor
+    func recordExitTime(for user: User) async {
+        // 서버 시간 조회 시도
+        if let serverTime = try? await TimeService.fetchCurrentTime() {
+            // 서버 시간 저장 성공
+            user.record.offlineRewardState.lastExitTime = serverTime
+            user.record.offlineRewardState.timeSource = .server
+            user.record.offlineRewardState.lastSystemUptime = nil
+        } else {
+            // 서버 시간 실패 -> 기기 시간 + systemUptime 저장
+            let deviceTime = Date().timeIntervalSince1970
+            user.record.offlineRewardState.lastExitTime = deviceTime
+            user.record.offlineRewardState.timeSource = .device
+            user.record.offlineRewardState.lastSystemUptime = ProcessInfo.processInfo.systemUptime
         }
     }
 }
 #endif
+
+// MARK: - Helper
+
+private extension SoloDeveloperTrainingApp {
+
+    // MARK: - Analytics
+
+    func checkFirstOpen(user: User) {
+        guard AnalyticsKeychain.isNewInstall() else { return }
+        AnalyticsKeychain.getOrCreateDeviceID()
+        AnalyticsService.shared.logFirstOpen(level: user.career.level)
+    }
+
+    struct DeeplinkInfo {
+        let entrySource: String
+        let referrerShareID: String
+        let resultID: String
+    }
+
+    func parseOpenURL(_ url: URL) -> DeeplinkInfo? {
+        guard let components = URLComponents(
+            url: url,
+            resolvingAgainstBaseURL: false
+        ) else {
+            return nil
+        }
+
+        let queryItems = components.queryItems ?? []
+
+        guard
+            let shareID = queryItems.first(where: { $0.name == "share_id" })?.value,
+            let resultID = queryItems.first(where: { $0.name == "result_id" })?.value
+        else {
+            return nil
+        }
+
+        let entrySource = queryItems
+            .first(where: { $0.name == "entry_source" })?
+            .value ?? "unknown"
+
+        return DeeplinkInfo(
+            entrySource: entrySource,
+            referrerShareID: shareID,
+            resultID: resultID
+        )
+    }
+
+}

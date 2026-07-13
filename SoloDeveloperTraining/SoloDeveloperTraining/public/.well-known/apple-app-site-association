@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "QBLK6726G4.kr.codesquad.boostcamp10.SoloDeveloperTraining",
+        "paths": ["*"]
+      },
+      {
+        "appID": "QBLK6726G4.com.devup.dev",
+        "paths": ["*"]
+      }
+    ]
+  }
+}

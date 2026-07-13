@@ -8,6 +8,46 @@
 import Foundation
 import Observation
 
+enum TimeSource: String, Codable {
+    case server
+    case device
+}
+
+struct OfflineRewardState: Codable {
+    /// 마지막 앱 종료 시간
+    var lastExitTime: TimeInterval?
+    /// 마지막 systemUptime (device 모드용)
+    var lastSystemUptime: TimeInterval?
+    /// 시간 출처
+    var timeSource: TimeSource?
+
+    init(
+        lastExitTime: TimeInterval? = nil,
+        lastSystemUptime: TimeInterval? = nil,
+        timeSource: TimeSource? = nil
+    ) {
+        self.lastExitTime = lastExitTime
+        self.lastSystemUptime = lastSystemUptime
+        self.timeSource = timeSource
+    }
+}
+
+struct SkillAdRewardState: Codable {
+    var usedDate: Date?
+    var useCount: Int
+    var rewardEndDate: Date?
+
+    init(
+        usedDate: Date? = nil,
+        useCount: Int = 0,
+        rewardEndDate: Date? = nil
+    ) {
+        self.usedDate = usedDate
+        self.useCount = useCount
+        self.rewardEndDate = rewardEndDate
+    }
+}
+
 @MainActor
 @Observable
 final class Record {
@@ -63,10 +103,8 @@ final class Record {
     var coffeeUseCount: Int = 0
     /// 에너지 드링크 사용 횟수
     var energyDrinkUseCount: Int = 0
-
-    // MARK: - Play Time Records
-    /// 총 플레이 시간
-    var totalPlayTime: TimeInterval = 0
+    /// 스킬 광고 보상 사용 상태
+    var skillAdRewardState: SkillAdRewardState = .init()
 
     // MARK: - Tutorial Records
     /// 튜토리얼 클리어 여부
@@ -75,6 +113,26 @@ final class Record {
     // MARK: - Career Records
     /// 하찮은 개발자 달성 여부
     var hasAchievedJuniorDeveloper: Bool = false
+
+    // MARK: - Scenario Records
+    /// 시나리오 진행 상태
+    var scenarioProgress: ScenarioProgress = ScenarioProgress()
+    /// 선택 기록 (커리어별)
+    var choiceHistory: [Career: ChoiceResult] = [:]
+
+    // MARK: - Play Time Records
+    /// 총 플레이 시간
+    var totalPlayTime: TimeInterval = 0
+
+    // MARK: - Offline Reward Records
+    /// 오프라인 보상 상태
+    var offlineRewardState: OfflineRewardState = .init()
+
+    // MARK: - Rebirth Records
+    /// 환생 횟수
+    var rebirthCount: Int = 0
+    /// 달성한 엔딩 목록
+    var allEndingsAchieved: Set<Ending> = []
 }
 
 // MARK: - Record Event
@@ -181,5 +239,61 @@ extension Record {
         }
         /// 미션 상태 업데이트
         missionSystem.updateCompletedMissions(record: self)
+    }
+}
+
+// MARK: - Rebirth
+extension Record {
+    /// 환생 시 초기화 (환생 기록 제외)
+    func resetForRebirth() {
+        // Financial Records 초기화
+        totalEarnedMoney = 0
+        totalSpentMoney = 0
+        totalSkillUpgradeCost = 0
+        totalEquipmentEnhancementCost = 0
+        totalConsumablePurchaseCost = 0
+        totalHousingMoveCost = 0
+
+        // Tap Records 초기화
+        totalTapCount = 0
+
+        // Language Game Records 초기화
+        languageCorrectCount = 0
+        languageConsecutiveCorrect = 0
+
+        // Bug Dodging Records 초기화
+        dodgeGoldCollectedCount = 0
+        dodgeMaxCombo = 0
+        dodgeBugAvoidedCount = 0
+        dodgeBugCollectCount = 0
+
+        // Stacking Game Records 초기화
+        stackingSuccessCount = 0
+        stackConsecutiveSuccess = 0
+
+        // Consumable Usage Records 초기화
+        coffeeUseCount = 0
+        energyDrinkUseCount = 0
+        skillAdRewardState = .init()
+
+        // totalPlayTime은 유지 (누적 플레이 시간)
+
+        // Tutorial Records 초기화
+        tutorialCompleted = false
+
+        // Career Records 초기화
+        hasAchievedJuniorDeveloper = false
+
+        // Scenario Records 초기화
+        scenarioProgress = ScenarioProgress()
+        choiceHistory.removeAll()
+
+        // Mission System 초기화
+        missionSystem.reset()
+
+        // Offline Reward State 초기화
+        offlineRewardState = .init()
+
+        // 유지: rebirthCount, allEndingsAchieved, totalPlayTime
     }
 }

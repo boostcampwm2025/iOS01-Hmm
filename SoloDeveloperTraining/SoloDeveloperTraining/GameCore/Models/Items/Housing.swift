@@ -29,6 +29,11 @@ struct Housing: Item {
         return tier.goldPerSecond
     }
     let tier: HousingTier
+
+    /// 초기 부동산 (환생 시 사용)
+    static var initial: Housing {
+        Housing(tier: .street)
+    }
 }
 
 enum HousingTier: Int, CaseIterable {
@@ -42,13 +47,13 @@ enum HousingTier: Int, CaseIterable {
 
     var imageName: String {
         switch self {
-        case .street: return "housing_street"
-        case .semiBasement: return "housing_semiBasement"
-        case .rooftop: return "housing_rooftop"
-        case .villa: return "housing_villa"
-        case .apartment: return "housing_apartment"
-        case .house: return "housing_house"
-        case .pentHouse: return "housing_pentHouse"
+        case .street: return "housingStreet"
+        case .semiBasement: return "housingSemiBasement"
+        case .rooftop: return "housingRooftop"
+        case .villa: return "housingVilla"
+        case .apartment: return "housingApartment"
+        case .house: return "housingHouse"
+        case .pentHouse: return "housingPentHouse"
         }
     }
 

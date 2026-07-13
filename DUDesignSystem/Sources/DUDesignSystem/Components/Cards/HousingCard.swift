@@ -1,0 +1,151 @@
+//
+//  HousingCard.swift
+//  DUDesignSystem
+//
+//  Created by SeoJunYoung on 6/8/26.
+//
+
+import SwiftUI
+
+public struct HousingCard: View {
+
+    public enum HousingCardState {
+        case `default`
+        case selected
+        case disabled
+        case equipped
+        case locked
+    }
+
+    public var title: String
+    public var price: String
+    public var rewardPerSecond: String
+    public var imageName: String
+    public var state: HousingCardState
+    public var onTap: () -> Void
+    public var onButtonTap: () -> Void
+
+    public init(
+        title: String,
+        price: String,
+        rewardPerSecond: String,
+        imageName: String,
+        state: HousingCardState = .default,
+        onTap: @escaping () -> Void,
+        onButtonTap: @escaping () -> Void
+    ) {
+        self.title = title
+        self.price = price
+        self.rewardPerSecond = rewardPerSecond
+        self.imageName = imageName
+        self.state = state
+        self.onTap = onTap
+        self.onButtonTap = onButtonTap
+    }
+
+    private var buttonType: TextButton.TextButtonType {
+        switch state {
+        case .default, .selected, .disabled: return .primary
+        case .equipped, .locked: return .secondary
+        }
+    }
+
+    private var buttonState: TextButton.TextButtonState {
+        switch state {
+        case .default, .selected: return .default
+        case .disabled, .equipped: return .disabled
+        case .locked: return .locked
+        }
+    }
+
+    public var body: some View {
+        VStack(spacing: TokenSpacing.md) {
+            VStack(alignment: .leading, spacing: TokenSpacing.xs) {
+                HStack(spacing: TokenSpacing.sm) {
+                    ItemLabel(text: title, font: .subheadline, color: .black300)
+                    ItemLabel(text: price, font: .label, color: .black300)
+                }
+                HStack(spacing: TokenSpacing.xs) {
+                    ItemLabel(text: "초당 재화 획득량", font: .label, color: .black300)
+                    ItemLabel(text: rewardPerSecond, font: .label, color: .black300)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, TokenSpacing.md)
+
+            Image(imageName, bundle: .module)
+                .resizable()
+                .scaledToFill()
+                .frame(maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+                .clipped()
+                .opacity(state == .locked ? TokenOpacity.opacity60 : TokenOpacity.opacity100)
+
+            TextButton(text: buttonText, type: buttonType, size: .medium, state: buttonState, action: onButtonTap)
+                .padding(.horizontal, TokenSpacing.lg)
+        }
+        .padding(.vertical, TokenSpacing.md)
+        .frame(width: 230)
+        .frame(maxHeight: .infinity)
+        .background(state == .selected ? Color.beige50 : Color.beige100)
+        .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
+        .overlay(
+            Group {
+                if state == .selected {
+                    RoundedRectangle(cornerRadius: TokenRadius.sm)
+                        .stroke(Color.gray700, lineWidth: 2)
+                }
+            }
+        )
+        .onTapGesture { if state == .default || state == .selected { onTap() } }
+    }
+
+    private var buttonText: String {
+        switch state {
+        case .default, .selected, .disabled, .locked: return "이사하기"
+        case .equipped: return "장착중"
+        }
+    }
+}
+
+#Preview {
+    HStack(spacing: TokenSpacing.sm) {
+        HousingCard(
+            title: "고시원",
+            price: "₩10,000,000",
+            rewardPerSecond: "초당 1 골드 획득",
+            imageName: "housingStreet",
+            state: .default,
+            onTap: {},
+            onButtonTap: {}
+        )
+        HousingCard(
+            title: "고시원",
+            price: "₩10,000,000",
+            rewardPerSecond: "초당 1 골드 획득",
+            imageName: "housingStreet",
+            state: .selected,
+            onTap: {},
+            onButtonTap: {}
+        )
+        HousingCard(
+            title: "고시원",
+            price: "₩10,000,000",
+            rewardPerSecond: "초당 1 골드 획득",
+            imageName: "housingStreet",
+            state: .equipped,
+            onTap: {},
+            onButtonTap: {}
+        )
+        HousingCard(
+            title: "고시원",
+            price: "₩10,000,000",
+            rewardPerSecond: "초당 1 골드 획득",
+            imageName: "housingStreet",
+            state: .locked,
+            onTap: {},
+            onButtonTap: {}
+        )
+    }
+    .padding(TokenSpacing.md)
+    .background(Color.beige200)
+}

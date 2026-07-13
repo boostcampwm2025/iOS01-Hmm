@@ -8,51 +8,73 @@
 import SwiftUI
 import SpriteKit
 
-enum AppTheme {
-    static let backgroundColor: Color = AppColors.beige200
-}
+import DUDesignSystem
 
 private enum Constant {
     static let characterSceneSize = CGSize(width: 100, height: 100)
     static let spriteViewSize = CGSize(width: 200, height: 200)
-    static let topAreaHeightRatio: CGFloat = 0.5
-
-    enum Padding {
-        static let horizontalPadding: CGFloat = 25
-    }
-
-    enum Color {
-        static let overlay = SwiftUI.Color.black.opacity(0.3)
-    }
-
-    enum CareerPopup {
-        static let title: String = "커리어"
-        static let maxHeight: CGFloat = 650
-    }
-
-    enum TopButton {
-        static let top: CGFloat = 128
-        static let horizontal: CGFloat = 16
-    }
+    // TabbarItem(48) + tabBar padding vertical md(16) × 2
+    static let tabBarHeight: CGFloat = 80
 }
 
 struct MainView: View {
     @Environment(\.scenePhase) var scenePhase
-    @State private var selectedTab: TabItem = .work
-    @State private var popupContent: PopupConfiguration?
+
+    @Binding var hasSeenIntro: Bool
+
+    @State private var selectedTab: AppTab = .work
+
+    // 게임 세션 관리
+    @State private var workGameSession = WorkGameSession()
+
     @State private var careerSystem: CareerSystem?
-    @State private var isWorkGameInProgress: Bool = false
     @State private var showQuizView: Bool = false
-    @State private var showSettingsView: Bool = false
+
+    // 업무 퇴장 보너스 광고 관련
+    @State private var exitBonusAdRewardFlowID: String?
+
+    // 스킬 광고 보상 지속시 남은 시간
+    @State private var skillAdRewardNow = Date()
+
+    // 오프라인 보상 팝업 관련
+    @State private var offlineRewardGold: Int = 0
+    @State private var offlineRewardHours: Double = 0.0
+    @State private var hasCheckedOfflineReward: Bool = false
+    @State private var isOfflineRewardPopupShowing: Bool = false
+    @State private var offlineRewardAdFlowID: String?
+
+    // 레벨업 이펙트 관련
+    @State private var isCareerSystemInitialized: Bool = false
+    @State private var showLevelUpEffect: Bool = false
+    @State private var previousCareer: Career? = nil
+    @State private var leveledUpCareer: Career? = nil
+
+    // 시나리오 관련
+    @State private var scenarioManager: ScenarioManager?
+    @State private var showScenarioView: Bool = false
+
+    private let rewardRepository = DefaultRewardRepository()
+
+    let scenarioRepository: ScenarioRepository
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
+    private let userType: RewardUserType
     private let scene: CharacterScene
     private let animationSystem: CharacterAnimationSystem
 
-    init(user: User) {
+    init(
+        user: User,
+        userType: RewardUserType,
+        hasSeenIntro: Binding<Bool>,
+        scenarioRepository: ScenarioRepository
+    ) {
+        self._hasSeenIntro = hasSeenIntro
+
         self.autoGainSystem = AutoGainSystem(user: user)
         self.user = user
+        self.userType = userType
+        self.scenarioRepository = scenarioRepository
 
         self.scene = CharacterScene(size: Constant.characterSceneSize, user: user)
         self.scene.scaleMode = .aspectFit
@@ -69,67 +91,153 @@ struct MainView: View {
     }
 
     var body: some View {
-        GeometryReader { geometry in
-            VStack(spacing: 0) {
-                topAreaContent
-                    .frame(height: geometry.size.height * Constant.topAreaHeightRatio)
-                    .background(housingBackgroundView)
+        GeometryReader { geo in
+            VStack(spacing: TokenSpacing.none) {
+                let contentHeight = (geo.size.height - Constant.tabBarHeight) / 2
+                gameViewport
+                    .frame(height: contentHeight)
                 tabBar
-                tabContentView
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                contentsPanel
+                    .frame(height: contentHeight)
             }
-            .ignoresSafeArea(edges: [.top, .bottom])
-            .background(AppTheme.backgroundColor)
-            .onAppear(perform: setupOnAppear)
-            .onDisappear { SoundService.shared.stopBGM() }
-            .onChange(of: scenePhase, handleScenePhaseChange)
-            .task(id: user.record.totalEarnedMoney) {
-                await careerSystem?.updateCareer()
+        }
+        .ignoresSafeArea(edges: [.top, .bottom])
+        .background(Color.beige200)
+        .onAppear(perform: setupOnAppear)
+        .task {
+            await updateSkillAdRewardTimer()
+        }
+        .onChange(of: scenePhase, handleScenePhaseChange)
+        .onChange(of: user.record.totalEarnedMoney) {
+            guard !isOfflineRewardPopupShowing else { return }
+            careerSystem?.updateCareer()
+        }
+        .onChange(of: showLevelUpEffect) { _, isPresented in
+            if isPresented && workGameSession.isInProgress {
+                workGameSession.isPauseRequested = true
             }
-            .overlay { popupOverlayView }
-            .overlay { settingsOverlayView }
-            .fullScreenCover(isPresented: $showQuizView) {
-                QuizGameView(user: user)
+        }
+        .onChange(of: workGameSession.showsExitBonusPopup) { _, shows in
+            if shows { showExitBonusPopup() }
+        }
+        .onChange(of: showLevelUpEffect) { oldValue, newValue in
+            if oldValue == true && newValue == false {
+                Task {
+                    await checkAndStartScenario()
+                }
+            }
+        }
+        .fullScreenCover(isPresented: $showQuizView) {
+            QuizGameView(user: user)
+        }
+        .fullScreenCover(isPresented: $showScenarioView) {
+            ZStack {
+                Color.black300EventDim.ignoresSafeArea()
+                if let manager = scenarioManager {
+                    ScenarioStoryView(
+                        user: user,
+                        manager: manager,
+                        repository: scenarioRepository
+                    ) {
+                        let isRebirth = manager.currentScenario?.scenarioType == .rebirth
+                        manager.completeScenario()
+                        showScenarioView = false
+                        if isRebirth {
+                            hasSeenIntro = false
+                        } else {
+                            SoundService.shared.playBGM(.main)
+                        }
+                    }
+                }
             }
         }
     }
 }
 
 private extension MainView {
-    var topAreaContent: some View {
-        ZStack(alignment: .top) {
-            topAreaMainContent
-            topButtonOverlay
-        }
-    }
-
-    var topAreaMainContent: some View {
-        VStack(spacing: 0) {
+    var gameViewport: some View {
+        VStack(spacing: TokenSpacing.none) {
+            // StatusBar Area
             StatusBar(
-                career: careerSystem?.currentCareer ?? .unemployed,
+                imageName: careerSystem?.currentCareer.imageName ?? "",
+                careerName: careerSystem?.currentCareer.rawValue ?? "",
                 nickname: user.nickname,
-                careerProgress: careerSystem?.careerProgress ?? 0.0,
-                gold: user.wallet.gold,
-                diamond: user.wallet.diamond
+                careerProgress: careerSystem?.careerProgress ?? 0,
+                gold: user.wallet.gold.formatted,
+                diamond: user.wallet.diamond.formatted,
+                time: SkillAdRewardManager.remainingTimeText(user: user, now: skillAdRewardNow)
             )
-            .onTapGesture { showCareerPopup() }
+            .background(Color.white300StatusBar)
+            .onTapGesture {
+                guard let careerSystem else { return }
+                if workGameSession.isInProgress {
+                    workGameSession.isPauseRequested = true
+                }
+                PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
+                    CareerPopupView(
+                        careerSystem: careerSystem,
+                        user: user,
+                        onClose: {
+                            PopupManager.shared.dismiss()
+                        },
+                        onRebirth: {
+                            PopupManager.shared.dismiss()
+                            showRebirthConfirmPopup()
+                        }
+                    )
+                }
+            }
+            // SettingButton, QuizButton Area
+            HStack {
+                SmallButton(type: .setting) {
+                    SoundService.shared.trigger(.click)
+                    if workGameSession.isInProgress {
+                        workGameSession.isPauseRequested = true
+                    }
+                    PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
+                        FeedbackSettingView(onClose: { PopupManager.shared.dismiss() })
+                    }
+                }
+                Spacer()
+                if !workGameSession.isInProgress {
+                    SmallButton(type: .quiz) {
+                        SoundService.shared.trigger(.click)
+                        showQuizView = true
+                    }
+                }
+            }
             Spacer()
-            characterSceneView
+        }
+        .frame(maxHeight: .infinity)
+        .background(housingBackgroundView)
+        .overlay(alignment: .bottom) {
+            // character Area
+            SpriteView(scene: scene, options: [.allowsTransparency])
+                .frame(width: Constant.spriteViewSize.width, height: Constant.spriteViewSize.height)
+                .background(Color.clear)
         }
     }
 
     var tabBar: some View {
-        TabBar(
-            selectedTab: $selectedTab,
-            hasCompletedMisson: user.record
-                .missionSystem.hasCompletedMission
+        Tabbar(
+            selectedIndex: Binding(
+                get: { AppTab.allCases.firstIndex(of: selectedTab) ?? 0 },
+                set: { handleTabTap(AppTab.allCases[$0]) }
+            ),
+            hasCompletedMission: user.record.missionSystem.hasCompletedMission
         )
-    }
-
-    var characterSceneView: some View {
-        SpriteView(scene: scene, options: [.allowsTransparency])
-            .frame(width: Constant.spriteViewSize.width, height: Constant.spriteViewSize.height)
-            .background(Color.clear)
+        .padding(.vertical, TokenSpacing.md)
+        .padding(.horizontal, TokenGrid.paddingSide)
+        .background(Color.beige200)
+        .background(GeometryReader { geo in
+            Color.clear
+                .onAppear {
+                    ToastManager.defaultAnchorY = geo.frame(in: .global).minY
+                }
+                .onChange(of: geo.frame(in: .global).minY) { _, newY in
+                    ToastManager.defaultAnchorY = newY
+                }
+        })
     }
 
     var housingBackgroundView: some View {
@@ -138,29 +246,12 @@ private extension MainView {
             .aspectRatio(contentMode: .fill)
     }
 
-    var topButtonOverlay: some View {
-        VStack {
-            HStack {
-                SmallButton(title: "설정", image: Image(.iconSetting)) {
-                    showSettingsView = true
-                }
-                Spacer()
-                SmallButton(title: "퀴즈", hasBadge: true) {
-                    showQuizView = true
-                }
-            }
-            .padding(.top, Constant.TopButton.top)
-            .padding(.horizontal, Constant.TopButton.horizontal)
-            Spacer()
-        }
-    }
-
-    var tabContentView: some View {
+    var contentsPanel: some View {
         ZStack {
-            if isWorkGameInProgress {
+            if workGameSession.isInProgress {
                 workGameOverlayView
             }
-            if !isWorkGameInProgress || selectedTab != .work {
+            if !workGameSession.isInProgress || selectedTab != .work {
                 tabContentSwitchView
             }
         }
@@ -170,12 +261,13 @@ private extension MainView {
         WorkSelectedView(
             user: user,
             animationSystem: animationSystem,
-            isGameStarted: $isWorkGameInProgress,
-            isGameViewDisappeared: Binding(
-                get: { selectedTab != .work || showQuizView },
-                set: { _ in }
-            ),
-            careerSystem: $careerSystem
+            isGameStarted: workGameStartedBinding,
+            gameActionGoldDelta: workGameSession.actionGoldDeltaBinding,
+            tabSwitchPause: tabSwitchPauseBinding,
+            careerSystem: $careerSystem,
+            showExitBonusPopup: workGameSession.exitBonusPopupBinding,
+            resumeGameCallback: workGameSession.resumeGameBinding,
+            exitGameCallback: workGameSession.exitGameBinding
         )
         .opacity(selectedTab == .work ? 1 : 0)
         .allowsHitTesting(selectedTab == .work)
@@ -185,91 +277,482 @@ private extension MainView {
     var tabContentSwitchView: some View {
         switch selectedTab {
         case .work:
-            if !isWorkGameInProgress {
+            if !workGameSession.isInProgress {
                 WorkSelectedView(
                     user: user,
                     animationSystem: animationSystem,
-                    isGameStarted: $isWorkGameInProgress,
-                    isGameViewDisappeared: Binding(
-                        get: { selectedTab != .work || showQuizView },
-                        set: { _ in }
-                    ),
-                    careerSystem: $careerSystem
+                    isGameStarted: workGameStartedBinding,
+                    gameActionGoldDelta: workGameSession.actionGoldDeltaBinding,
+                    tabSwitchPause: tabSwitchPauseBinding,
+                    careerSystem: $careerSystem,
+                    showExitBonusPopup: workGameSession.exitBonusPopupBinding,
+                    resumeGameCallback: workGameSession.resumeGameBinding,
+                    exitGameCallback: workGameSession.exitGameBinding
                 )
             }
         case .skill:
-            SkillView(user: user, careerSystem: careerSystem, popupContent: $popupContent)
+            SkillView(
+                user: user,
+                careerSystem: careerSystem,
+                adRewardNow: skillAdRewardNow
+            )
         case .shop:
-            ShopView(user: user, popupContent: $popupContent)
+            ShopView(user: user)
         case .mission:
             MissionView(user: user)
         }
     }
 
-    @ViewBuilder
-    var popupOverlayView: some View {
-        if let popupContent {
-            ZStack {
-                Constant.Color.overlay
-                    .ignoresSafeArea()
-                    .onTapGesture { self.popupContent = nil }
-
-                Popup(title: popupContent.title, contentView: popupContent.content)
-                    .frame(maxHeight: popupContent.maxHeight)
-                    .padding(.horizontal, Constant.Padding.horizontalPadding)
-            }
-        }
-    }
-
-    @ViewBuilder
-    var settingsOverlayView: some View {
-        if showSettingsView {
-            ZStack {
-                Constant.Color.overlay
-                    .ignoresSafeArea()
-                    .onTapGesture { showSettingsView = false }
-
-                FeedbackSettingView(onClose: { showSettingsView = false })
-                    .padding(.horizontal, Constant.Padding.horizontalPadding)
-            }
-        }
-    }
-
     func setupOnAppear() {
-        SoundService.shared.playBGM()
+        SoundService.shared.playBGM(.main)
+        skillAdRewardNow = Date()
         autoGainSystem.startSystem()
+
+        // 오프라인 보상 체크
         Task {
-            if careerSystem == nil {
-                careerSystem = await CareerSystem(user: user)
-                careerSystem?.onCareerChanged = { [weak scene] newCareer in
-                    scene?.updateCareerAppearance(to: newCareer)
+            await checkOfflineReward()
+        }
+
+        // 업데이트 보상 팝업
+        if !AppPreferences.shared.hasClaimedGameResetReward {
+            let updateRewardItems = rewardRepository.fetchAllRewards()
+            PopupManager.shared.show(onBackgroundTap: handleClaimUpdateReward) {
+                UpdateRewardPopupView(
+                    userType: userType,
+                    rewards: updateRewardItems,
+                    onClose: handleClaimUpdateReward
+                )
+            }
+        }
+
+        if careerSystem == nil {
+            careerSystem = CareerSystem(user: user)
+            isCareerSystemInitialized = true
+            careerSystem?.onCareerChanged = { [weak scene] oldCareer, newCareer in
+                scene?.updateCareerAppearance(to: newCareer)
+                previousCareer = oldCareer
+                leveledUpCareer = newCareer
+
+                let isLevelUp = newCareer != .unemployed
+                showLevelUpEffect = isLevelUp
+                if isLevelUp {
+                    SoundService.shared.trigger(.levelUp)
+                    LevelUpEffectManager.shared.show(
+                        previousCareerTitle: oldCareer.rawValue,
+                        currentCareerTitle: newCareer.rawValue,
+                        onDismiss: { showLevelUpEffect = false }
+                    )
                 }
             }
+        }
+    }
+
+    func showRebirthConfirmPopup() {
+        PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
+            NoticePopup(
+                type: .confirm(
+                    cancelText: "그냥 살기",
+                    confirmText: "환생하기",
+                    cancelAction: {
+                        SoundService.shared.trigger(.click)
+                        PopupManager.shared.dismiss()
+                    },
+                    confirmAction: {
+                        SoundService.shared.trigger(.click)
+                        PopupManager.shared.dismiss()
+                        handleRebirth()
+                    }
+                ),
+                title: "환생하기",
+                text: "전생의 기억은 모두 잃고 새로 태어나게됩니다.\n환생하시겠습니까?"
+            )
+        }
+    }
+
+    func handleRebirth() {
+        let evt01 = user.record.choiceHistory[.juniorDeveloper] ?? .optionA
+        let evt02 = user.record.choiceHistory[.nightOwlDeveloper] ?? .optionA
+        let evt03 = user.record.choiceHistory[.famousDeveloper] ?? .optionA
+        let evt04 = user.record.choiceHistory[.worldClassDeveloper] ?? .optionA
+        let ending = scenarioRepository.calculateEnding(evt01: evt01, evt02: evt02, evt03: evt03, evt04: evt04)
+        user.resetForRebirth(ending: ending)
+        let pages = scenarioRepository.fetchRebirthScenarioPages()
+        let rebirthScenario = Scenario(id: "rebirth", career: .unemployed, scenarioType: .rebirth, pages: pages)
+        let manager = ScenarioManager(record: user.record)
+        manager.startScenario(rebirthScenario)
+        scenarioManager = manager
+        showScenarioView = true
+        SoundService.shared.playBGM(.rebirth)
+    }
+
+    @MainActor
+    func checkPendingLevelUp() {
+        // 이미 시나리오가 떠 있거나 레벨업 이펙트가 진행 중이면 리턴
+        // 오프라인 보상 팝업이 표시 중이면 팝업 처리 후 레벨업 진행
+        guard !showScenarioView && !showLevelUpEffect && !isOfflineRewardPopupShowing else { return }
+
+        // 큐에 대기 중인 레벨업 커리어가 있다면 이펙트 다시 표시
+        if let pendingCareer = user.record.scenarioProgress.levelupQueue.first {
+            previousCareer = user.career
+            leveledUpCareer = pendingCareer
+            let shouldShow = pendingCareer != .unemployed
+            showLevelUpEffect = shouldShow
+            if shouldShow {
+                LevelUpEffectManager.shared.show(
+                    previousCareerTitle: user.career.rawValue,
+                    currentCareerTitle: pendingCareer.rawValue,
+                    onDismiss: { showLevelUpEffect = false }
+                )
+            }
+        }
+    }
+
+    @MainActor
+    func restoreScenarioIfNeeded() {
+        guard !showScenarioView, let career = user.record.scenarioProgress.currentCareer else { return }
+
+        if let scenario = scenarioRepository.fetchScenario(for: career) {
+            let manager = ScenarioManager(record: user.record)
+
+            manager.restoreScenario(scenario)
+            self.scenarioManager = manager
+            showScenarioView = true
+            SoundService.shared.playBGM(.scenario)
         }
     }
 
     func handleScenePhaseChange(_ oldValue: ScenePhase, _ newValue: ScenePhase) {
         if newValue == .active {
+            skillAdRewardNow = Date()
             autoGainSystem.startSystem()
+            // 오프라인 보상 체크
+            Task {
+                await checkOfflineReward()
+            }
         } else if newValue == .inactive || newValue == .background {
+            skillAdRewardNow = Date()
             autoGainSystem.stopSystem()
         }
     }
 
-    func showCareerPopup() {
-        guard let careerSystem else { return }
+    @MainActor
+    func checkAndStartScenario() async {
+        guard let career = user.record.scenarioProgress.dequeueLevelUp() else { return }
 
-        popupContent = PopupConfiguration(
-            title: Constant.CareerPopup.title,
-            maxHeight: Constant.CareerPopup.maxHeight
-        ) {
-            CareerPopupView(
-                careerSystem: careerSystem,
-                user: user,
-                onClose: {
-                    popupContent = nil
+        if let scenario = scenarioRepository.fetchScenario(for: career) {
+            let manager = ScenarioManager(record: user.record)
+            manager.startScenario(scenario)
+            self.scenarioManager = manager
+            showScenarioView = true
+            SoundService.shared.playBGM(.scenario)
+        }
+    }
+
+    @MainActor
+    func updateSkillAdRewardTimer() async {
+        while !Task.isCancelled {
+            skillAdRewardNow = Date()
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+        }
+    }
+
+    var workGameStartedBinding: Binding<Bool> {
+        Binding(
+            get: { workGameSession.isInProgress },
+            set: { isStarted in
+                guard !isStarted else {
+                    workGameSession.start()
+                    return
                 }
+
+                if let pendingTab = workGameSession.finish() {
+                    selectedTab = pendingTab
+                }
+            }
+        )
+    }
+
+    var tabSwitchPauseBinding: Binding<Bool> {
+        Binding(
+            get: { workGameSession.isPauseRequested },
+            set: { isPaused in
+                if isPaused {
+                    workGameSession.isPauseRequested = true
+                } else {
+                    workGameSession.cancelPauseRequest()
+                }
+            }
+        )
+    }
+
+    func handleTabTap(_ newTab: AppTab) {
+        guard selectedTab != newTab else { return }
+
+        SoundService.shared.trigger(.click)
+
+        if workGameSession.isInProgress && selectedTab == .work && newTab != .work {
+            workGameSession.requestTabSwitch(to: newTab)
+            return
+        }
+
+        selectedTab = newTab
+    }
+
+    func showExitBonusPopup() {
+        AnalyticsService.shared.enterScreen(.bonus)
+        trackExitBonusAdOfferIfNeeded()
+
+        PopupManager.shared.show {
+            RewardPopup(
+                title: "보너스",
+                text: "광고를 본다면 업무에서 얻은 재화만큼\n더 벌 수 있습니다.",
+                cancelText: "그냥 나가기",
+                adText: "2배 얻기",
+                cancelAction: {
+                    SoundService.shared.trigger(.click)
+                    handleExitWithoutBonus()
+                },
+                adAction: {
+                    SoundService.shared.trigger(.click)
+                    Task { await handleExitBonusAd() }
+                },
+                item: .gold(max(0, workGameSession.actionGoldDelta).formatted)
             )
+            .analyticsScreen(.bonus)
+        }
+    }
+
+    func trackExitBonusAdOfferIfNeeded() {
+        guard exitBonusAdRewardFlowID == nil else { return }
+
+        let flowID = AnalyticsService.shared.makeAdRewardFlowID()
+        exitBonusAdRewardFlowID = flowID
+        AnalyticsService.shared.logAdOfferViewed(
+            adRewardFlowID: flowID,
+            rewardType: .gold,
+            rewardAmount: max(0, workGameSession.actionGoldDelta)
+        )
+    }
+
+    func handleExitBonusAd() async {
+        PopupManager.shared.dismiss()
+        workGameSession.showsExitBonusPopup = false
+        guard let flowID = exitBonusAdRewardFlowID else {
+            exitWorkGame()
+            return
+        }
+        let bonusGold = max(0, workGameSession.actionGoldDelta)
+
+        AnalyticsService.shared.enterScreen(.bonus)
+        AnalyticsService.shared.logAdWatchClicked(
+            adRewardFlowID: flowID,
+            rewardType: .gold,
+            rewardAmount: bonusGold
+        )
+
+        let result = await AdService.shared.showAdWithResult(.interstitial)
+        if result.isOffline {
+            PopupManager.shared.showNoNetworkAlert()
+            return
+        }
+        exitBonusAdRewardFlowID = nil
+
+        if result.success {
+            HapticService.shared.trigger(.success)
+            AnalyticsService.shared.logAdWatchCompleted(
+                adRewardFlowID: flowID,
+                rewardType: .gold,
+                rewardAmount: bonusGold,
+                adWatchDurationSec: result.watchDurationSec
+            )
+            applyExitBonus(onToastShown: bonusGold > 0 ? { [self] in
+                user.record.record(.earnMoney(bonusGold))
+            } : nil)
+            AnalyticsService.shared.logAdRewardClaimed(
+                adRewardFlowID: flowID,
+                rewardType: .gold,
+                rewardAmount: bonusGold
+            )
+        }
+        exitWorkGame()
+    }
+
+    func handleExitWithoutBonus() {
+        PopupManager.shared.dismiss()
+        workGameSession.showsExitBonusPopup = false
+        if let flowID = exitBonusAdRewardFlowID {
+            AnalyticsService.shared.logAdOfferDismissed(
+                adRewardFlowID: flowID,
+                rewardType: .gold,
+                rewardAmount: max(0, workGameSession.actionGoldDelta),
+                dismissReason: .close
+            )
+            exitBonusAdRewardFlowID = nil
+        }
+        if let pendingTab = workGameSession.closeExitBonusPopupAndReturnPendingTab() {
+            selectedTab = pendingTab
+        }
+        exitWorkGame()
+    }
+
+    func handleClaimUpdateReward() {
+        PopupManager.shared.dismiss()
+        let rewards = rewardRepository.fetchAllRewards(for: userType)
+        rewards?.forEach { reward in
+            switch reward {
+            case .diamond(let count):
+                user.wallet.addDiamond(count)
+            case .consumable(let type, count: let count):
+                user.inventory.gain(consumable: type, count: count)
+            }
+        }
+        AppPreferences.shared.hasClaimedGameResetReward = true
+    }
+
+    func applyExitBonus(onToastShown: (() -> Void)? = nil) {
+        let bonusGold = max(0, workGameSession.actionGoldDelta)
+        if bonusGold > 0 {
+            user.wallet.addGold(bonusGold)
+        }
+        ToastManager.shared.show(
+            bonusGold > 0 ? "업무에서 얻은 보상 2배 획득!" : "업무 보너스를 받을 재화가 없습니다.",
+            onShown: onToastShown
+        )
+    }
+
+    func exitWorkGame() {
+        workGameSession.exitGame?()
+        workGameSession.isPauseRequested = false
+        workGameSession.clearGameCallbacks()
+    }
+
+    // MARK: - Offline Reward
+
+    func showOfflineRewardPopup() {
+        isOfflineRewardPopupShowing = true
+        trackOfflineRewardAdOfferIfNeeded()
+        PopupManager.shared.show {
+            NoticePopup(
+                type: .ad(
+                    cancelText: "안받기",
+                    adText: "보상 받기",
+                    cancelAction: {
+                        SoundService.shared.trigger(.click)
+                        handleOfflineRewardSkip()
+                    },
+                    adAction: {
+                        SoundService.shared.trigger(.click)
+                        Task { await handleOfflineRewardWatchAd() }
+                    }
+                ),
+                title: "보상 획득",
+                text: "잠자는 시간 동안 '\(user.nickname)'가 일을 했습니다.\n일한 보상을 받을까요?"
+            )
+            .analyticsScreen(.restart)
+        }
+    }
+
+    func checkOfflineReward() async {
+        guard !AdService.shared.isShowing else { return }
+        guard !hasCheckedOfflineReward else { return }
+
+        hasCheckedOfflineReward = true
+
+        let result = await OfflineRewardManager.checkAndAwardOfflineReward(user: user)
+
+        switch result {
+        case .awarded(let gold, let hoursElapsed):
+            offlineRewardGold = gold
+            offlineRewardHours = hoursElapsed
+            showOfflineRewardPopup()
+        case .notEligible:
+            hasCheckedOfflineReward = false
+            checkPendingLevelUp()
+            if !showLevelUpEffect {
+                restoreScenarioIfNeeded()
+            }
+        }
+    }
+
+    func trackOfflineRewardAdOfferIfNeeded() {
+        guard offlineRewardAdFlowID == nil else { return }
+
+        let flowID = AnalyticsService.shared.makeAdRewardFlowID()
+        offlineRewardAdFlowID = flowID
+        AnalyticsService.shared.logAdOfferViewed(
+            adRewardFlowID: flowID,
+            rewardType: .gold,
+            rewardAmount: offlineRewardGold
+        )
+    }
+
+    func handleOfflineRewardWatchAd() async {
+        PopupManager.shared.dismiss()
+        guard let flowID = offlineRewardAdFlowID else { return }
+        let rewardGold = offlineRewardGold
+
+        AnalyticsService.shared.logAdWatchClicked(
+            adRewardFlowID: flowID,
+            rewardType: .gold,
+            rewardAmount: rewardGold
+        )
+
+        let result = await AdService.shared.showAdWithResult(.interstitial)
+        if result.isOffline {
+            PopupManager.shared.showNoNetworkAlert()
+            isOfflineRewardPopupShowing = false
+            return
+        }
+        offlineRewardAdFlowID = nil
+
+        if result.success {
+            HapticService.shared.trigger(.success)
+            AnalyticsService.shared.logAdWatchCompleted(
+                adRewardFlowID: flowID,
+                rewardType: .gold,
+                rewardAmount: rewardGold,
+                adWatchDurationSec: result.watchDurationSec
+            )
+            user.wallet.addGold(offlineRewardGold)
+            user.record.record(.earnMoney(offlineRewardGold))
+            ToastManager.shared.show("잠자는 시간에 일한 보상 획득!")
+            AnalyticsService.shared.logAdRewardClaimed(
+                adRewardFlowID: flowID,
+                rewardType: .gold,
+                rewardAmount: rewardGold
+            )
+        }
+        offlineRewardGold = 0
+        offlineRewardHours = 0.0
+        isOfflineRewardPopupShowing = false
+        careerSystem?.updateCareer()
+        checkPendingLevelUp()
+        if !showLevelUpEffect {
+            restoreScenarioIfNeeded()
+        }
+    }
+
+    func handleOfflineRewardSkip() {
+        PopupManager.shared.dismiss()
+        if let flowID = offlineRewardAdFlowID {
+            AnalyticsService.shared.logAdOfferDismissed(
+                adRewardFlowID: flowID,
+                rewardType: .gold,
+                rewardAmount: offlineRewardGold,
+                dismissReason: .close
+            )
+            offlineRewardAdFlowID = nil
+        }
+        // 데이터 초기화
+        offlineRewardGold = 0
+        offlineRewardHours = 0.0
+        // 다음 체크를 위해 플래그 리셋
+        hasCheckedOfflineReward = false
+        isOfflineRewardPopupShowing = false
+        careerSystem?.updateCareer()
+        checkPendingLevelUp()
+        if !showLevelUpEffect {
+            restoreScenarioIfNeeded()
         }
     }
 }
@@ -296,5 +779,10 @@ private extension MainView {
             .init(key: SkillKey(game: .stack, tier: .beginner), level: 1)
         ]
     )
-    MainView(user: user)
+    MainView(
+        user: user,
+        userType: .newUser,
+        hasSeenIntro: .constant(true),
+        scenarioRepository: DefaultScenarioRepository()
+    )
 }

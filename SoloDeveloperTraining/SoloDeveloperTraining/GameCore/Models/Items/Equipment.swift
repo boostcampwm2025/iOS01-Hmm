@@ -19,13 +19,13 @@ final class Equipment: Item {
         }
         let nextTier = EquipmentTier(rawValue: tier.rawValue + 1) ?? .nationalTreasure
         let nextEquipment = Equipment(type: type, tier: nextTier)
-        return "강화시 초당 골드 획득량 \(goldPerSecond.formatted) -> \(nextEquipment.goldPerSecond.formatted)"
+        return "강화시 초당 +\(nextEquipment.goldPerSecond.formatted) / 현재 \(goldPerSecond.formatted)"
     }
     var cost: Cost {
         return tier.cost
     }
     var imageName: String {
-        return "item_\(type.imageName)_\(tier.imageName)"
+        return "item\(type.imageName)\(tier.imageName)"
     }
     var category: ItemCategory = .equipment
 
@@ -128,18 +128,22 @@ final class Equipment: Item {
         }
     }
 
-    /// 강화 확률에 따라 업그레이드
-    func upgraded() -> Bool {
+    /// 강화 확률에 따라 업그레이드 (bonusRate 기본값 0.0, 최대 100%)
+    func upgraded(bonusRate: Double = 0.0) -> Bool {
         guard canUpgrade else { return false }
-
         let randomValue = Double.random(in: 0...1)
-
-        if randomValue <= tier.upgradeSuccessRate {
+        let effectiveRate = min(tier.upgradeSuccessRate + bonusRate, 1.0)
+        if randomValue <= effectiveRate {
             self.tier = EquipmentTier(rawValue: tier.rawValue + 1) ?? .nationalTreasure
             return true
         } else {
             return false
         }
+    }
+
+    /// 환생 시 장비를 초기 상태로 되돌림
+    func reset() {
+        tier = .broken
     }
 }
 
@@ -171,13 +175,13 @@ enum EquipmentType {
     var imageName: String {
         switch self {
         case .keyboard:
-            return "keyboard"
+            return "Keyboard"
         case .mouse:
-            return "mouse"
+            return "Mouse"
         case .monitor:
-            return "monitor"
+            return "Monitor"
         case .chair:
-            return "chair"
+            return "Chair"
         }
     }
 }
@@ -262,21 +266,21 @@ enum EquipmentTier: Int {
     var imageName: String {
         switch self {
         case .broken:
-            return "broken"
+            return "Broken"
         case .cheap:
-            return "cheap"
+            return "Cheap"
         case .vintage:
-            return "vintage"
+            return "Vintage"
         case .decent:
-            return "decent"
+            return "Decent"
         case .premium:
-            return "premium"
+            return "Premium"
         case .diamond:
-            return "diamond"
+            return "Diamond"
         case .limited:
-            return "limited"
+            return "Limited"
         case .nationalTreasure:
-            return "nationalTreasure"
+            return "NationalTreasure"
         }
     }
 }

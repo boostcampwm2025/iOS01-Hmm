@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r \"ViewModel\\\\|EnvironmentObject\\\\|StateObject\" /Users/junyoung/development/iOS/NaverBoostCamp/Membership/DevUp/SoloDeveloperTraining/SoloDeveloperTraining/Production/Presentation/*.swift)",
+      "Bash(grep -l \"class\\\\|struct.*ViewModel\\\\|StateObject\\\\|ObservedObject\" /Users/junyoung/development/iOS/NaverBoostCamp/Membership/DevUp/SoloDeveloperTraining/SoloDeveloperTraining/Production/Presentation/*.swift)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(git add:*)"
+    ]
+  }
+}

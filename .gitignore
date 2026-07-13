@@ -105,6 +105,14 @@ iOSInjectionProject/
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
-Secret.swift
+
 # End of https://www.toptal.com/developers/gitignore/api/swift,xcode,macos
 
+
+# Firebase
+.firebase/
+hosting.cHVibGlj.cache
+
+# .xcconfig
+SoloDeveloperTraining/SoloDeveloperTraining/App/Config/Debug.xcconfig
+SoloDeveloperTraining/SoloDeveloperTraining/App/Config/Release.xcconfig

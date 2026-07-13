@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Career: String, CaseIterable {
+enum Career: String, CaseIterable, Codable {
     case unemployed = "백수"
     case laptopOwner = "노트북 보유자"
     case aspiringDeveloper = "개발자 지망생"
@@ -22,15 +22,15 @@ enum Career: String, CaseIterable {
     var description: String {
         switch self {
         case .unemployed:
-            return "아직 아무것도 시작하지 않았지만, 시간은 가장 많다"
+            return "빈털털이지만 시간 빌게이츠"
         case .laptopOwner:
             return "별다방 입장권 획득"
         case .aspiringDeveloper:
             return "헬로 월드(Hello World) 장인"
         case .juniorDeveloper:
-            return "에러는 많고 자신감은 적다"
+            return "에러 풀스택, 자신감 무스택"
         case .normalDeveloper:
-            return "이유는 몰라도 코드는 돌아간다"
+            return "작동 원리 미상"
         case .nightOwlDeveloper:
             return "해 뜨는게 퇴근 신호"
         case .skilledDeveloper:
@@ -38,7 +38,7 @@ enum Career: String, CaseIterable {
         case .famousDeveloper:
             return "개발자들의 연예인"
         case .allRounderDeveloper:
-            return "맡다 보니 전부 다 하게 됐다"
+            return "어쩌다 만능 노예"
         case .worldClassDeveloper:
             return "0과 1로 대화 가능"
         }
@@ -46,31 +46,31 @@ enum Career: String, CaseIterable {
 
     var imageName: String {
         switch self {
-        case .unemployed: return "profile_unemployed"
-        case .laptopOwner: return "profile_laptop_owner"
-        case .aspiringDeveloper: return "profile_aspiring_developer"
-        case .juniorDeveloper: return "profile_junior_developer"
-        case .normalDeveloper: return "profile_normal_developer"
-        case .nightOwlDeveloper: return "profile_night_owl_developer"
-        case .skilledDeveloper: return "profile_skilled_developer"
-        case .famousDeveloper: return "profile_famous_developer"
-        case .allRounderDeveloper: return "profile_all_rounder_developer"
-        case .worldClassDeveloper: return "profile_world_class_developer"
+        case .unemployed: return "profileUnemployed"
+        case .laptopOwner: return "profileLaptopOwner"
+        case .aspiringDeveloper: return "profileAspiringDeveloper"
+        case .juniorDeveloper: return "profileJuniorDeveloper"
+        case .normalDeveloper: return "profileNormalDeveloper"
+        case .nightOwlDeveloper: return "profileNightOwlDeveloper"
+        case .skilledDeveloper: return "profileSkilledDeveloper"
+        case .famousDeveloper: return "profileFamousDeveloper"
+        case .allRounderDeveloper: return "profileAllRounderDeveloper"
+        case .worldClassDeveloper: return "profileWorldClassDeveloper"
         }
     }
 
     var characterImagePrefix: String {
         switch self {
-        case .unemployed: return "character_unemployed"
-        case .laptopOwner: return "character_laptop_owner"
-        case .aspiringDeveloper: return "character_aspiring_developer"
-        case .juniorDeveloper: return "character_junior_developer"
-        case .normalDeveloper: return "character_normal_developer"
-        case .nightOwlDeveloper: return "character_night_owl_developer"
-        case .skilledDeveloper: return "character_skilled_developer"
-        case .famousDeveloper: return "character_famous_developer"
-        case .allRounderDeveloper: return "character_all_rounder_developer"
-        case .worldClassDeveloper: return "character_world_class_developer"
+        case .unemployed: return "characterUnemployed"
+        case .laptopOwner: return "characterLaptopOwner"
+        case .aspiringDeveloper: return "characterAspiringDeveloper"
+        case .juniorDeveloper: return "characterJuniorDeveloper"
+        case .normalDeveloper: return "characterNormalDeveloper"
+        case .nightOwlDeveloper: return "characterNightOwlDeveloper"
+        case .skilledDeveloper: return "characterSkilledDeveloper"
+        case .famousDeveloper: return "characterFamousDeveloper"
+        case .allRounderDeveloper: return "characterAllRounderDeveloper"
+        case .worldClassDeveloper: return "characterWorldClassDeveloper"
         }
     }
 
@@ -114,5 +114,28 @@ enum Career: String, CaseIterable {
     func canUpgrade(currentWealth: Int) -> Bool {
         guard let next = nextCareer else { return false }
         return currentWealth >= next.requiredWealth
+    }
+}
+
+// MARK: - Scenario
+extension Career {
+    /// 이 커리어의 시나리오 타입
+    var scenarioType: ScenarioType {
+        switch self {
+        case .worldClassDeveloper:
+            return .final
+        case .juniorDeveloper, .nightOwlDeveloper, .famousDeveloper:
+            return .event
+        default:
+            return .normal
+        }
+    }
+}
+
+// MARK: - Analytics
+extension Career {
+    /// Analytics 이벤트용 레벨 (1부터 시작)
+    var level: Int {
+        (Career.allCases.firstIndex(of: self) ?? 0) + 1
     }
 }

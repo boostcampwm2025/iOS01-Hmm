@@ -66,7 +66,6 @@ struct MissionTestView: View {
             .navigationTitle("미션 시스템 테스트")
             .alert("알림", isPresented: $showAlert) {
                 Button("확인", role: .cancel) {}
-                    .withTapSound()
             } message: {
                 Text(alertMessage)
             }
@@ -402,7 +401,7 @@ struct MissionTestView: View {
                 Spacer()
 
                 VStack {
-                    Text("박하스")
+                    Text("바카스")
                         .font(.caption)
                     Text("\(record.energyDrinkUseCount)")
                         .font(.title3)
@@ -440,7 +439,7 @@ struct MissionTestView: View {
                 Button {
                     performEnergyDrinkUse()
                 } label: {
-                    Label("박하스 +1", systemImage: "bolt.circle.fill")
+                    Label("바카스 +1", systemImage: "bolt.circle.fill")
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color.mint)
@@ -451,7 +450,7 @@ struct MissionTestView: View {
                 Button {
                     performEnergyDrinkUse(count: 10)
                 } label: {
-                    Label("박하스 +10", systemImage: "bolt.fill")
+                    Label("바카스 +10", systemImage: "bolt.fill")
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color.mint.opacity(0.7))
@@ -620,7 +619,7 @@ struct MissionTestView: View {
             return
         }
 
-        missionSystem.claimMissionReward(mission: mission, wallet: wallet)
+        missionSystem.claimMissionReward(mission: mission, wallet: wallet, record: record)
 
         var message = "미션 '\(mission.title)' 보상을 수령했습니다!\n"
         if mission.reward.gold > 0 {

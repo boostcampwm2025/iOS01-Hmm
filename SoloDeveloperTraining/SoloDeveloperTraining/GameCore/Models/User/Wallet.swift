@@ -62,4 +62,10 @@ final class Wallet {
         diamond -= amount
         return true
     }
+
+    /// 환생 시 재화 초기화
+    func reset() {
+        gold = 0
+        diamond = 0
+    }
 }

@@ -8,6 +8,8 @@
 import SpriteKit
 import SwiftUI
 
+import DUDesignSystem
+
 struct StackGameTestView: View {
     @State private var game: StackGame
     private let scene: StackGameScene
@@ -32,13 +34,23 @@ struct StackGameTestView: View {
                 SpriteView(scene: scene)
 
                 GameToolBar(
-                    closeButtonDidTapHandler: stopGame,
-                    coffeeButtonDidTapHandler: useCoffee,
-                    energyDrinkButtonDidTapHandler: useEnergyDrink,
-                    feverState: game.feverSystem,
-                    buffSystem: game.buffSystem,
-                    coffeeCount: .constant(game.user.inventory.count(.coffee) ?? 0),
-                    energyDrinkCount: .constant(game.user.inventory.count(.energyDrink) ?? 0)
+                    feverStage: game.feverSystem.feverStage,
+                    feverProgress: {
+                        let stageBase = Double(game.feverSystem.feverStage) * 100.0
+                        return (game.feverSystem.feverPercent - stageBase) / 100.0
+                    }(),
+                    feverMultiplier: game.feverSystem.feverStage == 0 ? 0 : game.feverSystem.feverMultiplier,
+                    coffeeCount: game.user.inventory.count(.coffee) ?? 0,
+                    energyDrinkCount: game.user.inventory.count(.energyDrink) ?? 0,
+                    coffeeCooldown: {
+                        Double(game.buffSystem.coffeeDuration) / Double(ConsumableType.coffee.duration)
+                    }(),
+                    energyDrinkCooldown: {
+                        Double(game.buffSystem.energyDrinkDuration) / Double(ConsumableType.energyDrink.duration)
+                    }(),
+                    onClose: stopGame,
+                    onCoffee: useCoffee,
+                    onEnergyDrink: useEnergyDrink
                 )
                 .padding()
             }

@@ -1,0 +1,80 @@
+//
+//  ComponentTabbarItemView.swift
+//  DUDesignSystemExample
+//
+
+import SwiftUI
+import DUDesignSystem
+
+struct ComponentTabbarItemView: View {
+
+    @State private var text: String = "홈"
+    @State private var assetName: String = "work"
+    @State private var selectedState: TabbarItem.TabbarItemState = .default
+    @State private var isNew: Bool = false
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // MARK: - Preview Area
+            PreviewArea {
+                HStack {
+                    Spacer()
+                    TabbarItem(assetName: assetName, text: text, state: selectedState, isNew: isNew) {
+                        selectedState = selectedState == .selected ? .default : .selected
+                    }
+                    .frame(width: 103)
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity)
+            }
+
+            // MARK: - Controls
+            List {
+                Section("텍스트") {
+                    HStack {
+                        TextField("텍스트 입력", text: $text)
+                        if !text.isEmpty {
+                            Button { text = "" } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(Color.gray400)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+
+                Section("뱃지") {
+                    Toggle("New 뱃지", isOn: $isNew)
+                }
+
+                Section("상태") {
+                    Picker("상태", selection: $selectedState) {
+                        Text("Default").tag(TabbarItem.TabbarItemState.default)
+                        Text("Selected").tag(TabbarItem.TabbarItemState.selected)
+                    }
+                    .pickerStyle(.segmented)
+                }
+                .listRowBackground(Color.clear)
+                .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+
+                Section("이미지명") {
+                    Picker("이미지명", selection: $assetName) {
+                        Text("work").tag("work")
+                        Text("mission").tag("mission")
+                        Text("skill").tag("skill")
+                        Text("shop").tag("shop")
+                    }
+                }
+            }
+            .scrollContentBackground(.hidden)
+        }
+        .background(Color.beige200)
+        .navigationTitle("TabbarItem")
+    }
+}
+
+#Preview {
+    NavigationStack {
+        ComponentTabbarItemView()
+    }
+}

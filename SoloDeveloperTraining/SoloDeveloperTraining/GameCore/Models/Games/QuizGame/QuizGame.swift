@@ -142,6 +142,22 @@ final class QuizGame {
             startQuestion()
         }
     }
+
+    /// 게임 완료 처리
+    /// - Parameter multiplier: 보상 배수 (기본값 1.0, 광고 시청 시 2.0)
+    /// - 타이머 중지
+    /// - 획득한 다이아를 사용자 지갑에 추가 (배수 적용)
+    /// - 게임 상태를 completed로 변경
+    func completeGame(multiplier: Double = 1.0) {
+        stopTimer()
+
+        // 다이아 보상 지급 (정답당 5개 × 배수)
+        let baseDiamonds = correctAnswersCount * Policy.Game.Quiz.diamondsPerCorrect
+        let diamondsToAward = Int(Double(baseDiamonds) * multiplier)
+        user.wallet.addDiamond(diamondsToAward)
+
+        phase = .completed
+    }
 }
 
 private extension QuizGame {
@@ -198,25 +214,11 @@ private extension QuizGame {
             correctAnswersCount += 1
         }
 
-        SoundService.shared.trigger(isCorrect ? .languageCorrect : .languageWrong)
+        SoundService.shared.trigger(isCorrect ? .correct : .wrong)
         if !isCorrect {
             HapticService.shared.trigger(.error)
         }
         phase = .showingExplanation
-    }
-
-    /// 게임 완료 처리
-    /// - 타이머 중지
-    /// - 획득한 다이아를 사용자 지갑에 추가
-    /// - 게임 상태를 completed로 변경
-    func completeGame() {
-        stopTimer()
-
-        // 다이아 보상 지급 (정답당 5개)
-        let diamondsToAward = correctAnswersCount * Policy.Game.Quiz.diamondsPerCorrect
-        user.wallet.addDiamond(diamondsToAward)
-
-        phase = .completed
     }
 
     /// 타이머 시작

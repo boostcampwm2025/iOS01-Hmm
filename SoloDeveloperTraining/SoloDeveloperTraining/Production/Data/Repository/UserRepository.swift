@@ -7,9 +7,15 @@
 
 import Foundation
 
+enum UserLoadResult {
+    case current(User)
+    case legacy(Career?)
+    case empty
+}
+
 protocol UserRepository {
     func save(_ user: User) async throws
-    func load() async throws -> User?
+    func load() async throws -> UserLoadResult
 }
 
 final class FileManagerUserRepository: UserRepository {
@@ -48,20 +54,34 @@ final class FileManagerUserRepository: UserRepository {
         }
     }
 
-    func load() async throws -> User? {
-        guard fileManager.fileExists(atPath: fileURL.path) else { return nil }
+    func load() async throws -> UserLoadResult {
+        guard fileManager.fileExists(atPath: fileURL.path) else { return .empty }
 
         let data = try Data(contentsOf: fileURL)
-        let userDTO = try JSONDecoder().decode(UserDTO.self, from: data)
+        do {
+            let userDTO = try JSONDecoder().decode(UserDTO.self, from: data)
+            return .current(
+                User(
+                    id: userDTO.id,
+                    nickname: userDTO.nickname,
+                    career: userDTO.career.toCareer(),
+                    wallet: userDTO.wallet.toWallet(),
+                    inventory: userDTO.inventory.toInventory(),
+                    record: userDTO.record.toRecord(),
+                    skills: Set(userDTO.skills.map { $0.toSkill() })
+                ))
+        } catch is DecodingError {
+            let legacyCareer = try loadLegacyCareer(data: data)
+            return .legacy(legacyCareer)
+        }
+    }
+}
 
-        return User(
-            id: userDTO.id,
-            nickname: userDTO.nickname,
-            career: userDTO.career.toCareer(),
-            wallet: userDTO.wallet.toWallet(),
-            inventory: userDTO.inventory.toInventory(),
-            record: userDTO.record.toRecord(),
-            skills: Set(userDTO.skills.map { $0.toSkill() })
-        )
+extension FileManagerUserRepository {
+    /// 이전 버전의 커리어 정보를 반환합니다.
+    func loadLegacyCareer(data: Data) throws -> Career? {
+        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+        let careerRaw = (json?["career"] as? [String: Any])?["rawValue"] as? String
+        return careerRaw.flatMap { Career(rawValue: $0) }
     }
 }

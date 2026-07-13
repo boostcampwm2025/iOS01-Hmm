@@ -8,7 +8,7 @@
 import Foundation
 
 final class DodgeGame: Game {
-    typealias ActionInput = DropItem.DropItemType
+    typealias ActionInput = FallingItemType
 
     /// 게임 종류
     var kind: GameType = .dodge
@@ -156,7 +156,7 @@ final class DodgeGame: Game {
     /// 아이템 충돌 처리
     /// - Parameter type: 충돌한 아이템 타입
     /// - Returns: 획득/손실한 골드 (손실은 음수)
-    func didPerformAction(_ input: DropItem.DropItemType) async -> Int {
+    func didPerformAction(_ input: FallingItemType) async -> Int {
         switch input {
         case .smallGold:
             // 피버 증가
@@ -175,7 +175,7 @@ final class DodgeGame: Game {
 
             // 재화 획득 시 캐릭터 웃게 만들기
             animationSystem?.playSmile()
-            SoundService.shared.trigger(.coinCollect)
+            SoundService.shared.trigger(.coin)
             return gainGold
 
         case .largeGold:
@@ -195,7 +195,7 @@ final class DodgeGame: Game {
 
             // 재화 획득 시 캐릭터 웃게 만들기
             animationSystem?.playSmile()
-            SoundService.shared.trigger(.coinCollect)
+            SoundService.shared.trigger(.coin)
             return gainGold
 
         case .bug:
@@ -210,13 +210,13 @@ final class DodgeGame: Game {
 
             // 골드 손실
             let loseGold = Int(Double(baseGold) * Policy.Game.Dodge.bugHitLossGoldMultiplier)
-            user.wallet.spendGold(loseGold)
+            let didSpendGold = user.wallet.spendGold(loseGold)
             /// 실패 기록
             user.record.record(.dodgeFail)
 
-            SoundService.shared.trigger(.bugHit)
+            SoundService.shared.trigger(.hit)
             HapticService.shared.trigger(.error)
-            return -loseGold
+            return didSpendGold ? -loseGold : 0
         }
     }
 }

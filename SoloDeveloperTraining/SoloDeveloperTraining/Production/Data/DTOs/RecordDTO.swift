@@ -36,15 +36,27 @@ struct RecordDTO: Codable {
     // Consumable Usage Records
     let coffeeUseCount: Int
     let energyDrinkUseCount: Int
+    let skillAdRewardState: SkillAdRewardState?
 
     // Play Time Records
     let totalPlayTime: TimeInterval
+
+    // Offline Reward Records
+    let offlineRewardState: OfflineRewardState
 
     // Tutorial Records
     let tutorialCompleted: Bool
 
     // Career Records
     let hasAchievedJuniorDeveloper: Bool
+
+    // Scenario Records
+    let scenarioProgress: ScenarioProgressDTO
+    let choiceHistory: [Career: ChoiceResult]
+
+    // Rebirth Records
+    let rebirthCount: Int
+    let allEndingsAchieved: [Ending]
 
     // Mission States
     let missionStates: [MissionStateDTO]
@@ -67,10 +79,16 @@ struct RecordDTO: Codable {
         self.stackConsecutiveSuccess = record.stackConsecutiveSuccess
         self.coffeeUseCount = record.coffeeUseCount
         self.energyDrinkUseCount = record.energyDrinkUseCount
+        self.skillAdRewardState = record.skillAdRewardState
         self.totalPlayTime = record.totalPlayTime
+        self.offlineRewardState = record.offlineRewardState
         self.tutorialCompleted = record.tutorialCompleted
         self.hasAchievedJuniorDeveloper = record.hasAchievedJuniorDeveloper
+        self.scenarioProgress = ScenarioProgressDTO(from: record.scenarioProgress)
+        self.choiceHistory = record.choiceHistory
         self.missionStates = record.missionSystem.missions.map { MissionStateDTO(from: $0) }
+        self.rebirthCount = record.rebirthCount
+        self.allEndingsAchieved = Array(record.allEndingsAchieved)
     }
 
     func toRecord() -> Record {
@@ -104,15 +122,23 @@ struct RecordDTO: Codable {
         // Consumable Usage Records
         record.coffeeUseCount = coffeeUseCount
         record.energyDrinkUseCount = energyDrinkUseCount
+        record.skillAdRewardState = skillAdRewardState ?? .init()
 
         // Play Time Records
         record.totalPlayTime = totalPlayTime
+
+        // Offline Reward Records
+        record.offlineRewardState = offlineRewardState
 
         // Tutorial Records
         record.tutorialCompleted = tutorialCompleted
 
         // Career Records
         record.hasAchievedJuniorDeveloper = hasAchievedJuniorDeveloper
+
+        // Scenario Records
+        record.scenarioProgress = scenarioProgress.toScenarioProgress()
+        record.choiceHistory = choiceHistory
 
         // Mission States 복원
         for missionState in missionStates {
@@ -121,6 +147,10 @@ struct RecordDTO: Codable {
                 mission.state = missionState.state.toMissionState()
             }
         }
+
+        // Rebirth Records 복원
+        record.rebirthCount = rebirthCount
+        record.allEndingsAchieved = Set(allEndingsAchieved)
 
         return record
     }

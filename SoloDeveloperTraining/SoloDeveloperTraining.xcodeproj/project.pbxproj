@@ -6,6 +6,25 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		088F6AA02FCAA8A600E14BA2 /* DUDesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 088F6A9F2FCAA8A600E14BA2 /* DUDesignSystem */; };
+		283B980E2FAB24750033B924 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 283B980D2FAB24750033B924 /* GoogleMobileAds */; };
+		283B9A432FAB36020033B924 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 283B9A422FAB36020033B924 /* GoogleMobileAds */; };
+		28AC32C92FDEB29600D0126E /* DUDesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 28AC32C82FDEB29600D0126E /* DUDesignSystem */; };
+		28AC32CB2FDEB2A600D0126E /* DUDesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 28AC32CA2FDEB2A600D0126E /* DUDesignSystem */; };
+		28F3C5072FB37EDA0077B77A /* KakaoSDKShare in Frameworks */ = {isa = PBXBuildFile; productRef = 28F3C5062FB37EDA0077B77A /* KakaoSDKShare */; };
+		28F3C7C32FB73B6E0077B77A /* KakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 28F3C7C22FB73B6E0077B77A /* KakaoSDK */; };
+		28F3C7C52FB73B7B0077B77A /* KakaoSDKShare in Frameworks */ = {isa = PBXBuildFile; productRef = 28F3C7C42FB73B7B0077B77A /* KakaoSDKShare */; };
+		28F3C7C72FB73B820077B77A /* KakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 28F3C7C62FB73B820077B77A /* KakaoSDK */; };
+		28FB12B02F9B5EA8004FCBB3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */; };
+		28FB12B22F9B5EB1004FCBB3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 28FB12B12F9B5EB1004FCBB3 /* FirebaseFirestore */; };
+		BC19336F2F8FC7110033A27E /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BC19336E2F8FC7110033A27E /* FirebaseAnalytics */; };
+		BC1933712F8FC7110033A27E /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = BC1933702F8FC7110033A27E /* FirebaseCore */; };
+		BC4C62982FE18C3C00570653 /* AppsFlyerLib in Frameworks */ = {isa = PBXBuildFile; productRef = BC4C62972FE18C3C00570653 /* AppsFlyerLib */; };
+		BCC0EACE2F8FE90700D7A84A /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BCC0EACD2F8FE90700D7A84A /* FirebaseAnalytics */; };
+		BCC0EAD02F8FE90D00D7A84A /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = BCC0EACF2F8FE90D00D7A84A /* FirebaseCore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		BCFC853D2F31FED800447A9A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -18,67 +37,142 @@
 
 /* Begin PBXFileReference section */
 		08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoloDeveloperTraining.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		088F6A8B2FCAA7E400E14BA2 /* DUDesignSystemExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DUDesignSystemExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2896AE422F100CD600D38732 /* SoloDeveloperTraining-Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SoloDeveloperTraining-Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B4C100012FCFE2A000000001 /* SoloDeveloperTraining/App/Config/Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = SoloDeveloperTraining/App/Config/Debug.xcconfig; sourceTree = "<group>"; };
+		B4C100022FCFE2A000000001 /* SoloDeveloperTraining/App/Config/Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = SoloDeveloperTraining/App/Config/Release.xcconfig; sourceTree = "<group>"; };
 		BCFC85392F31FED800447A9A /* SoloDeveloperTrainingTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SoloDeveloperTrainingTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		2896AE432F100CD600D38732 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */ = {
+		28FB16632F9B6E3C004FCBB3 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"App/Info-Dev.plist",
-				App/Info.plist,
-				"Production/Error/PurchasingError+UserReadableError.swift",
-				"Production/Error/SkillError+UserReadableError.swift",
-				Production/Error/UserReadableError.swift,
-				Production/Presentation/CharacterScene.swift,
-				Production/Presentation/DodgeGameView.swift,
-				Production/Presentation/FeedbackSettingView.swift,
-				Production/Presentation/Intro/IntroView.swift,
-				Production/Presentation/Intro/NicknameSetupView.swift,
-				Production/Presentation/Intro/TutorialPageView.swift,
-				Production/Presentation/Intro/TutorialView.swift,
-				Production/Presentation/LanguageGameView.swift,
-				Production/Presentation/MainView.swift,
-				Production/Presentation/MissionView.swift,
-				Production/Presentation/MultiTouchView.swift,
-				Production/Presentation/QuizGameView.swift,
-				Production/Presentation/ShopView.swift,
-				Production/Presentation/SkillView.swift,
-				Production/Presentation/StackGameScene.swift,
-				Production/Presentation/StackGameView.swift,
-				Production/Presentation/TapGameView.swift,
-				Production/Presentation/WorkSelectedView.swift,
-			);
-			target = 2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */;
-		};
-		BC6322A72F0F41BB00EAD3F7 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
+				.firebaserc,
 				App/Info.plist,
 				Devlopment/CheatSystem/CheatManager.swift,
+				Devlopment/Data/Repository/MockScenarioRepository.swift,
+				Devlopment/MockPolicyStore.swift,
+				Devlopment/Presentation/AdView.swift,
 				Devlopment/Presentation/ContentView.swift,
 				Devlopment/Presentation/DodgeGameTestView.swift,
-				Devlopment/Presentation/LanguageGameTestView.swift,
 				Devlopment/Presentation/MissionTestView.swift,
-				Devlopment/Presentation/QuizGameTestContentView.swift,
-				Devlopment/Presentation/QuizGameTestView.swift,
+				Devlopment/Presentation/PolicyTestView.swift,
+				Devlopment/Presentation/RebirthTestView.swift,
+				Devlopment/Presentation/ScenarioTestView.swift,
 				Devlopment/Presentation/ShopTestView.swift,
 				Devlopment/Presentation/SkillTestView.swift,
 				Devlopment/Presentation/StackGameScene.swift,
 				Devlopment/Presentation/StackGameTestView.swift,
 				Devlopment/Presentation/TabGameView.swift,
+				firebase.json,
+				"public/.well-known/apple-app-site-association",
+				public/aceDeveloper/index.html,
+				public/darkWebAgent/index.html,
+				public/digitalNomad/index.html,
+				public/geniusHacker/index.html,
+				public/index.html,
+				public/robots.txt,
+				public/startupCEO/index.html,
+				public/techInfluencer/index.html,
+				public/thumbnails/ace_developer.png,
+				public/thumbnails/dark_web_agent.png,
+				public/thumbnails/default.png,
+				public/thumbnails/digital_nomad.png,
+				public/thumbnails/genius_hacker.png,
+				public/thumbnails/startup_ceo.png,
+				public/thumbnails/tech_influencer.png,
 			);
 			target = 08267F2A2F0D06BC005A0066 /* SoloDeveloperTraining */;
+		};
+		28FB16642F9B6E3C004FCBB3 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				.firebaserc,
+				"App/Info-Dev.plist",
+				App/Info.plist,
+				firebase.json,
+				Production/Analytics/AppsFlyerDelegate.swift,
+				"Production/Error/PurchasingError+UserReadableError.swift",
+				"Production/Error/SkillError+UserReadableError.swift",
+				Production/Error/UserReadableError.swift,
+				Production/Presentation/CharacterScene.swift,
+				Production/Presentation/FeedbackSettingView.swift,
+				Production/Presentation/GIFView.swift,
+				Production/Presentation/Intro/IntroView.swift,
+				Production/Presentation/Intro/NicknameSetupView.swift,
+				Production/Presentation/Intro/TutorialPageView.swift,
+				Production/Presentation/Intro/TutorialView.swift,
+				Production/Presentation/LevelUpEffectManager.swift,
+				Production/Presentation/LevelUpEffectView.swift,
+				Production/Presentation/MainView.swift,
+				Production/Presentation/MissionView.swift,
+				Production/Presentation/ShopView.swift,
+				Production/Presentation/SkillView.swift,
+				Production/Presentation/UpdateRewardPopupView.swift,
+				Production/Presentation/Work/Game/DodgeGameView.swift,
+				Production/Presentation/Work/Game/EffectLabelData.swift,
+				Production/Presentation/Work/Game/LanguageGameView.swift,
+				Production/Presentation/Work/Game/MultiTouchView.swift,
+				Production/Presentation/Work/Game/QuizGameView.swift,
+				Production/Presentation/Work/Game/StackGameScene.swift,
+				Production/Presentation/Work/Game/StackGameView.swift,
+				Production/Presentation/Work/Game/TapGameView.swift,
+				Production/Presentation/Work/WorkSelectedView.swift,
+				"public/.well-known/apple-app-site-association",
+				public/aceDeveloper/index.html,
+				public/darkWebAgent/index.html,
+				public/digitalNomad/index.html,
+				public/geniusHacker/index.html,
+				public/index.html,
+				public/startupCEO/index.html,
+				public/techInfluencer/index.html,
+				public/thumbnails/ace_developer.png,
+				public/thumbnails/dark_web_agent.png,
+				public/thumbnails/default.png,
+				public/thumbnails/digital_nomad.png,
+				public/thumbnails/genius_hacker.png,
+				public/thumbnails/startup_ceo.png,
+				public/thumbnails/tech_influencer.png,
+				Resources/Audio/click.wav,
+				Resources/Audio/coin.wav,
+				Resources/Audio/correct.wav,
+				Resources/Audio/count.wav,
+				Resources/Audio/drink.wav,
+				Resources/Audio/drop.wav,
+				Resources/Audio/ending.wav,
+				Resources/Audio/error.wav,
+				Resources/Audio/failure.wav,
+				Resources/Audio/hit.wav,
+				Resources/Audio/levelUp.wav,
+				Resources/Audio/main.wav,
+				Resources/Audio/mission.wav,
+				Resources/Audio/normal.wav,
+				Resources/Audio/over.wav,
+				Resources/Audio/pop.wav,
+				Resources/Audio/rebirth.wav,
+				Resources/Audio/scenario.wav,
+				Resources/Audio/splash.wav,
+				Resources/Audio/stack.wav,
+				Resources/Audio/success.wav,
+				Resources/Audio/typing.wav,
+				Resources/Audio/wrong.wav,
+			);
+			target = 2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		08267F2D2F0D06BC005A0066 /* SoloDeveloperTraining */ = {
+		088F6A8C2FCAA7E400E14BA2 /* DUDesignSystemExample */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = DUDesignSystemExample;
+			sourceTree = "<group>";
+		};
+		28FB154B2F9B6E3B004FCBB3 /* SoloDeveloperTraining */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				BC6322A72F0F41BB00EAD3F7 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */,
-				2896AE432F100CD600D38732 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */,
+				28FB16632F9B6E3C004FCBB3 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining" target */,
+				28FB16642F9B6E3C004FCBB3 /* Exceptions for "SoloDeveloperTraining" folder in "SoloDeveloperTraining-Dev" target */,
 			);
 			path = SoloDeveloperTraining;
 			sourceTree = "<group>";
@@ -95,6 +189,22 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				283B980E2FAB24750033B924 /* GoogleMobileAds in Frameworks */,
+				BC4C62982FE18C3C00570653 /* AppsFlyerLib in Frameworks */,
+				BC1933712F8FC7110033A27E /* FirebaseCore in Frameworks */,
+				28AC32C92FDEB29600D0126E /* DUDesignSystem in Frameworks */,
+				BC19336F2F8FC7110033A27E /* FirebaseAnalytics in Frameworks */,
+				28FB12B02F9B5EA8004FCBB3 /* FirebaseFirestore in Frameworks */,
+				28F3C7C52FB73B7B0077B77A /* KakaoSDKShare in Frameworks */,
+				28F3C7C72FB73B820077B77A /* KakaoSDK in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		088F6A882FCAA7E400E14BA2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				088F6AA02FCAA8A600E14BA2 /* DUDesignSystem in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,6 +212,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				283B9A432FAB36020033B924 /* GoogleMobileAds in Frameworks */,
+				BCC0EAD02F8FE90D00D7A84A /* FirebaseCore in Frameworks */,
+				28AC32CB2FDEB2A600D0126E /* DUDesignSystem in Frameworks */,
+				28F3C5072FB37EDA0077B77A /* KakaoSDKShare in Frameworks */,
+				BCC0EACE2F8FE90700D7A84A /* FirebaseAnalytics in Frameworks */,
+				28FB12B22F9B5EB1004FCBB3 /* FirebaseFirestore in Frameworks */,
+				28F3C7C32FB73B6E0077B77A /* KakaoSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,9 +235,12 @@
 		08267F222F0D06BC005A0066 = {
 			isa = PBXGroup;
 			children = (
-				08267F2D2F0D06BC005A0066 /* SoloDeveloperTraining */,
 				BCFC853A2F31FED800447A9A /* SoloDeveloperTrainingTests */,
+				088F6A8C2FCAA7E400E14BA2 /* DUDesignSystemExample */,
+				BCC0EACC2F8FE90700D7A84A /* Frameworks */,
 				08267F2C2F0D06BC005A0066 /* Products */,
+				B4C100042FCFE2A000000001 /* Config */,
+				28FB154B2F9B6E3B004FCBB3 /* SoloDeveloperTraining */,
 			);
 			sourceTree = "<group>";
 		};
@@ -130,8 +250,25 @@
 				08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */,
 				2896AE422F100CD600D38732 /* SoloDeveloperTraining-Dev.app */,
 				BCFC85392F31FED800447A9A /* SoloDeveloperTrainingTests.xctest */,
+				088F6A8B2FCAA7E400E14BA2 /* DUDesignSystemExample.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		B4C100042FCFE2A000000001 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				B4C100012FCFE2A000000001 /* SoloDeveloperTraining/App/Config/Debug.xcconfig */,
+				B4C100022FCFE2A000000001 /* SoloDeveloperTraining/App/Config/Release.xcconfig */,
+			);
+			name = Config;
+			sourceTree = "<group>";
+		};
+		BCC0EACC2F8FE90700D7A84A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -151,13 +288,44 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				08267F2D2F0D06BC005A0066 /* SoloDeveloperTraining */,
+				28FB154B2F9B6E3B004FCBB3 /* SoloDeveloperTraining */,
 			);
 			name = SoloDeveloperTraining;
 			packageProductDependencies = (
+				BC19336E2F8FC7110033A27E /* FirebaseAnalytics */,
+				BC1933702F8FC7110033A27E /* FirebaseCore */,
+				28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */,
+				283B980D2FAB24750033B924 /* GoogleMobileAds */,
+				28F3C7C42FB73B7B0077B77A /* KakaoSDKShare */,
+				28F3C7C62FB73B820077B77A /* KakaoSDK */,
+				28AC32C82FDEB29600D0126E /* DUDesignSystem */,
+				BC4C62972FE18C3C00570653 /* AppsFlyerLib */,
 			);
 			productName = SoloDeveloperTraining;
 			productReference = 08267F2B2F0D06BC005A0066 /* SoloDeveloperTraining.app */;
+			productType = "com.apple.product-type.application";
+		};
+		088F6A8A2FCAA7E400E14BA2 /* DUDesignSystemExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 088F6A952FCAA7E500E14BA2 /* Build configuration list for PBXNativeTarget "DUDesignSystemExample" */;
+			buildPhases = (
+				088F6A872FCAA7E400E14BA2 /* Sources */,
+				088F6A882FCAA7E400E14BA2 /* Frameworks */,
+				088F6A892FCAA7E400E14BA2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				088F6A8C2FCAA7E400E14BA2 /* DUDesignSystemExample */,
+			);
+			name = DUDesignSystemExample;
+			packageProductDependencies = (
+				088F6A9F2FCAA8A600E14BA2 /* DUDesignSystem */,
+			);
+			productName = DUDesignSystemExample;
+			productReference = 088F6A8B2FCAA7E400E14BA2 /* DUDesignSystemExample.app */;
 			productType = "com.apple.product-type.application";
 		};
 		2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */ = {
@@ -174,10 +342,17 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				08267F2D2F0D06BC005A0066 /* SoloDeveloperTraining */,
+				28FB154B2F9B6E3B004FCBB3 /* SoloDeveloperTraining */,
 			);
 			name = "SoloDeveloperTraining-Dev";
 			packageProductDependencies = (
+				BCC0EACD2F8FE90700D7A84A /* FirebaseAnalytics */,
+				BCC0EACF2F8FE90D00D7A84A /* FirebaseCore */,
+				28FB12B12F9B5EB1004FCBB3 /* FirebaseFirestore */,
+				283B9A422FAB36020033B924 /* GoogleMobileAds */,
+				28F3C5062FB37EDA0077B77A /* KakaoSDKShare */,
+				28F3C7C22FB73B6E0077B77A /* KakaoSDK */,
+				28AC32CA2FDEB2A600D0126E /* DUDesignSystem */,
 			);
 			productName = SoloDeveloperTraining;
 			productReference = 2896AE422F100CD600D38732 /* SoloDeveloperTraining-Dev.app */;
@@ -213,10 +388,13 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2620;
+				LastSwiftUpdateCheck = 2610;
 				LastUpgradeCheck = 2610;
 				TargetAttributes = {
 					08267F2A2F0D06BC005A0066 = {
+						CreatedOnToolsVersion = 26.1.1;
+					};
+					088F6A8A2FCAA7E400E14BA2 = {
 						CreatedOnToolsVersion = 26.1.1;
 					};
 					BCFC85382F31FED800447A9A = {
@@ -234,6 +412,13 @@
 			);
 			mainGroup = 08267F222F0D06BC005A0066;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				283B95DB2FA9D44B0033B924 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+				28F3C5032FB37EA70077B77A /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
+				28AC32CC2FDEB4BD00D0126E /* XCLocalSwiftPackageReference "../DUDesignSystem" */,
+				BC4C62962FE18C3C00570653 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 08267F2C2F0D06BC005A0066 /* Products */;
 			projectDirPath = "";
@@ -242,12 +427,20 @@
 				08267F2A2F0D06BC005A0066 /* SoloDeveloperTraining */,
 				2896AE3A2F100CD600D38732 /* SoloDeveloperTraining-Dev */,
 				BCFC85382F31FED800447A9A /* SoloDeveloperTrainingTests */,
+				088F6A8A2FCAA7E400E14BA2 /* DUDesignSystemExample */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		08267F292F0D06BC005A0066 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		088F6A892FCAA7E400E14BA2 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -311,6 +504,13 @@
 
 /* Begin PBXSourcesBuildPhase section */
 		08267F272F0D06BC005A0066 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		088F6A872FCAA7E400E14BA2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -467,12 +667,16 @@
 		};
 		08267F372F0D06BE005A0066 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B4C100012FCFE2A000000001 /* SoloDeveloperTraining/App/Config/Debug.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = app_icon_release;
+				ASSETCATALOG_COMPILER_APPICON_NAME = appIconRelease;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_ENTITLEMENTS = SoloDeveloperTraining/App/SoloDeveloperTraining.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B3PWYBKFUK;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = QBLK6726G4;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -490,9 +694,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.2;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = kr.codesquad.boostcamp10.SoloDeveloperTraining;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = development_provisioning;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -509,12 +715,16 @@
 		};
 		08267F382F0D06BE005A0066 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B4C100022FCFE2A000000001 /* SoloDeveloperTraining/App/Config/Release.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = app_icon_release;
+				ASSETCATALOG_COMPILER_APPICON_NAME = appIconRelease;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_ENTITLEMENTS = SoloDeveloperTraining/App/SoloDeveloperTraining.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B3PWYBKFUK;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = QBLK6726G4;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -532,9 +742,93 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.2;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = kr.codesquad.boostcamp10.SoloDeveloperTraining;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = distribution_provisioning;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		088F6A932FCAA7E500E14BA2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = QBLK6726G4;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.devup.DUDesignSystem;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = design_example_development_provisioning;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		088F6A942FCAA7E500E14BA2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = QBLK6726G4;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.devup.DUDesignSystem;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = design_example_distribution_provisioning;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -551,17 +845,22 @@
 		};
 		2896AE402F100CD600D38732 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B4C100012FCFE2A000000001 /* SoloDeveloperTraining/App/Config/Debug.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = app_icon_dev;
+				ASSETCATALOG_COMPILER_APPICON_NAME = appIconDev;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_ENTITLEMENTS = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B3PWYBKFUK;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = QBLK6726G4;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "SoloDeveloperTraining/App/Info-Dev.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "개발자 키우기 (Dev)";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "개인화된 광고 제공 목적으로 사용됩니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
@@ -576,8 +875,10 @@
 				);
 				MARKETING_VERSION = 1.0;
 				OTHER_SWIFT_FLAGS = "-DDEV_BUILD";
-				PRODUCT_BUNDLE_IDENTIFIER = kr.codesquad.boostcamp10.SoloDeveloperTraining.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = com.devup.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = dev_development_provisioning;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -594,17 +895,22 @@
 		};
 		2896AE412F100CD600D38732 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B4C100012FCFE2A000000001 /* SoloDeveloperTraining/App/Config/Debug.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = app_icon_dev;
+				ASSETCATALOG_COMPILER_APPICON_NAME = appIconDev;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_ENTITLEMENTS = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B3PWYBKFUK;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = QBLK6726G4;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "SoloDeveloperTraining/App/Info-Dev.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "개발자 키우기 (Dev)";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "개인화된 광고 제공 목적으로 사용됩니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
@@ -619,8 +925,10 @@
 				);
 				MARKETING_VERSION = 1.0;
 				OTHER_SWIFT_FLAGS = "-DDEV_BUILD";
-				PRODUCT_BUNDLE_IDENTIFIER = kr.codesquad.boostcamp10.SoloDeveloperTraining.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = com.devup.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = dev_distribution_provisioning;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -700,6 +1008,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		088F6A952FCAA7E500E14BA2 /* Build configuration list for PBXNativeTarget "DUDesignSystemExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				088F6A932FCAA7E500E14BA2 /* Debug */,
+				088F6A942FCAA7E500E14BA2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		2896AE3F2F100CD600D38732 /* Build configuration list for PBXNativeTarget "SoloDeveloperTraining-Dev" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -719,6 +1036,128 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		28AC32CC2FDEB4BD00D0126E /* XCLocalSwiftPackageReference "../DUDesignSystem" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../DUDesignSystem;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		283B95DB2FA9D44B0033B924 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 13.3.0;
+			};
+		};
+		28F3C5032FB37EA70077B77A /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.12.0;
+			};
+		};
+		BC4C62962FE18C3C00570653 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AppsFlyerSDK/AppsFlyerFramework";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		088F6A9F2FCAA8A600E14BA2 /* DUDesignSystem */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DUDesignSystem;
+		};
+		283B980D2FAB24750033B924 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 283B95DB2FA9D44B0033B924 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
+		283B9A422FAB36020033B924 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 283B95DB2FA9D44B0033B924 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
+		28AC32C82FDEB29600D0126E /* DUDesignSystem */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DUDesignSystem;
+		};
+		28AC32CA2FDEB2A600D0126E /* DUDesignSystem */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DUDesignSystem;
+		};
+		28F3C5062FB37EDA0077B77A /* KakaoSDKShare */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28F3C5032FB37EA70077B77A /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKShare;
+		};
+		28F3C7C22FB73B6E0077B77A /* KakaoSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28F3C5032FB37EA70077B77A /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDK;
+		};
+		28F3C7C42FB73B7B0077B77A /* KakaoSDKShare */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28F3C5032FB37EA70077B77A /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKShare;
+		};
+		28F3C7C62FB73B820077B77A /* KakaoSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28F3C5032FB37EA70077B77A /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDK;
+		};
+		28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		28FB12B12F9B5EB1004FCBB3 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		BC19336E2F8FC7110033A27E /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		BC1933702F8FC7110033A27E /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		BC4C62972FE18C3C00570653 /* AppsFlyerLib */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC4C62962FE18C3C00570653 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */;
+			productName = AppsFlyerLib;
+		};
+		BCC0EACD2F8FE90700D7A84A /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		BCC0EACF2F8FE90D00D7A84A /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 08267F232F0D06BC005A0066 /* Project object */;
 }

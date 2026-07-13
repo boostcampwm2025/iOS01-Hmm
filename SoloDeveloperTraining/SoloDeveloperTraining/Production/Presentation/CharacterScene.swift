@@ -20,6 +20,7 @@ final class CharacterScene: SKScene {
     // MARK: - Properties
     private var characterSprite: SKSpriteNode?
     private var user: User
+    private var isSmiling = false
 
     init(size: CGSize, user: User) {
         self.user = user
@@ -32,15 +33,15 @@ final class CharacterScene: SKScene {
 
     // MARK: - Computed Properties (텍스처)
     private var idleTexture: SKTexture {
-        SKTexture(imageNamed: "\(user.career.characterImagePrefix)_default")
+        SKTexture(imageNamed: "\(user.career.characterImagePrefix)Default")
     }
 
     private var blinkTexture: SKTexture {
-        SKTexture(imageNamed: "\(user.career.characterImagePrefix)_close")
+        SKTexture(imageNamed: "\(user.career.characterImagePrefix)Close")
     }
 
     private var smileTexture: SKTexture {
-        SKTexture(imageNamed: "\(user.career.characterImagePrefix)_smile")
+        SKTexture(imageNamed: "\(user.career.characterImagePrefix)Smile")
     }
 
     private enum AnimationKey {
@@ -60,7 +61,8 @@ final class CharacterScene: SKScene {
 
     /// 캐릭터를 웃게 만들기
     func playSmile() {
-        guard let sprite = characterSprite else { return }
+        guard let sprite = characterSprite, !isSmiling else { return }
+        isSmiling = true
         // 깜빡임 애니메이션 일시 중지
         sprite.removeAction(forKey: AnimationKey.blink)
         // 웃는 애니메이션
@@ -70,6 +72,7 @@ final class CharacterScene: SKScene {
             SKAction.setTexture(idleTexture),
             SKAction.run { [weak self] in
                 // 웃음 애니메이션 끝나면 다시 깜빡임 시작
+                self?.isSmiling = false
                 self?.startBlinking()
             }
         ])
@@ -89,7 +92,7 @@ final class CharacterScene: SKScene {
         guard let sprite = characterSprite else { return }
 
         // 새로운 텍스처로 업데이트
-        let newIdleTexture = SKTexture(imageNamed: "\(newCareer.characterImagePrefix)_default")
+        let newIdleTexture = SKTexture(imageNamed: "\(newCareer.characterImagePrefix)Default")
         sprite.texture = newIdleTexture
 
         // 애니메이션 재시작
