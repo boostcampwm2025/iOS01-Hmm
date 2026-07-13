@@ -17,6 +17,7 @@ jobs:
       - name: Create PR to dev
         uses: actions/github-script@v7
         with:
+          github-token: ${{ secrets.DevUp }}
           script: |
             const sourceBranch = context.payload.pull_request.head.ref;
             const originalBody = context.payload.pull_request.body ?? '';
