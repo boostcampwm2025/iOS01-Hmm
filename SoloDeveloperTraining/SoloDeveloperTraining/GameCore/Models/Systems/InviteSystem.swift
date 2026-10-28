@@ -55,4 +55,18 @@ final class InviteSystem {
         self.myCode = myCode
         self.invitedFriends = invitedFriends
     }
+
+    /// 친구 초대 보상 수령
+    /// - Returns: 수령 성공 여부
+    @discardableResult
+    func claimInviteReward(friend: InvitedFriend, wallet: Wallet) -> Bool {
+        guard let index = invitedFriends.firstIndex(where: { $0.id == friend.id }),
+              !invitedFriends[index].isRewardClaimed
+        else { return false }
+
+        // TODO: 서버 연동 - 수령 처리 결과를 서버에 반영
+        invitedFriends[index].isRewardClaimed = true
+        wallet.addDiamond(InviteConstants.inviterRewardDiamond)
+        return true
+    }
 }
