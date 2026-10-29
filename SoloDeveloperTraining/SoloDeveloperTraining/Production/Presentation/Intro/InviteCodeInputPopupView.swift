@@ -16,6 +16,9 @@ private enum Constant {
 struct InviteCodeInputPopupView: View {
     @State private var code: String = ""
     @State private var validationResult: InviteCodeValidationResult?
+    @State private var isValidating: Bool = false
+
+    private let validator = InviteCodeValidator()
 
     let onConfirm: () -> Void
     let onSkip: () -> Void
@@ -41,9 +44,9 @@ struct InviteCodeInputPopupView: View {
 
                 resultLabel
 
-                TextButton(text: "확인", type: .primary, size: .large) {
+                TextButton(text: "확인", type: .primary, size: .large, state: confirmButtonState) {
                     SoundService.shared.trigger(.click)
-                    onConfirm()
+                    confirm()
                 }
                 ItemLabel(
                     text: "지금 입력하지 않으면 나중에 입력할 수 없어요",
@@ -58,6 +61,13 @@ struct InviteCodeInputPopupView: View {
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.lg))
         .overlay(RoundedRectangle(cornerRadius: TokenRadius.lg).stroke(Color.gray700, lineWidth: 2))
         .padding(.horizontal, TokenGrid.marginPopUp)
+        .onChange(of: code) { _, newValue in
+            let normalized = validator.normalize(newValue)
+            if normalized != newValue {
+                code = normalized
+            }
+            validationResult = nil
+        }
     }
 }
 
@@ -73,6 +83,11 @@ private extension InviteCodeInputPopupView {
         failedResult == nil ? .default : .error(message: "")
     }
 
+    /// 빈 값이거나 확인 중이면 비활성
+    var confirmButtonState: TextButton.TextButtonState {
+        code.isEmpty || isValidating ? .disabled : .default
+    }
+
     /// 기본: 형식 안내 / 실패: 실패 사유
     var resultLabel: some View {
         ItemLabel(
@@ -80,6 +95,21 @@ private extension InviteCodeInputPopupView {
             font: .label,
             color: failedResult == nil ? .gray400 : .accentRed
         )
+    }
+
+    func confirm() {
+        guard !isValidating else { return }
+        isValidating = true
+
+        Task {
+            let result = await validator.validate(code)
+            isValidating = false
+            validationResult = result
+
+            if result.isValid {
+                onConfirm()
+            }
+        }
     }
 
     var skipButton: some View {
