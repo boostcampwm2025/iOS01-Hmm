@@ -59,9 +59,9 @@ public struct SmallButton: View {
         case .invite:
             // TODO: 전용 에셋이 나오면 이미지로 교체
             AnyView(
-                ItemLabel(text: "초대", font: .subheadline, color: .white300)
+                ItemLabel(text: "초대", font: .subheadline, color: .black300)
                     .frame(width: 44, height: 44)
-                    .background(Color.accentGreen)
+                    .background(Color.beige300)
                     .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
                     .tokenShadow(isPressed ? .none : .default)
                     .offset(
