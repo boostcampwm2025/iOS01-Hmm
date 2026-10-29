@@ -77,8 +77,9 @@ private extension SoloDeveloperTrainingApp {
                     scenarioRepository: scenarioRepository
                 )
             } else if hasSeenIntro, user == nil, showNicknameSetup {
-                NicknameSetupView { nickname in
+                NicknameSetupView { nickname, welcomeRewardDiamond in
                     let newUser = User(nickname: nickname)
+                    newUser.wallet.addDiamond(welcomeRewardDiamond)
                     user = newUser
                     checkFirstOpen(user: newUser)
                     user?.record.tutorialCompleted = true
