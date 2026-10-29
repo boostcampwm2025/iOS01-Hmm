@@ -813,6 +813,27 @@ private extension MainView {
         }
     }
 
+    /// 친구가 내 초대 코드를 입력했을 때 보상 팝업
+    /// - 수령: 바로 지급 → 초대 현황에 "수령 완료"로 반영
+    /// - 나중에: 닫기만 → 초대 현황에서 수령 가능
+    // TODO: 서버 연동 - 홈 진입 시 수령 대기 친구를 조회해 호출
+    func showInviteRewardPopup(for friend: InvitedFriend) {
+        if workGameSession.isInProgress {
+            workGameSession.isPauseRequested = true
+        }
+        PopupManager.shared.show {
+            InviteRewardPopupView(
+                friendNickname: friend.nickname,
+                rewardDiamond: InviteConstants.inviterRewardDiamond,
+                onLater: { PopupManager.shared.dismiss() },
+                onClaim: {
+                    claimInviteReward(friend: friend)
+                    PopupManager.shared.dismiss()
+                }
+            )
+        }
+    }
+
     func claimInviteReward(friend: InvitedFriend) {
         guard inviteSystem.claimInviteReward(friend: friend, wallet: user.wallet) else { return }
         ToastManager.shared.show("다이아 \(InviteConstants.inviterRewardDiamond)개를 받았어요")
