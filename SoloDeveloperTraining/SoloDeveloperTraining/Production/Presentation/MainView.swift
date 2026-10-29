@@ -53,6 +53,9 @@ struct MainView: View {
     @State private var scenarioManager: ScenarioManager?
     @State private var showScenarioView: Bool = false
 
+    // 초대 관련
+    @State private var inviteSystem = InviteSystem()
+
     private let rewardRepository = DefaultRewardRepository()
 
     let scenarioRepository: ScenarioRepository
@@ -187,15 +190,24 @@ private extension MainView {
                     )
                 }
             }
-            // SettingButton, QuizButton Area
-            HStack {
-                SmallButton(type: .setting) {
-                    SoundService.shared.trigger(.click)
-                    if workGameSession.isInProgress {
-                        workGameSession.isPauseRequested = true
+            // SettingButton, InviteButton, QuizButton Area
+            HStack(alignment: .top) {
+                VStack(spacing: TokenSpacing.none) {
+                    SmallButton(type: .setting) {
+                        SoundService.shared.trigger(.click)
+                        if workGameSession.isInProgress {
+                            workGameSession.isPauseRequested = true
+                        }
+                        PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
+                            FeedbackSettingView(onClose: { PopupManager.shared.dismiss() })
+                        }
                     }
-                    PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
-                        FeedbackSettingView(onClose: { PopupManager.shared.dismiss() })
+                    SmallButton(type: .invite) {
+                        SoundService.shared.trigger(.click)
+                        if workGameSession.isInProgress {
+                            workGameSession.isPauseRequested = true
+                        }
+                        showInvitePopup()
                     }
                 }
                 Spacer()
@@ -753,6 +765,20 @@ private extension MainView {
         checkPendingLevelUp()
         if !showLevelUpEffect {
             restoreScenarioIfNeeded()
+        }
+    }
+
+    // MARK: - Invite
+
+    func showInvitePopup() {
+        PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
+            InvitePopupView(
+                myCode: inviteSystem.myCode,
+                invitedCount: inviteSystem.invitedCount,
+                onInvite: {},
+                onShowStatus: {},
+                onClose: { PopupManager.shared.dismiss() }
+            )
         }
     }
 }
