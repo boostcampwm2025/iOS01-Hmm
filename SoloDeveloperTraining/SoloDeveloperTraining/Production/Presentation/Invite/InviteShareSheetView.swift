@@ -49,9 +49,13 @@ struct InviteShareSheetView: View {
         .padding(TokenSpacing.lg)
         .padding(.bottom, TokenSpacing.lg)
         .frame(maxWidth: .infinity)
-        .background(Color.white300)
-        .clipShape(sheetShape)
-        .overlay(sheetShape.stroke(Color.gray700, lineWidth: 2))
+        // 홈 인디케이터 영역까지 시트 배경이 이어지도록 하단 safe area 무시
+        .background {
+            sheetShape
+                .fill(Color.white300)
+                .overlay(sheetShape.stroke(Color.gray700, lineWidth: 2))
+                .ignoresSafeArea(edges: .bottom)
+        }
     }
 }
 

@@ -15,6 +15,8 @@ private enum Constant {
     static let spriteViewSize = CGSize(width: 200, height: 200)
     // TabbarItem(48) + tabBar padding vertical md(16) × 2
     static let tabBarHeight: CGFloat = 80
+    // 실제 높이를 측정하기 전 첫 표시용
+    static let inviteShareSheetDefaultHeight: CGFloat = 320
 }
 
 struct MainView: View {
@@ -55,6 +57,8 @@ struct MainView: View {
 
     // 초대 관련
     @State private var inviteSystem = InviteSystem()
+    @State private var showInviteShareSheet: Bool = false
+    @State private var inviteShareSheetHeight: CGFloat = Constant.inviteShareSheetDefaultHeight
 
     private let rewardRepository = DefaultRewardRepository()
 
@@ -129,6 +133,16 @@ struct MainView: View {
                     await checkAndStartScenario()
                 }
             }
+        }
+        // 친구 초대 팝업(PopupManager) 위로 올라오도록 시스템 시트 사용
+        .sheet(isPresented: $showInviteShareSheet) {
+            InviteShareSheetView(myCode: inviteSystem.myCode)
+                .fixedSize(horizontal: false, vertical: true)
+                .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
+                    inviteShareSheetHeight = height
+                }
+                .presentationDetents([.height(inviteShareSheetHeight)])
+                .presentationBackground(.clear)
         }
         .fullScreenCover(isPresented: $showQuizView) {
             QuizGameView(user: user)
@@ -775,7 +789,7 @@ private extension MainView {
             InvitePopupView(
                 myCode: inviteSystem.myCode,
                 invitedCount: inviteSystem.invitedCount,
-                onInvite: {},
+                onInvite: { showInviteShareSheet = true },
                 onShowStatus: {},
                 onClose: { PopupManager.shared.dismiss() }
             )
