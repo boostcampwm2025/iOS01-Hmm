@@ -11,12 +11,14 @@ import DUDesignSystem
 
 private enum Constant {
     static let guideText = "영문과 숫자 \(InviteConstants.codeLength)자리를 입력해주세요"
+    static let autoFilledText = "복사한 초대 코드를 붙여넣었어요"
 }
 
 struct InviteCodeInputPopupView: View {
     @State private var code: String = ""
     @State private var validationResult: InviteCodeValidationResult?
     @State private var isValidating: Bool = false
+    @State private var autoFilledCode: String?
 
     private let validator = InviteCodeValidator()
 
@@ -61,6 +63,7 @@ struct InviteCodeInputPopupView: View {
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.lg))
         .overlay(RoundedRectangle(cornerRadius: TokenRadius.lg).stroke(Color.gray700, lineWidth: 2))
         .padding(.horizontal, TokenGrid.marginPopUp)
+        .onAppear(perform: fillCodeFromClipboard)
         .onChange(of: code) { _, newValue in
             let normalized = validator.normalize(newValue)
             if normalized != newValue {
@@ -88,13 +91,33 @@ private extension InviteCodeInputPopupView {
         code.isEmpty || isValidating ? .disabled : .default
     }
 
-    /// 기본: 형식 안내 / 실패: 실패 사유
+    /// 클립보드에서 가져온 코드를 그대로 두고 있는지
+    var isShowingAutoFilledCode: Bool {
+        autoFilledCode != nil && code == autoFilledCode
+    }
+
+    /// 실패: 실패 사유 / 자동 입력: 붙여넣기 안내 / 기본: 형식 안내
+    @ViewBuilder
     var resultLabel: some View {
-        ItemLabel(
-            text: failedResult?.message ?? Constant.guideText,
-            font: .label,
-            color: failedResult == nil ? .gray400 : .accentRed
-        )
+        if let failedResult {
+            ItemLabel(text: failedResult.message, font: .label, color: .accentRed)
+        } else if isShowingAutoFilledCode {
+            ItemLabel(text: Constant.autoFilledText, font: .label, color: .accentGreen)
+        } else {
+            ItemLabel(text: Constant.guideText, font: .label, color: .gray400)
+        }
+    }
+
+    /// 클립보드에 초대 코드가 있으면 자동 입력
+    /// - 클립보드 문자열을 읽는 순간 iOS가 "붙여넣기 허용" 시스템 팝업을 띄움
+    func fillCodeFromClipboard() {
+        guard code.isEmpty, UIPasteboard.general.hasStrings else { return }
+        guard let text = UIPasteboard.general.string,
+              let extracted = validator.extractCode(from: text)
+        else { return }
+
+        autoFilledCode = extracted
+        code = extracted
     }
 
     func confirm() {

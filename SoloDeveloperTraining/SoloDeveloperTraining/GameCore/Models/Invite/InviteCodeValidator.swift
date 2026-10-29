@@ -10,6 +10,8 @@ import Foundation
 private enum Constant {
     // TODO: 서버 연동 - 서버 조회로 교체 후 제거
     static let mockExistingCodes: Set<String> = ["ABC123", "ABC456", "ABC789"]
+    /// 대문자·숫자 6자리
+    static let codePattern = "(?<![A-Za-z0-9])[A-Z0-9]{\(InviteConstants.codeLength)}(?![A-Za-z0-9])"
 }
 
 final class InviteCodeValidator {
@@ -20,6 +22,12 @@ final class InviteCodeValidator {
             .uppercased()
             .filter { $0.isASCII && ($0.isLetter || $0.isNumber) }
         return String(filtered.prefix(InviteConstants.codeLength))
+    }
+
+    /// 문자열에서 초대 코드 추출
+    func extractCode(from text: String) -> String? {
+        guard let range = text.range(of: Constant.codePattern, options: .regularExpression) else { return nil }
+        return String(text[range])
     }
 
     /// 초대 코드 확인
