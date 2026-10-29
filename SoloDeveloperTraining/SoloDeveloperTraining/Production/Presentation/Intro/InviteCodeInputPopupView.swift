@@ -12,6 +12,7 @@ import DUDesignSystem
 private enum Constant {
     static let guideText = "영문과 숫자 \(InviteConstants.codeLength)자리를 입력해주세요"
     static let autoFilledText = "복사한 초대 코드를 붙여넣었어요"
+    static let clipboardReadDelay: Duration = .milliseconds(300)
 }
 
 struct InviteCodeInputPopupView: View {
@@ -63,7 +64,11 @@ struct InviteCodeInputPopupView: View {
         .clipShape(RoundedRectangle(cornerRadius: TokenRadius.lg))
         .overlay(RoundedRectangle(cornerRadius: TokenRadius.lg).stroke(Color.gray700, lineWidth: 2))
         .padding(.horizontal, TokenGrid.marginPopUp)
-        .onAppear(perform: fillCodeFromClipboard)
+        .task {
+            // 팝업이 그려진 뒤 "붙여넣기 허용" 시스템 팝업이 뜨도록 지연
+            guard (try? await Task.sleep(for: Constant.clipboardReadDelay)) != nil else { return }
+            fillCodeFromClipboard()
+        }
         .onChange(of: code) { _, newValue in
             let normalized = validator.normalize(newValue)
             if normalized != newValue {
