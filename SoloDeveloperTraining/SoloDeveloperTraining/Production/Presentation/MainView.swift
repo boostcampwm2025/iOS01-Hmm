@@ -786,14 +786,36 @@ private extension MainView {
 
     func showInvitePopup() {
         PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
-            InvitePopupView(
-                myCode: inviteSystem.myCode,
-                invitedCount: inviteSystem.invitedCount,
-                onInvite: { showInviteShareSheet = true },
-                onShowStatus: {},
-                onClose: { PopupManager.shared.dismiss() }
+            invitePopup
+        }
+    }
+
+    var invitePopup: some View {
+        InvitePopupView(
+            myCode: inviteSystem.myCode,
+            invitedCount: inviteSystem.invitedCount,
+            onInvite: { showInviteShareSheet = true },
+            onShowStatus: showInviteStatusPopup,
+            onClose: { PopupManager.shared.dismiss() }
+        )
+    }
+
+    /// 초대 현황 팝업 (닫으면 친구 초대 팝업으로 복귀)
+    func showInviteStatusPopup() {
+        PopupManager.shared.replace {
+            InviteStatusPopupView(
+                inviteSystem: inviteSystem,
+                onClaim: claimInviteReward,
+                onClose: {
+                    PopupManager.shared.replace { invitePopup }
+                }
             )
         }
+    }
+
+    func claimInviteReward(friend: InvitedFriend) {
+        guard inviteSystem.claimInviteReward(friend: friend, wallet: user.wallet) else { return }
+        ToastManager.shared.show("다이아 \(InviteConstants.inviterRewardDiamond)개를 받았어요")
     }
 }
 
