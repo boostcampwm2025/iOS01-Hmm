@@ -14,11 +14,13 @@ struct NicknameSetupView: View {
     @State private var nicknameState: InputField.InputFieldState = .default
     @State private var showTutorial = false
     @State private var confirmedNickname = ""
+    @State private var welcomeRewardDiamond = 0
     @State private var inputFieldMaxY: CGFloat = 0
     @State private var keyboardMinY: CGFloat = .infinity
 
     private let validator = Validator()
-    let onComplete: (String) -> Void
+    /// (닉네임, 웰컴 보상 다이아)
+    let onComplete: (String, Int) -> Void
 
     private var isValid: Bool {
         validator.isValid(nickname)
@@ -72,7 +74,8 @@ struct NicknameSetupView: View {
                 TextButton(text: "완료", type: .primary, state: isValid ? .default : .disabled) {
                     SoundService.shared.trigger(.click)
                     confirmedNickname = nickname
-                    showTutorial = true
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    showInviteCodeInputPopup()
                 }
                 .padding(.top, 16 + 48)
                 .padding(.horizontal, TokenSpacing.lg)
@@ -107,14 +110,42 @@ struct NicknameSetupView: View {
         }
         .fullScreenCover(isPresented: $showTutorial) {
             TutorialView {
-                onComplete(confirmedNickname)
+                onComplete(confirmedNickname, welcomeRewardDiamond)
+            }
+        }
+    }
+}
+
+// MARK: - 초대 코드
+
+private extension NicknameSetupView {
+    /// 초대 코드 입력 (최초 1회) → 성공 시 웰컴 보상 / 건너뛰기 시 바로 튜토리얼
+    func showInviteCodeInputPopup() {
+        PopupManager.shared.show {
+            InviteCodeInputPopupView(
+                onConfirm: showWelcomeRewardPopup,
+                onSkip: {
+                    PopupManager.shared.dismiss()
+                    showTutorial = true
+                }
+            )
+        }
+    }
+
+    func showWelcomeRewardPopup() {
+        PopupManager.shared.replace {
+            WelcomeRewardPopupView {
+                // 다이아는 User 생성 시점(onComplete)에 지급
+                welcomeRewardDiamond = InviteConstants.welcomeRewardDiamond
+                PopupManager.shared.dismiss()
+                showTutorial = true
             }
         }
     }
 }
 
 #Preview {
-    NicknameSetupView { nickname in
-        print("완료: \(nickname)")
+    NicknameSetupView { nickname, welcomeRewardDiamond in
+        print("완료: \(nickname), 웰컴 보상: \(welcomeRewardDiamond)")
     }
 }

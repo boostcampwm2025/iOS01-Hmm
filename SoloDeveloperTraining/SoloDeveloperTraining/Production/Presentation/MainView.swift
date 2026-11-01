@@ -15,6 +15,8 @@ private enum Constant {
     static let spriteViewSize = CGSize(width: 200, height: 200)
     // TabbarItem(48) + tabBar padding vertical md(16) × 2
     static let tabBarHeight: CGFloat = 80
+    // 실제 높이를 측정하기 전 첫 표시용
+    static let inviteShareSheetDefaultHeight: CGFloat = 320
 }
 
 struct MainView: View {
@@ -52,6 +54,11 @@ struct MainView: View {
     // 시나리오 관련
     @State private var scenarioManager: ScenarioManager?
     @State private var showScenarioView: Bool = false
+
+    // 초대 관련
+    @State private var inviteSystem = InviteSystem()
+    @State private var showInviteShareSheet: Bool = false
+    @State private var inviteShareSheetHeight: CGFloat = Constant.inviteShareSheetDefaultHeight
 
     private let rewardRepository = DefaultRewardRepository()
 
@@ -127,6 +134,16 @@ struct MainView: View {
                 }
             }
         }
+        // 친구 초대 팝업(PopupManager) 위로 올라오도록 시스템 시트 사용
+        .sheet(isPresented: $showInviteShareSheet) {
+            InviteShareSheetView(myCode: inviteSystem.myCode)
+                .fixedSize(horizontal: false, vertical: true)
+                .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
+                    inviteShareSheetHeight = height
+                }
+                .presentationDetents([.height(inviteShareSheetHeight)])
+                .presentationBackground(.clear)
+        }
         .fullScreenCover(isPresented: $showQuizView) {
             QuizGameView(user: user)
         }
@@ -187,15 +204,24 @@ private extension MainView {
                     )
                 }
             }
-            // SettingButton, QuizButton Area
-            HStack {
-                SmallButton(type: .setting) {
-                    SoundService.shared.trigger(.click)
-                    if workGameSession.isInProgress {
-                        workGameSession.isPauseRequested = true
+            // SettingButton, InviteButton, QuizButton Area
+            HStack(alignment: .top) {
+                VStack(spacing: TokenSpacing.none) {
+                    SmallButton(type: .setting) {
+                        SoundService.shared.trigger(.click)
+                        if workGameSession.isInProgress {
+                            workGameSession.isPauseRequested = true
+                        }
+                        PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
+                            FeedbackSettingView(onClose: { PopupManager.shared.dismiss() })
+                        }
                     }
-                    PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
-                        FeedbackSettingView(onClose: { PopupManager.shared.dismiss() })
+                    SmallButton(type: .invite) {
+                        SoundService.shared.trigger(.click)
+                        if workGameSession.isInProgress {
+                            workGameSession.isPauseRequested = true
+                        }
+                        showInvitePopup()
                     }
                 }
                 Spacer()
@@ -754,6 +780,63 @@ private extension MainView {
         if !showLevelUpEffect {
             restoreScenarioIfNeeded()
         }
+    }
+
+    // MARK: - Invite
+
+    func showInvitePopup() {
+        PopupManager.shared.show(onBackgroundTap: { PopupManager.shared.dismiss() }) {
+            invitePopup
+        }
+    }
+
+    var invitePopup: some View {
+        InvitePopupView(
+            myCode: inviteSystem.myCode,
+            invitedCount: inviteSystem.invitedCount,
+            onInvite: { showInviteShareSheet = true },
+            onShowStatus: showInviteStatusPopup,
+            onClose: { PopupManager.shared.dismiss() }
+        )
+    }
+
+    /// 초대 현황 팝업 (닫으면 친구 초대 팝업으로 복귀)
+    func showInviteStatusPopup() {
+        PopupManager.shared.replace {
+            InviteStatusPopupView(
+                inviteSystem: inviteSystem,
+                onClaim: claimInviteReward,
+                onClose: {
+                    PopupManager.shared.replace { invitePopup }
+                }
+            )
+        }
+    }
+
+    /// 친구가 내 초대 코드를 입력했을 때 보상 팝업
+    /// - 수령: 바로 지급 → 초대 현황에 "수령 완료"로 반영
+    /// - 나중에: 닫기만 → 초대 현황에서 수령 가능
+    // TODO: 서버 연동 - 홈 진입 시 수령 대기 친구를 조회해 호출
+    func showInviteRewardPopup(for friend: InvitedFriend) {
+        if workGameSession.isInProgress {
+            workGameSession.isPauseRequested = true
+        }
+        PopupManager.shared.show {
+            InviteRewardPopupView(
+                friendNickname: friend.nickname,
+                rewardDiamond: InviteConstants.inviterRewardDiamond,
+                onLater: { PopupManager.shared.dismiss() },
+                onClaim: {
+                    claimInviteReward(friend: friend)
+                    PopupManager.shared.dismiss()
+                }
+            )
+        }
+    }
+
+    func claimInviteReward(friend: InvitedFriend) {
+        guard inviteSystem.claimInviteReward(friend: friend, wallet: user.wallet) else { return }
+        ToastManager.shared.show("다이아 \(InviteConstants.inviterRewardDiamond)개를 받았어요")
     }
 }
 

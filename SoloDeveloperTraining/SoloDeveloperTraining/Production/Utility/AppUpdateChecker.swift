@@ -15,7 +15,7 @@ enum AppUpdateType {
 struct AppUpdateChecker {
 
     private static let appStoreID = "6758282441"
-    private static let appStoreURL = URL(string: "https://apps.apple.com/kr/app/id\(appStoreID)")!
+    static let appStoreURL = URL(string: "https://apps.apple.com/kr/app/id\(appStoreID)")!
     private static let lookupURL = URL(string: "https://itunes.apple.com/lookup?id=\(appStoreID)&country=kr")!
 
     // MARK: - Public

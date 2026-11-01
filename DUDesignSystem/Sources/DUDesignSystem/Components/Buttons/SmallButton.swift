@@ -12,6 +12,7 @@ public struct SmallButton: View {
     public enum SmallButtonType: Hashable {
         case quiz
         case setting
+        case invite
     }
 
     public var type: SmallButtonType
@@ -55,6 +56,19 @@ public struct SmallButton: View {
                         y: isPressed ? TokenShadow.default.y : 0
                     )
             )
+        case .invite:
+            // TODO: 전용 에셋이 나오면 이미지로 교체
+            AnyView(
+                ItemLabel(text: "초대", font: .subheadline, color: .black300)
+                    .frame(width: 44, height: 44)
+                    .background(Color.beige300)
+                    .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
+                    .tokenShadow(isPressed ? .none : .default)
+                    .offset(
+                        x: isPressed ? TokenShadow.default.x : 0,
+                        y: isPressed ? TokenShadow.default.y : 0
+                    )
+            )
         }
 
         return button
@@ -72,6 +86,7 @@ public struct SmallButton: View {
     HStack(spacing: 20) {
         SmallButton(type: .quiz) { }
         SmallButton(type: .setting) { }
+        SmallButton(type: .invite) { }
     }
     .padding()
     .background(Color.beige200)
