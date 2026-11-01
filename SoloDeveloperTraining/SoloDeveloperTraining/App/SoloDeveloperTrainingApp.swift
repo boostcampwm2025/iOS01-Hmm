@@ -21,6 +21,11 @@ struct SoloDeveloperTrainingApp: App {
     init() {
         FirebaseApp.configure()
 
+        let authenticationClient = FirebaseAuthenticationClient()
+        _authenticationService = State(
+            initialValue: AuthenticationService(authenticationClient: authenticationClient)
+        )
+
         MobileAds.shared.start()
 
         let kakaoAppKey = Bundle.main.kakaoAppKey
@@ -43,6 +48,7 @@ struct SoloDeveloperTrainingApp: App {
     @State private var showNicknameSetup = false
     @State private var isPolicyLoading = true
     @State private var hasPolicyError = false
+    @State private var authenticationService: AuthenticationService
     @Environment(\.scenePhase) private var scenePhase
 
     private let userRepository: UserRepository = FileManagerUserRepository()
@@ -52,11 +58,27 @@ struct SoloDeveloperTrainingApp: App {
         WindowGroup {
 #if DEV_BUILD
             ContentView()
-                .task { try? await policyStore.initialize() }
+                .task {
+                    try? await policyStore.initialize()
+                    await initializeFirebaseAuthentication()
+                }
 #else
             gameContent
-                .task { await loadPolicy() }
+                .task {
+                    await loadPolicy()
+                    await initializeFirebaseAuthentication()
+                }
 #endif
+        }
+    }
+}
+
+private extension SoloDeveloperTrainingApp {
+    func initializeFirebaseAuthentication() async {
+        await authenticationService.authenticate()
+
+        if case .failed(let error) = authenticationService.status {
+            // TODO: 오류 안내, 재시도 처리
         }
     }
 }
