@@ -30,6 +30,10 @@ struct UserDefaultsStorage {
         return userDefaults.bool(forKey: key)
     }
 
+    func stringArray(key: String) -> [String]? {
+        userDefaults.stringArray(forKey: key)
+    }
+
     func any(key: String) -> Any? {
         return userDefaults.object(forKey: key)
     }

@@ -22,9 +22,23 @@ struct InviteCodeInputPopupView: View {
     @State private var autoFilledCode: String?
 
     private let validator = InviteCodeValidator()
+    private let nickname: String
+    private let inviteSystem: InviteSystem
 
     let onConfirm: () -> Void
     let onSkip: () -> Void
+
+    init(
+        nickname: String,
+        inviteSystem: InviteSystem,
+        onConfirm: @escaping () -> Void,
+        onSkip: @escaping () -> Void
+    ) {
+        self.nickname = nickname
+        self.inviteSystem = inviteSystem
+        self.onConfirm = onConfirm
+        self.onSkip = onSkip
+    }
 
     var body: some View {
         VStack(spacing: TokenSpacing.lg) {
@@ -68,6 +82,8 @@ struct InviteCodeInputPopupView: View {
             // 팝업이 그려진 뒤 "붙여넣기 허용" 시스템 팝업이 뜨도록 지연
             guard (try? await Task.sleep(for: Constant.clipboardReadDelay)) != nil else { return }
             fillCodeFromClipboard()
+            // 건너뛰더라도 내 초대 코드와 목록 표시용 닉네임은 준비한다.
+            _ = try? await inviteSystem.initializeProfile(nickname: nickname)
         }
         .onChange(of: code) { _, newValue in
             let normalized = validator.normalize(newValue)
@@ -130,12 +146,25 @@ private extension InviteCodeInputPopupView {
         isValidating = true
 
         Task {
-            let result = await validator.validate(code)
-            isValidating = false
-            validationResult = result
+            let localResult = validator.validateFormat(code)
+            guard localResult.isValid else {
+                isValidating = false
+                validationResult = localResult
+                return
+            }
 
-            if result.isValid {
+            do {
+                // 초기 프로필 요청이 실패했더라도 확인 시 다시 보장한다.
+                try await inviteSystem.applyInviteCode(code, nickname: nickname)
+                isValidating = false
+                validationResult = .valid
                 onConfirm()
+            } catch let error as InviteFunctionsError {
+                isValidating = false
+                validationResult = InviteCodeValidationResult(error: error)
+            } catch {
+                isValidating = false
+                validationResult = .serverError
             }
         }
     }
@@ -156,6 +185,6 @@ private extension InviteCodeInputPopupView {
 #Preview {
     ZStack {
         Color.black300.ignoresSafeArea()
-        InviteCodeInputPopupView(onConfirm: {}, onSkip: {})
+        InviteCodeInputPopupView(nickname: "소피아", inviteSystem: InviteSystem(), onConfirm: {}, onSkip: {})
     }
 }
