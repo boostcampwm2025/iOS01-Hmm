@@ -39,6 +39,8 @@ iOS 기기 특유의 ‘손맛’과 직관적인 조작감을 구현했습니�
 Minimum Deployment Target: iOS 17.0
 ```
 
+Firebase Functions의 환경 구성, 코드 구조 및 테스트 방법은 [서버 개발 가이드](functions/README.md)를 참고하세요.
+
 # ⚔️ 사용 기술 스택
 
 | 구분 | 스택 |
