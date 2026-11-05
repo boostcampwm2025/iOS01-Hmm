@@ -184,6 +184,16 @@ firebase emulators:start --only auth,functions,firestore
 
 현재 iOS의 기본 `FirebaseInviteFunctionsClient`는 `asia-northeast3` 실환경을 향합니다. 앱-Emulator 종단 테스트를 할 때는 개발 빌드에서 Auth/Functions/Firestore SDK의 Emulator 호스트를 명시적으로 연결해야 합니다. 이 설정 없이 앱을 실행하면 로컬 Functions가 호출되지 않습니다.
 
+### iOS Simulator에서 초대 흐름 테스트
+
+1. 저장소 루트에서 `firebase emulators:start --only auth,functions,firestore`를 실행하고 터미널을 열어 둡니다.
+2. Xcode에서 `SoloDeveloperTraining-InviteLocal` 스킴과 iOS Simulator를 선택해 실행합니다.
+3. 이 스킴은 `-useFirebaseEmulators` 인자를 넘겨 Auth는 `127.0.0.1:9099`, Functions는 `127.0.0.1:5001`에만 연결합니다.
+4. 밸런스 정책을 읽는 Firestore SDK는 Emulator로 바꾸지 않으므로 기존 정책 로딩 흐름은 유지됩니다.
+5. 초대자와 피초대자 흐름을 함께 보려면 서로 다른 Simulator 두 대에 앱을 실행해 각각 다른 익명 UID를 사용합니다.
+
+`SoloDeveloperTraining` 기본 스킴은 Emulator 인자가 없으므로 기존처럼 실환경을 향합니다. 실행 중인 Emulator를 먼저 종료하면 로컬 데이터는 다음 실행에 남지 않습니다.
+
 ## 9. 변경할 때 지켜야 할 흐름
 
 1. 외부 API 계약을 먼저 확인합니다. iOS 파서는 `InviteFunctionsClient.swift`에 있습니다.

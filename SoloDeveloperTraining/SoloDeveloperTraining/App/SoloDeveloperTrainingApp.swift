@@ -9,7 +9,9 @@
 import AppsFlyerLib
 #endif
 import SwiftUI
+import FirebaseAuth
 import FirebaseCore
+import FirebaseFunctions
 import GoogleMobileAds
 import KakaoSDKCommon
 
@@ -20,6 +22,7 @@ struct SoloDeveloperTrainingApp: App {
 
     init() {
         FirebaseApp.configure()
+        Self.configureFirebaseEmulatorsIfNeeded()
 
         let authenticationClient = FirebaseAuthenticationClient()
         _authenticationService = State(
@@ -70,6 +73,18 @@ struct SoloDeveloperTrainingApp: App {
                 }
 #endif
         }
+    }
+}
+
+private extension SoloDeveloperTrainingApp {
+    static func configureFirebaseEmulatorsIfNeeded() {
+#if DEBUG
+        guard ProcessInfo.processInfo.arguments.contains("-useFirebaseEmulators") else { return }
+
+        Auth.auth().useEmulator(withHost: "127.0.0.1", port: 9099)
+        Functions.functions(region: "asia-northeast3")
+            .useEmulator(withHost: "127.0.0.1", port: 5001)
+#endif
     }
 }
 
