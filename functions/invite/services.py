@@ -35,7 +35,7 @@ def _invitation_id_from(grant_id: str) -> str:
         if not invitation_id:
             raise errors.RewardNotFoundError()
         return invitation_id
-    return grant_id
+    raise errors.RewardNotFoundError()
 
 
 # 사용자 UID 유효성을 검증하고 없을 경우 미인증 예외를 발생시키는 함수
@@ -51,38 +51,65 @@ class InviteService:
         self.db = db
 
     # 사용자 초대 프로필을 확인하고 고유 초대 코드가 없으면 새로 발급하는 메서드
-    def initialize_invite_profile(self, uid: str | None) -> dict[str, Any]:
+    def initialize_invite_profile(
+        self,
+        uid: str | None,
+        nickname: str | None = None,
+    ) -> dict[str, Any]:
         uid = require_uid(uid)
         existing = self.db.collection(const.COLLECTION_USERS).document(uid).get()
         if existing.exists:
             code = existing.to_dict().get("inviteCode")
             if isinstance(code, str) and code:
-                return {"inviteCode": code, "created": False}
+                if nickname is not None:
+                    self.update_invite_nickname(uid, nickname)
+                return {"inviteCode": code}
 
         for _ in range(const.CODE_GENERATION_MAX_ATTEMPTS):
             code = generate_invite_code()
-            allocated = self._try_create_profile(uid, code)
+            allocated = self._try_create_profile(uid, code, nickname)
             if allocated:
-                return {"inviteCode": allocated, "created": allocated == code}
+                return {"inviteCode": allocated}
 
         raise errors.InviteCodeGenerationError()
+
+    # 사용자 프로필 닉네임과 초대 문서의 조회용 복제본을 하나의 트랜잭션으로 갱신하는 메서드
+    def update_invite_nickname(self, uid: str | None, nickname: str | None) -> dict[str, Any]:
+        uid = require_uid(uid)
+        user_ref = self.db.collection(const.COLLECTION_USERS).document(uid)
+        invitation_ref = self.db.collection(const.COLLECTION_INVITATIONS).document(uid)
+
+        @transactional
+        def commit(transaction) -> None:
+            invitation_snap = invitation_ref.get(transaction=transaction)
+            transaction.set(
+                user_ref,
+                {"nickname": nickname},
+                merge=True,
+            )
+            if invitation_snap.exists:
+                transaction.update(
+                    invitation_ref,
+                    {"inviteeNickname": nickname},
+                )
+
+        commit(self.db.transaction())
+        return {}
 
     # 시도 횟수 및 고유성을 검증한 후 초대 코드를 등록하고 보상을 생성하는 메서드
     def apply_invite_code(
         self,
         uid: str | None,
         invite_code: str | None,
-        input_method: str | None = None,
     ) -> dict[str, Any]:
         uid = require_uid(uid)
-        method = self._normalize_input_method(input_method)
         code = normalize_invite_code(invite_code)
 
         existing_invitation = self.db.collection(const.COLLECTION_INVITATIONS).document(uid).get()
         if existing_invitation.exists:
             data = existing_invitation.to_dict() or {}
             if data.get("inviteCode") == code:
-                return self._apply_success_payload(uid, data, replayed=True)
+                return self._apply_success_payload(uid)
             raise errors.AlreadyAppliedError()
 
         if not is_valid_invite_code_format(code):
@@ -102,22 +129,16 @@ class InviteService:
             self._consume_attempt(uid)
             raise errors.OwnInviteCodeError()
 
-        invitation, replayed = self._create_invitation_and_consume_attempt(
+        self._create_invitation_and_consume_attempt(
             invitee_uid=uid,
             inviter_uid=inviter_uid,
             invite_code=code,
         )
-        return self._apply_success_payload(uid, invitation, replayed=replayed, input_method=method)
+        return self._apply_success_payload(uid)
 
-    # 사용자의 초대 코드, 초대 목록, 보상 현황 및 추가 등록 가능 여부를 조회하는 메서드
+    # 사용자의 초대 목록과 보상 상태를 조회하는 메서드
     def get_invite_status(self, uid: str | None) -> dict[str, Any]:
         uid = require_uid(uid)
-        profile = self.db.collection(const.COLLECTION_USERS).document(uid).get()
-        invite_code = ""
-        if profile.exists:
-            data = profile.to_dict() or {}
-            invite_code = data.get("inviteCode") or ""
-
         invitations_query = (
             self.db.collection(const.COLLECTION_INVITATIONS)
             .where(filter=FieldFilter("inviterUid", "==", uid))
@@ -126,22 +147,7 @@ class InviteService:
         invitation_docs = list(invitations_query.stream())
         invitations = [_invitation_status(doc.id, doc.to_dict() or {}) for doc in invitation_docs]
 
-        pending_rewards = sum(1 for item in invitations if item["inviterRewardStatus"] == const.STATUS_PENDING)
-        claimed_rewards = sum(1 for item in invitations if item["inviterRewardStatus"] == const.STATUS_CLAIMED)
-
-        remaining = self._daily_attempts_remaining(uid)
-        already_applied = self.db.collection(const.COLLECTION_INVITATIONS).document(uid).get().exists
-        can_apply = not already_applied and remaining > 0
-
-        return {
-            "inviteCode": invite_code,
-            "totalInvitations": len(invitations),
-            "invitations": invitations,
-            "pendingRewards": pending_rewards,
-            "claimedRewards": claimed_rewards,
-            "dailyAttemptsRemaining": remaining,
-            "canApplyInviteCode": can_apply,
-        }
+        return {"invitations": invitations}
 
     # 초대 문서를 검증하고 트랜잭션을 통해 보상을 수령 완료 상태로 변경하는 메서드
     def claim_invite_reward(self, uid: str | None, grant_id: str | None) -> dict[str, Any]:
@@ -161,29 +167,22 @@ class InviteService:
             invitation = snap.to_dict() or {}
             if invitation.get("inviterUid") != uid:
                 raise errors.ForbiddenRewardError()
-            current_status = invitation.get("rewardStatus") or invitation.get("inviterRewardStatus")
+            current_status = invitation.get("inviterRewardStatus")
             if current_status == const.STATUS_CLAIMED:
                 raise errors.RewardAlreadyClaimedError()
             if current_status != const.STATUS_PENDING:
                 raise errors.RewardNotFoundError()
 
-            now = admin_firestore.SERVER_TIMESTAMP
             transaction.update(
                 invitation_ref,
-                {
-                    "rewardStatus": const.STATUS_CLAIMED,
-                    "inviterRewardStatus": const.STATUS_CLAIMED,
-                    "claimedAt": now,
-                },
+                {"inviterRewardStatus": const.STATUS_CLAIMED},
             )
             return invitation
 
         commit(self.db.transaction())
         return {
             "grantId": grant_id_for(invitation_id, const.ROLE_INVITER),
-            "invitationId": invitation_id,
             "role": const.ROLE_INVITER,
-            "status": const.STATUS_CLAIMED,
         }
 
     # 사용자의 대기 및 수령 완료된 모든 보상 내역을 invitations 컬렉션에서 동기화 조회하는 메서드
@@ -194,29 +193,24 @@ class InviteService:
             .where(filter=FieldFilter("inviterUid", "==", uid))
             .stream()
         )
-        pending = []
         claimed = []
         for doc in docs:
-            payload = _invitation_grant_payload(doc.id, doc.to_dict() or {})
-            if payload["status"] == const.STATUS_CLAIMED:
-                claimed.append(payload)
-            else:
-                pending.append(payload)
+            data = doc.to_dict() or {}
+            if data.get("inviterRewardStatus") == const.STATUS_CLAIMED:
+                claimed.append(_invitation_grant_payload(doc.id))
 
         # 피초대자로서의 보상(가입 시 즉시 수령) 내역 포함
         invitee_doc = self.db.collection(const.COLLECTION_INVITATIONS).document(uid).get()
         if invitee_doc.exists:
             claimed.append({
                 "grantId": grant_id_for(uid, const.ROLE_INVITEE),
-                "invitationId": uid,
                 "role": const.ROLE_INVITEE,
-                "status": const.STATUS_CLAIMED,
             })
 
-        return {"pending": pending, "claimed": claimed}
+        return {"claimed": claimed}
 
     # 트랜잭션 내에서 프로필과 초대 코드의 중복을 확인하고 새 프로필을 생성하는 메서드
-    def _try_create_profile(self, uid: str, code: str) -> bool:
+    def _try_create_profile(self, uid: str, code: str, nickname: str | None = None) -> bool:
         user_ref = self.db.collection(const.COLLECTION_USERS).document(uid)
         code_ref = self.db.collection(const.COLLECTION_INVITE_CODES).document(code)
 
@@ -233,22 +227,15 @@ class InviteService:
             if code_snap.exists:
                 return ""
 
-            now = admin_firestore.SERVER_TIMESTAMP
-            transaction.set(
-                user_ref,
-                {
-                    "inviteCode": code,
-                    "createdAt": now,
-                    "updatedAt": now,
-                },
-                merge=True,
-            )
+            user_payload = {
+                "inviteCode": code,
+            }
+            if nickname is not None:
+                user_payload["nickname"] = nickname
+            transaction.set(user_ref, user_payload, merge=True)
             transaction.set(
                 code_ref,
-                {
-                    "uid": uid,
-                    "createdAt": now,
-                },
+                {"uid": uid},
             )
             return code
 
@@ -269,17 +256,13 @@ class InviteService:
                 count = int(data.get("dailyAttemptCount") or 0)
             if count >= const.MAX_DAILY_ATTEMPTS:
                 raise errors.DailyAttemptLimitError()
-            now = admin_firestore.SERVER_TIMESTAMP
             payload = {
                 "dailyAttemptDate": today,
                 "dailyAttemptCount": count + 1,
-                "lastAttemptAt": now,
             }
             if snap.exists:
                 transaction.update(ref, payload)
             else:
-                payload["createdAt"] = now
-                payload["updatedAt"] = now
                 transaction.set(ref, payload)
 
         commit(self.db.transaction())
@@ -291,24 +274,27 @@ class InviteService:
         invitee_uid: str,
         inviter_uid: str,
         invite_code: str,
-    ) -> tuple[dict[str, Any], bool]:
+    ) -> None:
         invitation_id = invitee_uid
         invitation_ref = self.db.collection(const.COLLECTION_INVITATIONS).document(invitation_id)
         user_ref = self.db.collection(const.COLLECTION_USERS).document(invitee_uid)
 
         # 동일 요청의 동시 재시도는 기존 초대를 반환하고 시도 횟수를 중복 차감하지 않는다.
         @transactional
-        def commit(transaction) -> tuple[dict[str, Any], bool]:
+        def commit(transaction) -> None:
             existing = invitation_ref.get(transaction=transaction)
             if existing.exists:
                 data = existing.to_dict() or {}
                 if data.get("inviteCode") == invite_code:
-                    return data, True
+                    return
                 raise errors.AlreadyAppliedError()
 
             user_snap = user_ref.get(transaction=transaction)
             today = kst_date_string()
             user_data = user_snap.to_dict() if user_snap.exists else {}
+            invitee_nickname = user_data.get("nickname")
+            if not isinstance(invitee_nickname, str) or not invitee_nickname:
+                raise errors.NicknameRequiredError()
             count = 0
             if user_data.get("dailyAttemptDate") == today:
                 count = int(user_data.get("dailyAttemptCount") or 0)
@@ -319,75 +305,31 @@ class InviteService:
             attempt_payload = {
                 "dailyAttemptDate": today,
                 "dailyAttemptCount": count + 1,
-                "lastAttemptAt": now,
-                "updatedAt": now,
             }
-            if not user_snap.exists:
-                attempt_payload["createdAt"] = now
             transaction.set(user_ref, attempt_payload, merge=True)
 
             invitation = {
                 "inviterUid": inviter_uid,
-                "inviteeUid": invitee_uid,
+                "inviteeNickname": invitee_nickname,
                 "inviteCode": invite_code,
-                "rewardStatus": const.STATUS_PENDING,
                 "inviterRewardStatus": const.STATUS_PENDING,
-                "inviteeRewardStatus": const.STATUS_CLAIMED,
                 "createdAt": now,
-                "claimedAt": None,
             }
             transaction.set(invitation_ref, invitation)
-            return invitation, False
 
-        return commit(self.db.transaction())
+        commit(self.db.transaction())
 
     # 초대 코드 등록 성공 시 클라이언트에 반환할 응답 페이로드를 생성하는 메서드
     def _apply_success_payload(
         self,
         invitee_uid: str,
-        invitation: dict[str, Any],
-        *,
-        replayed: bool,
-        input_method: str | None = None,
     ) -> dict[str, Any]:
-        invitation_id = invitee_uid
-        status = invitation.get("rewardStatus") or invitation.get("inviterRewardStatus", const.STATUS_PENDING)
         return {
-            "success": True,
-            "replayed": replayed,
-            "invitationId": invitation_id,
-            "inviteCode": invitation.get("inviteCode"),
-            "inviterUidPresent": bool(invitation.get("inviterUid")),
-            "inputMethod": input_method,
-            "status": status,
             "inviteeGrant": {
-                "grantId": grant_id_for(invitation_id, const.ROLE_INVITEE),
+                "grantId": grant_id_for(invitee_uid, const.ROLE_INVITEE),
                 "role": const.ROLE_INVITEE,
-                "status": const.STATUS_CLAIMED,
-            },
-            "inviterGrant": {
-                "grantId": grant_id_for(invitation_id, const.ROLE_INVITER),
-                "role": const.ROLE_INVITER,
-                "status": status,
             },
         }
-
-    # KST 기준 당일 잔여 초대 코드 입력 가능 횟수를 반환하는 메서드
-    def _daily_attempts_remaining(self, uid: str) -> int:
-        snap = self.db.collection(const.COLLECTION_USERS).document(uid).get()
-        if not snap.exists:
-            return const.MAX_DAILY_ATTEMPTS
-        data = snap.to_dict() or {}
-        if data.get("dailyAttemptDate") != kst_date_string():
-            return const.MAX_DAILY_ATTEMPTS
-        used = int(data.get("dailyAttemptCount") or 0)
-        return max(0, const.MAX_DAILY_ATTEMPTS - used)
-
-    # 허용된 입력 방식 목록을 기준으로 입력 경로를 정규화하는 메서드
-    def _normalize_input_method(self, input_method: str | None) -> str:
-        if input_method in const.INPUT_METHODS:
-            return input_method
-        return "manual"
 
 
 # 다양한 형식의 타임스탬프 또는 날짜 값을 UTC datetime 객체로 변환하는 헬퍼 함수
@@ -406,21 +348,17 @@ def _as_datetime(value: Any) -> datetime | None:
 # Firestore 초대 문서 데이터를 클라이언트 조회용 응답 포맷으로 변환하는 헬퍼 함수
 def _invitation_status(invitation_id: str, data: dict[str, Any]) -> dict[str, Any]:
     created_at = _as_datetime(data.get("createdAt"))
-    status = data.get("rewardStatus") or data.get("inviterRewardStatus", const.STATUS_PENDING)
     return {
         "invitationId": invitation_id,
+        "inviteeNickname": data.get("inviteeNickname") or "친구",
         "createdAt": created_at.isoformat() if created_at else None,
-        "inviterRewardStatus": status,
-        "rewardStatus": status,
+        "inviterRewardStatus": data.get("inviterRewardStatus", const.STATUS_PENDING),
     }
 
 
 # Firestore 초대 문서 데이터를 클라이언트 보상 동기화용 응답 포맷으로 변환하는 헬퍼 함수
-def _invitation_grant_payload(invitation_id: str, data: dict[str, Any]) -> dict[str, Any]:
-    status = data.get("rewardStatus") or data.get("inviterRewardStatus", const.STATUS_PENDING)
+def _invitation_grant_payload(invitation_id: str) -> dict[str, Any]:
     return {
         "grantId": grant_id_for(invitation_id, const.ROLE_INVITER),
-        "invitationId": invitation_id,
         "role": const.ROLE_INVITER,
-        "status": status,
     }

@@ -26,7 +26,7 @@
 ├── functions/
 │   ├── main.py                  # Callable Function 진입점과 오류 변환
 │   ├── requirements.txt         # 운영 의존성
-│   ├── requirements-dev.txt     # 테스트 의존성
+│   ├── requirements-dev.txt     # 테스트 의존성 (운영 의존성 포함)
 │   ├── run_tests.sh             # Emulator 기동을 포함한 전체 테스트
 │   ├── invite/
 │   │   ├── constants.py         # 컬렉션명, 상태, 입력 제한
@@ -59,45 +59,50 @@ sequenceDiagram
     Fn-->>App: 성공 응답 또는 표준 HttpsError
 ```
 
-`main.py`는 얇은 전송 계층입니다. 인증 UID 추출과 `InviteError` → `HttpsError` 변환만 담당합니다. 도메인 규칙은 `InviteService`에 두고, 다중 문서를 함께 바꾸거나 동시 요청에 민감한 작업은 Firestore 트랜잭션으로 처리합니다.
+`main.py`는 얇은 전송 계층입니다. 사용자 인증 UID 추출과 `InviteError` → `HttpsError` 변환만 담당합니다. 도메인 규칙은 `InviteService`에 두고, 다중 문서를 함께 바꾸거나 동시 요청에 민감한 작업은 Firestore 트랜잭션으로 처리합니다.
 
 ## 4. Callable API
 
 | 함수 | 입력 | 핵심 결과 |
 | --- | --- | --- |
-| `initialize_invite_profile` | 없음 | 고유 초대 코드 발급 또는 기존 코드 반환 |
-| `apply_invite_code` | `inviteCode`, `inputMethod` | 초대 관계 생성, 피초대자/초대자 grant 반환 |
-| `get_invite_status` | 없음 | 내 코드, 초대 목록, 보상 수, 잔여 시도 횟수 |
-| `claim_invite_reward` | `grantId` 또는 레거시 `invitationId` | 초대자 보상을 `CLAIMED`로 변경 |
-| `sync_invite_rewards` | 없음 | 서버 기준 `pending`, `claimed` grant 목록 |
+| `initialize_invite_profile` | 선택 `nickname` | 고유 초대 코드 발급과 닉네임 초기 저장 |
+| `update_invite_nickname` | `nickname` | 사용자 프로필과 기존 초대 문서의 닉네임을 함께 갱신 |
+| `apply_invite_code` | `inviteCode` | 초대 관계 생성과 피초대자 grant 반환 |
+| `get_invite_status` | 없음 | 초대 목록 반환 |
+| `claim_invite_reward` | `grantId` | 초대자 보상을 `CLAIMED`로 변경 |
+| `sync_invite_rewards` | 없음 | 서버 기준 수령 완료 grant 목록 반환 |
 
 모든 함수는 Firebase Authentication이 필요합니다. 인증이 없으면 `UNAUTHENTICATED` 오류를 반환합니다.
+
+앱은 최초 닉네임 설정을 완료할 때 검증된 값을 `initialize_invite_profile`의 `nickname`으로 전달합니다. 서버는 닉네임 형식을 다시 검증하지 않고 저장합니다. 닉네임이 저장되지 않은 사용자가 초대 코드를 적용하면 `NICKNAME_REQUIRED`를 반환합니다.
+
+닉네임 변경 시 `update_invite_nickname`을 호출합니다. 이 함수는 사용자 프로필과 초대 목록의 닉네임을 한 트랜잭션에서 갱신합니다.
 
 ## 5. Firestore 데이터 모델
 
 ### `users/{uid}`
 
 - `inviteCode`: 사용자의 고유 초대 코드
+- `nickname`: 초대 기능에서 사용하는 기준 닉네임
 - `dailyAttemptDate`: KST 기준 최근 입력 시도 일자
 - `dailyAttemptCount`: 해당 일자의 입력 시도 횟수
-- `lastAttemptAt`, `createdAt`, `updatedAt`: 서버 타임스탬프
 
 ### `inviteCodes/{code}`
 
 - `uid`: 코드 소유자 UID
-- `createdAt`: 서버 타임스탬프
 
 문서 ID 자체가 6자리 코드이므로 코드 중복을 트랜잭션에서 감지합니다.
 
 ### `invitations/{inviteeUid}`
 
-- `inviterUid`, `inviteeUid`, `inviteCode`
+- `inviterUid`, `inviteCode`
+- `inviteeNickname`: 목록 조회를 위해 사용자 프로필에서 복제한 최신 닉네임
 - `inviterRewardStatus`: `PENDING` 또는 `CLAIMED`
-- `inviteeRewardStatus`: 가입 성공 시 `CLAIMED`
-- `rewardStatus`: 초대자 상태와의 하위 호환 필드
-- `createdAt`, `claimedAt`
+- `createdAt`: 목록 정렬과 표시용 서버 타임스탬프
 
 문서 ID를 피초대자 UID로 사용하므로 한 사용자는 하나의 초대 코드만 등록할 수 있습니다.
+
+`users/{uid}.nickname`이 닉네임의 기준 데이터이고 invitation의 값은 조회 성능을 위한 복제본입니다. 현재 사용자당 피초대 invitation이 최대 하나이므로 닉네임 수정 시 두 문서를 직접 갱신할 수 있습니다.
 
 서버는 다이아 수량이나 지갑 잔액을 저장하지 않습니다. 응답의 grant는 지급 사실과 역할만 표현하며, 현재 재화 반영은 iOS 로컬 저장소가 담당합니다.
 
@@ -128,7 +133,7 @@ java -version
 ./functions/run_tests.sh
 ```
 
-이 스크립트는 Firestore Emulator를 시작하고, pytest를 실행한 뒤, 성공/실패와 관계없이 Emulator를 종료합니다. 현재 기준 성공 결과는 `13 passed`입니다.
+이 스크립트는 Firestore Emulator를 시작하고, pytest를 실행한 뒤, 성공/실패와 관계없이 Emulator를 종료합니다. 현재 기준 성공 결과는 `14 passed`입니다.
 
 일반 `pytest`만 실행했을 때 Emulator가 없으면 통합 테스트는 더 이상 조용히 skip되지 않고, 올바른 실행 명령을 포함한 오류로 실패합니다.
 
@@ -142,6 +147,7 @@ functions/.venv/bin/python -m pytest functions/tests/test_invite_codes.py -q
 
 - 코드 형식, 혼동 문자 제외, 입력 정규화
 - 코드 발급 멱등성과 중복 방지
+- 닉네임 필수 프로필과 수정 시 초대 목록 동기화
 - 정상 등록 및 자기 코드/없는 코드/잘못된 코드 거부
 - KST 기준 일일 5회 제한
 - 보상 소유권 및 중복 수령 방지
@@ -178,7 +184,8 @@ firebase emulators:start --only auth,functions,firestore
 4. 실패 경로도 일일 시도 횟수 같은 정책에 포함되는지 확인합니다.
 5. 단위/통합 테스트를 추가하고 `./functions/run_tests.sh`를 실행합니다.
 6. 새 복합 쿼리가 있으면 `firestore.indexes.json`을 함께 수정합니다.
-7. 배포 전 Functions 로딩과 iOS 응답 파싱을 함께 확인합니다.
+7. 기능, API 계약, 데이터 모델, 테스트 방법이 바뀌면 이 온보딩 문서를 같은 변경에서 최신화합니다.
+8. 배포 전 Functions 로딩과 iOS 응답 파싱을 함께 확인합니다.
 
 ## 10. 배포 전 주의 사항
 

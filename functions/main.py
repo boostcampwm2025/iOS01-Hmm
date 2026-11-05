@@ -51,7 +51,18 @@ def _https_error(error: InviteError) -> https_fn.HttpsError:
 @https_fn.on_call()
 def initialize_invite_profile(req: https_fn.CallableRequest) -> dict:
     try:
-        return _service().initialize_invite_profile(_uid_from(req))
+        data = _data(req)
+        return _service().initialize_invite_profile(_uid_from(req), data.get("nickname"))
+    except InviteError as error:
+        raise _https_error(error) from error
+
+
+# 사용자 닉네임과 초대 목록에 복제된 닉네임을 함께 갱신하는 Cloud Function
+@https_fn.on_call()
+def update_invite_nickname(req: https_fn.CallableRequest) -> dict:
+    try:
+        data = _data(req)
+        return _service().update_invite_nickname(_uid_from(req), data.get("nickname"))
     except InviteError as error:
         raise _https_error(error) from error
 
@@ -64,7 +75,6 @@ def apply_invite_code(req: https_fn.CallableRequest) -> dict:
         return _service().apply_invite_code(
             _uid_from(req),
             data.get("inviteCode"),
-            data.get("inputMethod"),
         )
     except InviteError as error:
         raise _https_error(error) from error
@@ -84,8 +94,7 @@ def get_invite_status(req: https_fn.CallableRequest) -> dict:
 def claim_invite_reward(req: https_fn.CallableRequest) -> dict:
     try:
         data = _data(req)
-        target_id = data.get("invitationId") or data.get("grantId")
-        return _service().claim_invite_reward(_uid_from(req), target_id)
+        return _service().claim_invite_reward(_uid_from(req), data.get("grantId"))
     except InviteError as error:
         raise _https_error(error) from error
 

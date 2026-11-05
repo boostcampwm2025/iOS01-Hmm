@@ -21,5 +21,3 @@ STATUS_CLAIMED = "CLAIMED"
 
 ROLE_INVITER = "inviter"
 ROLE_INVITEE = "invitee"
-
-INPUT_METHODS = ("manual", "clipboard", "deeplink")

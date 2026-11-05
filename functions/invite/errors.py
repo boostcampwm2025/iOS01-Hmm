@@ -42,10 +42,14 @@ class AlreadyAppliedError(InviteError):
         )
 
 
-class NotNewUserError(InviteError):
-    # 신규 사용자가 아닌 경우 발생하는 오류를 생성하는 생성자
+class NicknameRequiredError(InviteError):
+    # 초대 코드 적용 전에 서버 프로필에 닉네임이 저장되지 않은 경우 발생하는 오류를 생성하는 생성자
     def __init__(self):
-        super().__init__("NOT_NEW_USER", "failed-precondition", "Invite codes can only be applied by new users.")
+        super().__init__(
+            "NICKNAME_REQUIRED",
+            "failed-precondition",
+            "A nickname must be saved before applying an invite code.",
+        )
 
 
 class DailyAttemptLimitError(InviteError):

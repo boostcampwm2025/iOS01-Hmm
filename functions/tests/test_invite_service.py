@@ -8,7 +8,6 @@ from uuid import uuid4
 import pytest
 from google.auth.credentials import AnonymousCredentials
 from google.cloud import firestore as google_firestore
-from google.cloud.firestore_v1.base_query import FieldFilter
 
 os.environ.setdefault("FIRESTORE_EMULATOR_HOST", "localhost:8080")
 os.environ.setdefault("GCLOUD_PROJECT", "solodevelopertraining")
@@ -19,7 +18,6 @@ from invite.constants import (  # noqa: E402
     COLLECTION_INVITE_CODES,
     COLLECTION_USERS,
     MAX_DAILY_ATTEMPTS,
-    STATUS_CLAIMED,
     STATUS_PENDING,
 )
 from invite.errors import (  # noqa: E402
@@ -28,6 +26,7 @@ from invite.errors import (  # noqa: E402
     ForbiddenRewardError,
     InvalidInviteCodeError,
     InviteCodeNotFoundError,
+    NicknameRequiredError,
     OwnInviteCodeError,
     RewardAlreadyClaimedError,
     RewardNotFoundError,
@@ -81,12 +80,20 @@ def _uid(prefix: str) -> str:
 # 초대 코드 최초 발급 및 재요청 시 기존 코드 재사용 동작을 검증하는 테스트
 def test_issue_and_reuse_invite_code(service):
     uid = _uid("issuer")
-    first = service.initialize_invite_profile(uid)
+    first = service.initialize_invite_profile(uid, "개발자")
     second = service.initialize_invite_profile(uid)
-    assert first["created"] is True
-    assert second["created"] is False
     assert first["inviteCode"] == second["inviteCode"]
     assert len(first["inviteCode"]) == 6
+
+
+# 초대 코드 적용 전 닉네임 프로필 저장 요구사항을 검증하는 테스트
+def test_nickname_required_profile(service):
+    inviter = _uid("inviter")
+    invitee = _uid("invitee")
+    code = service.initialize_invite_profile(inviter, "초대자")["inviteCode"]
+
+    with pytest.raises(NicknameRequiredError):
+        service.apply_invite_code(invitee, code)
 
 
 # 초대 코드 등록 성공 시 초대 관계 및 초대자/피초대자 보상이 생성되는지 검증하는 테스트
@@ -94,20 +101,25 @@ def test_apply_success_creates_invitation_and_grants(service, db):
     inviter = _uid("inviter")
     invitee = _uid("invitee")
     code = service.initialize_invite_profile(inviter)["inviteCode"]
-    result = service.apply_invite_code(invitee, code, input_method="manual")
+    service.initialize_invite_profile(invitee, "피초대자")
+    result = service.apply_invite_code(invitee, code)
 
-    assert result["success"] is True
-    assert result["inviteeGrant"]["status"] == STATUS_CLAIMED
-    assert result["inviterGrant"]["status"] == STATUS_PENDING
+    assert set(result) == {"inviteeGrant"}
+    assert set(result["inviteeGrant"]) == {"grantId", "role"}
     assert "amount" not in result["inviteeGrant"]
-    assert "amount" not in result["inviterGrant"]
 
     invitation = db.collection(COLLECTION_INVITATIONS).document(invitee).get()
     assert invitation.exists
     data = invitation.to_dict()
+    assert set(data) == {
+        "inviterUid",
+        "inviteeNickname",
+        "inviteCode",
+        "inviterRewardStatus",
+        "createdAt",
+    }
     assert data["inviterUid"] == inviter
-    assert data["inviteeUid"] == invitee
-    assert data["inviteeRewardStatus"] == STATUS_CLAIMED
+    assert data["inviteeNickname"] == "피초대자"
     assert data["inviterRewardStatus"] == STATUS_PENDING
     _assert_no_wallet_fields(data)
 
@@ -132,11 +144,11 @@ def test_already_applied_and_idempotent_retry(service):
     invitee = _uid("invitee")
     code = service.initialize_invite_profile(inviter)["inviteCode"]
     other_code = service.initialize_invite_profile(other)["inviteCode"]
+    service.initialize_invite_profile(invitee, "피초대자")
 
     first = service.apply_invite_code(invitee, code)
     replay = service.apply_invite_code(invitee, code)
-    assert first["invitationId"] == replay["invitationId"]
-    assert replay["replayed"] is True
+    assert first["inviteeGrant"]["grantId"] == replay["inviteeGrant"]["grantId"]
 
     with pytest.raises(AlreadyAppliedError):
         service.apply_invite_code(invitee, other_code)
@@ -161,16 +173,20 @@ def test_claim_is_owner_only_canonical_and_not_duplicated(service):
     invitee = _uid("invitee")
     other = _uid("other")
     code = service.initialize_invite_profile(inviter)["inviteCode"]
-    applied = service.apply_invite_code(invitee, code)
-    grant_id = applied["inviterGrant"]["grantId"]
+    service.initialize_invite_profile(invitee, "피초대자")
+    service.apply_invite_code(invitee, code)
+    grant_id = grant_id_for(invitee, "inviter")
 
     with pytest.raises(ForbiddenRewardError):
         service.claim_invite_reward(other, grant_id)
     with pytest.raises(RewardNotFoundError):
         service.claim_invite_reward(inviter, grant_id_for(invitee, "invitee"))
 
-    claimed = service.claim_invite_reward(inviter, invitee)
-    assert claimed["status"] == STATUS_CLAIMED
+    with pytest.raises(RewardNotFoundError):
+        service.claim_invite_reward(inviter, invitee)
+
+    claimed = service.claim_invite_reward(inviter, grant_id)
+    assert set(claimed) == {"grantId", "role"}
     assert claimed["grantId"] == grant_id
     assert "amount" not in claimed
     with pytest.raises(RewardAlreadyClaimedError):
@@ -182,6 +198,8 @@ def test_unauthenticated_requests_are_blocked(service):
     with pytest.raises(UnauthenticatedError):
         service.initialize_invite_profile(None)
     with pytest.raises(UnauthenticatedError):
+        service.update_invite_nickname(None, "닉네임")
+    with pytest.raises(UnauthenticatedError):
         service.apply_invite_code("", "ABCDEF")
     with pytest.raises(UnauthenticatedError):
         service.get_invite_status(None)
@@ -192,23 +210,28 @@ def test_unauthenticated_requests_are_blocked(service):
 
 
 # 초대 상태 조회 및 보상 동기화 페이로드 구조를 검증하는 테스트
-def test_status_and_sync_payloads(service):
+def test_status_and_sync_payloads(service, db):
     inviter = _uid("inviter")
     invitee = _uid("invitee")
     code = service.initialize_invite_profile(inviter)["inviteCode"]
+    service.initialize_invite_profile(invitee, "첫닉네임")
     service.apply_invite_code(invitee, code)
 
     status = service.get_invite_status(inviter)
-    assert status["inviteCode"] == code
-    assert status["totalInvitations"] == 1
-    assert status["pendingRewards"] == 1
-    assert status["claimedRewards"] == 0
+    assert set(status) == {"invitations"}
+    assert len(status["invitations"]) == 1
+    assert status["invitations"][0]["inviteeNickname"] == "첫닉네임"
     assert status["invitations"][0]["inviterRewardStatus"] == STATUS_PENDING
+
+    service.update_invite_nickname(invitee, "새닉네임")
+    updated_status = service.get_invite_status(inviter)
+    assert updated_status["invitations"][0]["inviteeNickname"] == "새닉네임"
+    assert db.collection(COLLECTION_USERS).document(invitee).get().to_dict()["nickname"] == "새닉네임"
 
     service.claim_invite_reward(inviter, grant_id_for(invitee, "inviter"))
     synced = service.sync_invite_rewards(inviter)
+    assert set(synced) == {"claimed"}
     assert len(synced["claimed"]) == 1
-    assert synced["pending"] == []
     invitee_sync = service.sync_invite_rewards(invitee)
     assert "amount" not in invitee_sync["claimed"][0]
 
@@ -218,6 +241,7 @@ def test_concurrent_apply_creates_single_invitation(service, db):
     inviter = _uid("inviter")
     invitee = _uid("invitee")
     code = service.initialize_invite_profile(inviter)["inviteCode"]
+    service.initialize_invite_profile(invitee, "동시요청")
     errors = []
 
     # 동시 실행 스레드에서 초대 코드를 적용하는 작업 함수
@@ -233,12 +257,7 @@ def test_concurrent_apply_creates_single_invitation(service, db):
     for thread in threads:
         thread.join()
 
-    docs = list(
-        db.collection(COLLECTION_INVITATIONS)
-        .where(filter=FieldFilter("inviteeUid", "==", invitee))
-        .stream()
-    )
-    assert len(docs) == 1
+    assert db.collection(COLLECTION_INVITATIONS).document(invitee).get().exists
     assert errors == []
     user_doc = db.collection(COLLECTION_USERS).document(invitee).get().to_dict()
     assert user_doc["dailyAttemptCount"] == 1
