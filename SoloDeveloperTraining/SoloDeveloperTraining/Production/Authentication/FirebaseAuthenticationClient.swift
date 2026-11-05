@@ -51,7 +51,7 @@ enum AuthenticationError: LocalizedError, Equatable {
 }
 
 // 인증 객체 프로토콜
-protocol AuthenticationClient: AnyObject {
+protocol AuthenticationClient {
     func ensureAuthenticated() async throws -> AuthenticationState
 }
 
@@ -59,13 +59,14 @@ protocol AuthenticationClient: AnyObject {
 final class FirebaseAuthenticationClient: AuthenticationClient {
 
     func ensureAuthenticated() async throws -> AuthenticationState {
-        if let userID = Auth.auth().currentUser?.uid {
+        let auth = InviteFirebaseEnvironment.auth
+        if let userID = auth.currentUser?.uid {
             return AuthenticationState(userID: userID)
         }
 
         do {
             // 익명 인증 과정 수행
-            let result = try await Auth.auth().signInAnonymously()
+            let result = try await auth.signInAnonymously()
             return AuthenticationState(userID: result.user.uid)
         } catch {
             throw AuthenticationError(error: error)
