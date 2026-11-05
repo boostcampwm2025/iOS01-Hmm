@@ -6,9 +6,20 @@
       "disallowLegacyRuntimeConfig": true,
       "ignore": [
         "venv",
+        ".venv",
         ".git",
+        "__pycache__",
+        "*.pyc",
+        ".pytest_cache",
+        "tests",
+        "pytest.ini",
+        "requirements-dev.txt",
+        "run_tests.sh",
+        "README.md",
         "firebase-debug.log",
         "firebase-debug.*.log",
+        "firestore-debug.log",
+        "firestore-debug.*.log",
         "*.local"
       ],
       "runtime": "python314"
