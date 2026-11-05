@@ -22,6 +22,7 @@
 .
 ├── firebase.json                 # 함수 런타임, Firestore, Emulator 포트
 ├── .firebaserc                   # 기본 Firebase 프로젝트 ID
+├── firestore.rules              # 클라이언트 Firestore 접근 규칙
 ├── firestore.indexes.json       # 초대 목록 조회용 복합 인덱스
 ├── functions/
 │   ├── main.py                  # Callable Function 진입점과 오류 변환
@@ -106,6 +107,13 @@ sequenceDiagram
 
 서버는 다이아 수량이나 지갑 잔액을 저장하지 않습니다. 응답의 grant는 지급 사실과 역할만 표현하며, 현재 재화 반영은 iOS 로컬 저장소가 담당합니다.
 
+### Firestore 보안 규칙
+
+- `users`, `inviteCodes`, `invitations`는 iOS가 Firestore로 직접 쓰지 못하며, Callable Functions에서만 변경합니다.
+- Python 서버 Functions에서만 사용하는 Firebase Admin SDK는 Firestore 보안 규칙을 적용받지 않습니다. iOS 앱에는 Admin SDK가 포함되지 않습니다.
+- 기존 밸런스 정책 경로인 `1_Edit`, `2_Test`, `3_Live`, `4_Version`, `versions`, `test`, `live`, `editingSession`은 기존 배포 상태와 동일하게 공개 읽기·쓰기를 유지합니다. 이 경로의 규칙은 초대 기능 변경에서 더 제한하지 않습니다.
+- `firebase.json`이 `firestore.rules`를 참조하므로 Emulator와 운영 배포가 같은 규칙 파일을 사용합니다.
+
 ## 6. 로컬 환경 준비
 
 필수 도구:
@@ -184,8 +192,9 @@ firebase emulators:start --only auth,functions,firestore
 4. 실패 경로도 일일 시도 횟수 같은 정책에 포함되는지 확인합니다.
 5. 단위/통합 테스트를 추가하고 `./functions/run_tests.sh`를 실행합니다.
 6. 새 복합 쿼리가 있으면 `firestore.indexes.json`을 함께 수정합니다.
-7. 기능, API 계약, 데이터 모델, 테스트 방법이 바뀌면 이 온보딩 문서를 같은 변경에서 최신화합니다.
-8. 배포 전 Functions 로딩과 iOS 응답 파싱을 함께 확인합니다.
+7. 새 Firestore 컬렉션이 있으면 `firestore.rules`을 갱신하고, 기존 밸런스 정책 경로의 권한이 바뀌지 않았는지 확인합니다.
+8. 기능, API 계약, 데이터 모델, 테스트 방법이 바뀌면 이 온보딩 문서를 같은 변경에서 최신화합니다.
+9. 배포 전 Functions 로딩과 iOS 응답 파싱을 함께 확인합니다.
 
 ## 10. 배포 전 주의 사항
 
