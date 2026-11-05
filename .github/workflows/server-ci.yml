@@ -1,0 +1,59 @@
+name: Server CI
+
+on:
+  push:
+    branches: [main, dev]
+    paths:
+      - 'functions/**'
+      - '!functions/**/*.md'
+      - 'firebase.json'
+      - '.firebaserc'
+      - 'firestore.rules'
+      - 'firestore.indexes.json'
+      - '.github/workflows/server-ci.yml'
+  pull_request:
+    branches: [main, dev]
+    paths:
+      - 'functions/**'
+      - '!functions/**/*.md'
+      - 'firebase.json'
+      - '.firebaserc'
+      - 'firestore.rules'
+      - 'firestore.indexes.json'
+      - '.github/workflows/server-ci.yml'
+
+jobs:
+  test:
+    name: Firebase server tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Java for Firestore Emulator
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install dependencies
+        run: |
+          npm install --global firebase-tools@15.34.2
+          python -m venv functions/.venv
+          functions/.venv/bin/python -m pip install -r functions/requirements-dev.txt
+
+      - name: Run server tests
+        run: ./functions/run_tests.sh

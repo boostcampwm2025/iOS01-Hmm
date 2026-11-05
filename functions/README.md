@@ -1,6 +1,6 @@
 # Firebase Functions 서버 온보딩 가이드
 
-이 문서는 친구 초대 기능의 Firebase 서버를 처음 다루는 팀원이 로컬 환경을 구성하고, 코드 흐름을 따라가며, 테스트와 배포 전 점검을 수행할 수 있도록 정리한 가이드입니다.
+친구 초대 서버의 구조, 테스트, 배포 방법을 정리한 가이드 문서입니다.
 
 ## 1. 기술 스택
 
@@ -38,6 +38,7 @@
 │   └── tests/
 │       ├── test_invite_codes.py # Emulator가 필요 없는 단위 테스트
 │       └── test_invite_service.py # Firestore 통합/동시성 테스트
+└── .github/workflows/server-ci.yml # PR과 main/dev 푸시에서 서버 테스트 실행
 ```
 
 ## 3. 요청 처리 흐름
@@ -106,66 +107,32 @@ sequenceDiagram
 - Python 서버 Functions에서만 사용하는 Firebase Admin SDK는 Firestore 보안 규칙을 적용받지 않습니다.
 - `firebase.json`이 `firestore.rules`를 참조하므로 Emulator와 운영 배포가 같은 규칙 파일을 사용합니다.
 
-## 6. 로컬 환경 준비
+## 6. 서버 테스트
 
-필수 도구:
+서버 관련 파일이 변경된 `main`·`dev` 대상 PR과 해당 브랜치 푸시에서 `Server CI`가 Firestore Emulator로 테스트 14개를 실행합니다. PR 검증만 할 때는 로컬 환경 설정이 필요하지 않습니다.
 
-- Python 3.14
-- Node.js와 Firebase CLI
-- Java 21 이상(Firestore Emulator 실행용)
+<details>
+<summary>로컬에서 서버 테스트 실행하기</summary>
 
-저장소 루트에서 실행합니다.
+Python 3.14, Node.js와 Firebase CLI, Java 21 이상을 설치한 뒤 저장소 루트에서 실행합니다.
 
 ```bash
 python3.14 -m venv functions/.venv
 functions/.venv/bin/python -m pip install -r functions/requirements-dev.txt
-firebase --version
-java -version
-```
-
-## 7. 서버 내 단위, 통합 테스트 실행
-
-서버의 단위 테스트와 Firestore 통합 테스트를 모두 실행하려면 저장소 루트에서 다음 명령을 사용합니다.
-현재 테스트는 `코드 생성 단위 테스트 3개`와 `기능 통합 테스트 11`개, 총 14개로 구성되어 있습니다.
-
-```bash
 ./functions/run_tests.sh
 ```
 
-이 스크립트는 Firestore Emulator를 시작하고 pytest를 실행한 뒤, 성공·실패와 관계없이 자신이 시작한 Emulator를 종료합니다. 실행 전에 Firestore Emulator의 8080 포트가 비어 있어야 합니다.
+`run_tests.sh`가 Firestore Emulator를 시작해 테스트를 실행하고 종료합니다. 실행 전 8080 포트가 비어 있어야 합니다.
 
+</details>
 
-Emulator가 필요 없는 `코드 생성 단위 테스트`만 빠르게 실행하려면 다음 명령을 사용합니다.
+## 7. 서버 코드 변경 시
 
-```bash
-functions/.venv/bin/python -m pytest functions/tests/test_invite_codes.py -q
-```
+1. Callable 요청·응답은 `main.py`, 초대 규칙은 `invite/services.py`에서 수정합니다. 여러 문서를 함께 바꾸거나 동시 요청이 가능한 작업에는 트랜잭션을 사용합니다.
+2. 데이터 구조와 쿼리를 바꾸면 `firestore.rules`·`firestore.indexes.json`을 확인합니다. 기존 밸런스 정책 권한은 유지합니다.
+3. 관련 테스트와 이 문서를 갱신하고 PR의 `Server CI` 결과를 확인합니다.
 
-테스트가 검증하는 주요 항목:
-
-- 코드 형식, 혼동 문자 제외, 입력 정규화
-- 코드 발급 멱등성과 중복 방지
-- 닉네임 필수 프로필과 수정 시 초대 목록 동기화
-- 정상 등록 및 자기 코드/없는 코드/잘못된 코드 거부
-- KST 기준 일일 5회 제한
-- 보상 소유권 및 중복 수령 방지
-- 상태 조회와 보상 동기화 응답
-- 동시 요청 8건에서 초대 문서 1개 및 시도 횟수 1회 보장
-- Firestore에 재화 필드가 저장되지 않음
-
-## 8. 변경할 때 지켜야 할 흐름
-
-1. Callable API 계약과 서버 응답 필드를 먼저 확인합니다.
-2. 도메인 로직은 `services.py`, 전송 계층은 `main.py`에 둡니다.
-3. 동시 요청 또는 두 문서 이상이 관련된 변경은 Firestore 트랜잭션으로 구현합니다.
-4. 실패 경로도 일일 시도 횟수 같은 정책에 포함되는지 확인합니다.
-5. 단위/통합 테스트를 추가하고 `./functions/run_tests.sh`를 실행합니다.
-6. 새 복합 쿼리가 있으면 `firestore.indexes.json`을 함께 수정합니다.
-7. 새 Firestore 컬렉션이 있으면 `firestore.rules`을 갱신하고, 기존 밸런스 정책 경로의 권한이 바뀌지 않았는지 확인합니다.
-8. 기능, API 계약, 데이터 모델, 테스트 방법이 바뀌면 이 온보딩 문서를 같은 변경에서 최신화합니다.
-9. 배포 전 Functions 로딩과 응답 형식을 확인합니다.
-
-## 9. 서버 배포
+## 8. 서버 배포
 
 서버 코드 수정 후, 실제 운영 환경에 반영합니다.
 Firebase CLI 로그인 후 저장소 루트에서 실행합니다. `--project`는 배포 대상 Firebase 프로젝트 ID입니다.
@@ -176,27 +143,3 @@ firebase deploy --project solodevelopertraining --only firestore
 # functions/main.py의 Callable Functions를 배포합니다.
 firebase deploy --project solodevelopertraining --only functions
 ```
-
-## 10. 배포 전 주의 사항
-
-- `functions/firebase-debug.log`와 `functions/firestore-debug.log`는 생성 로그이며 커밋 대상이 아닙니다.
-- 테스트 코드와 개발 전용 파일은 서버 코드와 같은 Python 환경을 사용하기 위해 `functions/`에 두되, `firebase.json`의 `ignore` 목록으로 운영 배포물에서는 제외합니다.
-- 운영 배포 명령은 실제 프로젝트를 변경하므로 프로젝트 ID와 대상 환경을 확인한 담당자만 실행합니다.
-
-## 11. 자주 겪는 문제
-
-### 통합 테스트가 Emulator 오류로 실패함
-
-`pytest`를 직접 실행하지 말고 `./functions/run_tests.sh`를 사용합니다. 8080 포트를 다른 프로세스가 쓰고 있는지도 확인합니다.
-
-### `DefaultCredentialsError`가 발생함
-
-최신 테스트 코드는 로컬 익명 자격 증명을 사용합니다. 오래된 테스트 코드나 다른 Firestore 클라이언트에서 `firebase_admin.firestore.client()`를 직접 생성하면 ADC를 요구할 수 있습니다.
-
-### Emulator 포트가 4001, 4401 등으로 바뀜
-
-다른 Firebase Emulator Suite가 이미 실행 중인 상태입니다. 중복 프로세스를 종료하고 한 인스턴스만 실행합니다.
-
-### 쿼리에 인덱스가 필요하다는 오류가 발생함
-
-`inviterUid ASC + createdAt DESC` 인덱스가 `firestore.indexes.json`에 있는지 확인합니다. 새 쿼리라면 오류가 안내하는 인덱스를 코드 리뷰와 함께 추가합니다.
