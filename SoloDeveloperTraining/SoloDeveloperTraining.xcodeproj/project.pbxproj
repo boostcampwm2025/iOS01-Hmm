@@ -23,6 +23,10 @@
 		BC4C62982FE18C3C00570653 /* AppsFlyerLib in Frameworks */ = {isa = PBXBuildFile; productRef = BC4C62972FE18C3C00570653 /* AppsFlyerLib */; };
 		BCC0EACE2F8FE90700D7A84A /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = BCC0EACD2F8FE90700D7A84A /* FirebaseAnalytics */; };
 		BCC0EAD02F8FE90D00D7A84A /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = BCC0EACF2F8FE90D00D7A84A /* FirebaseCore */; };
+		D1A000000000000000000011 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D1A000000000000000000001 /* FirebaseAuth */; };
+		D1A000000000000000000012 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D1A000000000000000000002 /* FirebaseAuth */; };
+		D1A000000000000000000013 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = D1A000000000000000000003 /* FirebaseFunctions */; };
+		D1A000000000000000000014 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = D1A000000000000000000004 /* FirebaseFunctions */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -194,7 +198,9 @@
 				BC1933712F8FC7110033A27E /* FirebaseCore in Frameworks */,
 				28AC32C92FDEB29600D0126E /* DUDesignSystem in Frameworks */,
 				BC19336F2F8FC7110033A27E /* FirebaseAnalytics in Frameworks */,
+				D1A000000000000000000011 /* FirebaseAuth in Frameworks */,
 				28FB12B02F9B5EA8004FCBB3 /* FirebaseFirestore in Frameworks */,
+				D1A000000000000000000013 /* FirebaseFunctions in Frameworks */,
 				28F3C7C52FB73B7B0077B77A /* KakaoSDKShare in Frameworks */,
 				28F3C7C72FB73B820077B77A /* KakaoSDK in Frameworks */,
 			);
@@ -217,7 +223,9 @@
 				28AC32CB2FDEB2A600D0126E /* DUDesignSystem in Frameworks */,
 				28F3C5072FB37EDA0077B77A /* KakaoSDKShare in Frameworks */,
 				BCC0EACE2F8FE90700D7A84A /* FirebaseAnalytics in Frameworks */,
+				D1A000000000000000000012 /* FirebaseAuth in Frameworks */,
 				28FB12B22F9B5EB1004FCBB3 /* FirebaseFirestore in Frameworks */,
+				D1A000000000000000000014 /* FirebaseFunctions in Frameworks */,
 				28F3C7C32FB73B6E0077B77A /* KakaoSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -294,7 +302,9 @@
 			packageProductDependencies = (
 				BC19336E2F8FC7110033A27E /* FirebaseAnalytics */,
 				BC1933702F8FC7110033A27E /* FirebaseCore */,
+				D1A000000000000000000001 /* FirebaseAuth */,
 				28FB12AF2F9B5EA8004FCBB3 /* FirebaseFirestore */,
+				D1A000000000000000000003 /* FirebaseFunctions */,
 				283B980D2FAB24750033B924 /* GoogleMobileAds */,
 				28F3C7C42FB73B7B0077B77A /* KakaoSDKShare */,
 				28F3C7C62FB73B820077B77A /* KakaoSDK */,
@@ -348,7 +358,9 @@
 			packageProductDependencies = (
 				BCC0EACD2F8FE90700D7A84A /* FirebaseAnalytics */,
 				BCC0EACF2F8FE90D00D7A84A /* FirebaseCore */,
+				D1A000000000000000000002 /* FirebaseAuth */,
 				28FB12B12F9B5EB1004FCBB3 /* FirebaseFirestore */,
+				D1A000000000000000000004 /* FirebaseFunctions */,
 				283B9A422FAB36020033B924 /* GoogleMobileAds */,
 				28F3C5062FB37EDA0077B77A /* KakaoSDKShare */,
 				28F3C7C22FB73B6E0077B77A /* KakaoSDK */,
@@ -1156,6 +1168,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseCore;
+		};
+		D1A000000000000000000001 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		D1A000000000000000000002 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		D1A000000000000000000003 /* FirebaseFunctions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFunctions;
+		};
+		D1A000000000000000000004 /* FirebaseFunctions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BC19336D2F8FC7110033A27E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFunctions;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

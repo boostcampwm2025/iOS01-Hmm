@@ -11,6 +11,7 @@ import DUDesignSystem
 
 struct NicknameSetupView: View {
     @State private var nickname: String = ""
+    @State private var inviteSystem = InviteSystem()
     @State private var nicknameState: InputField.InputFieldState = .default
     @State private var showTutorial = false
     @State private var confirmedNickname = ""
@@ -123,7 +124,11 @@ private extension NicknameSetupView {
     func showInviteCodeInputPopup() {
         PopupManager.shared.show {
             InviteCodeInputPopupView(
-                onConfirm: showWelcomeRewardPopup,
+                nickname: confirmedNickname,
+                inviteSystem: inviteSystem,
+                onConfirm: {
+                    showWelcomeRewardPopup()
+                },
                 onSkip: {
                     PopupManager.shared.dismiss()
                     showTutorial = true

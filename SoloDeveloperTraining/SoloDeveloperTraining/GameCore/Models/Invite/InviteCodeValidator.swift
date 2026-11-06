@@ -8,8 +8,6 @@
 import Foundation
 
 private enum Constant {
-    // TODO: 서버 연동 - 서버 조회로 교체 후 제거
-    static let mockExistingCodes: Set<String> = ["ABC123", "ABC456", "ABC789"]
     /// 대문자·숫자 6자리
     static let codePattern = "(?<![A-Za-z0-9])[A-Z0-9]{\(InviteConstants.codeLength)}(?![A-Za-z0-9])"
 }
@@ -30,27 +28,12 @@ final class InviteCodeValidator {
         return String(text[range])
     }
 
-    /// 초대 코드 확인
-    /// - Parameters:
-    ///   - code: 유저가 입력한 코드
-    ///   - myCode: 내 초대 코드
-    func validate(_ code: String, myCode: String? = nil) async -> InviteCodeValidationResult {
+    /// 초대 코드 유효성을 검증
+    func validateFormat(_ code: String) -> InviteCodeValidationResult {
         let code = normalize(code)
-
-        guard isValidFormat(code) else { return .invalidFormat }
-        if let myCode, code == myCode { return .ownCode }
-
-        // TODO: 서버 연동 - 코드 존재 여부를 서버에서 조회
-        guard Constant.mockExistingCodes.contains(code) else { return .notFound }
-
+        guard code.count == InviteConstants.codeLength,
+              code.allSatisfy({ $0.isASCII && ($0.isUppercase || $0.isNumber) })
+        else { return .invalidFormat }
         return .valid
-    }
-}
-
-private extension InviteCodeValidator {
-    /// 초대 코드 형식에 맞는지 확인
-    func isValidFormat(_ code: String) -> Bool {
-        code.count == InviteConstants.codeLength
-            && code.allSatisfy { $0.isASCII && ($0.isUppercase || $0.isNumber) }
     }
 }

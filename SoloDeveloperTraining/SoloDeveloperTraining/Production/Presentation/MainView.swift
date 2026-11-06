@@ -59,6 +59,7 @@ struct MainView: View {
     @State private var inviteSystem = InviteSystem()
     @State private var showInviteShareSheet: Bool = false
     @State private var inviteShareSheetHeight: CGFloat = Constant.inviteShareSheetDefaultHeight
+    @State private var isRefreshingInviteState: Bool = false
 
     private let rewardRepository = DefaultRewardRepository()
 
@@ -113,6 +114,9 @@ struct MainView: View {
         .onAppear(perform: setupOnAppear)
         .task {
             await updateSkillAdRewardTimer()
+        }
+        .task {
+            await refreshInviteState()
         }
         .onChange(of: scenePhase, handleScenePhaseChange)
         .onChange(of: user.record.totalEarnedMoney) {
@@ -454,6 +458,7 @@ private extension MainView {
             // 오프라인 보상 체크
             Task {
                 await checkOfflineReward()
+                await refreshInviteState()
             }
         } else if newValue == .inactive || newValue == .background {
             skillAdRewardNow = Date()
@@ -816,7 +821,6 @@ private extension MainView {
     /// 친구가 내 초대 코드를 입력했을 때 보상 팝업
     /// - 수령: 바로 지급 → 초대 현황에 "수령 완료"로 반영
     /// - 나중에: 닫기만 → 초대 현황에서 수령 가능
-    // TODO: 서버 연동 - 홈 진입 시 수령 대기 친구를 조회해 호출
     func showInviteRewardPopup(for friend: InvitedFriend) {
         if workGameSession.isInProgress {
             workGameSession.isPauseRequested = true
@@ -834,9 +838,25 @@ private extension MainView {
         }
     }
 
+    func refreshInviteState() async {
+        guard !isRefreshingInviteState else { return }
+        isRefreshingInviteState = true
+        defer { isRefreshingInviteState = false }
+
+        await inviteSystem.refreshStatus()
+        let pending = await inviteSystem.syncRewards(user: user)
+        if let friend = pending.first {
+            showInviteRewardPopup(for: friend)
+        }
+    }
+
     func claimInviteReward(friend: InvitedFriend) {
-        guard inviteSystem.claimInviteReward(friend: friend, wallet: user.wallet) else { return }
-        ToastManager.shared.show("다이아 \(InviteConstants.inviterRewardDiamond)개를 받았어요")
+        Task {
+            let claimed = await inviteSystem.claimInviteReward(friend: friend, user: user)
+            if claimed {
+                ToastManager.shared.show("다이아 \(InviteConstants.inviterRewardDiamond)개를 받았어요")
+            }
+        }
     }
 }
 

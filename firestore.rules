@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow write: if false;
+    }
+
+    match /inviteCodes/{code} {
+      allow read, write: if false;
+    }
+
+    match /invitations/{invitationId} {
+      allow read, write: if false;
+    }
+
+    // Keep the currently deployed access behavior for balance-policy data.
+    // These paths are used by the iOS app and the developer Admin app.
+    match /1_Edit/{document=**} {
+      allow read, write: if true;
+    }
+
+    match /2_Test/{document=**} {
+      allow read, write: if true;
+    }
+
+    match /3_Live/{document=**} {
+      allow read, write: if true;
+    }
+
+    match /4_Version/{document=**} {
+      allow read, write: if true;
+    }
+
+    match /versions/{document=**} {
+      allow read, write: if true;
+    }
+
+    match /test/{document=**} {
+      allow read, write: if true;
+    }
+
+    match /live/{document=**} {
+      allow read, write: if true;
+    }
+
+    match /editingSession/{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

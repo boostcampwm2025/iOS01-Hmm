@@ -109,9 +109,45 @@ iOSInjectionProject/
 # End of https://www.toptal.com/developers/gitignore/api/swift,xcode,macos
 
 
-# Firebase
+# Firebase CLI / Local Emulator Suite generated files
 .firebase/
 hosting.cHVibGlj.cache
+*-debug.log
+*-debug.*.log
+firebase-export-*/
+.firebase-emulator-data/
+emulator-data/
+.runtimeconfig.json
+.secret.local
+
+# Firebase Functions local environment files (may contain secrets)
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# Python server generated files
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+pip-wheel-metadata/
+*.egg-info/
+
+# Local editor configuration
+.vscode/
+.idea/
 
 # .xcconfig
 SoloDeveloperTraining/SoloDeveloperTraining/App/Config/Debug.xcconfig
