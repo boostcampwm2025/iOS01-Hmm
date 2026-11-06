@@ -59,4 +59,7 @@ jobs:
         run: ./functions/run_tests.sh
 
       - name: Verify Functions Emulator loads
-        run: firebase emulators:exec --only functions "true"
+        run: |
+          set -o pipefail
+          firebase emulators:exec --only functions "true" 2>&1 | tee "$RUNNER_TEMP/functions-emulator.log"
+          grep -Eq 'Loaded functions definitions from source:.*initialize_invite_profile' "$RUNNER_TEMP/functions-emulator.log"
