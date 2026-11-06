@@ -52,8 +52,11 @@ jobs:
       - name: Install dependencies
         run: |
           npm install --global firebase-tools@15.34.2
-          python -m venv functions/.venv
-          functions/.venv/bin/python -m pip install -r functions/requirements-dev.txt
+          python -m venv functions/venv
+          functions/venv/bin/python -m pip install -r functions/requirements-dev.txt
 
       - name: Run server tests
         run: ./functions/run_tests.sh
+
+      - name: Verify Functions Emulator loads
+        run: firebase emulators:exec --only functions "true"

@@ -109,7 +109,7 @@ sequenceDiagram
 
 ## 6. 서버 테스트
 
-서버 관련 파일이 변경된 `main`·`dev` 대상 PR과 해당 브랜치 푸시에서 `Server CI`가 Firestore Emulator로 테스트 14개를 실행합니다. PR 검증만 할 때는 로컬 환경 설정이 필요하지 않습니다.
+서버 관련 파일이 변경된 `main`·`dev` 대상 PR과 해당 브랜치 푸시에서 `Server CI`가 Firestore Emulator로 테스트 14개를 실행하고 Functions Emulator의 함수 로드를 확인합니다. PR 검증만 할 때는 로컬 환경 설정이 필요하지 않습니다.
 
 <details>
 <summary>로컬에서 서버 테스트 실행하기</summary>
@@ -117,8 +117,8 @@ sequenceDiagram
 Python 3.14, Node.js와 Firebase CLI, Java 21 이상을 설치한 뒤 저장소 루트에서 실행합니다.
 
 ```bash
-python3.14 -m venv functions/.venv
-functions/.venv/bin/python -m pip install -r functions/requirements-dev.txt
+python3.14 -m venv functions/venv
+functions/venv/bin/python -m pip install -r functions/requirements-dev.txt
 ./functions/run_tests.sh
 ```
 

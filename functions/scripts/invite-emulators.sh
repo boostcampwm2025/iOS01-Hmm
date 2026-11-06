@@ -27,8 +27,8 @@ if is_ready; then
   exit 0
 fi
 
-if [[ ! -x "$repo_root/functions/.venv/bin/python" ]]; then
-  echo "Missing functions/.venv. Follow functions/README.md setup." >&2
+if [[ ! -x "$repo_root/functions/venv/bin/python" ]]; then
+  echo "Missing functions/venv. Follow functions/README.md setup." >&2
   exit 1
 fi
 
