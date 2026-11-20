@@ -89,6 +89,21 @@
         .button:active {
             background: #0056b3;
         }
+        .status {
+            display: none;
+            margin-top: 12px;
+            font-size: 14px;
+            color: #34A853;
+            line-height: 1.5;
+            word-break: keep-all;
+        }
+        .sub-link {
+            display: inline-block;
+            margin-top: 16px;
+            font-size: 14px;
+            color: #999;
+            text-decoration: underline;
+        }
 
         /* 인스타그램 안내 화면 */
         .instagram-notice {
@@ -114,6 +129,10 @@
 
         <a id="start-button" href="https://apps.apple.com/kr/app/id6758282441" class="button">
             초대 받고 시작하기
+        </a>
+        <p class="status" id="copy-status">초대 코드를 복사했어요.<br>앱에서 붙여넣기를 허용하면 코드가 입력돼요.</p>
+        <a id="store-link" href="https://apps.apple.com/kr/app/id6758282441" class="sub-link">
+            앱스토어로 바로 가기
         </a>
     </div>
 
@@ -149,6 +168,74 @@
             document.getElementById('invite-code').textContent = inviteCode;
             document.getElementById('code-box').style.display = 'block';
         }
+
+        // MARK: - 앱 연결
+
+        const APP_STORE_URL = 'https://apps.apple.com/kr/app/id6758282441';
+        // 앱이 열리지 않았다고 판단하기까지 기다리는 시간
+        const APP_OPEN_TIMEOUT_MS = 2000;
+
+        // 버튼 탭 안에서 호출해야 복사가 허용된다.
+        function copyInviteCode(code) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(code).catch(() => legacyCopy(code));
+            } else {
+                legacyCopy(code);
+            }
+            document.getElementById('copy-status').style.display = 'block';
+        }
+
+        // Clipboard API를 쓸 수 없는 인앱 브라우저용
+        function legacyCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.setAttribute('readonly', '');
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            textarea.setSelectionRange(0, text.length);
+            try { document.execCommand('copy'); } catch (e) {}
+            document.body.removeChild(textarea);
+        }
+
+        // 앱 열기를 시도하고, 일정 시간 안에 페이지가 가려지지 않으면 앱이 없다고 보고 앱스토어로 보낸다.
+        function openAppOrStore(code) {
+            let timer = null;
+            const cancel = () => {
+                clearTimeout(timer);
+                document.removeEventListener('visibilitychange', onVisibilityChange);
+                window.removeEventListener('pagehide', cancel);
+            };
+            const onVisibilityChange = () => {
+                if (document.hidden) cancel();
+            };
+
+            // 앱이 열리면 페이지가 백그라운드로 가므로 타이머를 멈춘다.
+            // blur는 쓰지 않는다: 앱이 없을 때 Safari의 "주소가 유효하지 않음" 경고도 blur를 일으켜 앱스토어로 넘어가지 못한다.
+            document.addEventListener('visibilitychange', onVisibilityChange);
+            window.addEventListener('pagehide', cancel);
+
+            timer = setTimeout(() => {
+                cancel();
+                if (!document.hidden) window.location.href = APP_STORE_URL;
+            }, APP_OPEN_TIMEOUT_MS);
+
+            window.location.href = `devup://invite?code=${encodeURIComponent(code)}`;
+        }
+
+        document.getElementById('start-button').addEventListener('click', (event) => {
+            // 코드가 없으면 기본 링크(앱스토어)로 이동
+            if (!inviteCode) return;
+            event.preventDefault();
+            copyInviteCode(inviteCode);
+            openAppOrStore(inviteCode);
+        });
+
+        // 앱스토어로 바로 가더라도 설치 후 붙여넣을 수 있게 코드를 복사해 둔다.
+        document.getElementById('store-link').addEventListener('click', () => {
+            if (inviteCode) copyInviteCode(inviteCode);
+        });
     </script>
 </body>
 </html>
