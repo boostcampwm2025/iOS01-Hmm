@@ -152,8 +152,15 @@ private extension InviteShareSheetView {
         ToastManager.shared.show(Constant.codeCopiedMessage)
     }
 
+    /// 카카오톡 초대 템플릿으로 공유 (버튼은 초대 랜딩 페이지로 연결)
+    /// - 카카오톡이 없으면 카카오 웹 공유 페이지가 열린다.
     func shareToKakao() {
-        // TODO: 서버 연동 - 초대 전용 템플릿 등록 후 연결 (템플릿 인자 예: invite_code)
+        guard ensureCodeReady() else { return }
+        ShareService.shareToKakao(
+            messageTemplateID: InviteConstants.kakaoMessageTemplateID,
+            templateArgs: [InviteConstants.kakaoInviteCodeArgument: myCode],
+            onCompleted: {}
+        )
     }
 
     /// 초대 문구 + 코드 + 랜딩 페이지 URL을 시스템 공유 시트로 공유
