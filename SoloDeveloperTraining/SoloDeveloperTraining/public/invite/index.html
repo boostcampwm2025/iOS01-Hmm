@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>개발자 키우기 - 친구 초대</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- OG 태그 (메신저 링크 미리보기) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="[개발자 키우기] 친구가 초대했어요!">
+    <meta property="og:description" content="초대 코드를 입력하고 웰컴 보상 다이아 50개를 받아보세요.">
+    <meta property="og:url" content="https://solodevelopertraining.web.app/invite">
+    <meta property="og:image" content="https://solodevelopertraining.web.app/thumbnails/default.png">
+    <meta property="fb:app_id" content="1484631113301060">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f4f4f9;
+            color: #1a1a1a;
+        }
+        .container {
+            text-align: center;
+            padding: 40px 24px;
+            max-width: 450px;
+            width: 100%;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            margin: 20px;
+        }
+        .thumbnail {
+            width: 60%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            background: #eee;
+        }
+        h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #007AFF;
+            word-break: keep-all;
+        }
+        .desc {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 24px;
+            word-break: keep-all;
+        }
+        .code-box {
+            display: none;
+            margin-bottom: 30px;
+            padding: 16px;
+            background: #f4f4f9;
+            border-radius: 14px;
+        }
+        .code-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+        .code {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: 6px;
+            color: #1a1a1a;
+            font-variant-numeric: tabular-nums;
+        }
+        .button {
+            display: block;
+            padding: 16px;
+            background: #007AFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+        .button:active {
+            background: #0056b3;
+        }
+
+        /* 인스타그램 안내 화면 */
+        .instagram-notice {
+            display: none;
+            text-align: center;
+            padding: 40px 24px;
+        }
+        .icon { font-size: 50px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <!-- [1] 일반 브라우저 뷰 -->
+    <div class="container" id="normal-view">
+        <img class="thumbnail" src="/thumbnails/default.png" alt="개발자 키우기">
+        <h3>친구가 개발자 키우기에 초대했어요!</h3>
+        <p class="desc">초대 코드를 입력하면<br>웰컴 보상 다이아 50개를 받아요.</p>
+
+        <div class="code-box" id="code-box">
+            <p class="code-label">초대 코드</p>
+            <p class="code" id="invite-code"></p>
+        </div>
+
+        <a id="start-button" href="https://apps.apple.com/kr/app/id6758282441" class="button">
+            초대 받고 시작하기
+        </a>
+    </div>
+
+    <!-- [2] 인스타그램 인앱 브라우저 대응 뷰 -->
+    <div class="instagram-notice" id="instagram-view">
+        <div class="icon">📲</div>
+        <h3>외부 브라우저에서 열기</h3>
+        <p class="desc" style="text-align: left; background: #eee; padding: 20px; border-radius: 12px; margin-top: 20px;">
+            인스타그램에서는 앱 연결이 제한됩니다.<br><br>
+            1. 오른쪽 상단 <strong>점 세개(···)</strong> 클릭<br>
+            2. <strong>'시스템 브라우저에서 열기'</strong> 선택
+        </p>
+    </div>
+
+    <script>
+        // 초대 코드: 영문 대문자 + 숫자 6자리 (앱의 InviteLink 규칙과 동일)
+        const CODE_PATTERN = /^[A-Z0-9]{6}$/;
+
+        function readInviteCode() {
+            const raw = new URLSearchParams(window.location.search).get('code');
+            if (!raw) return null;
+            const code = raw.trim().toUpperCase();
+            return CODE_PATTERN.test(code) ? code : null;
+        }
+
+        const inviteCode = readInviteCode();
+        const isInstagram = /Instagram|FBAN|FBAV/.test(navigator.userAgent);
+
+        if (isInstagram) {
+            document.getElementById('normal-view').style.display = 'none';
+            document.getElementById('instagram-view').style.display = 'block';
+        } else if (inviteCode) {
+            document.getElementById('invite-code').textContent = inviteCode;
+            document.getElementById('code-box').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
