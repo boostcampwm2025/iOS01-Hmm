@@ -20,32 +20,12 @@ enum ShareService {
 
     static func defaultLinkShare(_ urlString: String, onCompleted: @escaping () -> Void) {
         guard let shareURL = URL(string: urlString) else { return }
+        presentActivitySheet(activityItems: [shareURL], onCompleted: onCompleted)
+    }
 
-        let activityVC = UIActivityViewController(
-            activityItems: [shareURL],
-            applicationActivities: nil
-        )
-
-        activityVC.completionWithItemsHandler = { _, completed, _, error in
-              if let error {
-                  print("❌ 기본 시트 공유 실패: \(error)")
-                  return
-              }
-
-              guard completed else { return }
-              onCompleted()
-          }
-
-        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let rootVC = scene.windows.first(where: { $0.isKeyWindow })?.rootViewController
-        else { return }
-
-        var topVC = rootVC
-        while let presented = topVC.presentedViewController {
-            topVC = presented
-        }
-
-        topVC.present(activityVC, animated: true)
+    /// 문구(링크 포함)를 시스템 공유 시트로 공유
+    static func defaultTextShare(_ text: String, onCompleted: @escaping () -> Void) {
+        presentActivitySheet(activityItems: [text], onCompleted: onCompleted)
     }
 
     static func shareToKakao(messageTemplateID: String, templateArgs: [String: String], onCompleted: @escaping () -> Void) {
@@ -71,4 +51,35 @@ enum ShareService {
         }
     }
 
+}
+
+private extension ShareService {
+    /// 최상단 화면 위에 시스템 공유 시트를 띄운다.
+    static func presentActivitySheet(activityItems: [Any], onCompleted: @escaping () -> Void) {
+        let activityVC = UIActivityViewController(
+            activityItems: activityItems,
+            applicationActivities: nil
+        )
+
+        activityVC.completionWithItemsHandler = { _, completed, _, error in
+            if let error {
+                print("❌ 기본 시트 공유 실패: \(error)")
+                return
+            }
+
+            guard completed else { return }
+            onCompleted()
+        }
+
+        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let rootVC = scene.windows.first(where: { $0.isKeyWindow })?.rootViewController
+        else { return }
+
+        var topVC = rootVC
+        while let presented = topVC.presentedViewController {
+            topVC = presented
+        }
+
+        topVC.present(activityVC, animated: true)
+    }
 }
