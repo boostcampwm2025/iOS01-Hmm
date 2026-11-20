@@ -10,9 +10,9 @@ import SwiftUI
 import DUDesignSystem
 
 private enum Constant {
-    static let inviteMessage = "1인 개발자 키우기에서 같이 성장해요!"
     static let linkCopiedMessage = "링크를 복사했어요"
     static let codeCopiedMessage = "초대 코드를 복사했어요"
+    static let codeNotReadyMessage = "초대 코드를 준비하고 있어요. 잠시 후 다시 시도해주세요"
     static let shareButtonSize: CGFloat = 58
 }
 
@@ -64,13 +64,19 @@ private extension InviteShareSheetView {
         UnevenRoundedRectangle(topLeadingRadius: TokenRadius.lg, topTrailingRadius: TokenRadius.lg)
     }
 
-    var appStoreLink: String {
-        AppUpdateChecker.appStoreURL.absoluteString
+    /// 초대 랜딩 페이지 URL
+    var inviteLink: String {
+        InviteLink.urlString(code: myCode)
+    }
+
+    /// 내 초대 코드가 준비됐는지 (서버에서 받기 전에는 빈 값)
+    var isCodeReady: Bool {
+        !myCode.isEmpty
     }
 
     var infoCard: some View {
         VStack(alignment: .leading, spacing: TokenSpacing.sm) {
-            Text(Constant.inviteMessage)
+            Text(InviteLink.inviteMessage)
                 .duFont(.body)
             HStack(spacing: TokenSpacing.xs) {
                 Text("초대 코드:")
@@ -81,7 +87,7 @@ private extension InviteShareSheetView {
                     .background(Color.beige300)
                     .clipShape(RoundedRectangle(cornerRadius: TokenRadius.sm))
             }
-            Text(appStoreLink)
+            Text(isCodeReady ? inviteLink : "")
                 .duFont(.caption)
                 .foregroundStyle(Color.gray400)
                 .lineLimit(1)
@@ -123,13 +129,25 @@ private extension InviteShareSheetView {
         .buttonStyle(.plain)
     }
 
+    /// 코드가 준비되지 않았으면 안내하고 false
+    func ensureCodeReady() -> Bool {
+        guard isCodeReady else {
+            ToastManager.shared.show(Constant.codeNotReadyMessage)
+            return false
+        }
+        return true
+    }
+
+    /// 초대 문구 + 코드 + 랜딩 페이지 URL을 복사
     func copyLink() {
-        ShareService.copyLink(appStoreLink) {
+        guard ensureCodeReady() else { return }
+        ShareService.copyLink(InviteLink.shareMessage(code: myCode)) {
             ToastManager.shared.show(Constant.linkCopiedMessage)
         }
     }
 
     func copyCode() {
+        guard ensureCodeReady() else { return }
         UIPasteboard.general.string = myCode
         ToastManager.shared.show(Constant.codeCopiedMessage)
     }
@@ -138,8 +156,10 @@ private extension InviteShareSheetView {
         // TODO: 서버 연동 - 초대 전용 템플릿 등록 후 연결 (템플릿 인자 예: invite_code)
     }
 
+    /// 초대 문구 + 코드 + 랜딩 페이지 URL을 시스템 공유 시트로 공유
     func shareToOthers() {
-        ShareService.defaultLinkShare(appStoreLink, onCompleted: {})
+        guard ensureCodeReady() else { return }
+        ShareService.defaultTextShare(InviteLink.shareMessage(code: myCode), onCompleted: {})
     }
 }
 
