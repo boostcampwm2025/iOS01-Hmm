@@ -20,8 +20,18 @@ struct NicknameSetupView: View {
     @State private var keyboardMinY: CGFloat = .infinity
 
     private let validator = Validator()
+    /// 초대 링크로 받은 코드 (없으면 초대 코드 팝업이 클립보드를 확인)
+    let pendingInviteCode: String?
     /// (닉네임, 웰컴 보상 다이아)
     let onComplete: (String, Int) -> Void
+
+    init(
+        pendingInviteCode: String? = nil,
+        onComplete: @escaping (String, Int) -> Void
+    ) {
+        self.pendingInviteCode = pendingInviteCode
+        self.onComplete = onComplete
+    }
 
     private var isValid: Bool {
         validator.isValid(nickname)
@@ -126,6 +136,7 @@ private extension NicknameSetupView {
             InviteCodeInputPopupView(
                 nickname: confirmedNickname,
                 inviteSystem: inviteSystem,
+                prefilledCode: pendingInviteCode,
                 onConfirm: {
                     showWelcomeRewardPopup()
                 },

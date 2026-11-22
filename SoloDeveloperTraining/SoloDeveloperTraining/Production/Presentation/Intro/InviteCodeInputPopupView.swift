@@ -12,6 +12,7 @@ import DUDesignSystem
 private enum Constant {
     static let guideText = "영문과 숫자 \(InviteConstants.codeLength)자리를 입력해주세요"
     static let autoFilledText = "복사한 초대 코드를 붙여넣었어요"
+    static let linkFilledText = "초대 링크의 코드를 입력했어요"
     static let clipboardReadDelay: Duration = .milliseconds(300)
 }
 
@@ -20,10 +21,13 @@ struct InviteCodeInputPopupView: View {
     @State private var validationResult: InviteCodeValidationResult?
     @State private var isValidating: Bool = false
     @State private var autoFilledCode: String?
+    @State private var autoFilledText: String = Constant.autoFilledText
 
     private let validator = InviteCodeValidator()
     private let nickname: String
     private let inviteSystem: InviteSystem
+    /// 초대 링크로 받은 코드 (있으면 클립보드 대신 이 코드를 채운다)
+    private let prefilledCode: String?
 
     let onConfirm: () -> Void
     let onSkip: () -> Void
@@ -31,11 +35,13 @@ struct InviteCodeInputPopupView: View {
     init(
         nickname: String,
         inviteSystem: InviteSystem,
+        prefilledCode: String? = nil,
         onConfirm: @escaping () -> Void,
         onSkip: @escaping () -> Void
     ) {
         self.nickname = nickname
         self.inviteSystem = inviteSystem
+        self.prefilledCode = prefilledCode
         self.onConfirm = onConfirm
         self.onSkip = onSkip
     }
@@ -79,9 +85,14 @@ struct InviteCodeInputPopupView: View {
         .overlay(RoundedRectangle(cornerRadius: TokenRadius.lg).stroke(Color.gray700, lineWidth: 2))
         .padding(.horizontal, TokenGrid.marginPopUp)
         .task {
-            // 팝업이 그려진 뒤 "붙여넣기 허용" 시스템 팝업이 뜨도록 지연
-            guard (try? await Task.sleep(for: Constant.clipboardReadDelay)) != nil else { return }
-            fillCodeFromClipboard()
+            if let prefilledCode {
+                // 초대 링크로 받은 코드가 있으면 클립보드를 읽지 않는다 ("붙여넣기 허용" 팝업 방지)
+                fillCodeFromLink(prefilledCode)
+            } else {
+                // 팝업이 그려진 뒤 "붙여넣기 허용" 시스템 팝업이 뜨도록 지연
+                guard (try? await Task.sleep(for: Constant.clipboardReadDelay)) != nil else { return }
+                fillCodeFromClipboard()
+            }
             // 건너뛰더라도 내 초대 코드와 목록 표시용 닉네임은 준비한다.
             _ = try? await inviteSystem.initializeProfile(nickname: nickname)
         }
@@ -117,13 +128,13 @@ private extension InviteCodeInputPopupView {
         autoFilledCode != nil && code == autoFilledCode
     }
 
-    /// 실패: 실패 사유 / 자동 입력: 붙여넣기 안내 / 기본: 형식 안내
+    /// 실패: 실패 사유 / 자동 입력: 링크·붙여넣기 안내 / 기본: 형식 안내
     @ViewBuilder
     var resultLabel: some View {
         if let failedResult {
             ItemLabel(text: failedResult.message, font: .label, color: .accentRed)
         } else if isShowingAutoFilledCode {
-            ItemLabel(text: Constant.autoFilledText, font: .label, color: .accentGreen)
+            ItemLabel(text: autoFilledText, font: .label, color: .accentGreen)
         } else {
             ItemLabel(text: Constant.guideText, font: .label, color: .gray400)
         }
@@ -137,8 +148,19 @@ private extension InviteCodeInputPopupView {
               let extracted = validator.extractCode(from: text)
         else { return }
 
+        autoFilledText = Constant.autoFilledText
         autoFilledCode = extracted
         code = extracted
+    }
+
+    /// 초대 링크로 받은 코드를 자동 입력
+    func fillCodeFromLink(_ linkCode: String) {
+        let normalized = validator.normalize(linkCode)
+        guard code.isEmpty, validator.validateFormat(normalized).isValid else { return }
+
+        autoFilledText = Constant.linkFilledText
+        autoFilledCode = normalized
+        code = normalized
     }
 
     func confirm() {
@@ -186,5 +208,18 @@ private extension InviteCodeInputPopupView {
     ZStack {
         Color.black300.ignoresSafeArea()
         InviteCodeInputPopupView(nickname: "소피아", inviteSystem: InviteSystem(), onConfirm: {}, onSkip: {})
+    }
+}
+
+#Preview("초대 링크로 진입") {
+    ZStack {
+        Color.black300.ignoresSafeArea()
+        InviteCodeInputPopupView(
+            nickname: "소피아",
+            inviteSystem: InviteSystem(),
+            prefilledCode: "AB1234",
+            onConfirm: {},
+            onSkip: {}
+        )
     }
 }
