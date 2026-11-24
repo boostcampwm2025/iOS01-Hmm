@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "hosting",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "cd /Users/sunghun/Desktop/GroupProject/iOS01-Hmm/SoloDeveloperTraining/SoloDeveloperTraining && firebase serve --only hosting --port 5050"],
+      "port": 5050
+    }
+  ]
+}

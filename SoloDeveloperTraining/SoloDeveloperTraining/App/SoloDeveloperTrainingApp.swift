@@ -43,6 +43,8 @@ struct SoloDeveloperTrainingApp: App {
 
     @State private var user: User?
     @State private var legacyUserType: RewardUserType? = nil
+    /// 초대 링크로 받은 코드 (닉네임 설정 전 신규 유저만 사용)
+    @State private var pendingInviteCode: String?
 
     @State private var hasSeenIntro = false
     @State private var showNicknameSetup = false
@@ -99,7 +101,8 @@ private extension SoloDeveloperTrainingApp {
                     scenarioRepository: scenarioRepository
                 )
             } else if hasSeenIntro, user == nil, showNicknameSetup {
-                NicknameSetupView { nickname, welcomeRewardDiamond in
+                NicknameSetupView(pendingInviteCode: pendingInviteCode) { nickname, welcomeRewardDiamond in
+                    pendingInviteCode = nil
                     let newUser = User(nickname: nickname)
                     newUser.wallet.addDiamond(welcomeRewardDiamond)
                     user = newUser
@@ -122,6 +125,11 @@ private extension SoloDeveloperTrainingApp {
         }
         .animation(TokenAnimation.fadeInSlow.animation, value: hasSeenIntro)
         .onOpenURL { url in
+            if let inviteCode = InviteLink.code(from: url) {
+                handleInviteLink(code: inviteCode)
+                return
+            }
+
             guard let deeplinkInfo = parseOpenURL(url) else { return }
 
             AnalyticsService.shared
@@ -196,6 +204,15 @@ private extension SoloDeveloperTrainingApp {
                 AnalyticsService.shared.logAppDeparture(level: level)
             }
         }
+    }
+
+    // MARK: - Invite
+
+    /// 초대 링크로 앱이 열렸을 때 닉네임 설정 전 신규 유저만 코드를 보관한다.
+    /// 기존 유저(현재·레거시)는 초대 코드를 입력할 수 없으므로 안내 없이 무시한다.
+    func handleInviteLink(code: String) {
+        guard user == nil, legacyUserType == nil else { return }
+        pendingInviteCode = code
     }
 
     // MARK: - Async

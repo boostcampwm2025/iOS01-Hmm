@@ -18,4 +18,10 @@ enum InviteConstants {
     // MARK: - 초대 코드
     /// 초대 코드 길이 (영문 대문자 + 숫자)
     static let codeLength = 6
+
+    // MARK: - 카카오톡 공유
+    /// 카카오 개발자 콘솔에 등록한 초대 메시지 템플릿 ID
+    static let kakaoMessageTemplateID = "139195"
+    /// 템플릿의 사용자 인자 이름 (`${invite_code}`)
+    static let kakaoInviteCodeArgument = "invite_code"
 }
