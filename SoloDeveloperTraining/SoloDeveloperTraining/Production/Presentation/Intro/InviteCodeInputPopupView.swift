@@ -30,14 +30,14 @@ struct InviteCodeInputPopupView: View {
     /// 초대 링크로 받은 코드 (있으면 클립보드 대신 이 코드를 채운다)
     private let prefilledCode: String?
 
-    let onConfirm: () -> Void
+    let onConfirm: (InviteParticipants?) -> Void
     let onSkip: () -> Void
 
     init(
         nickname: String,
         inviteSystem: InviteSystem,
         prefilledCode: String? = nil,
-        onConfirm: @escaping () -> Void,
+        onConfirm: @escaping (InviteParticipants?) -> Void,
         onSkip: @escaping () -> Void
     ) {
         self.nickname = nickname
@@ -98,10 +98,14 @@ struct InviteCodeInputPopupView: View {
             // 건너뛰더라도 내 초대 코드와 목록 표시용 닉네임은 준비한다.
             _ = try? await inviteSystem.initializeProfile(nickname: nickname)
         }
+        .onDisappear { logViewIfNeeded() }
         .onChange(of: code) { _, newValue in
             let normalized = validator.normalize(newValue)
             if normalized != newValue {
                 code = normalized
+            }
+            if let autoFilledCode, normalized != autoFilledCode {
+                self.autoFilledCode = nil
             }
             validationResult = nil
         }
@@ -175,9 +179,16 @@ private extension InviteCodeInputPopupView {
         guard !isValidating else { return }
         logViewIfNeeded()
         isValidating = true
+        let submittedCode = code
+        let inputMethod: InviteCodeInputMethod
+        if isShowingAutoFilledCode {
+            inputMethod = prefilledCode == nil ? .clipboard : .deepLink
+        } else {
+            inputMethod = .manual
+        }
 
         Task {
-            let localResult = validator.validateFormat(code)
+            let localResult = validator.validateFormat(submittedCode)
             guard localResult.isValid else {
                 isValidating = false
                 validationResult = localResult
@@ -186,10 +197,17 @@ private extension InviteCodeInputPopupView {
 
             do {
                 // 초기 프로필 요청이 실패했더라도 확인 시 다시 보장한다.
-                try await inviteSystem.applyInviteCode(code, nickname: nickname)
+                let registration = try await inviteSystem.applyInviteCode(submittedCode, nickname: nickname)
+                if registration.firstRegistration, let participants = registration.participants {
+                    AnalyticsService.shared.logInviteAccepted(
+                        referrerID: participants.referrerID,
+                        inviteeID: participants.inviteeID,
+                        inputMethod: inputMethod
+                    )
+                }
                 isValidating = false
                 validationResult = .valid
-                onConfirm()
+                onConfirm(registration.participants)
             } catch let error as InviteFunctionsError {
                 isValidating = false
                 validationResult = InviteCodeValidationResult(error: error)
@@ -219,7 +237,7 @@ private extension InviteCodeInputPopupView {
 #Preview {
     ZStack {
         Color.black300.ignoresSafeArea()
-        InviteCodeInputPopupView(nickname: "소피아", inviteSystem: InviteSystem(), onConfirm: {}, onSkip: {})
+        InviteCodeInputPopupView(nickname: "소피아", inviteSystem: InviteSystem(), onConfirm: { _ in }, onSkip: {})
     }
 }
 
@@ -230,7 +248,7 @@ private extension InviteCodeInputPopupView {
             nickname: "소피아",
             inviteSystem: InviteSystem(),
             prefilledCode: "AB1234",
-            onConfirm: {},
+            onConfirm: { _ in },
             onSkip: {}
         )
     }

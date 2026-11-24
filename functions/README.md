@@ -67,7 +67,7 @@ sequenceDiagram
 | --- | --- | --- |
 | `initialize_invite_profile` | 선택 `nickname` | 고유 초대 코드 발급과 닉네임 초기 저장 |
 | `update_invite_nickname` | `nickname` | 사용자 프로필과 기존 초대 문서의 닉네임을 함께 갱신 |
-| `apply_invite_code` | `inviteCode` | 초대 관계 생성과 피초대자 grant 반환 |
+| `apply_invite_code` | `inviteCode` | 초대 관계 생성 후 `inviteeGrant`, `inviterUid`, `inviteeUid` 반환 |
 | `get_invite_status` | 없음 | 초대 목록 반환 |
 | `claim_invite_reward` | `grantId` | 초대자 보상을 `CLAIMED`로 변경 |
 | `sync_invite_rewards` | 없음 | 서버 기준 수령 완료 grant 목록 반환 |

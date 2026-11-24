@@ -11,8 +11,9 @@ final class DefaultInviteRepository: InviteRepository {
         try await client.initializeInviteProfile(nickname: nickname).inviteCode
     }
 
-    func applyCode(_ code: String) async throws -> String {
-        try await client.applyInviteCode(code).inviteeGrant.grantId
+    func applyCode(_ code: String) async throws -> (grantID: String, participants: InviteParticipants?) {
+        let result = try await client.applyInviteCode(code)
+        return (result.inviteeGrant.grantId, result.participants)
     }
 
     func fetchInvitedFriends() async throws -> [InvitedFriend] {

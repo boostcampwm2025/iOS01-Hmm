@@ -109,7 +109,7 @@ class InviteService:
         if existing_invitation.exists:
             data = existing_invitation.to_dict() or {}
             if data.get("inviteCode") == code:
-                return self._apply_success_payload(uid)
+                return self._apply_success_payload(uid, data["inviterUid"])
             raise errors.AlreadyAppliedError()
 
         if not is_valid_invite_code_format(code):
@@ -134,7 +134,7 @@ class InviteService:
             inviter_uid=inviter_uid,
             invite_code=code,
         )
-        return self._apply_success_payload(uid)
+        return self._apply_success_payload(uid, inviter_uid)
 
     # 사용자의 초대 목록과 보상 상태를 조회하는 메서드
     def get_invite_status(self, uid: str | None) -> dict[str, Any]:
@@ -323,8 +323,11 @@ class InviteService:
     def _apply_success_payload(
         self,
         invitee_uid: str,
+        inviter_uid: str,
     ) -> dict[str, Any]:
         return {
+            "inviterUid": inviter_uid,
+            "inviteeUid": invitee_uid,
             "inviteeGrant": {
                 "grantId": grant_id_for(invitee_uid, const.ROLE_INVITEE),
                 "role": const.ROLE_INVITEE,

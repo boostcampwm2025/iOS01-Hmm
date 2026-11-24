@@ -62,10 +62,11 @@ final class InviteSystem {
 
     /// 초대 코드 등록 후 서버가 반환한 피초대자 grant ID를 기기에 저장한다.
     /// 웰컴 다이아는 이후 닉네임 설정 완료 시 로컬 지갑에 지급한다.
-    func applyInviteCode(_ code: String, nickname: String) async throws {
+    func applyInviteCode(_ code: String, nickname: String) async throws -> (participants: InviteParticipants?, firstRegistration: Bool) {
         try await initializeProfile(nickname: nickname)
-        let grantId = try await repository.applyCode(code)
-        grantStore.record(grantId)
+        let result = try await repository.applyCode(code)
+        let firstRegistration = grantStore.record(result.grantID)
+        return (result.participants, firstRegistration)
     }
 
     /// 서버의 내 코드와 초대 목록을 최신 상태로 갱신한다.

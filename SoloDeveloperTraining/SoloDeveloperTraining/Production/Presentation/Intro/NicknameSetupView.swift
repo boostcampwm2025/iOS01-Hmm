@@ -137,7 +137,7 @@ private extension NicknameSetupView {
                 nickname: confirmedNickname,
                 inviteSystem: inviteSystem,
                 prefilledCode: pendingInviteCode,
-                onConfirm: {
+                onConfirm: { _ in
                     showWelcomeRewardPopup()
                 },
                 onSkip: {

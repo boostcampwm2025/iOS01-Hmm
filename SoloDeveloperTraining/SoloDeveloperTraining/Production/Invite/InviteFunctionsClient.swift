@@ -98,7 +98,13 @@ final class FirebaseInviteFunctionsClient: InviteFunctionsClient {
         guard let inviteeGrant = grant(from: payload["inviteeGrant"]) else {
             throw InviteFunctionsError.unknown
         }
-        return InviteApplyDTO(inviteeGrant: inviteeGrant)
+        let participants: InviteParticipants?
+        if let inviter = payload["inviterUid"] as? String, let invitee = payload["inviteeUid"] as? String {
+            participants = InviteParticipants(referrerID: inviter, inviteeID: invitee)
+        } else {
+            participants = nil
+        }
+        return InviteApplyDTO(inviteeGrant: inviteeGrant, participants: participants)
     }
 
     func getInviteStatus() async throws -> InviteStatusDTO {

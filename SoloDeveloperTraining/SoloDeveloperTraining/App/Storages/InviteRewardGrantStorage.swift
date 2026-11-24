@@ -19,11 +19,13 @@ final class InviteRewardGrantStorage: @unchecked Sendable {
         }
     }
 
-    func record(_ grantId: String) {
+    @discardableResult
+    func record(_ grantId: String) -> Bool {
         Self.lock.withLock {
             var ids = Set(storage.stringArray(key: Key.grantIds) ?? [])
-            ids.insert(grantId)
+            guard ids.insert(grantId).inserted else { return false }
             storage.set(ids.sorted(), forKey: Key.grantIds)
+            return true
         }
     }
 }
