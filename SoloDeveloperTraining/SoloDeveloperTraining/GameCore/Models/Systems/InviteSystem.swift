@@ -88,9 +88,8 @@ final class InviteSystem {
         do {
             let synced = try await repository.fetchClaimedRewards()
             var didChangeWallet = false
-            for grant in synced where !grantStore.contains(grant.grantId) {
+            for grant in synced where grantStore.record(grant.grantId) {
                 user.wallet.addDiamond(grant.role.diamondAmount)
-                grantStore.record(grant.grantId)
                 markClaimed(grantId: grant.grantId)
                 didChangeWallet = true
             }
@@ -115,22 +114,20 @@ final class InviteSystem {
             return false
         }
 
+        let grantId: String
         do {
-            let grantId = try await repository.claimReward(grantId: friend.grantId)
-            user.wallet.addDiamond(InviteConstants.inviterRewardDiamond)
-            grantStore.record(grantId)
-            try? await userRepository.save(user)
-            invitedFriends[index].isRewardClaimed = true
-            return true
+            grantId = try await repository.claimReward(grantId: friend.grantId)
         } catch let error as InviteFunctionsError where error == .rewardAlreadyClaimed {
-            user.wallet.addDiamond(InviteConstants.inviterRewardDiamond)
-            grantStore.record(friend.grantId)
-            try? await userRepository.save(user)
-            invitedFriends[index].isRewardClaimed = true
-            return true
+            grantId = friend.grantId
         } catch {
             return false
         }
+
+        markClaimed(grantId: grantId)
+        guard grantStore.record(grantId) else { return false }
+        user.wallet.addDiamond(InviteConstants.inviterRewardDiamond)
+        try? await userRepository.save(user)
+        return true
     }
 
     private func markClaimed(grantId: String) {

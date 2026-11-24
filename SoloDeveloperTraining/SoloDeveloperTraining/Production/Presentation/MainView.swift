@@ -67,6 +67,7 @@ struct MainView: View {
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
+    private let onInviterRewardClaimed: (String) -> Void
     private let onInviteShared: (InviteShareChannel) -> Void
     private let userType: RewardUserType
     private let scene: CharacterScene
@@ -77,13 +78,15 @@ struct MainView: View {
         userType: RewardUserType,
         hasSeenIntro: Binding<Bool>,
         scenarioRepository: ScenarioRepository,
-        onInviteShared: @escaping (InviteShareChannel) -> Void
+        onInviteShared: @escaping (InviteShareChannel) -> Void,
+        onInviterRewardClaimed: @escaping (String) -> Void
     ) {
         self._hasSeenIntro = hasSeenIntro
 
         self.autoGainSystem = AutoGainSystem(user: user)
         self.user = user
         self.userType = userType
+        self.onInviterRewardClaimed = onInviterRewardClaimed
         self.onInviteShared = onInviteShared
         self.scenarioRepository = scenarioRepository
 
@@ -857,6 +860,7 @@ private extension MainView {
         Task {
             let claimed = await inviteSystem.claimInviteReward(friend: friend, user: user)
             if claimed {
+                onInviterRewardClaimed(friend.id)
                 ToastManager.shared.show("다이아 \(InviteConstants.inviterRewardDiamond)개를 받았어요")
             }
         }
@@ -890,6 +894,7 @@ private extension MainView {
         userType: .newUser,
         hasSeenIntro: .constant(true),
         scenarioRepository: DefaultScenarioRepository(),
-        onInviteShared: { _ in }
+        onInviteShared: { _ in },
+        onInviterRewardClaimed: { _ in }
     )
 }
