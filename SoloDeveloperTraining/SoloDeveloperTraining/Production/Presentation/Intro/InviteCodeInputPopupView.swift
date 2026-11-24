@@ -20,6 +20,7 @@ struct InviteCodeInputPopupView: View {
     @State private var code: String = ""
     @State private var validationResult: InviteCodeValidationResult?
     @State private var isValidating: Bool = false
+    @State private var hasLoggedView = false
     @State private var autoFilledCode: String?
     @State private var autoFilledText: String = Constant.autoFilledText
 
@@ -93,6 +94,7 @@ struct InviteCodeInputPopupView: View {
                 guard (try? await Task.sleep(for: Constant.clipboardReadDelay)) != nil else { return }
                 fillCodeFromClipboard()
             }
+            logViewIfNeeded()
             // 건너뛰더라도 내 초대 코드와 목록 표시용 닉네임은 준비한다.
             _ = try? await inviteSystem.initializeProfile(nickname: nickname)
         }
@@ -163,8 +165,15 @@ private extension InviteCodeInputPopupView {
         code = normalized
     }
 
+    func logViewIfNeeded() {
+        guard !hasLoggedView else { return }
+        hasLoggedView = true
+        AnalyticsService.shared.logInviteCodeInputViewed(entryType: autoFilledCode == nil ? .manual : .auto)
+    }
+
     func confirm() {
         guard !isValidating else { return }
+        logViewIfNeeded()
         isValidating = true
 
         Task {
@@ -194,6 +203,8 @@ private extension InviteCodeInputPopupView {
     var skipButton: some View {
         Button {
             SoundService.shared.trigger(.click)
+            logViewIfNeeded()
+            AnalyticsService.shared.logInviteCodeInputSkipped()
             onSkip()
         } label: {
             Text("건너뛰기")
@@ -201,6 +212,7 @@ private extension InviteCodeInputPopupView {
                 .underline()
                 .foregroundStyle(Color.gray400)
         }
+        .disabled(isValidating)
     }
 }
 
