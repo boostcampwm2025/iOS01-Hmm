@@ -13,7 +13,7 @@ enum InviteAnalyticsEvent: String {
 
 enum InviteShareChannel: String {
     case kakao
-    case line
+    case other
     case url
     case code
 }

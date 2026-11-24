@@ -99,7 +99,10 @@ private extension SoloDeveloperTrainingApp {
                     userType: legacyUserType ?? .newUser,
                     hasSeenIntro: $hasSeenIntro,
                     scenarioRepository: scenarioRepository
-                )
+                ) { channel in
+                    guard case .authenticated(let state) = authenticationService.status else { return }
+                    AnalyticsService.shared.logInviteLinkShared(channel: channel, referrerID: state.userID)
+                }
             } else if hasSeenIntro, user == nil, showNicknameSetup {
                 NicknameSetupView(pendingInviteCode: pendingInviteCode) { nickname, welcomeRewardDiamond in
                     pendingInviteCode = nil

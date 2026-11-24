@@ -18,6 +18,7 @@ private enum Constant {
 
 struct InviteShareSheetView: View {
     let myCode: String
+    let onShared: (InviteShareChannel) -> Void
 
     var body: some View {
         VStack(spacing: TokenSpacing.lg) {
@@ -142,6 +143,7 @@ private extension InviteShareSheetView {
     func copyLink() {
         guard ensureCodeReady() else { return }
         ShareService.copyLink(InviteLink.shareMessage(code: myCode)) {
+            onShared(.url)
             ToastManager.shared.show(Constant.linkCopiedMessage)
         }
     }
@@ -149,6 +151,7 @@ private extension InviteShareSheetView {
     func copyCode() {
         guard ensureCodeReady() else { return }
         UIPasteboard.general.string = myCode
+        onShared(.code)
         ToastManager.shared.show(Constant.codeCopiedMessage)
     }
 
@@ -159,20 +162,22 @@ private extension InviteShareSheetView {
         ShareService.shareToKakao(
             messageTemplateID: InviteConstants.kakaoMessageTemplateID,
             templateArgs: [InviteConstants.kakaoInviteCodeArgument: myCode],
-            onCompleted: {}
+            onCompleted: { onShared(.kakao) }
         )
     }
 
     /// 초대 문구 + 코드 + 랜딩 페이지 URL을 시스템 공유 시트로 공유
     func shareToOthers() {
         guard ensureCodeReady() else { return }
-        ShareService.defaultTextShare(InviteLink.shareMessage(code: myCode), onCompleted: {})
+        ShareService.defaultTextShare(InviteLink.shareMessage(code: myCode)) {
+            onShared(.other)
+        }
     }
 }
 
 #Preview {
     ZStack(alignment: .bottom) {
         Color.black300.ignoresSafeArea()
-        InviteShareSheetView(myCode: "ABC000")
+        InviteShareSheetView(myCode: "ABC000", onShared: { _ in })
     }
 }
