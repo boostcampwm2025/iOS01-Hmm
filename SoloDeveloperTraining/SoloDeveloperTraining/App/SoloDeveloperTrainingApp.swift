@@ -99,12 +99,29 @@ private extension SoloDeveloperTrainingApp {
                     userType: legacyUserType ?? .newUser,
                     hasSeenIntro: $hasSeenIntro,
                     scenarioRepository: scenarioRepository
-                )
+                ) { channel in
+                    guard case .authenticated(let state) = authenticationService.status else { return }
+                    AnalyticsService.shared.logInviteLinkShared(channel: channel, referrerID: state.userID)
+                } onInviterRewardClaimed: { inviteeID in
+                    guard case .authenticated(let state) = authenticationService.status else { return }
+                    AnalyticsService.shared.logReferralRewardClaimed(
+                        role: .inviter,
+                        referrerID: state.userID,
+                        inviteeID: inviteeID
+                    )
+                }
             } else if hasSeenIntro, user == nil, showNicknameSetup {
-                NicknameSetupView(pendingInviteCode: pendingInviteCode) { nickname, welcomeRewardDiamond in
+                NicknameSetupView(pendingInviteCode: pendingInviteCode) { nickname, welcomeRewardDiamond, participants in
                     pendingInviteCode = nil
                     let newUser = User(nickname: nickname)
                     newUser.wallet.addDiamond(welcomeRewardDiamond)
+                    if welcomeRewardDiamond > 0, let participants {
+                        AnalyticsService.shared.logReferralRewardClaimed(
+                            role: .invitee,
+                            referrerID: participants.referrerID,
+                            inviteeID: participants.inviteeID
+                        )
+                    }
                     user = newUser
                     checkFirstOpen(user: newUser)
                     user?.record.tutorialCompleted = true

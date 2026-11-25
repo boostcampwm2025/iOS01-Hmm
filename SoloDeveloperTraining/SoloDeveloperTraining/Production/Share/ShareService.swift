@@ -34,19 +34,23 @@ enum ShareService {
             return
         }
 
+        func openShareURL(_ url: URL) {
+            UIApplication.shared.open(url) { opened in
+                if opened { onCompleted() }
+            }
+        }
+
         if ShareApi.isKakaoTalkSharingAvailable() {
             ShareApi.shared.shareCustom(templateId: templateID, templateArgs: templateArgs) { (sharingResult, error) in
                 if let error = error {
                     print("❌ 카카오 공유 실패: \(error)")
                 } else if let sharingResult = sharingResult {
-                    UIApplication.shared.open(sharingResult.url)
-                    onCompleted()
+                    openShareURL(sharingResult.url)
                 }
             }
         } else {
             if let url = ShareApi.shared.makeCustomUrl(templateId: templateID, templateArgs: templateArgs) {
-                UIApplication.shared.open(url)
-                onCompleted()
+                openShareURL(url)
             }
         }
     }

@@ -104,7 +104,8 @@ def test_apply_success_creates_invitation_and_grants(service, db):
     service.initialize_invite_profile(invitee, "피초대자")
     result = service.apply_invite_code(invitee, code)
 
-    assert set(result) == {"inviteeGrant"}
+    assert result["inviterUid"] == inviter
+    assert result["inviteeUid"] == invitee
     assert set(result["inviteeGrant"]) == {"grantId", "role"}
     assert "amount" not in result["inviteeGrant"]
 
@@ -148,7 +149,7 @@ def test_already_applied_and_idempotent_retry(service):
 
     first = service.apply_invite_code(invitee, code)
     replay = service.apply_invite_code(invitee, code)
-    assert first["inviteeGrant"]["grantId"] == replay["inviteeGrant"]["grantId"]
+    assert first == replay
 
     with pytest.raises(AlreadyAppliedError):
         service.apply_invite_code(invitee, other_code)

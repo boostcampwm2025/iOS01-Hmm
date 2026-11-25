@@ -47,15 +47,15 @@ enum AnalyticsProperty {
     /// 유입을 만든 원 기기 ID
     static let referrerDeviceID = "referrer_device_id"
 
+    // MARK: - 보상 프로퍼티
+    static let rewardType = "reward_type"
+    static let rewardAmount = "reward_amount"
+
     // MARK: - 광고 관련 프로퍼티
     /// 광고 보상 플로우 식별자
     static let adRewardFlowID = "ad_reward_flow_id"
     /// 광고 제안 위치
     static let adPlacement = "ad_placement"
-    /// 광고 보상 종류
-    static let rewardType = "reward_type"
-    /// 광고 보상량
-    static let rewardAmount = "reward_amount"
     /// 광고 형식
     static let adFormat = "ad_format"
     /// 광고 네트워크
@@ -67,6 +67,13 @@ enum AnalyticsProperty {
     /// 광고 시청 시간
     static let adWatchDurationSec = "ad_watch_duration_sec"
 
+    // MARK: - 초대 관련 프로퍼티
+    static let channel = "channel"
+    static let referrerID = "referrer_id"
+    static let inviteeID = "invitee_id"
+    static let entryType = "entry_type"
+    static let inputMethod = "input_method"
+    static let role = "role"
 }
 
 // MARK: - Device Values

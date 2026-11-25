@@ -8,8 +8,11 @@ import Testing
 struct PolicyFetchBenchmarkTests {
     private typealias Read = @MainActor () async throws -> Void
 
-    @Test(.enabled(if: ProcessInfo.processInfo.environment["RUN_POLICY_BENCHMARK"] == "1"))
-    func 정책_문서의_순차_조회와_동시_조회_시간을_비교한다() async throws {
+    @Test(
+        "정책 문서의 순차 조회와 동시 조회 시간을 비교한다",
+        .enabled(if: ProcessInfo.processInfo.environment["RUN_POLICY_BENCHMARK"] == "1")
+    )
+    func comparesSequentialAndConcurrentFetchTimes() async throws {
         let store = Firestore.firestore()
         let active = try await store.document("test/current").getDocument(source: .server)
         let version = try #require(active.data()?["version"] as? Int)

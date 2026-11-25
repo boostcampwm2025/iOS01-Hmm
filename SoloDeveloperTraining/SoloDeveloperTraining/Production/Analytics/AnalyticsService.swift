@@ -36,7 +36,6 @@ final class AnalyticsService {
         currentScreenID = screen.rawValue
     }
 
-
     // MARK: - 성장
 
     /// device_id 기준 첫 앱 실행 (앱 재설치 시에도 1회만)
@@ -299,5 +298,52 @@ extension AnalyticsService {
         guard loggedFlowIDs.insert(adRewardFlowID).inserted else { return false }
         loggedAdRewardFlowIDsByEvent[event] = loggedFlowIDs
         return true
+    }
+}
+
+// MARK: - 초대
+extension AnalyticsService {
+
+    func logInviteLinkShared(channel: InviteShareChannel, referrerID: String) {
+        Analytics.logEvent(InviteAnalyticsEvent.linkShared.rawValue, parameters: [
+            AP.channel: channel.rawValue,
+            AP.referrerID: referrerID
+        ])
+    }
+
+    func logInviteCodeInputViewed(entryType: InviteCodeEntryType) {
+        Analytics.logEvent(InviteAnalyticsEvent.codeInputViewed.rawValue, parameters: [
+            AP.entryType: entryType.rawValue
+        ])
+    }
+
+    func logInviteCodeInputSkipped() {
+        Analytics.logEvent(InviteAnalyticsEvent.codeInputSkipped.rawValue, parameters: nil)
+    }
+
+    func logInviteAccepted(
+        referrerID: String,
+        inviteeID: String,
+        inputMethod: InviteCodeInputMethod
+    ) {
+        Analytics.logEvent(InviteAnalyticsEvent.accepted.rawValue, parameters: [
+            AP.referrerID: referrerID,
+            AP.inviteeID: inviteeID,
+            AP.inputMethod: inputMethod.rawValue
+        ])
+    }
+
+    func logReferralRewardClaimed(
+        role: InviteRewardRole,
+        referrerID: String,
+        inviteeID: String
+    ) {
+        Analytics.logEvent(InviteAnalyticsEvent.rewardClaimed.rawValue, parameters: [
+            AP.role: role.rawValue,
+            AP.referrerID: referrerID,
+            AP.inviteeID: inviteeID,
+            AP.rewardType: "diamond",
+            AP.rewardAmount: role.diamondAmount
+        ])
     }
 }

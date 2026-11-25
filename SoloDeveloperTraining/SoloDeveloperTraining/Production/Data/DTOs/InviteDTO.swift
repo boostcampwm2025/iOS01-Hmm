@@ -12,6 +12,7 @@ struct InviteProfileDTO {
 
 struct InviteApplyDTO {
     let inviteeGrant: InviteGrantDTO
+    let participants: InviteParticipants?
 }
 
 /// 서버는 보상 식별자와 역할만 반환한다.

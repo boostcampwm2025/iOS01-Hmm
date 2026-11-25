@@ -67,6 +67,8 @@ struct MainView: View {
 
     private var autoGainSystem: AutoGainSystem
     private let user: User
+    private let onInviterRewardClaimed: (String) -> Void
+    private let onInviteShared: (InviteShareChannel) -> Void
     private let userType: RewardUserType
     private let scene: CharacterScene
     private let animationSystem: CharacterAnimationSystem
@@ -75,13 +77,17 @@ struct MainView: View {
         user: User,
         userType: RewardUserType,
         hasSeenIntro: Binding<Bool>,
-        scenarioRepository: ScenarioRepository
+        scenarioRepository: ScenarioRepository,
+        onInviteShared: @escaping (InviteShareChannel) -> Void,
+        onInviterRewardClaimed: @escaping (String) -> Void
     ) {
         self._hasSeenIntro = hasSeenIntro
 
         self.autoGainSystem = AutoGainSystem(user: user)
         self.user = user
         self.userType = userType
+        self.onInviterRewardClaimed = onInviterRewardClaimed
+        self.onInviteShared = onInviteShared
         self.scenarioRepository = scenarioRepository
 
         self.scene = CharacterScene(size: Constant.characterSceneSize, user: user)
@@ -140,7 +146,7 @@ struct MainView: View {
         }
         // 친구 초대 팝업(PopupManager) 위로 올라오도록 시스템 시트 사용
         .sheet(isPresented: $showInviteShareSheet) {
-            InviteShareSheetView(myCode: inviteSystem.myCode)
+            InviteShareSheetView(myCode: inviteSystem.myCode, onShared: onInviteShared)
                 .fixedSize(horizontal: false, vertical: true)
                 .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
                     inviteShareSheetHeight = height
@@ -854,6 +860,7 @@ private extension MainView {
         Task {
             let claimed = await inviteSystem.claimInviteReward(friend: friend, user: user)
             if claimed {
+                onInviterRewardClaimed(friend.id)
                 ToastManager.shared.show("다이아 \(InviteConstants.inviterRewardDiamond)개를 받았어요")
             }
         }
@@ -886,6 +893,8 @@ private extension MainView {
         user: user,
         userType: .newUser,
         hasSeenIntro: .constant(true),
-        scenarioRepository: DefaultScenarioRepository()
+        scenarioRepository: DefaultScenarioRepository(),
+        onInviteShared: { _ in },
+        onInviterRewardClaimed: { _ in }
     )
 }

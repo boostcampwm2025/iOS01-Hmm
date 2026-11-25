@@ -62,10 +62,11 @@ final class InviteSystem {
 
     /// 초대 코드 등록 후 서버가 반환한 피초대자 grant ID를 기기에 저장한다.
     /// 웰컴 다이아는 이후 닉네임 설정 완료 시 로컬 지갑에 지급한다.
-    func applyInviteCode(_ code: String, nickname: String) async throws {
+    func applyInviteCode(_ code: String, nickname: String) async throws -> (participants: InviteParticipants?, firstRegistration: Bool) {
         try await initializeProfile(nickname: nickname)
-        let grantId = try await repository.applyCode(code)
-        grantStore.record(grantId)
+        let result = try await repository.applyCode(code)
+        let firstRegistration = grantStore.record(result.grantID)
+        return (result.participants, firstRegistration)
     }
 
     /// 서버의 내 코드와 초대 목록을 최신 상태로 갱신한다.
@@ -87,9 +88,8 @@ final class InviteSystem {
         do {
             let synced = try await repository.fetchClaimedRewards()
             var didChangeWallet = false
-            for grant in synced where !grantStore.contains(grant.grantId) {
+            for grant in synced where grantStore.record(grant.grantId) {
                 user.wallet.addDiamond(grant.role.diamondAmount)
-                grantStore.record(grant.grantId)
                 markClaimed(grantId: grant.grantId)
                 didChangeWallet = true
             }
@@ -114,22 +114,20 @@ final class InviteSystem {
             return false
         }
 
+        let grantId: String
         do {
-            let grantId = try await repository.claimReward(grantId: friend.grantId)
-            user.wallet.addDiamond(InviteConstants.inviterRewardDiamond)
-            grantStore.record(grantId)
-            try? await userRepository.save(user)
-            invitedFriends[index].isRewardClaimed = true
-            return true
+            grantId = try await repository.claimReward(grantId: friend.grantId)
         } catch let error as InviteFunctionsError where error == .rewardAlreadyClaimed {
-            user.wallet.addDiamond(InviteConstants.inviterRewardDiamond)
-            grantStore.record(friend.grantId)
-            try? await userRepository.save(user)
-            invitedFriends[index].isRewardClaimed = true
-            return true
+            grantId = friend.grantId
         } catch {
             return false
         }
+
+        markClaimed(grantId: grantId)
+        guard grantStore.record(grantId) else { return false }
+        user.wallet.addDiamond(InviteConstants.inviterRewardDiamond)
+        try? await userRepository.save(user)
+        return true
     }
 
     private func markClaimed(grantId: String) {

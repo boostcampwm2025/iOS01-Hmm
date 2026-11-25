@@ -15,6 +15,7 @@ struct NicknameSetupView: View {
     @State private var nicknameState: InputField.InputFieldState = .default
     @State private var showTutorial = false
     @State private var confirmedNickname = ""
+    @State private var inviteParticipants: InviteParticipants?
     @State private var welcomeRewardDiamond = 0
     @State private var inputFieldMaxY: CGFloat = 0
     @State private var keyboardMinY: CGFloat = .infinity
@@ -22,12 +23,12 @@ struct NicknameSetupView: View {
     private let validator = Validator()
     /// 초대 링크로 받은 코드 (없으면 초대 코드 팝업이 클립보드를 확인)
     let pendingInviteCode: String?
-    /// (닉네임, 웰컴 보상 다이아)
-    let onComplete: (String, Int) -> Void
+    /// 닉네임 설정 완료 시 지급할 다이아와 초대 관계를 전달한다.
+    let onComplete: (String, Int, InviteParticipants?) -> Void
 
     init(
         pendingInviteCode: String? = nil,
-        onComplete: @escaping (String, Int) -> Void
+        onComplete: @escaping (String, Int, InviteParticipants?) -> Void
     ) {
         self.pendingInviteCode = pendingInviteCode
         self.onComplete = onComplete
@@ -121,7 +122,7 @@ struct NicknameSetupView: View {
         }
         .fullScreenCover(isPresented: $showTutorial) {
             TutorialView {
-                onComplete(confirmedNickname, welcomeRewardDiamond)
+                onComplete(confirmedNickname, welcomeRewardDiamond, inviteParticipants)
             }
         }
     }
@@ -137,7 +138,8 @@ private extension NicknameSetupView {
                 nickname: confirmedNickname,
                 inviteSystem: inviteSystem,
                 prefilledCode: pendingInviteCode,
-                onConfirm: {
+                onConfirm: { participants in
+                    inviteParticipants = participants
                     showWelcomeRewardPopup()
                 },
                 onSkip: {
@@ -161,7 +163,7 @@ private extension NicknameSetupView {
 }
 
 #Preview {
-    NicknameSetupView { nickname, welcomeRewardDiamond in
+    NicknameSetupView { nickname, welcomeRewardDiamond, _ in
         print("완료: \(nickname), 웰컴 보상: \(welcomeRewardDiamond)")
     }
 }
